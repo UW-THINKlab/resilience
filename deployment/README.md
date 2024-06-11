@@ -69,4 +69,19 @@ To deploy the supabase backend to a local minikube cluster, run the following co
 
 ## Production
 
-Coming soon.
+There are some infrastructure tools that are needed to run supabase in the server.
+
+1. Docker: Docker will be the underlying platform for running the container applications for the backend.
+    To install docker in ubuntu, follow the instructions in the [official documentation](https://docs.docker.com/engine/install/ubuntu/).
+
+    **Note: To allow docker to run as non-root user, do `sudo usermod -aG docker ubuntu`**
+
+2. k3d: k3d is a lightweight wrapper to run k3s (A certified lightweight Kubernetes distribution) in docker. It is used to run the kubernetes cluster for the backend. To install k3d, follow the instructions in the [official documentation](https://k3d.io/v5.6.3/#installation).
+
+3. kubectl: kubectl is the command line tool for interacting with the kubernetes cluster. To install kubectl, follow the instructions in the [official documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-binary-with-curl-on-linux).
+
+4. Helm: Helm is the package manager for kubernetes. To install helm, follow the instructions in the [official documentation](https://helm.sh/docs/intro/install/).
+
+5. Stern: Stern is a tool for tailing multiple pods on kubernetes. To install stern, follow the instructions in the [official documentation](https://github.com/stern/stern?tab=readme-ov-file#installation).
+
+**Note: Deployment instructions for production will be available in the future.**

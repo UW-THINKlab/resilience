@@ -5,24 +5,15 @@
 
 This repository is a collection of resources for post-disaster communications. It is a work in progress and will be updated as the project progresses.
 
-## Infrastructure Setup
+## Frontend Technology Stack
 
-There are some infrastructure tools that are needed to run supabase in the server.
+Flutter is an open-source UI software development kit created by Google.
 
-1. Docker: Docker will be the underlying platform for running the container applications for the backend.
-    To install docker in ubuntu, follow the instructions in the [official documentation](https://docs.docker.com/engine/install/ubuntu/).
+This will be used for the mobile application development.
 
-    **Note: To allow docker to run as non-root user, do `sudo usermod -aG docker ubuntu`**
+See [Official Documentation](https://flutter.dev/docs)
 
-2. k3d: k3d is a lightweight wrapper to run k3s (A certified lightweight Kubernetes distribution) in docker. It is used to run the kubernetes cluster for the backend. To install k3d, follow the instructions in the [official documentation](https://k3d.io/v5.6.3/#installation).
-
-3. kubectl: kubectl is the command line tool for interacting with the kubernetes cluster. To install kubectl, follow the instructions in the [official documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-binary-with-curl-on-linux).
-
-4. Helm: Helm is the package manager for kubernetes. To install helm, follow the instructions in the [official documentation](https://helm.sh/docs/intro/install/).
-
-5. Stern: Stern is a tool for tailing multiple pods on kubernetes. To install stern, follow the instructions in the [official documentation](https://github.com/stern/stern?tab=readme-ov-file#installation).
-
-## Supabase Setup
+## Backend Technology Stack
 
 Supabase is an open source Firebase alternative. It is a service that provides a Postgres database with a RESTful API and real-time capabilities. It is used as the backend for the project.
 
@@ -32,14 +23,6 @@ The helm chart can be found in [supabase-community/supabase-kubernetes](https://
 Deploying supabase via Kubernetes allows for a cloud agnostic deployment as long as a Kubernetes cluster is available.
 
 See [Official Documentation](https://supabase.com/docs)
-
-## Flutter
-
-Flutter is an open-source UI software development kit created by Google.
-
-This will be used for the mobile application development.
-
-See [Official Documentation](https://flutter.dev/docs)
 
 ## Contributing
 
