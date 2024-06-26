@@ -1,0 +1,5 @@
+# Android Studio
+.idea/
+
+# MacOS
+.DS_Store
