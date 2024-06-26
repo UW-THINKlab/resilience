@@ -1,0 +1,45 @@
+name: WebPreview
+
+on:
+  pull_request_target:
+    types: [labeled, synchronize]
+
+jobs:
+  add-preview:
+    runs-on: ubuntu-latest
+    # This workflow accesses secrets and checks out a PR, so only run if labelled
+    # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
+    defaults:
+      run:
+        working-directory: ./src/support_sphere
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+    - run: flutter pub get
+    - run: flutter build web --web-renderer html
+
+    - name: Deploy Website Preview
+      if: always()
+      uses: nwtgck/actions-netlify@v3.0
+      with:
+        publish-dir: './build/web'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy from GitHub Actions"
+        enable-github-deployment: false
+        enable-commit-status: false
+        enable-commit-comment: false
+        enable-pull-request-comment: true
+        overwrites-pull-request-comment: true
+        alias: deploy-preview-${{ github.event.number }}
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      timeout-minutes: 1
