@@ -1,0 +1,22 @@
+[project]
+name = "post-disaster-comms"
+version = "0.1.0"
+description = "post-disaster communications project"
+authors = ["Don Setiawan"]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[dependencies]
+python = ">=3.10"
+ipykernel = ">=6.29.5,<6.30"
+rich = ">=13.7.1,<13.8"
+
+[tasks]
+
+[tasks.install-flutter]
+cmd = "python scripts/install-flutter.py"
+outputs = [".flutter/flutter"]
+
+[tasks.check-flutter]
+cmd = "flutter doctor"
+depends-on = ["install-flutter"]
