@@ -31,15 +31,14 @@ cmd = [
     "helm",
     "upgrade",
     "supabase", 
-    "../vendors/supabase-kubernetes/charts/supabase",
+    "vendors/supabase-kubernetes/charts/supabase",
     "--install",
     "--wait",
     "--cleanup-on-fail",
     "--values",
-    "values.dev.yaml"
+    "deployment/values.dev.yaml"
 ]
-cwd = "deployment"
-inputs = ["**/values.dev.yaml"]
+inputs = ["deployment/values.dev.yaml"]
 
 # K3D Tasks
 [tasks.install-k3d]
