@@ -38,7 +38,6 @@ cmd = [
     "--values",
     "deployment/values.dev.yaml"
 ]
-inputs = ["deployment/values.dev.yaml"]
 
 # K3D Tasks
 [tasks.install-k3d]
@@ -50,11 +49,18 @@ K3D_INSTALL_DIR = "$CONDA_PREFIX/bin"
 USE_SUDO = "false"
 
 [tasks.k3d-create-cluster]
-cmd = 'k3d cluster create -p "80:80@loadbalancer"'
+cmd = [
+    "k3d",
+    "cluster",
+    "create",
+    "pdc-cluster",
+    "-p", "80:80@loadbalancer",
+    "-p", "5432:5432@loadbalancer",
+]
 depends-on = ["install-k3d", "k3d-delete-cluster"]
 
 [tasks.k3d-delete-cluster]
-cmd = "k3d cluster delete"
+cmd = "k3d cluster delete pdc-cluster"
 
 # Flutter tasks
 [tasks.flutter-run]
