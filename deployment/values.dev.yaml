@@ -17,6 +17,8 @@ secret:
     apiKey: your-super-secret-and-long-logflare-key
 
 db:
+  imagePullSecrets:
+  - name: regcred
   enabled: true
   image:
     tag: 15.1.0.147
@@ -31,6 +33,8 @@ db:
     enabled: false
 
 studio:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: 20240326-5e5586d
   environment:
@@ -45,6 +49,8 @@ studio:
     initialDelaySeconds: 3
 
 auth:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v2.143.0
   environment:
@@ -58,10 +64,14 @@ auth:
     GOTRUE_SMTP_SENDER_NAME: "your-mail@example.com"
 
 rest:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v12.0.1
 
 realtime:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v2.27.5
   livenessProbe:
@@ -71,10 +81,14 @@ realtime:
     initialDelaySeconds: 3
 
 meta:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v0.80.0
 
 storage:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v0.46.4
   livenessProbe:
@@ -86,6 +100,8 @@ storage:
     enabled: false
 
 imgproxy:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v3.8.0
   environment:
@@ -100,6 +116,8 @@ imgproxy:
     enabled: false
 
 kong:
+  imagePullSecrets:
+  - name: regcred
   image:
     repository: kong
     tag: 2.8.1
@@ -108,7 +126,7 @@ kong:
     KONG_LOG_LEVEL: info
   ingress:
     enabled: true
-    className: "nginx"
+    className: "traefik"
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
     tls: []
@@ -122,6 +140,8 @@ kong:
             pathType: Prefix
 
 analytics:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: 1.4.0
   livenessProbe:
@@ -131,6 +151,8 @@ analytics:
     initialDelaySeconds: 3
 
 vector:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: 0.34.0-alpine
   livenessProbe:
@@ -150,5 +172,7 @@ vector:
         path: /var/log/pods
 
 functions:
+  imagePullSecrets:
+  - name: regcred
   image:
     tag: v1.41.2

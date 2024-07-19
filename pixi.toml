@@ -12,18 +12,50 @@ ipykernel = ">=6.29.5,<6.30"
 rich = ">=13.7.1,<13.8"
 ruby = ">=3.3.3,<3.4"
 curl = ">=8.8.0,<8.9"
+kubernetes-helm = ">=3.15.3,<3.16"
+kubernetes-client = ">=1.23.6,<1.31"
 
 [tasks]
-setup = { depends-on = ["install-k3d", "install-flutter"] }
+install-tools = { depends-on = ["install-k3d", "install-flutter"] }
+setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
+
+# Supabase tasks
+[tasks.set-registry-secret]
+# This task will need docker username and password
+# to be set as environment variables
+# DOCKER_USERNAME and DOCKER_PASSWORD
+cmd = "scripts/docker-login.sh"
+
+[tasks.setup-supabase]
+cmd = [
+    "helm",
+    "upgrade",
+    "supabase", 
+    "../vendors/supabase-kubernetes/charts/supabase",
+    "--install",
+    "--wait",
+    "--cleanup-on-fail",
+    "--values",
+    "values.dev.yaml"
+]
+cwd = "deployment"
+inputs = ["**/values.dev.yaml"]
 
 # K3D Tasks
 [tasks.install-k3d]
 cmd = "curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
-outputs = ["$CONDA_PREFIX/bin/k3d"]
+outputs = ["**/bin/k3d"]
 
 [tasks.install-k3d.env]
 K3D_INSTALL_DIR = "$CONDA_PREFIX/bin"
 USE_SUDO = "false"
+
+[tasks.k3d-create-cluster]
+cmd = 'k3d cluster create -p "80:80@loadbalancer"'
+depends-on = ["install-k3d", "k3d-delete-cluster"]
+
+[tasks.k3d-delete-cluster]
+cmd = "k3d cluster delete"
 
 # Flutter tasks
 [tasks.flutter-run]

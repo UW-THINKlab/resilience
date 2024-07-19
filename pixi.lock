@@ -28,6 +28,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/jupyter_core-5.7.2-py312h7900ff3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.1-h166bdaf_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/krb5-1.21.3-h659f571_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/kubernetes-client-1.30.3-haa56f51_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/kubernetes-helm-3.15.3-h519d9b9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.40-hf3520f5_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libcurl-8.8.0-hca28451_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libedit-3.1.20191231-he28a2e2_2.tar.bz2
@@ -105,6 +107,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyter_client-8.6.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/jupyter_core-5.7.2-py312hb401068_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/krb5-1.21.3-h37d8d59_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/kubernetes-client-1.23.6-h12d39d3_0.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/kubernetes-helm-3.15.3-h1762f63_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libasprintf-0.22.5-h5ff76d1_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libasprintf-devel-0.22.5-h5ff76d1_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libcurl-8.8.0-hf9fcc65_1.conda
@@ -182,6 +186,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/jupyter_client-8.6.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jupyter_core-5.7.2-py312h81bd7bf_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/kubernetes-client-1.30.3-hb59f5e1_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/kubernetes-helm-3.15.3-h30cdf38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libasprintf-0.22.5-h8fbad5d_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libasprintf-devel-0.22.5-h8fbad5d_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libcurl-8.8.0-h7b6f9a7_1.conda
@@ -1018,6 +1024,86 @@ packages:
   license_family: MIT
   size: 1370023
   timestamp: 1719463201255
+- kind: conda
+  name: kubernetes-client
+  version: 1.23.6
+  build: h12d39d3_0
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/kubernetes-client-1.23.6-h12d39d3_0.tar.bz2
+  sha256: 498305675babb8a86982d596418cda2278953816a414cbd37fe2da5984ff7b50
+  md5: d1d1813735923043bd8f955accfcd58f
+  constrains:
+  - __osx>=10.12
+  license: Apache-2.0
+  license_family: APACHE
+  size: 26818930
+  timestamp: 1653310705
+- kind: conda
+  name: kubernetes-client
+  version: 1.30.3
+  build: haa56f51_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/kubernetes-client-1.30.3-haa56f51_0.conda
+  sha256: 88b0ac855600f255ae60a4c58a11ceee2258e520e3f9d2a90dead86ffe89f1a5
+  md5: 0e19f336aea245539f466f4393ca15e7
+  depends:
+  - __glibc >=2.17
+  - __glibc >=2.17,<3.0.a0
+  - libgcc-ng >=12
+  license: Apache-2.0
+  size: 22671601
+  timestamp: 1721272588425
+- kind: conda
+  name: kubernetes-client
+  version: 1.30.3
+  build: hb59f5e1_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/kubernetes-client-1.30.3-hb59f5e1_0.conda
+  sha256: 58a7571bb3aa22704214a5c2e3ac06bc26d4c160ce72cf331d4e10634d142ed3
+  md5: 9c2351a9d3a5f8c715eb7ed43a56b47e
+  depends:
+  - __osx >=11.3
+  license: Apache-2.0
+  size: 22837621
+  timestamp: 1721272830977
+- kind: conda
+  name: kubernetes-helm
+  version: 3.15.3
+  build: h1762f63_0
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/kubernetes-helm-3.15.3-h1762f63_0.conda
+  sha256: 08b72de6dabf430a66733d4ad8b856998c68fc4667f4efc42e8b50c80334a755
+  md5: a0fb6c5f28539fa2ef27c1f7828c5777
+  constrains:
+  - __osx>=10.12
+  license: Apache-2.0
+  license_family: Apache
+  size: 12508747
+  timestamp: 1720664320825
+- kind: conda
+  name: kubernetes-helm
+  version: 3.15.3
+  build: h30cdf38_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/kubernetes-helm-3.15.3-h30cdf38_0.conda
+  sha256: cbeb822136feda7c12e0b8f822b60be518368712ea3151fa2f6bb38e4459266e
+  md5: 4ec03e52fa2667a7b7bbbebc7eaca0d0
+  license: Apache-2.0
+  license_family: Apache
+  size: 11554056
+  timestamp: 1720664241272
+- kind: conda
+  name: kubernetes-helm
+  version: 3.15.3
+  build: h519d9b9_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/kubernetes-helm-3.15.3-h519d9b9_0.conda
+  sha256: 754a041cd3c85ec51a65f12ef54b8c86d4df15b00eba7067d098506cd4e07b2c
+  md5: fc072fa95f5dc47c47981974e033ed5f
+  license: Apache-2.0
+  license_family: Apache
+  size: 12202625
+  timestamp: 1720664256894
 - kind: conda
   name: ld_impl_linux-64
   version: '2.40'
