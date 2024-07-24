@@ -24,6 +24,49 @@ Deploying supabase via Kubernetes allows for a cloud agnostic deployment as long
 
 See [Official Documentation](https://supabase.com/docs)
 
+## Running locally
+
+To run this app locally, follow these steps:
+
+1. Install [Android Studio](https://developer.android.com/studio)
+2. Run Android Studio, which will help you install the Android toolchain. Be sure to include all required components
+   1. Android SDK Platform
+   1. Android SDK Command-line tools
+   1. Android SDK Build-Tools
+   1. Android SDK Platform-Tools
+   1. Android Emulator
+3. Install Pixi: https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation
+4. In the package's directory, run
+```
+pixi run install-tools
+```
+5. Accept the Android licenses (or check that you have already done so) by running
+```
+pixi run flutter doctor --android-licenses
+```
+6. Check that you're ready to run Flutter by running the following (there may be an issue indicated with XCode -- that is okay and can be ignored)
+```
+pixi run flutter doctor
+```
+7. Set environment variables with your Docker username and password
+```
+export DOCKER_USERNAME=<your docker username>
+export DOCKER_PASSWORD=<your docker password>
+```
+8. Run the Docker daemon
+9. Install the required submodules
+```
+git submodule update --init
+```
+9. Set up the infrastructure. You should have a Supabase instance running at http://localhost
+```
+pixi run setup-infra
+```
+10. Run Flutter. This will open the Android app in a new Chrome window
+```
+pixi run flutter-run
+```
+
 ## Contributing
 
 You can contribute to this project by creating issues or forking this repository and opening a pull request.
