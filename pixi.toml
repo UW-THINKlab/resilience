@@ -16,7 +16,7 @@ kubernetes-helm = ">=3.15.3,<3.16"
 kubernetes-client = ">=1.23.6,<1.31"
 
 [tasks]
-install-tools = { depends-on = ["install-k3d", "install-flutter"] }
+install-tools = { depends-on = ["install-k3d", "install-flutter", "fetch-supabase-chart"] }
 setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
 
 # Supabase tasks
