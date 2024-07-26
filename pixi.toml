@@ -26,6 +26,9 @@ setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setu
 # DOCKER_USERNAME and DOCKER_PASSWORD
 cmd = "scripts/docker-login.sh"
 
+[tasks.fetch-supabase-chart]
+cmd = "git submodule update --init"
+
 [tasks.setup-supabase]
 cmd = [
     "helm",
@@ -38,6 +41,7 @@ cmd = [
     "--values",
     "deployment/values.dev.yaml"
 ]
+depends-on = ["fetch-supabase-chart"]
 
 # K3D Tasks
 [tasks.install-k3d]
