@@ -51,7 +51,7 @@ To run this app locally, follow these steps:
 6. Check that you're ready to run Flutter by running the following (there may be an issue indicated with XCode -- that is okay and can be ignored)
    
    ```console
-   pixi run flutter doctor
+   pixi run check-flutter
    ```
 
 7. Set environment variables with your Docker username and password
