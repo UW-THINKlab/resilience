@@ -37,31 +37,43 @@ To run this app locally, follow these steps:
    1. Android Emulator
 3. Install Pixi: https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation
 4. In the package's directory, run
-```console
-pixi run install-tools
-```
+
+   ```console
+   pixi run install-tools
+   ```
+
 5. Accept the Android licenses (or check that you have already done so) by running
-```console
-pixi run check-flutter --android-licenses
-```
+   
+   ```console
+   pixi run check-flutter --android-licenses
+   ```
+
 6. Check that you're ready to run Flutter by running the following (there may be an issue indicated with XCode -- that is okay and can be ignored)
-```console
-pixi run flutter doctor
-```
+   
+   ```console
+   pixi run flutter doctor
+   ```
+
 7. Set environment variables with your Docker username and password
-```console
-export DOCKER_USERNAME=<your docker username>
-export DOCKER_PASSWORD=<your docker password>
-```
+
+   ```console
+   export DOCKER_USERNAME=<your docker username>
+   export DOCKER_PASSWORD=<your docker password>
+   ```
+
 8. Run the Docker daemon
+
 9. Set up the infrastructure. You should have a Supabase instance running at http://localhost
-```console
-pixi run setup-infra
-```
+
+   ```console
+   pixi run setup-infra
+   ```
+
 10. Run Flutter. This will open the Android app in a new Chrome window
-```console
-pixi run flutter-run
-```
+   
+   ```console
+   pixi run flutter-run
+   ```
 
 ## Contributing
 
