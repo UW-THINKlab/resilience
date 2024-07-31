@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "support-sphere-db"
+version = "0.1.0-alpha"
+description = "Small package for support sphere database"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "sqlmodel>=0.0.21,<0.1",
+    "supabase>=2.6.0,<2.7",
+]
+
+[project.license]
+file = "LICENSE"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ssdb"]
