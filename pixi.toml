@@ -6,30 +6,31 @@ authors = ["Don Setiawan"]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64"]
 
-[dependencies]
-python = ">=3.10"
-ipykernel = ">=6.29.5,<6.30"
-rich = ">=13.7.1,<13.8"
-ruby = ">=3.3.3,<3.4"
+[environments]
+frontend = ["frontend"]
+backend = ["backend"]
+
+# ==== Backend environment ====
+[feature.backend.tasks]
+install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
+setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
+
+[feature.backend.dependencies]
 curl = ">=8.8.0,<8.9"
 kubernetes-helm = ">=3.15.3,<3.16"
 kubernetes-client = ">=1.23.6,<1.31"
 
-[tasks]
-install-tools = { depends-on = ["install-k3d", "install-flutter", "fetch-supabase-chart"] }
-setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
-
 # Supabase tasks
-[tasks.set-registry-secret]
+[feature.backend.tasks.set-registry-secret]
 # This task will need docker username and password
 # to be set as environment variables
 # DOCKER_USERNAME and DOCKER_PASSWORD
 cmd = "scripts/docker-login.sh"
 
-[tasks.fetch-supabase-chart]
+[feature.backend.tasks.fetch-supabase-chart]
 cmd = "git submodule update --init"
 
-[tasks.setup-supabase]
+[feature.backend.tasks.setup-supabase]
 cmd = [
     "helm",
     "upgrade",
@@ -44,15 +45,15 @@ cmd = [
 depends-on = ["fetch-supabase-chart"]
 
 # K3D Tasks
-[tasks.install-k3d]
+[feature.backend.tasks.install-k3d]
 cmd = "curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
 outputs = ["**/bin/k3d"]
 
-[tasks.install-k3d.env]
+[feature.backend.tasks.install-k3d.env]
 K3D_INSTALL_DIR = "$CONDA_PREFIX/bin"
 USE_SUDO = "false"
 
-[tasks.k3d-create-cluster]
+[feature.backend.tasks.k3d-create-cluster]
 cmd = [
     "k3d",
     "cluster",
@@ -63,29 +64,44 @@ cmd = [
 ]
 depends-on = ["install-k3d", "k3d-delete-cluster"]
 
-[tasks.k3d-delete-cluster]
+[feature.backend.tasks.k3d-delete-cluster]
 cmd = "k3d cluster delete pdc-cluster"
 
+# ==== Frontend environment ====
+[feature.frontend.tasks]
+install-tools = { depends-on = ["install-flutter"] }
+setup-infra = { depends-on = ["check-android-licenses", "flutter-get"] }
+
+[feature.frontend.dependencies]
+python = ">=3.10"
+ipykernel = ">=6.29.5,<6.30"
+rich = ">=13.7.1,<13.8"
+ruby = ">=3.3.3,<3.4"
+
 # Flutter tasks
-[tasks.flutter-run]
+[feature.frontend.tasks.flutter-run]
 cmd = "flutter run"
 cwd = "src/support_sphere"
 depends-on = ["flutter-devices", "flutter-get"]
 
-[tasks.flutter-get]
+[feature.frontend.tasks.flutter-get]
 cmd = "flutter pub get"
 cwd = "src/support_sphere"
 depends-on = ["check-flutter"]
 
-[tasks.flutter-devices]
+[feature.frontend.tasks.flutter-devices]
 cmd = "flutter devices"
 cwd = "src/support_sphere"
 depends-on = ["check-flutter"]
 
-[tasks.install-flutter]
+[feature.frontend.tasks.install-flutter]
 cmd = "python scripts/install-flutter.py"
 outputs = [".app/flutter"]
 
-[tasks.check-flutter]
+[feature.frontend.tasks.check-flutter]
 cmd = "flutter doctor"
+depends-on = ["install-flutter"]
+
+[feature.frontend.tasks.check-android-licenses]
+cmd = "flutter doctor --android-licenses"
 depends-on = ["install-flutter"]
