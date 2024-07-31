@@ -8,7 +8,15 @@ platforms = ["linux-64", "osx-64", "osx-arm64"]
 
 [environments]
 frontend = ["frontend"]
-backend = ["backend"]
+backend = ["backend", "db"]
+
+# ==== Backend Database environment ====
+[feature.db.dependencies]
+python = ">=3.10"
+pip = "*"
+
+[feature.db.pypi-dependencies]
+support-sphere-db = { path = "./src/support_sphere_db", editable = true }
 
 # ==== Backend environment ====
 [feature.backend.tasks]
