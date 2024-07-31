@@ -28,6 +28,37 @@ See [Official Documentation](https://supabase.com/docs)
 
 To run this app locally, follow these steps:
 
+0. Install Pixi: https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation
+1. In the package's directory, run the following to install both `frontend` and `backend` tools
+
+   ```console
+   # Install frontend tools
+   pixi run -e frontend install-tools
+   # install backend tools
+   pixi run -e backend install-tools
+   ```
+
+### Backend
+
+1. Run the Docker daemon
+
+2. Set environment variables with your Docker username and password
+
+   ```console
+   export DOCKER_USERNAME=<your docker username>
+   export DOCKER_PASSWORD=<your docker password>
+   ```
+
+3. Set up the infrastructure. You should have a Supabase instance running at http://localhost
+
+   ```console
+   pixi run -e backend setup-infra
+   ```
+
+   At this point your backend is now ready to go! Now off to frontend
+
+### Frontend
+
 1. Install [Android Studio](https://developer.android.com/studio)
 2. Run Android Studio, which will help you install the Android toolchain. Be sure to include all required components
    1. Android SDK Platform
@@ -35,45 +66,21 @@ To run this app locally, follow these steps:
    1. Android SDK Build-Tools
    1. Android SDK Platform-Tools
    1. Android Emulator
-3. Install Pixi: https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation
-4. In the package's directory, run
 
-   ```console
-   pixi run install-tools
-   ```
-
-5. Accept the Android licenses (or check that you have already done so) by running
+3. Accept the Android licenses (or check that you have already done so) and get frontend dependencies
+   by running the command below. *There may be an issue indicated with XCode -- that is okay and can be ignored*
    
    ```console
-   pixi run check-flutter --android-licenses
+   pixi run -e frontend setup-infra
    ```
 
-6. Check that you're ready to run Flutter by running the following (there may be an issue indicated with XCode -- that is okay and can be ignored)
+4. Run Flutter. This will open the Android app in a new Chrome window
    
    ```console
-   pixi run check-flutter
+   pixi run -e frontend flutter-run
    ```
 
-7. Set environment variables with your Docker username and password
-
-   ```console
-   export DOCKER_USERNAME=<your docker username>
-   export DOCKER_PASSWORD=<your docker password>
-   ```
-
-8. Run the Docker daemon
-
-9. Set up the infrastructure. You should have a Supabase instance running at http://localhost
-
-   ```console
-   pixi run setup-infra
-   ```
-
-10. Run Flutter. This will open the Android app in a new Chrome window
-   
-   ```console
-   pixi run flutter-run
-   ```
+   At this point your frontend is now ready to go! You are all set.
 
 ## Contributing
 
