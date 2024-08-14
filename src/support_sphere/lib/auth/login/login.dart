@@ -16,12 +16,13 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    // LoginViewModel viewModel = Provider.of<LoginViewModel>(context);
+    // TODO: LoginViewModel viewModel = Provider.of<LoginViewModel>(context);
+    // Need to create a view model and controller for login
     return LoadingOverlay(
         isLoading: false,
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
-          // key: viewModel.scaffoldKey,
+          // TODO: key: viewModel.scaffoldKey,
           body: ListView(
               padding:
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
