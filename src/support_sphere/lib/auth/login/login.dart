@@ -141,7 +141,4 @@ class _LoginState extends State<Login> {
     ));
   }
 
-  void thisFunc() {
-    print('Forgot password clicked');
-  }
 }
