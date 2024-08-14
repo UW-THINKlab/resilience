@@ -37,7 +37,7 @@ class _LoginState extends State<Login> {
                 const SizedBox(height: 10.0),
                 Center(
                   child: Text(
-                    'Log into your account and get started!',
+                    'Log into an existing account',
                     style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w300,
