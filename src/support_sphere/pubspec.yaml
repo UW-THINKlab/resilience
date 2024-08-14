@@ -38,6 +38,8 @@ dependencies:
   ionicons: ^0.2.2
   loading_overlay: ^0.3.0
   provider: ^6.1.2
+  supabase_flutter: ^2.6.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
