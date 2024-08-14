@@ -38,7 +38,7 @@ class _RegisterState extends State<Register> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Already have an account  ',
+                    'Already have an account? ',
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
