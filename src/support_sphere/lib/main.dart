@@ -5,6 +5,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:support_sphere/utils/config.dart';
+import 'package:support_sphere/presentation/router/app_router.dart';
 
 void main() {
   try {
@@ -31,8 +32,20 @@ class MyApp extends StatelessWidget {
         Brightness.light,
       ),
 
-      // Landing page
-      home: const Landing(),
+      // Routing configuration
+      initialRoute: '/',
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      onUnknownRoute: (settings) {
+        // Handle unknown routes
+        // essentially a 404 page
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('404 NOT FOUND: No route defined for ${settings.name}'),
+            ),
+          ),
+        );
+      },
 
       // Localizations configuration (i18n)
       localizationsDelegates: const [

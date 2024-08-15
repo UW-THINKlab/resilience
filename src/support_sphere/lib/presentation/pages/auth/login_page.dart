@@ -1,10 +1,10 @@
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:support_sphere/constants/routes.dart';
 import 'package:support_sphere/presentation/components/icon_logo.dart';
 import 'package:support_sphere/presentation/components/auth/text_form_builder.dart';
 import 'package:support_sphere/presentation/components/auth/password_form_builder.dart';
-import 'package:support_sphere/presentation/pages/auth/register_page.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 
 class Login extends StatefulWidget {
@@ -17,13 +17,10 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    // TODO: LoginViewModel viewModel = Provider.of<LoginViewModel>(context);
-    // Need to create a view model and controller for login
     return LoadingOverlay(
         isLoading: false,
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
-          // TODO: key: viewModel.scaffoldKey,
           body: ListView(
               padding:
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
@@ -31,7 +28,7 @@ class _LoginState extends State<Login> {
                 SizedBox(height: MediaQuery.of(context).size.height / 5),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacementNamed(AppRoutes.home);
                   },
                   child: const IconLogo(),
                 ),
@@ -54,11 +51,7 @@ class _LoginState extends State<Login> {
                   const SizedBox(width: 5.0),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => Register(),
-                        ),
-                      );
+                      Navigator.of(context).pushNamed(AppRoutes.register);
                     },
                     child: Text(
                       LoginStrings.signUp,
@@ -103,7 +96,7 @@ class _LoginState extends State<Login> {
                       print("Forgot password clicked");
                     },
                     child: const Text(
-                      'Forgot Password?',
+                      LoginStrings.forgotPassword,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
