@@ -38,7 +38,7 @@ class _LoginState extends State<Login> {
                 const SizedBox(height: 10.0),
                 Center(
                   child: Text(
-                    LoginTexts.loginIntoExisting,
+                    LoginStrings.loginIntoExisting,
                     style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w300,
@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
                 buildForm(context),
                 const SizedBox(height: 10.0),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Text(LoginTexts.dontHaveAnAccount),
+                  const Text(LoginStrings.dontHaveAnAccount),
                   const SizedBox(width: 5.0),
                   GestureDetector(
                     onTap: () {
@@ -61,7 +61,7 @@ class _LoginState extends State<Login> {
                       );
                     },
                     child: Text(
-                      LoginTexts.signUp,
+                      LoginStrings.signUp,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.secondary,
@@ -129,7 +129,7 @@ class _LoginState extends State<Login> {
             ),
             // highlightElevation: 4.0,
             child: const Text(
-              LoginTexts.login,
+              LoginStrings.login,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12.0,
