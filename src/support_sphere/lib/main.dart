@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:support_sphere/landing/landing_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:support_sphere/utils/string_catalog.dart';
+import 'package:support_sphere/utils/constants.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +16,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Support Sphere',
+      // App title
+      title: AppTexts.appName,
+      
+      // Theme configuration
       theme: _buildTheme(
         Brightness.light,
       ),
+
+      // Landing page
       home: const Landing(),
+
+      // Localizations configuration (i18n)
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('es'), // Spanish
+      ],
     );
   }
 
@@ -26,7 +45,7 @@ class MyApp extends StatelessWidget {
       brightness: brightness,
       colorScheme: ColorScheme.fromSeed(
         dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-        seedColor: const Color.fromARGB(255, 14, 54, 70),
+        seedColor: ColorConstants.seed,
         brightness: Brightness.light,
       ),
       // This is the theme of your application.

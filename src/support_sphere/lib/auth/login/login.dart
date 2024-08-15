@@ -5,6 +5,7 @@ import 'package:support_sphere/components/icon_logo.dart';
 import 'package:support_sphere/components/text_form_builder.dart';
 import 'package:support_sphere/components/password_form_builder.dart';
 import 'package:support_sphere/auth/register/register.dart';
+import 'package:support_sphere/utils/string_catalog.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -37,7 +38,7 @@ class _LoginState extends State<Login> {
                 const SizedBox(height: 10.0),
                 Center(
                   child: Text(
-                    'Log into an existing account',
+                    LoginTexts.loginIntoExisting,
                     style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w300,
@@ -49,7 +50,7 @@ class _LoginState extends State<Login> {
                 buildForm(context),
                 const SizedBox(height: 10.0),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Text('Don\'t have an account?'),
+                  const Text(LoginTexts.dontHaveAnAccount),
                   const SizedBox(width: 5.0),
                   GestureDetector(
                     onTap: () {
@@ -60,7 +61,7 @@ class _LoginState extends State<Login> {
                       );
                     },
                     child: Text(
-                      'Sign Up',
+                      LoginTexts.signUp,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.secondary,
@@ -128,7 +129,7 @@ class _LoginState extends State<Login> {
             ),
             // highlightElevation: 4.0,
             child: const Text(
-              "LOGIN",
+              LoginTexts.login,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12.0,

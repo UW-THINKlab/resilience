@@ -3,6 +3,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:support_sphere/components/text_form_builder.dart';
 import 'package:support_sphere/components/password_form_builder.dart';
+import 'package:support_sphere/utils/string_catalog.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _RegisterState extends State<Register> {
             children: [
               SizedBox(height: MediaQuery.of(context).size.height / 10),
               Text(
-                'Welcome to Support Sphere\nCreate a new account and prepare with your community',
+                AppTexts.signUpWelcome,
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.w300,
@@ -38,12 +39,13 @@ class _RegisterState extends State<Register> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Already have an account? ',
+                    LoginTexts.alreadyHaveAnAccount,
                   ),
+                  const SizedBox(width: 5.0),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Text(
-                      'Login',
+                      LoginTexts.login,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.secondary,
@@ -64,7 +66,7 @@ class _RegisterState extends State<Register> {
           TextFormBuilder(
             enabled: true,
             prefix: Ionicons.person_outline,
-            hintText: "Username",
+            hintText: LoginTexts.username,
             textInputAction: TextInputAction.next,
             onSaved: (String val) {
               print(val);
@@ -75,7 +77,7 @@ class _RegisterState extends State<Register> {
           TextFormBuilder(
             enabled: true,
             prefix: Ionicons.mail_outline,
-            hintText: "Email",
+            hintText: LoginTexts.email,
             textInputAction: TextInputAction.next,
             onSaved: (String val) {
               print(val);
@@ -86,7 +88,7 @@ class _RegisterState extends State<Register> {
           TextFormBuilder(
             enabled: true,
             prefix: Ionicons.qr_code_outline,
-            hintText: "Sign Up Code",
+            hintText: LoginTexts.signUpCode,
             textInputAction: TextInputAction.next,
             onSaved: (String val) {
               print(val);
@@ -98,9 +100,9 @@ class _RegisterState extends State<Register> {
             enabled: true,
             prefix: Ionicons.lock_closed_outline,
             suffix: Ionicons.eye_outline,
-            hintText: "Password",
+            hintText: LoginTexts.password,
             textInputAction: TextInputAction.done,
-            obscureText: false,
+            obscureText: true,
             onSaved: (String val) {
               print(val);
               // Set the password
@@ -111,9 +113,9 @@ class _RegisterState extends State<Register> {
             enabled: true,
             prefix: Ionicons.lock_open_outline,
             suffix: Ionicons.eye_outline,
-            hintText: "Confirm Password",
+            hintText: LoginTexts.confirmPassword,
             textInputAction: TextInputAction.done,
-            obscureText: false,
+            obscureText: true,
             onSaved: (String val) {
               print(val);
               // Set the confirm password
@@ -136,7 +138,7 @@ class _RegisterState extends State<Register> {
               ),
               // highlightElevation: 4.0,
               child: const Text(
-                "SIGN UP",
+                LoginTexts.signUp,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12.0,

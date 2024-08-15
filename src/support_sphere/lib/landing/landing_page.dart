@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:support_sphere/auth/login/login.dart';
 import 'package:support_sphere/auth/register/register.dart';
 import 'package:support_sphere/components/icon_logo.dart';
+import 'package:support_sphere/utils/string_catalog.dart';
+import 'package:support_sphere/utils/constants.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -17,7 +19,7 @@ class _LandingState extends State<Landing> {
       backgroundColor: Colors.white,
       body: const IconLogo(),
       bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(0, 0, 0, 0),
+        color: ColorConstants.transparent,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
@@ -41,7 +43,7 @@ class _LandingState extends State<Landing> {
                   ),
                   // highlightElevation: 4.0,
                   child: const Text(
-                    "LOGIN",
+                    LoginTexts.login,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
