@@ -74,9 +74,9 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                   initialValue: widget.initialValue,
                   enabled: widget.enabled,
                   onChanged: (val) {
-                    // error = widget.validateFunction!(val);
+                    error = widget.validateFunction!(val);
                     setState(() {});
-                    // widget.onSaved!(val);
+                    widget.onSaved!(val);
                   },
                   style: const TextStyle(
                     fontSize: 15.0,
