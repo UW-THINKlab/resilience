@@ -43,7 +43,7 @@ class _LandingState extends State<Landing> {
                   ),
                   // highlightElevation: 4.0,
                   child: const Text(
-                    LoginTexts.login,
+                    LoginStrings.login,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
