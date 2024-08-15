@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:support_sphere/presentation/pages/auth/login_page.dart';
-import 'package:support_sphere/presentation/pages/auth/register_page.dart';
 import 'package:support_sphere/presentation/components/icon_logo.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';

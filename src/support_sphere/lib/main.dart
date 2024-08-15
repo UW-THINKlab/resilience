@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:support_sphere/presentation/pages/landing_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
