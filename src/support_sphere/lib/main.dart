@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:support_sphere/landing/landing_page.dart';
+import 'package:support_sphere/presentation/pages/landing_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:support_sphere/utils/string_catalog.dart';
-import 'package:support_sphere/utils/constants.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:support_sphere/utils/config.dart';
 
 void main() {
+  try {
+    Config.initSupabase();
+  } catch (e) {
+    // TODO: Log error
+    print(e);
+  }
   runApp(const MyApp());
 }
 

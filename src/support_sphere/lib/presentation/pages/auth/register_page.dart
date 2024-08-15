@@ -1,9 +1,9 @@
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
-import 'package:support_sphere/components/text_form_builder.dart';
-import 'package:support_sphere/components/password_form_builder.dart';
-import 'package:support_sphere/utils/string_catalog.dart';
+import 'package:support_sphere/presentation/components/auth/text_form_builder.dart';
+import 'package:support_sphere/presentation/components/auth/password_form_builder.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);

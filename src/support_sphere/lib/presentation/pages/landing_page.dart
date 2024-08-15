@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:support_sphere/auth/login/login.dart';
-import 'package:support_sphere/auth/register/register.dart';
-import 'package:support_sphere/components/icon_logo.dart';
-import 'package:support_sphere/utils/string_catalog.dart';
-import 'package:support_sphere/utils/constants.dart';
+import 'package:support_sphere/presentation/pages/auth/login_page.dart';
+import 'package:support_sphere/presentation/pages/auth/register_page.dart';
+import 'package:support_sphere/presentation/components/icon_logo.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/color.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -43,7 +43,7 @@ class _LandingState extends State<Landing> {
                   ),
                   // highlightElevation: 4.0,
                   child: const Text(
-                    LoginTexts.login,
+                    LoginStrings.login,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       color: Colors.white,

@@ -1,11 +1,11 @@
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
-import 'package:support_sphere/components/icon_logo.dart';
-import 'package:support_sphere/components/text_form_builder.dart';
-import 'package:support_sphere/components/password_form_builder.dart';
-import 'package:support_sphere/auth/register/register.dart';
-import 'package:support_sphere/utils/string_catalog.dart';
+import 'package:support_sphere/presentation/components/icon_logo.dart';
+import 'package:support_sphere/presentation/components/auth/text_form_builder.dart';
+import 'package:support_sphere/presentation/components/auth/password_form_builder.dart';
+import 'package:support_sphere/presentation/pages/auth/register_page.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);

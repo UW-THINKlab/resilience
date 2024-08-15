@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:support_sphere/components/custom_card.dart';
+import 'package:support_sphere/presentation/components/custom_card.dart';
 
 class PasswordFormBuilder extends StatefulWidget {
   final String? initialValue;
@@ -74,9 +74,9 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                   initialValue: widget.initialValue,
                   enabled: widget.enabled,
                   onChanged: (val) {
-                    error = widget.validateFunction!(val);
+                    // error = widget.validateFunction!(val);
                     setState(() {});
-                    widget.onSaved!(val);
+                    // widget.onSaved!(val);
                   },
                   style: const TextStyle(
                     fontSize: 15.0,
