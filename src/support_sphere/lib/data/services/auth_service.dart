@@ -9,22 +9,22 @@ class AuthService extends Equatable{
   static final GoTrueClient _supabaseAuth = supabase.auth;
   static const String _redirectUrl = 'io.supabase.flutterexample://signup-callback';
 
-  User? getSignedInUser() => supabase.auth.currentUser;
+  User? getSignedInUser() => _supabaseAuth.currentUser;
 
   Future<AuthResponse> signUpWithEmailAndPassword(String email, String password) async {
-    final response = await supabase.auth.signUp(email: email, password: password, emailRedirectTo: _redirectUrl);
+    final response = await _supabaseAuth.signUp(email: email, password: password, emailRedirectTo: _redirectUrl);
     return response;
   }
 
   Future<AuthResponse> signInWithEmailAndPassword(String email, String password) async {
-    final response = await supabase.auth.signInWithPassword(email: email, password: password);
+    final response = await _supabaseAuth.signInWithPassword(email: email, password: password);
     return response;
   }
 
-  Stream<User?> getCurrentUser() => supabase.auth.onAuthStateChange.map((data) => data.session?.user);
+  Stream<User?> getCurrentUser() => _supabaseAuth.onAuthStateChange.map((data) => data.session?.user);
 
-  Future<void> signOut() async => await supabase.auth.signOut();
+  Future<void> signOut() async => await _supabaseAuth.signOut();
 
   @override
-  List<Object?> get props => [_redirectUrl];
+  List<Object?> get props => [];
 }
