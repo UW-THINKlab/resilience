@@ -5,27 +5,54 @@ import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:support_sphere/utils/config.dart';
 import 'package:support_sphere/presentation/router/app_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
+import 'package:support_sphere/data/repositories/authentication.dart';
 
-void main() {
+void main() async {
   try {
-    Config.initSupabase();
+    await Config.initSupabase();
   } catch (e) {
     // TODO: Log error
     print(e);
   }
-  runApp(const MyApp());
+
+  final authRepo = AuthenticationRepository();
+  await authRepo.user.first;
+  runApp(MyApp(authenticationRepository: authRepo));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp(
+      {required AuthenticationRepository authenticationRepository, super.key})
+      : _authRepository = authenticationRepository;
+
+  final AuthenticationRepository _authRepository;
 
   // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider.value(
+      value: (context) => _authRepository,
+      child: BlocProvider(
+        create: (context) => AuthenticationBloc(
+          authenticationRepository: _authRepository,
+        ),
+        child: const AppView(),
+      ),
+    );
+  }
+}
+
+class AppView extends StatelessWidget {
+  const AppView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       // App title
       title: AppStrings.appName,
-      
+
       // Theme configuration
       theme: _buildTheme(
         Brightness.light,
@@ -40,7 +67,8 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child: Text('404 NOT FOUND: No route defined for ${settings.name}'),
+              child:
+                  Text('404 NOT FOUND: No route defined for ${settings.name}'),
             ),
           ),
         );
