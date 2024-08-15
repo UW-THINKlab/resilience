@@ -4,6 +4,6 @@ import 'package:support_sphere/constants/environment.dart';
 class Config {
   static initSupabase() async {
     await Supabase.initialize(
-        url: EnvironmentConstants.supabaseUrl, anonKey: EnvironmentConstants.supabaseAnnonKey);
+        url: EnvironmentConstants.supabaseUrl, anonKey: EnvironmentConstants.supabaseAnonKey);
   }
 }
