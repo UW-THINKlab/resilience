@@ -16,27 +16,21 @@ void main() async {
     // TODO: Log error
     print(e);
   }
-
-  final authRepo = AuthenticationRepository();
-  await authRepo.user.first;
-  runApp(MyApp(authenticationRepository: authRepo));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp(
-      {required AuthenticationRepository authenticationRepository, super.key})
-      : _authRepository = authenticationRepository;
+  const MyApp({super.key});
 
-  final AuthenticationRepository _authRepository;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: (context) => _authRepository,
+    return RepositoryProvider(
+      create: (_) => AuthenticationRepository(),
       child: BlocProvider(
-        create: (context) => AuthenticationBloc(
-          authenticationRepository: _authRepository,
+        create: (_) => AuthenticationBloc(
+          authenticationRepository: context.read<AuthenticationRepository>(),
         ),
         child: const AppView(),
       ),

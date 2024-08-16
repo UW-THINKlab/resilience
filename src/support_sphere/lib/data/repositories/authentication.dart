@@ -22,16 +22,16 @@ class AuthenticationRepository {
   }
 
   Future<void> logIn({
-    required String username,
+    required String email,
     required String password,
-  }) async => _authService.signInWithEmailAndPassword(username, password);
+  }) async => _authService.signInWithEmailAndPassword(email, password);
 
   Future<void> logOut() async => await _authService.signOut();
 
   Future<void> signUp({
-    required String username,
+    required String email,
     required String password,
-  }) async => _authService.signUpWithEmailAndPassword(username, password);
+  }) async => _authService.signUpWithEmailAndPassword(email, password);
 
   User _parseUser(supabase_flutter.User? user) {
     return user == null ? User.empty : User(uuid: user.id);
