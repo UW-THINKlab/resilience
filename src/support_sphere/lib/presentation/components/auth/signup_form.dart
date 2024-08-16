@@ -23,7 +23,7 @@ class SignupForm extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(
               const SnackBar(
-                content: Text('Authentication Failure'),
+                content: Text('Signup Failure'),
               ),
             );
         }

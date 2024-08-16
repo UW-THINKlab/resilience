@@ -42,9 +42,9 @@ class SignupCubit extends Cubit<SignupState> {
     emit(
       state.copyWith(
         signupCode: signupCode,
+        isValid: Formz.validate([state.email, state.password, state.confirmedPassword, signupCode]),
       ),
     );
-    Formz.validate([signupCode]);
   }
 
   void confirmedPasswordChanged(String value) {
