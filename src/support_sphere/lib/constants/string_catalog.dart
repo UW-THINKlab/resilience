@@ -19,4 +19,12 @@ class LoginStrings {
   static const String signUp = 'Sign Up';
 }
 
+/// Error messages
+class ErrorMessageStrings {
+  static const String invalidEmail = 'Invalid email';
+  static const String invalidPassword = 'Invalid password';
+  static const String invalidConfirmPassword = 'Passwords do not match';
+  static const String invalidSignUpCode = 'Invalid sign up code';
+}
+
 

@@ -1,4 +1,5 @@
 import 'package:formz/formz.dart';
+import 'package:support_sphere/constants/auth.dart';
 
 /// Validation errors for the [Email] [FormzInput].
 enum EmailValidationError {
@@ -16,9 +17,7 @@ class Email extends FormzInput<String, EmailValidationError> {
   /// {@macro email}
   const Email.dirty([super.value = '']) : super.dirty();
 
-  static final RegExp _emailRegExp = RegExp(
-    r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
-  );
+  static final RegExp _emailRegExp = emailRegExp;
 
   @override
   EmailValidationError? validator(String? value) {

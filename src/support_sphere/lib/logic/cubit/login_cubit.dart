@@ -2,6 +2,7 @@ import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/all_models.dart';
+import 'package:support_sphere/logic/cubit/utils.dart';
 import 'package:formz/formz.dart';
 
 part 'login_state.dart';
@@ -29,6 +30,10 @@ class LoginCubit extends Cubit<LoginState> {
         isValid: Formz.validate([state.email, password]),
       ),
     );
+  }
+
+  void toggleShowPassword() {
+    changeShowPassword(emit, state);
   }
 
   Future<void> logInWithCredentials() async {
