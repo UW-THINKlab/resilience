@@ -14,6 +14,8 @@ backend = ["backend", "db"]
 [feature.db.dependencies]
 python = ">=3.10"
 pip = "*"
+sqlmodel = ">=0.0.21,<0.0.22"
+psycopg2 = ">=2.9.9,<3"
 
 [feature.db.pypi-dependencies]
 support-sphere-db = { path = "./src/support_sphere_db", editable = true }
@@ -21,7 +23,7 @@ support-sphere-db = { path = "./src/support_sphere_db", editable = true }
 # ==== Backend environment ====
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
-setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
+setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase", "port-forward-supabase-db"] }
 
 [feature.backend.dependencies]
 curl = ">=8.8.0,<8.9"
@@ -51,6 +53,10 @@ cmd = [
     "deployment/values.dev.yaml"
 ]
 depends-on = ["fetch-supabase-chart"]
+
+[feature.backend.tasks.port-forward-supabase-db]
+cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"
+depends-on = ["setup-supabase"]
 
 # K3D Tasks
 [feature.backend.tasks.install-k3d]
