@@ -4,14 +4,9 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:support_sphere/constants/routes.dart';
 
-class Landing extends StatefulWidget {
-  const Landing({Key? key}) : super(key: key);
+class Landing extends StatelessWidget{
+  const Landing({super.key});
 
-  @override
-  _LandingState createState() => _LandingState();
-}
-
-class _LandingState extends State<Landing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,10 +43,7 @@ class _LandingState extends State<Landing> {
                       color: Colors.white,
                     ),
                   ),
-                  onPressed: () {
-                    print("Login clicked");
-                    Navigator.of(context).pushNamed(AppRoutes.login);
-                  },
+                  onPressed: () => Navigator.of(context).pushNamed(AppRoutes.login),
                 ),
               ),
             ],
