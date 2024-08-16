@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/all_models.dart';
 import 'package:support_sphere/data/models/signup/signup_code.dart';
 import 'package:support_sphere/data/models/signup/confirmed_password.dart';
