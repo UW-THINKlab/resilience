@@ -5,7 +5,8 @@ import logging
 
 # DO NOT REMOVE: SQLModel requires the models (tables) to be imported so that it is added to the SQLModel.metadata
 # https://sqlmodel.tiangolo.com/tutorial/create-db-and-table/#sqlmodel-metadata-order-matters
-from ssdb.models import *
+from ssdb.models.auth import *
+from ssdb.models.public import *
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 import uuid
 from sqlmodel import Field, Relationship
-from ssdb.models import User
+from ssdb.models.auth import User
 from ssdb.models.base import BasePublicSchemaModel
 
 

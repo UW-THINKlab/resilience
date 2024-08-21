@@ -1,4 +1,4 @@
-from ssdb.models import UserProfile
+from ssdb.models.public import UserProfile
 
 from sqlmodel import Session, select
 
