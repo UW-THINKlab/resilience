@@ -11,7 +11,7 @@ class UserProfile(AbstractPublicSchemaModel, table=True):
     username: str = Field(unique=True)
     name: str = Field()
     nickname: str = Field(nullable=True)
-    is_safe: bool = Field(default=False)
+    is_safe: bool = Field(default=True)
     needs_help: bool = Field(default=False)
 
     user: User = Relationship(back_populates="user_profile")
