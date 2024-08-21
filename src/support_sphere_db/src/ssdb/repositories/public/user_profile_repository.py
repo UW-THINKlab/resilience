@@ -2,7 +2,7 @@ from ssdb.models.public import UserProfile
 
 from sqlmodel import Session, select
 
-from ssdb.repository.base_repository import BaseRepository
+from ssdb.repositories.base_repository import BaseRepository
 
 
 class UserProfileRepository(BaseRepository):
