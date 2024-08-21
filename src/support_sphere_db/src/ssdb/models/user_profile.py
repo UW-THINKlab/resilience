@@ -1,13 +1,18 @@
 import uuid
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship
+from ssdb.models import User
+from ssdb.models.abstract_public_schema_model import AbstractPublicSchemaModel
 
 
-class UserProfile(SQLModel, table=True):
+class UserProfile(AbstractPublicSchemaModel, table=True):
     __tablename__ = "user_profiles"
 
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    id: uuid.UUID = Field(primary_key=True, foreign_key="auth.users.id")
+    username: str = Field(unique=True)
     name: str = Field()
-    nickname: str = Field()
-    username: str = Field()
-    is_safe: bool = Field(default=True)
-    needs_help: bool = Field(default=True)
+    nickname: str = Field(nullable=True)
+    is_safe: bool = Field(default=False)
+    needs_help: bool = Field(default=False)
+
+    user: User = Relationship(back_populates="user_profile")
+

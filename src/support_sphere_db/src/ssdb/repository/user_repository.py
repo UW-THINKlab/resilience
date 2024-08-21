@@ -1,4 +1,4 @@
-from ssdb.models import UserProfile
+from ssdb.models import User
 
 from sqlmodel import Session, select
 
@@ -7,17 +7,11 @@ from ssdb.repository.base_repository import BaseRepository
 
 class UserRepository(BaseRepository):
 
-    def select_all(self) -> list[UserProfile]:
-        return super().select_all(UserProfile)
+    def select_all(self) -> list[User]:
+        return super().select_all(User)
 
-    def find_by_user_id(self, user_id: str) -> list[UserProfile]:
+    def find_by_user_id(self, user_id: str) -> list[User]:
         with Session(self.engine) as session:
-            statement = select(UserProfile).where(UserProfile.id == user_id)
+            statement = select(User).where(User.id == user_id)
             results = session.exec(statement)
             return results.one()
-
-    def find_by_username(self, username: str) -> list[UserProfile]:
-        with Session(self.engine) as session:
-            statement = select(UserProfile).where(UserProfile.username == username)
-            results = session.exec(statement)
-            return results.all()
