@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel
 
 
-class AbstractPublicSchemaModel(SQLModel):
+class BasePublicSchemaModel(SQLModel):
     __table_args__ = {"schema": "public"}
