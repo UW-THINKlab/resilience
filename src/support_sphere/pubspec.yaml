@@ -48,6 +48,8 @@ dependencies:
   equatable: ^2.0.5
   uuid: ^4.4.2
   formz: ^0.7.0
+  flow_builder: ^0.1.0
+  modal_bottom_sheet: ^3.0.0
 
 dev_dependencies:
   flutter_test:

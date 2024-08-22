@@ -3,11 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:support_sphere/data/models/all_models.dart';
+import 'package:support_sphere/presentation/router/auth_select.dart';
+import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 import 'package:support_sphere/utils/config.dart';
-import 'package:support_sphere/presentation/router/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
+import 'package:flow_builder/flow_builder.dart';
+import 'package:support_sphere/presentation/pages/landing_page.dart';
 
 void main() async {
   try {
@@ -21,7 +25,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   // This widget is the root of your application.
   @override
@@ -51,10 +54,11 @@ class AppView extends StatelessWidget {
       theme: _buildTheme(
         Brightness.light,
       ),
+      debugShowCheckedModeBanner: false,
+
+      home: const AuthSelect(),
 
       // Routing configuration
-      initialRoute: '/',
-      onGenerateRoute: AppRouter.onGenerateRoute,
       onUnknownRoute: (settings) {
         // Handle unknown routes
         // essentially a 404 page

@@ -1,3 +1,4 @@
+import 'package:flow_builder/flow_builder.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -5,9 +6,12 @@ import 'package:support_sphere/logic/cubit/signup_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:support_sphere/presentation/components/auth/signup_form.dart';
+import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 
 class Signup extends StatelessWidget {
   const Signup({super.key});
+
+  static MaterialPage page() => const MaterialPage(child: Signup());
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,9 @@ class Signup extends StatelessWidget {
                           ),
                           const SizedBox(width: 5.0),
                           GestureDetector(
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => context
+                                .flow<OnboardingSteps>()
+                                .update((previous) => OnboardingSteps.login),
                             child: Text(
                               LoginStrings.login,
                               style: TextStyle(

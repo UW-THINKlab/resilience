@@ -1,14 +1,27 @@
+import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:support_sphere/presentation/components/icon_logo.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:support_sphere/constants/routes.dart';
+import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 
 class Landing extends StatelessWidget{
   const Landing({super.key});
 
+  static MaterialPage page() => const MaterialPage(child: LandingView());
+
   @override
   Widget build(BuildContext context) {
+    return const OnboardingFlow();
+  }
+}
+
+class LandingView extends StatelessWidget {
+const LandingView({ super.key });
+
+  @override
+  Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.white,
       body: const IconLogo(),
@@ -43,7 +56,9 @@ class Landing extends StatelessWidget{
                       color: Colors.white,
                     ),
                   ),
-                  onPressed: () => Navigator.of(context).pushNamed(AppRoutes.login),
+                  onPressed: () => context
+                  .flow<OnboardingSteps>()
+                  .update((next) => OnboardingSteps.login),
                 ),
               ),
             ],
