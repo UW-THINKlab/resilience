@@ -1,7 +1,7 @@
 import uuid
 from sqlmodel import Field, Relationship
-from ssdb.models.auth import User
-from ssdb.models.base import BasePublicSchemaModel
+from support_sphere.models.auth import User
+from support_sphere.models.base import BasePublicSchemaModel
 
 
 class UserProfile(BasePublicSchemaModel, table=True):

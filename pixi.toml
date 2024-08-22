@@ -14,11 +14,9 @@ backend = ["backend", "db"]
 [feature.db.dependencies]
 python = ">=3.10"
 pip = "*"
-sqlmodel = ">=0.0.21,<0.0.22"
-psycopg2 = ">=2.9.9,<3"
 
 [feature.db.pypi-dependencies]
-support-sphere-db = { path = "./src/support_sphere_db", editable = true }
+support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 # ==== Backend environment ====
 [feature.backend.tasks]

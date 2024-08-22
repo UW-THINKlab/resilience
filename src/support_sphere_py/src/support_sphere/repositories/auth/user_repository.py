@@ -1,8 +1,8 @@
-from ssdb.models.auth import User
+from support_sphere.models.auth import User
 
 from sqlmodel import Session, select
 
-from ssdb.repositories.base_repository import BaseRepository
+from support_sphere.repositories.base_repository import BaseRepository
 
 
 class UserRepository(BaseRepository):

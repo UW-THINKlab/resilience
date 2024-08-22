@@ -77,7 +77,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/80/a3/f83657af88ab558d2a76cc324e7c9d6a3641a119961a866f75b167b0d40b/supabase-2.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/93/ea/da0b3bd36ac21e91a7f3d43c3cc7884b79d96766cb07d1e55a83df0baadd/supafunc-0.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/00/d6f01ca2b191f8b0808e4132ccd2e7691f0453cbd7d0f72330eb97453c3a/websockets-12.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: ./src/support_sphere_db
+      - pypi: ./src/support_sphere_py
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
@@ -140,7 +140,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/80/a3/f83657af88ab558d2a76cc324e7c9d6a3641a119961a866f75b167b0d40b/supabase-2.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/93/ea/da0b3bd36ac21e91a7f3d43c3cc7884b79d96766cb07d1e55a83df0baadd/supafunc-0.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/39/34/364f30fdf1a375e4002a26ee3061138d1571dfda6421126127d379d13930/websockets-12.0-cp312-cp312-macosx_10_9_x86_64.whl
-      - pypi: ./src/support_sphere_db
+      - pypi: ./src/support_sphere_py
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-h99b78c6_7.conda
@@ -203,7 +203,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/80/a3/f83657af88ab558d2a76cc324e7c9d6a3641a119961a866f75b167b0d40b/supabase-2.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/93/ea/da0b3bd36ac21e91a7f3d43c3cc7884b79d96766cb07d1e55a83df0baadd/supafunc-0.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2e/00/96ae1c9dcb3bc316ef683f2febd8c97dde9f254dc36c3afc65c7645f734c/websockets-12.0-cp312-cp312-macosx_11_0_arm64.whl
-      - pypi: ./src/support_sphere_db
+      - pypi: ./src/support_sphere_py
   default:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -3496,13 +3496,15 @@ packages:
   - httpx[http2]>=0.24,<0.28
   requires_python: '>=3.8,<4.0'
 - kind: pypi
-  name: support-sphere-db
+  name: support-sphere-py
   version: 0.1.0a0
-  path: ./src/support_sphere_db
-  sha256: 2d79f45205df56e485108b7f519fa2bc71f3271d0c93d0ce318e169b8c2553ad
+  path: ./src/support_sphere_py
+  sha256: dc678112bff309aec7003c158ac267553285b3cfc4ea0cf68e9a40d171c23c55
   requires_dist:
   - sqlmodel>=0.0.21,<0.1
   - supabase>=2.6.0,<2.7
+  - sqlmodel>=0.0.21,<0.0.22
+  - psycopg2>=2.9.9,<3
   requires_python: '>=3.12'
   editable: true
 - kind: conda

@@ -1,8 +1,8 @@
-from ssdb.models.public import UserProfile
+from support_sphere.models.public import UserProfile
 
 from sqlmodel import Session, select
 
-from ssdb.repositories.base_repository import BaseRepository
+from support_sphere.repositories.base_repository import BaseRepository
 
 
 class UserProfileRepository(BaseRepository):
