@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
-import 'package:support_sphere/data/models/user.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -24,7 +24,7 @@ class AuthenticationBloc
   }
 
   final AuthenticationRepository _authRepository;
-  late final StreamSubscription<User> _userSubscription;
+  late final StreamSubscription<AuthUser> _userSubscription;
 
   void _onCurrentUserChanged(
       AuthOnCurrentUserChanged event, Emitter<AuthenticationState> emit) {

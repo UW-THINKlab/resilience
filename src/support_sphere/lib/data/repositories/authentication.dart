@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
-import 'package:support_sphere/data/models/user.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 class AuthenticationRepository {
   final _authService = AuthService();
@@ -10,12 +11,12 @@ class AuthenticationRepository {
   /// the authentication state changes.
   ///
   /// Emits [User.empty] if the user is not authenticated.
-  Stream<User> get user {
+  Stream<AuthUser> get user {
     // Transform the regular supabase user object to our own User model
     return _authService.getCurrentUser().map((user) => _parseUser(user));
   }
 
-  User get currentUser {
+  AuthUser get currentUser {
     supabase_flutter.User? user = _authService.getSignedInUser();
     // Transform the regular supabase user object to our own User model
     return _parseUser(user);
@@ -31,9 +32,17 @@ class AuthenticationRepository {
   Future<void> signUp({
     required String email,
     required String password,
-  }) async => _authService.signUpWithEmailAndPassword(email, password);
+    required String signupCode,
+  }) async {
+    bool isCodeValid = await _authService.isSignupCodeValid(signupCode);
+    if (!isCodeValid) {
+      throw Exception(ErrorMessageStrings.invalidSignUpCode);
+    } else {
+      await _authService.signUpWithEmailAndPassword(email, password);
+    }
+  }
 
-  User _parseUser(supabase_flutter.User? user) {
-    return user == null ? User.empty : User(uuid: user.id);
+  AuthUser _parseUser(supabase_flutter.User? user) {
+    return user == null ? AuthUser.empty : AuthUser(uuid: user.id);
   }
 }
