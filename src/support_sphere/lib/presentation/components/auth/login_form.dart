@@ -2,9 +2,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
 import 'package:formz/formz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../constants/string_catalog.dart';
-import '../../../logic/cubit/login_cubit.dart';
-import './borders.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/logic/cubit/login_cubit.dart';
+import 'package:support_sphere/presentation/components/auth/borders.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});

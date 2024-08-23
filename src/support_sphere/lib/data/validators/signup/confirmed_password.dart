@@ -1,6 +1,6 @@
 import 'package:formz/formz.dart';
 import 'package:support_sphere/constants/auth.dart';
-import '../../../constants/string_catalog.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 enum ConfirmedPasswordValidationError {
   invalid,

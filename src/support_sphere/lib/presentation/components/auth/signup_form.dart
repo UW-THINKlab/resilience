@@ -1,14 +1,13 @@
-import 'package:equatable/equatable.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:support_sphere/data/models/all_models.dart';
-import 'package:support_sphere/data/models/signup/signup_code.dart';
-import 'package:support_sphere/data/models/signup/confirmed_password.dart';
-import '../../../constants/string_catalog.dart';
-import '../../../logic/cubit/signup_cubit.dart';
-import './borders.dart';
+import 'package:support_sphere/data/validators/signup/signup_code.dart';
+import 'package:support_sphere/data/validators/signup/confirmed_password.dart';
+
+import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/logic/cubit/signup_cubit.dart';
+import 'package:support_sphere/presentation/components/auth/borders.dart';
 
 class SignupForm extends StatelessWidget {
   const SignupForm({super.key});

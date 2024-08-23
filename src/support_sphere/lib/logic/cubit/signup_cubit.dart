@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
-import 'package:support_sphere/data/models/all_models.dart';
-import 'package:support_sphere/data/models/signup/signup_code.dart';
-import 'package:support_sphere/data/models/signup/confirmed_password.dart';
+import 'package:support_sphere/data/validators/login/email.dart';
+import 'package:support_sphere/data/validators/login/password.dart';
+import 'package:support_sphere/data/validators/signup/signup_code.dart';
+import 'package:support_sphere/data/validators/signup/confirmed_password.dart';
 import 'package:formz/formz.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 
