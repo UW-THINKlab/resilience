@@ -1,0 +1,5 @@
+email,phone,username,given_name,family_name,is_safe,needs_help,accessibility_needs,has_profile
+adam.abacus@example.com,+1234567890,adamabacus,Adam,Abacus,True,False,False,True
+beth.bodmas@example.com,+0987654321,bethbodmas,Beth,Bodmas,True,False,False,True
+charles.calculus@example.com,+1122334455,charlescalculas,Charles,Calculus,True,False,False,False
+debby.divide@example.com,+5566778899, debbydivide, Debby,Divide,True,False,False,False

@@ -55,6 +55,13 @@ To run this app locally, follow these steps:
    pixi run -e backend setup-infra
    ```
 
+4. Optional: If you want to add sample entries in your local Supabase Instance. 
+   Run the following command in a new terminal session.
+   
+   ```console
+   pixi run populate-sample-entries
+   ```
+   
    At this point your backend is now ready to go! Now off to frontend
 
 ### Frontend
