@@ -31,6 +31,13 @@ db:
     initialDelaySeconds: 3
   persistence:
     enabled: false
+  config:
+    # Enable the PostGIS extension on deployment
+    postgis.sql: |
+      BEGIN;
+        -- Create postgis extension
+        CREATE EXTENSION IF NOT EXISTS postgis SCHEMA extensions;
+      COMMIT;
 
 studio:
   imagePullSecrets:
