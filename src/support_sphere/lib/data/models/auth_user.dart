@@ -21,7 +21,7 @@ class AuthUser extends Equatable {
   /// The current user's id.
   final String uuid;
 
-  /// The current user's name (display name).
+  /// The current user's phone.
   final String? phone;
 
   /// Empty user which represents an unauthenticated user.
