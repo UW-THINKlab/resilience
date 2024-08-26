@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:uuid/uuid.dart';
 
+/// Repository for user interactions.
+/// TODO: Implement the user repository with user info
+
 class UserRepository {
   AuthUser? _user;
 
