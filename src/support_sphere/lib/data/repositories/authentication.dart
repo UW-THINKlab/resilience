@@ -7,10 +7,10 @@ import 'package:support_sphere/constants/string_catalog.dart';
 class AuthenticationRepository {
   final _authService = AuthService();
 
-  /// Stream of [User] which will emit the current user when
+  /// Stream of [AuthUser] which will emit the current user when
   /// the authentication state changes.
   ///
-  /// Emits [User.empty] if the user is not authenticated.
+  /// Emits [AuthUser.empty] if the user is not authenticated.
   Stream<AuthUser> get user {
     // Transform the regular supabase user object to our own User model
     return _authService.getCurrentUser().map((user) => _parseUser(user));
