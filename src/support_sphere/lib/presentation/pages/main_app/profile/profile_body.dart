@@ -4,7 +4,6 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/modal_edit.dart';
-import 'package:support_sphere/presentation/pages/main_app/profile/personal_info_edit.dart';
 
 class ProfileBody extends StatelessWidget {
   const ProfileBody({super.key});
