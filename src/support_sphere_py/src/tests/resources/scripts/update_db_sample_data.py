@@ -1,4 +1,6 @@
-import csv, os
+import csv
+from pathlib import Path
+
 from support_sphere.models.public import UserProfile, People
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
@@ -10,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 def populate_user_details():
-    with open("./src/support_sphere_py/src/tests/resources/data/sample_data.csv", mode='r', newline='') as file:
+    file_path = Path("./src/support_sphere_py/src/tests/resources/data/sample_data.csv")
+    with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
         for row in csv_reader:
