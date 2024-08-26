@@ -67,14 +67,14 @@ class PeopleRepository(BaseRepository):
             return user_profile
 
     @staticmethod
-    def find_by_user_id(user_id: str, fetch_user_profile: bool = False) -> Optional[People]:
+    def find_by_user_profile_id(user_profile_id: str, fetch_user_profile: bool = False) -> Optional[People]:
         """
         Finds a `People` record by the associated `user_id` with optional eager loading of the related `UserProfile`.
 
         Parameters
         ----------
-        user_id : str
-            The `user_id` to search for in the `People` model.
+        user_profile_id : str
+            The `user_profile_id` alias (public.user_profiles.id) to search for in the `People` model.
         fetch_user_profile : bool, optional
             Whether to fetch the related `UserProfile` entity (default is False).
 
@@ -85,7 +85,7 @@ class PeopleRepository(BaseRepository):
         """
         with Session(PeopleRepository.repository_engine) as session:
             statement = PeopleRepository._build_search_query(fetch_user_profile)
-            statement = statement.where(People.user_id == user_id)
+            statement = statement.where(People.user_profile_id == user_profile_id)
             user_profile = session.exec(statement).one_or_none()
             return user_profile
 
