@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:support_sphere/presentation/components/icon_logo.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
-import 'package:support_sphere/constants/routes.dart';
 import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 
 class Landing extends StatelessWidget{
