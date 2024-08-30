@@ -1,23 +1,6 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
-provider "registry.opentofu.org/hashicorp/archive" {
-  version = "2.5.0"
-  hashes = [
-    "h1:KcZeWFIEKf2xmLj9bi3m/0wQDp4Ni7JVE50LVMslcic=",
-    "zh:0e7c2d37160cab82a9aa9471f82a9b891ace9612de3f65f3a4c4adc11ed79e0e",
-    "zh:13bfe59219ff933a6f110b7ec7516b6a908317d1c356cd097799d492770a72b0",
-    "zh:1e0b22c18c5b3b20a6df090e1fa1e3f83e4f71be94a4f4cf48e62618d2d10c6a",
-    "zh:2898e058ae3e3e678967f928d3d20e4035b0db7543d32f06a4b33e0859ffde90",
-    "zh:591b2f97ef1ec0f284994dedb33b82b01e07c706d32cba7df7ff249453a6e52f",
-    "zh:69a49b4e0ef3a6a23c1ea08931b8f287d39ecf9e2706289f8f67c5ad1266817f",
-    "zh:89463997a628373ecedfdd9129235cd6d5f2d3d6a7ca45b0b13cf64c60e245d4",
-    "zh:95ab51e9e743fcec8d439a13e9c00550e7ab5424994d06401d7914922aaad690",
-    "zh:d53f08bf3257f4f54d3aa0e0f427f9bdb41f5836bfe747d0b52176ed0bce28f5",
-    "zh:dfb3c0c2420290573f21cbab355817daceb3ca7db5e09f575c53022bdcb5e0e5",
-  ]
-}
-
 provider "registry.opentofu.org/hashicorp/aws" {
   version     = "5.62.0"
   constraints = "~> 5.61"

@@ -176,4 +176,4 @@ cython_debug/
 
 # OpenTofu
 .terraform/
-shutdown_lambda.zip
+*.tfstate*

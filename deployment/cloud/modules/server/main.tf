@@ -13,49 +13,22 @@ data "aws_default_tags" "default_tags" {}
 
 // vpc
 
-resource "aws_vpc" "support_sphere_vpc" {
-  cidr_block = "10.0.0.0/16"
-  
-}
+module "vpc" {
+    source = "terraform-aws-modules/vpc/aws"
+    version = "~> 5.0"
 
-resource "aws_subnet" "support_sphere_subnet" {
-  vpc_id = aws_vpc.support_sphere_vpc.id
-  cidr_block = "10.0.0.0/16"
-  availability_zone = "${data.aws_region.current.name}b"
-}
+    name = "support-sphere-vpc"
+    cidr = "10.0.0.0/16"
 
-// security group
-resource "aws_security_group" "support_sphere_sg" {
-  name = "support-sphere-sg"
-  description = "Support Sphere Security Group"
-  vpc_id = aws_vpc.support_sphere_vpc.id
-}
+    azs = ["${data.aws_region.current.name}a", "${data.aws_region.current.name}b", "${data.aws_region.current.name}c"]
+    private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+    public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
-resource "aws_security_group_rule" "support_sphere_sg_ssh_ingress" {
-  security_group_id = aws_security_group.support_sphere_sg.id
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]
-}
-
-resource "aws_security_group_rule" "support_sphere_sg_ssh_egress" {
-  security_group_id = aws_security_group.support_sphere_sg.id
-  type = "egress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]
-}
-
-resource "aws_security_group_rule" "support_sphere_sg_http_ingress" {
-  security_group_id = aws_security_group.support_sphere_sg.id
-  type = "ingress"
-  from_port = 80
-  to_port = 80
-  protocol = "tcp"
-  cidr_blocks = [ "0.0.0.0/0" ]
+    enable_nat_gateway = true
+    single_nat_gateway = true
+    one_nat_gateway_per_az = false
+    enable_dns_hostnames = true
+    enable_dhcp_options  = true
 }
 
 // instance role
@@ -91,7 +64,7 @@ resource "aws_iam_role" "support_sphere_instance_role" {
             "ec2:DisassociateAddress"
           ],
           Resource = "*",
-          condition = {
+          Condition = {
             StringEquals = {
               "aws:ResourceTag/Project" = data.aws_default_tags.default_tags.tags.Project
             }
@@ -100,15 +73,47 @@ resource "aws_iam_role" "support_sphere_instance_role" {
       ]
     })
   }
+
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 }
 
-
-// elastic ip
-// we can associate this with the instance in the userdata script
-resource "aws_eip" "support_sphere_eip" {
-  domain = "vpc"
+resource "aws_iam_instance_profile" "support_sphere_instance_profile" {
+  name = "support-sphere-instance-profile"
+  role = aws_iam_role.support_sphere_instance_role.name
 }
 
+// security group
+resource "aws_security_group" "support_sphere_security_group" {
+  name = "support-sphere-security-group"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 443
+    to_port = 443
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 // launch template -- userdata tbd for now
 
@@ -118,7 +123,16 @@ resource "aws_launch_template" "support_sphere_launch_template" {
   image_id = "resolve:ssm:/aws/service/canonical/ubuntu/server/jammy/stable/current/amd64/hvm/ebs-gp2/ami-id"
   instance_type = "r5.large"
   key_name = ""
-  security_group_names = []
+  #vpc_security_group_ids = [aws_security_group.support_sphere_security_group.id]
+  iam_instance_profile {
+    name = aws_iam_instance_profile.support_sphere_instance_profile.name
+  }
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups = [aws_security_group.support_sphere_security_group.id]
+  }
+
   user_data = ""
 
   update_default_version = true
@@ -135,7 +149,7 @@ resource "aws_autoscaling_group" "support_sphere_asg" {
   min_size = 0
   max_size = 1
   desired_capacity = 0
-  vpc_zone_identifier = [aws_subnet.support_sphere_subnet.id]
+  vpc_zone_identifier = [module.vpc.public_subnets[0]]
 
   dynamic "tag" {
     for_each = data.aws_default_tags.default_tags.tags
@@ -151,3 +165,12 @@ resource "aws_autoscaling_group" "support_sphere_asg" {
   }
 }
 
+// Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
+// Replaces an overcomplicated lambda function/eventbridge rule setup
+
+resource "aws_autoscaling_schedule" "support_sphere_asg_schedule" {
+  scheduled_action_name = "support-sphere-asg-shutdown-after-working-hours"
+  desired_capacity = 0
+  recurrence = "0 1 * * MON-FRI"
+  autoscaling_group_name = aws_autoscaling_group.support_sphere_asg.name
+}

@@ -24,9 +24,19 @@ module "server" {
   
 }
 
-module "shutdown" {
-  source = "./modules/shutdown"
-  
-  asg_name = module.server.asg_name
-  asg_arn = module.server.asg_arn
+resource "aws_resourcegroups_group" "support_sphere_group_laurelhurst" {
+    name = "support-sphere-laurelhurst-group"
+
+    resource_query {
+        query = jsonencode({
+            ResourceTypeFilters = ["AWS::AllSupported"],
+            TagFilters = [{
+                "Key" = "Project",
+                "Values" = ["Support Sphere"]
+            }, {
+                "Key" = "Neighborhood",
+                "Values" = ["Laurelhurst"]
+            }]
+        })
+    }
 }
