@@ -99,6 +99,59 @@ To run this app locally, follow these steps:
 
    At this point your frontend is now ready to go! You are all set.
 
+## Running in the cloud
+
+### Where's the cloud stuff?
+
+It's in `./deployment/cloud` and we're using [OpenTofu](https://opentofu.org/)
+
+### Credentials
+
+For now, contact Niki for least-privileged IAM user credentials. These will be used to assume the necessary roles. ([TODO as part of this issue](https://github.com/uw-ssec/post-disaster-comms/issues/61): find a better way to distribute these)
+
+This user will assume the necessary roles to get things going
+
+### Deploying infrastructure changes
+
+The following commands will allow you to do what you gotta do to update and deploy the infrastructure
+
+#### Preview the changes to your infrastructure
+
+```
+pixi run cloud-plan
+```
+
+#### Deploy your infrastructure changes
+
+```
+pixi run cloud-deploy
+```
+
+#### Destroy all cloud infra (WARNING: ask if you think you gotta do this)
+
+```
+pixi run cloud-destroy
+```
+
+### Run the development server
+
+Right now, this server does nothing. TODO: fix that as part of these issues ([1](https://github.com/uw-ssec/post-disaster-comms/issues/38) and [2](https://github.com/uw-ssec/post-disaster-comms/issues/40))
+
+```
+pixi run cloud-server-run
+```
+
+### Stop the development server
+
+The server will stop daily at 01:00 UTC (6PM PDT/5PM PST), but if you wanna be a good citizen and stop it when you're done, run the following
+
+```
+pixi run cloud-server-stop
+```
+
+#### Start the server 
+
+
 ## Contributing
 
 You can contribute to this project by creating issues or forking this repository and opening a pull request.
