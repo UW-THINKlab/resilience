@@ -9,6 +9,11 @@ terraform {
 
 provider "aws" {
   region = "us-west-2"
+    assume_role {
+        role_arn = "arn:aws:iam::871683513797:role/supportsphere-deploy"
+        session_name = "supportsphere-infra-deployment"
+        external_id = "supportsphere-infra-deployment"
+    }
 
   // Tags all resources created from this provider with {"Project": "Support Sphere", "Neighborhood": "Laurelhurst"}
   default_tags {

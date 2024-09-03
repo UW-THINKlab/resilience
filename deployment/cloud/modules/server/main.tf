@@ -11,6 +11,8 @@ data "aws_region" "current" {}
 
 data "aws_default_tags" "default_tags" {}
 
+data "aws_caller_identity" "current" {}
+
 // vpc
 
 module "vpc" {
@@ -76,6 +78,7 @@ resource "aws_iam_role" "support_sphere_instance_role" {
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 }
+
 
 resource "aws_iam_instance_profile" "support_sphere_instance_profile" {
   name = "support-sphere-instance-profile"
@@ -170,7 +173,49 @@ resource "aws_autoscaling_group" "support_sphere_asg" {
 
 resource "aws_autoscaling_schedule" "support_sphere_asg_schedule" {
   scheduled_action_name = "support-sphere-asg-shutdown-after-working-hours"
+  min_size = 0
   desired_capacity = 0
+  max_size = 1
   recurrence = "0 1 * * MON-FRI"
   autoscaling_group_name = aws_autoscaling_group.support_sphere_asg.name
+}
+
+// role to scale up and down the server asg
+resource "aws_iam_role" "supportsphere_server_run_role" {
+    name = "supportsphere-server-run-role"
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+            {
+                Effect = "Allow",
+                Principal = {
+                    AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+                },
+                Action = "sts:AssumeRole"
+            }
+        ]
+    })
+
+    inline_policy {
+        name = "support_sphere_server_run_policy"
+        policy = jsonencode({
+            Version = "2012-10-17",
+            Statement = [
+                {
+                    Effect = "Allow",
+                    Action = [
+                        "autoscaling:SetDesiredCapacity"
+                    ],
+                    Resource = aws_autoscaling_group.support_sphere_asg.arn
+                },
+                {
+                    Effect = "Allow",
+                    Action = [
+                        "autoscaling:DescribeAutoScalingGroups"
+                    ],
+                    Resource = "*"
+                }
+            ]
+        })
+    }
 }
