@@ -90,12 +90,13 @@ resource "aws_security_group" "support_sphere_security_group" {
   name = "support-sphere-security-group"
   vpc_id = module.vpc.vpc_id
 
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+# TODO: restrict to UW IPs https://github.com/uw-ssec/post-disaster-comms/issues/64
+#   ingress {
+#     from_port = 22
+#     to_port = 22
+#     protocol = "tcp"
+#     cidr_blocks = []
+#   }
 
   ingress {
     from_port = 443
