@@ -149,8 +149,6 @@ The server will stop daily at 01:00 UTC (6PM PDT/5PM PST), but if you wanna be a
 pixi run cloud-server-stop
 ```
 
-#### Start the server 
-
 
 ## Contributing
 
