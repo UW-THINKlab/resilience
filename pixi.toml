@@ -9,6 +9,7 @@ platforms = ["linux-64", "osx-64", "osx-arm64"]
 [environments]
 frontend = ["frontend"]
 backend = ["backend", "db"]
+deployment = ["cloud"]
 
 # ==== Backend Database environment ====
 [feature.db.dependencies]
@@ -132,3 +133,33 @@ depends-on = ["install-flutter"]
 [feature.frontend.tasks.check-android-licenses]
 cmd = "flutter doctor --android-licenses"
 depends-on = ["install-flutter"]
+
+
+# ==== Deployment environment ====
+[feature.cloud.tasks]
+# empty for now
+
+[feature.cloud.dependencies]
+python = ">=3.10"
+opentofu = ">=1.8.1"
+boto3 = ">=1.35"
+
+# OpenTofu tasks
+[feature.cloud.tasks.cloud-deploy]
+cmd = "tofu apply"
+cwd = "deployment/cloud"
+
+[feature.cloud.tasks.cloud-plan]
+cmd = "tofu plan"
+cwd = "deployment/cloud"
+
+[feature.cloud.tasks.cloud-destroy]
+cmd = "tofu destroy"
+cwd = "deployment/cloud"
+
+# server tasks
+[feature.cloud.tasks.cloud-server-run]
+cmd = "python scripts/run-cloud-server.py --scale-up"
+
+[feature.cloud.tasks.cloud-server-stop]
+cmd = "python scripts/run-cloud-server.py --scale-down"
