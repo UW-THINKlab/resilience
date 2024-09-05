@@ -7,11 +7,11 @@ terraform {
   }
 }
 
-data "aws_region" "current" {}
+data "aws_region" "this" {}
 
-data "aws_default_tags" "default_tags" {}
+data "aws_default_tags" "this" {}
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "this" {}
 
 // vpc
 
@@ -22,7 +22,7 @@ module "vpc" {
     name = "support-sphere-vpc"
     cidr = "10.0.0.0/16"
 
-    azs = ["${data.aws_region.current.name}a", "${data.aws_region.current.name}b", "${data.aws_region.current.name}c"]
+    azs = ["${data.aws_region.this.name}a", "${data.aws_region.this.name}b", "${data.aws_region.this.name}c"]
     private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
     public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
@@ -35,7 +35,7 @@ module "vpc" {
 
 // instance role
 
-resource "aws_iam_role" "support_sphere_instance_role" {
+resource "aws_iam_role" "instance" {
   name = "support-sphere-instance-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -80,13 +80,13 @@ resource "aws_iam_role" "support_sphere_instance_role" {
 }
 
 
-resource "aws_iam_instance_profile" "support_sphere_instance_profile" {
+resource "aws_iam_instance_profile" "this" {
   name = "support-sphere-instance-profile"
-  role = aws_iam_role.support_sphere_instance_role.name
+  role = aws_iam_role.instance.name
 }
 
 // security group
-resource "aws_security_group" "support_sphere_security_group" {
+resource "aws_security_group" "this" {
   name = "support-sphere-security-group"
   vpc_id = module.vpc.vpc_id
 
@@ -121,7 +121,7 @@ resource "aws_security_group" "support_sphere_security_group" {
 
 // launch template -- userdata tbd for now
 
-resource "aws_launch_template" "support_sphere_launch_template" {
+resource "aws_launch_template" "this" {
   name = "support-sphere-launch-template"
   // https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/#finding-images-with-ssm
   image_id = "resolve:ssm:/aws/service/canonical/ubuntu/server/jammy/stable/current/amd64/hvm/ebs-gp2/ami-id"
@@ -129,12 +129,12 @@ resource "aws_launch_template" "support_sphere_launch_template" {
   key_name = ""
   #vpc_security_group_ids = [aws_security_group.support_sphere_security_group.id]
   iam_instance_profile {
-    name = aws_iam_instance_profile.support_sphere_instance_profile.name
+    name = aws_iam_instance_profile.this.name
   }
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups = [aws_security_group.support_sphere_security_group.id]
+    security_groups = [aws_security_group.this.id]
   }
 
   user_data = ""
@@ -144,10 +144,10 @@ resource "aws_launch_template" "support_sphere_launch_template" {
 
 // asg
 
-resource "aws_autoscaling_group" "support_sphere_asg" {
+resource "aws_autoscaling_group" "this" {
   name = "support-sphere-asg"
   launch_template {
-    id = aws_launch_template.support_sphere_launch_template.id
+    id = aws_launch_template.this.id
     version = "$Latest"
   }
   min_size = 0
@@ -156,7 +156,7 @@ resource "aws_autoscaling_group" "support_sphere_asg" {
   vpc_zone_identifier = [module.vpc.public_subnets[0]]
 
   dynamic "tag" {
-    for_each = data.aws_default_tags.default_tags.tags
+    for_each = data.aws_default_tags.this.tags
     content {
       key = tag.key
       value = tag.value
@@ -172,7 +172,7 @@ resource "aws_autoscaling_group" "support_sphere_asg" {
 // Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
 // Replaces an overcomplicated lambda function/eventbridge rule setup
 
-resource "aws_autoscaling_schedule" "support_sphere_asg_schedule" {
+resource "aws_autoscaling_schedule" "scale_down" {
   scheduled_action_name = "support-sphere-asg-shutdown-after-working-hours"
   min_size = 0
   desired_capacity = 0
@@ -182,7 +182,7 @@ resource "aws_autoscaling_schedule" "support_sphere_asg_schedule" {
 }
 
 // role to scale up and down the server asg
-resource "aws_iam_role" "supportsphere_server_run_role" {
+resource "aws_iam_role" "scaling" {
     name = "supportsphere-server-run-role"
     assume_role_policy = jsonencode({
         Version = "2012-10-17",
@@ -190,7 +190,7 @@ resource "aws_iam_role" "supportsphere_server_run_role" {
             {
                 Effect = "Allow",
                 Principal = {
-                    AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+                    AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:root"
                 },
                 Action = "sts:AssumeRole"
             }
@@ -207,7 +207,7 @@ resource "aws_iam_role" "supportsphere_server_run_role" {
                     Action = [
                         "autoscaling:SetDesiredCapacity"
                     ],
-                    Resource = aws_autoscaling_group.support_sphere_asg.arn
+                    Resource = aws_autoscaling_group.this.arn
                 },
                 {
                     Effect = "Allow",

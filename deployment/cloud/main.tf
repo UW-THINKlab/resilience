@@ -29,7 +29,7 @@ module "server" {
   
 }
 
-resource "aws_resourcegroups_group" "support_sphere_group_laurelhurst" {
+resource "aws_resourcegroups_group" "this" {
     name = "support-sphere-laurelhurst-group"
 
     resource_query {
