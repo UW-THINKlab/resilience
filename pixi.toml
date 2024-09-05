@@ -153,6 +153,10 @@ boto3 = ">=1.35"
 cmd = "tofu apply"
 cwd = "deployment/cloud"
 
+[feature.cloud.tasks.cloud-init]
+cmd = "tofu init"
+cwd = "deployment/cloud"
+
 [feature.cloud.tasks.cloud-plan]
 cmd = "tofu plan"
 cwd = "deployment/cloud"
