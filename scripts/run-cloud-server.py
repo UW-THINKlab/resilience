@@ -4,8 +4,13 @@ import argparse
 
 sts = boto3.client('sts')
 
-deploy_role_arn = 'arn:aws:iam::871683513797:role/supportsphere-server-run-role'
-asg_name = 'support-sphere-asg'
+project_name = os.environ.get('TF_VAR_project_name', 'Support Sphere').lower().strip().replace(" ", "")
+neighborhood = os.environ.get('TF_VAR_neighborhood', 'Laurelhurst').lower().strip().replace(" ", "")
+
+resource_prefix = f'{project_name}-{neighborhood}'
+
+deploy_role_arn = f'arn:aws:iam::871683513797:role/{resource_prefix}-scaling-role'
+asg_name = f'{resource_prefix}-asg'
 
 def start_session():
     response = sts.assume_role(

@@ -19,7 +19,7 @@ module "vpc" {
     source = "terraform-aws-modules/vpc/aws"
     version = "~> 5.0"
 
-    name = "support-sphere-vpc"
+    name = "${var.resource_prefix}-vpc"
     cidr = "10.0.0.0/16"
 
     azs = ["${data.aws_region.this.name}a", "${data.aws_region.this.name}b", "${data.aws_region.this.name}c"]
@@ -36,7 +36,7 @@ module "vpc" {
 // instance role
 
 resource "aws_iam_role" "instance" {
-  name = "support-sphere-instance-role"
+  name = "${var.resource_prefix}-instance-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -51,7 +51,7 @@ resource "aws_iam_role" "instance" {
   })
 
   inline_policy {
-    name = "support_sphere_instance_policy"
+    name = "${var.resource_prefix}_instance_policy"
     policy = jsonencode({
       Version = "2012-10-17",
       Statement = [
@@ -68,7 +68,7 @@ resource "aws_iam_role" "instance" {
           Resource = "*",
           Condition = {
             StringEquals = {
-              "aws:ResourceTag/Project" = data.aws_default_tags.default_tags.tags.Project
+              "aws:ResourceTag/Project" = data.aws_default_tags.this.tags.Project
             }
           }
         }
@@ -81,13 +81,13 @@ resource "aws_iam_role" "instance" {
 
 
 resource "aws_iam_instance_profile" "this" {
-  name = "support-sphere-instance-profile"
+  name = "${var.resource_prefix}-instance-profile"
   role = aws_iam_role.instance.name
 }
 
 // security group
 resource "aws_security_group" "this" {
-  name = "support-sphere-security-group"
+  name = "${var.resource_prefix}-security-group"
   vpc_id = module.vpc.vpc_id
 
 # TODO: restrict to UW IPs https://github.com/uw-ssec/post-disaster-comms/issues/64
@@ -122,12 +122,11 @@ resource "aws_security_group" "this" {
 // launch template -- userdata tbd for now
 
 resource "aws_launch_template" "this" {
-  name = "support-sphere-launch-template"
+  name = "${var.resource_prefix}-template"
   // https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/#finding-images-with-ssm
   image_id = "resolve:ssm:/aws/service/canonical/ubuntu/server/jammy/stable/current/amd64/hvm/ebs-gp2/ami-id"
   instance_type = "r5.large"
   key_name = ""
-  #vpc_security_group_ids = [aws_security_group.support_sphere_security_group.id]
   iam_instance_profile {
     name = aws_iam_instance_profile.this.name
   }
@@ -145,7 +144,7 @@ resource "aws_launch_template" "this" {
 // asg
 
 resource "aws_autoscaling_group" "this" {
-  name = "support-sphere-asg"
+  name = "${var.resource_prefix}-asg"
   launch_template {
     id = aws_launch_template.this.id
     version = "$Latest"
@@ -173,17 +172,17 @@ resource "aws_autoscaling_group" "this" {
 // Replaces an overcomplicated lambda function/eventbridge rule setup
 
 resource "aws_autoscaling_schedule" "scale_down" {
-  scheduled_action_name = "support-sphere-asg-shutdown-after-working-hours"
+  scheduled_action_name = "${var.resource_prefix}-asg-shutdown-after-working-hours"
   min_size = 0
   desired_capacity = 0
   max_size = 1
   recurrence = "0 1 * * MON-FRI"
-  autoscaling_group_name = aws_autoscaling_group.support_sphere_asg.name
+  autoscaling_group_name = aws_autoscaling_group.this.name
 }
 
 // role to scale up and down the server asg
 resource "aws_iam_role" "scaling" {
-    name = "supportsphere-server-run-role"
+    name = "${var.resource_prefix}-scaling-role"
     assume_role_policy = jsonencode({
         Version = "2012-10-17",
         Statement = [
@@ -198,7 +197,7 @@ resource "aws_iam_role" "scaling" {
     })
 
     inline_policy {
-        name = "support_sphere_server_run_policy"
+        name = "${var.resource_prefix}_server_run_policy"
         policy = jsonencode({
             Version = "2012-10-17",
             Statement = [

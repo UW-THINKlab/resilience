@@ -136,6 +136,10 @@ depends-on = ["install-flutter"]
 
 
 # ==== Deployment environment ====
+[feature.cloud.activation.env]
+"TF_VAR_project_name" = "Support Sphere"
+"TF_VAR_neighborhood" = "Laurelhurst"
+
 [feature.cloud.tasks]
 # empty for now
 
