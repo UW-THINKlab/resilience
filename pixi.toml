@@ -19,10 +19,13 @@ pip = "*"
 support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 [feature.db.tasks]
-populate-sample-entries = { depends-on = ["populate-user-details"]}
+populate-sample-entries = { depends-on = ["configure-role-based-access", "populate-user-details"]}
+
+[feature.db.tasks.configure-role-based-access]
+cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/role_based_access_control.py"
 
 [feature.db.tasks.populate-user-details]
-cmd = "python3 ./src/support_sphere_py/src/tests/resources/scripts/update_db_sample_data.py"
+cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py"
 
 # ==== Backend environment ====
 [feature.backend.tasks]
@@ -84,6 +87,15 @@ depends-on = ["install-k3d", "k3d-delete-cluster"]
 
 [feature.backend.tasks.k3d-delete-cluster]
 cmd = "k3d cluster delete pdc-cluster"
+
+# Fast API tasks
+[feature.backend.tasks.run-fast-api-server-run]
+cmd = "fastapi run ./src/support_sphere_py/src/support_sphere/apis/main.py"
+
+# Runs the Fast API server in editable mode - auto-triggers restart when source files are changed.
+[feature.backend.tasks.fast-api-server-dev]
+cmd = "fastapi dev ./src/support_sphere_py/src/support_sphere/apis/main.py"
+
 
 # ==== Frontend environment ====
 [feature.frontend.tasks]

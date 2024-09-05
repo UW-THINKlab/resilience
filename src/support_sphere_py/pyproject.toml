@@ -23,7 +23,10 @@ dependencies = [
     "sqlmodel>=0.0.21,<0.1",
     "supabase>=2.6.0,<2.7",
     "sqlmodel>=0.0.21,<0.0.22",
-    "psycopg2>=2.9.9,<3"
+    "psycopg2>=2.9.9,<3",
+    "fastapi[standard]>=0.111.0",
+    "uvicorn>=0.30.6",
+    "geoalchemy2>=0.15.2",
 ]
 
 [project.license]

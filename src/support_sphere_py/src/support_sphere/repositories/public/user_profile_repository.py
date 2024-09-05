@@ -29,8 +29,8 @@ class UserProfileRepository(BaseRepository):
     - The `fetch_person_details` flag is used to load the associated `People` model.
     - The repository relies on `Session` from SQLModel to execute database operations.
     """
-    @staticmethod
-    def select_all() -> list[UserProfile]:
+    @classmethod
+    def select_all(cls) -> list[UserProfile]:
         """
         Retrieves all `UserProfile` records from the database.
 

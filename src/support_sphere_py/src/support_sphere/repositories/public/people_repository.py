@@ -31,8 +31,8 @@ class PeopleRepository(BaseRepository):
     - The repository relies on `Session` from SQLModel to execute database operations.
     """
 
-    @staticmethod
-    def select_all() -> list[People]:
+    @classmethod
+    def select_all(cls) -> list[People]:
         """
         Retrieves all `People` records from the database.
 

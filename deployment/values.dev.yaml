@@ -69,6 +69,8 @@ auth:
     GOTRUE_SMTP_HOST: "smtp.example.com"
     GOTRUE_SMTP_PORT: "587"
     GOTRUE_SMTP_SENDER_NAME: "your-mail@example.com"
+    GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
+    GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/public/custom_access_token"
 
 rest:
   imagePullSecrets:

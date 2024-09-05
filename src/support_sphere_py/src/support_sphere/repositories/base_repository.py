@@ -8,20 +8,22 @@ T = TypeVar("T", bound=SQLModel)
 class BaseRepository:
     repository_engine = engine
 
-    @staticmethod
-    def add(entity: T) -> None:
+    @classmethod
+    def add(cls, entity: T) -> T:
         with Session(BaseRepository.repository_engine) as session:
             session.add(entity)
             session.commit()
+            session.refresh(entity)
+            return entity
 
-    @staticmethod
-    def add_all( entity_list: list[T]) -> None:
+    @classmethod
+    def add_all(cls, entity_list: list[T]) -> None:
         with Session(BaseRepository.repository_engine) as session:
             session.add_all(entity_list)
             session.commit()
 
-    @staticmethod
-    def select_all(from_table: Type[T]) -> list[T]:
+    @classmethod
+    def select_all(cls, from_table: Type[T]) -> list[T]:
         with Session(BaseRepository.repository_engine) as session:
             statement = select(from_table)
             results = session.exec(statement)

@@ -30,11 +30,13 @@ class People(BasePublicSchemaModel, table=True):
         Indicates whether the person is marked as safe, defaults to True.
     needs_help : bool
         Indicates whether the person is flagged as needing help, defaults to False.
-    accessibility_needs : str|None, optional
-        Indicates the person's accessibility needs.
     user_profile : Optional[UserProfile]
         A relationship to the `UserProfile` model, with back_populates set to "person_details",
         linking an individual to their user profile if available.
+        This is NOT a column in the table but represents relationship only.
+    people_group : Optional[PeopleGroup]
+        A relationship to the `PeopleGroup` model, with back_populates set to "people",
+        linking an individual to a particular household.
         This is NOT a column in the table but represents relationship only.
     """
     __tablename__ = "people"
@@ -47,6 +49,6 @@ class People(BasePublicSchemaModel, table=True):
     nickname: str|None = Field(nullable=True)
     is_safe: bool = Field(default=True)
     needs_help: bool = Field(default=False)
-    accessibility_needs: str|None = Field(nullable=True)
 
-    user_profile: Optional["UserProfile"] = Relationship(back_populates="person_details")
+    user_profile: Optional["UserProfile"] = Relationship(back_populates="person_details", cascade_delete=False)
+    people_group: Optional["PeopleGroup"] = Relationship(back_populates="people", cascade_delete=False)

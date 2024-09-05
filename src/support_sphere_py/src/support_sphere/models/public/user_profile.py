@@ -21,6 +21,10 @@ class UserProfile(BasePublicSchemaModel, table=True):
         A relationship to the `User` model (from the `auth.users` table), with back_populates set
         to "user_profile", establishing a one-to-one connection between UserProfile and User.
         This is NOT a column in the table but represents relationship only.
+    user_roles: Optional[UserRole]
+        A `UserRole` objects associated with this user_profile. Represents a one-to-one relationship where
+        each `user_profile` can have a single `UserRole` entity. The relationship is configured with `back_populates`
+        to match the `user_profile` attribute in the `UserRole` model, and cascading delete is disabled.
 
     Notes
     -----
@@ -36,4 +40,6 @@ class UserProfile(BasePublicSchemaModel, table=True):
     user: User = Relationship(back_populates="user_profile")
     person_details: Optional["People"] = Relationship(back_populates="user_profile",
                                                       cascade_delete=False, sa_relationship_kwargs={"uselist": False})
+    user_role: Optional["UserRole"] = Relationship(back_populates="user_profile", cascade_delete=False)
+    operational_events: list["OperationalEvent"] = Relationship(back_populates="user_profile", cascade_delete=False)
 

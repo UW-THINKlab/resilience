@@ -8,6 +8,9 @@ import logging
 from support_sphere.models.auth import *
 from support_sphere.models.public import *
 
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s %(thread)d %(levelname)s %(module)s.%(funcName)s(): %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 username = os.environ.get('DB_USERNAME', 'postgres')
