@@ -147,14 +147,14 @@ class _PersonalInformation extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Phone"),
-            Text("555-555-5555"),
+            Text("+15555555555"),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Email"),
-            Text("john@example.com"),
+            Text("johndoe@example.com"),
           ],
         ),
       ],

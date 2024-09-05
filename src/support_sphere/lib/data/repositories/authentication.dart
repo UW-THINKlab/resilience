@@ -16,6 +16,10 @@ class AuthenticationRepository {
     return _authService.getCurrentUser().map((user) => _parseUser(user));
   }
 
+  supabase_flutter.User? getRawUser() {
+    return _authService.getSignedInUser();
+  }
+
   AuthUser get currentUser {
     supabase_flutter.User? user = _authService.getSignedInUser();
     // Transform the regular supabase user object to our own User model
@@ -40,6 +44,14 @@ class AuthenticationRepository {
     } else {
       await _authService.signUpWithEmailAndPassword(email, password);
     }
+  }
+
+  Future<void> updateUser({
+    String? email,
+    String? phone,
+    String? password,
+  }) async {
+    await _authService.updateUser(email, phone, password);
   }
 
   AuthUser _parseUser(supabase_flutter.User? user) {

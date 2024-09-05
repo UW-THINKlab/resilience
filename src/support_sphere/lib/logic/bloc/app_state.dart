@@ -28,3 +28,18 @@ class AppState extends Equatable {
     );
   }
 }
+
+extension Explanation on AppModes {
+  String? get name {
+    switch(this) {
+      case AppModes.normal:
+        return "NORMAL";
+      case AppModes.emergency:
+        return "EMERGENCY";
+      case AppModes.testEmergency:
+        return "TEST";
+      default:
+        return null;
+    }
+  }
+}

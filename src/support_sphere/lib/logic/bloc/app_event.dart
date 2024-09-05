@@ -14,6 +14,15 @@ class AppOnModeChanged extends AppEvent {
   List<Object> get props => [mode];
 }
 
+class AppOnStatusChangeRequested extends AppEvent {
+  AppOnStatusChangeRequested(this.mode);
+
+  final AppModes mode;
+
+  @override
+  List<Object> get props => [mode];
+}
+
 class AppOnBottomNavIndexChanged extends AppEvent {
   AppOnBottomNavIndexChanged(this.selectedBottomNavIndex);
 
