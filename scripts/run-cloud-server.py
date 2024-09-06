@@ -1,6 +1,7 @@
 import boto3
 import os
 import argparse
+from time import sleep
 
 sts = boto3.client('sts')
 
@@ -73,12 +74,29 @@ def scale_down(autoscaling):
     )
     print('Scaling down server, it may take a few minutes for the instance to stop')
 
+def wait_for_scaling(autoscaling, desired_capacity):
+    seconds = 0
+    while True:
+        response = autoscaling.describe_auto_scaling_groups(
+            AutoScalingGroupNames=[asg_name]
+        )
+
+        if len(response['AutoScalingGroups'][0]['Instances']) == desired_capacity:
+            print('Scaling completed')
+            if desired_capacity == 1:
+                print('InstanceId:', response['AutoScalingGroups'][0]['Instances'][0]['InstanceId'])
+            break
+        print(seconds, 'seconds elapsed')
+        sleep(5)
+        seconds += 5
+
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run cloud server')
     parser.add_argument('--scale-up', action='store_true', help='Scale up the server by running 1 instance')
     parser.add_argument('--scale-down', action='store_true', help='Scale down the server having 0 instances running')
+    parser.add_argument('--replace', action='store_true', help='Replace the server by scaling down and then scaling up')
 
     args = parser.parse_args() 
 
@@ -90,4 +108,8 @@ if __name__ == '__main__':
         scale_up(autoscaling=autoscaling)
     elif args.scale_down:
         scale_down(autoscaling=autoscaling)
-    
+    elif args.replace:
+        scale_down(autoscaling=autoscaling)
+        wait_for_scaling(autoscaling=autoscaling, desired_capacity=0)
+        scale_up(autoscaling=autoscaling)
+        wait_for_scaling(autoscaling=autoscaling, desired_capacity=1)

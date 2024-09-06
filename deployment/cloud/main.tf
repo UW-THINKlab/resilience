@@ -36,12 +36,23 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias = "east"
+  region = "us-east-1"
+}
+
 module "server" {
   source = "./modules/server"
   
   resource_prefix = local.resource_prefix
   instance_type = var.instance_type
   stage = var.stage
+  volume_size = var.volume_size
+
+  providers = {
+    aws = aws
+    aws.east = aws.east
+  }
 }
 
 resource "aws_resourcegroups_group" "this" {

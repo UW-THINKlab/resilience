@@ -27,5 +27,11 @@ variable "additional_tags" {
 variable "instance_type" {
     description = "The instance type to use for the server"
     type        = string
-    default     = "r5.large"
+    default     = "t3.medium"
+}
+
+variable "volume_size" {
+    description = "The instance type to use for the server"
+    type        = string
+    default     = 16
 }

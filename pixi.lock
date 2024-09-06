@@ -71,7 +71,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/aa/cc0199a5f0ad350994d660967a8efb233fe0416e4639146c089643407ce6/packaging-24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e8/ab/6abb38f59d798a1548996061764ecaec347c28e3bdc58723257fbe99407a/postgrest-0.16.10-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/c9/5e/dc6acaf46d78979d6b03458b7a1618a68e152a6776fce95daac5e0f0301b/psycopg2-2.9.9.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/19/57/9f172b900795ea37246c78b5f52e00f4779984370855b3e161600156906d/psycopg2_binary-2.9.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/1f/fa/b7f815b8c9ad021c07f88875b601222ef5e70619391ade4a49234d12d278/pydantic-2.8.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/09/b3/a5a54b47cccd1ab661ed5775235c5e06924753c2d4817737c5667bfa19a8/pydantic_core-2.20.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl
@@ -154,7 +154,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/aa/cc0199a5f0ad350994d660967a8efb233fe0416e4639146c089643407ce6/packaging-24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e8/ab/6abb38f59d798a1548996061764ecaec347c28e3bdc58723257fbe99407a/postgrest-0.16.10-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/c9/5e/dc6acaf46d78979d6b03458b7a1618a68e152a6776fce95daac5e0f0301b/psycopg2-2.9.9.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/a7/d0/5f2db14e7b53552276ab613399a83f83f85b173a862d3f20580bc7231139/psycopg2_binary-2.9.9-cp312-cp312-macosx_10_9_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/1f/fa/b7f815b8c9ad021c07f88875b601222ef5e70619391ade4a49234d12d278/pydantic-2.8.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6f/47/ef0d60ae23c41aced42921728650460dc831a0adf604bfa66b76028cb4d0/pydantic_core-2.20.1-cp312-cp312-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl
@@ -236,7 +236,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/aa/cc0199a5f0ad350994d660967a8efb233fe0416e4639146c089643407ce6/packaging-24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e8/ab/6abb38f59d798a1548996061764ecaec347c28e3bdc58723257fbe99407a/postgrest-0.16.10-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/c9/5e/dc6acaf46d78979d6b03458b7a1618a68e152a6776fce95daac5e0f0301b/psycopg2-2.9.9.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/18/ca/da384fd47233e300e3e485c90e7aab5d7def896d1281239f75901faf87d4/psycopg2_binary-2.9.9-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/1f/fa/b7f815b8c9ad021c07f88875b601222ef5e70619391ade4a49234d12d278/pydantic-2.8.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6a/23/430f2878c9cd977a61bb39f71751d9310ec55cee36b3d5bf1752c6341fd0/pydantic_core-2.20.1-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl
@@ -732,9 +732,38 @@ packages:
   sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
   md5: d7c89558ba9fa0495403155b64376d81
   license: None
+  size: 2562
+  timestamp: 1578324546067
+- kind: conda
+  name: _libgcc_mutex
+  version: '0.1'
+  build: conda_forge
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
+  sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
+  md5: d7c89558ba9fa0495403155b64376d81
+  license: None
   purls: []
   size: 2562
   timestamp: 1578324546067
+- kind: conda
+  name: _openmp_mutex
+  version: '4.5'
+  build: 2_gnu
+  build_number: 16
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+  sha256: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
+  md5: 73aaf86a425cc6e73fcf236a5a46396d
+  depends:
+  - _libgcc_mutex 0.1 conda_forge
+  - libgomp >=7.5.0
+  constrains:
+  - openmp_impl 9999
+  license: BSD-3-Clause
+  license_family: BSD
+  size: 23621
+  timestamp: 1650670423406
 - kind: conda
   name: _openmp_mutex
   version: '4.5'
@@ -2447,9 +2476,41 @@ packages:
   - libiconv >=1.17,<2.0a0
   - libintl 0.22.5 h8414b35_3
   license: GPL-3.0-or-later
+  size: 2467439
+  timestamp: 1723627140130
+- kind: conda
+  name: gettext-tools
+  version: 0.22.5
+  build: h8414b35_3
+  build_number: 3
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/gettext-tools-0.22.5-h8414b35_3.conda
+  sha256: 50b530cf2326938b80330f78cf4056492fa8c6a5c7e313d92069ebbbb2f4d264
+  md5: 47071f4b2915032e1d47119f779f9d9c
+  depends:
+  - __osx >=11.0
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 h8414b35_3
+  license: GPL-3.0-or-later
   license_family: GPL
   size: 2467439
   timestamp: 1723627140130
+- kind: conda
+  name: gettext-tools
+  version: 0.22.5
+  build: hdfe23c8_3
+  build_number: 3
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
+  sha256: 7fe97828eae5e067b68dd012811e614e057854ed51116bbd2fd2e8d05439ad63
+  md5: 70a5bb1505016ebdba1214ba10de0503
+  depends:
+  - __osx >=10.13
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 hdfe23c8_3
+  license: GPL-3.0-or-later
+  size: 2513986
+  timestamp: 1723626957941
 - kind: conda
   name: gettext-tools
   version: 0.22.5
@@ -2619,6 +2680,20 @@ packages:
   - libgcc-ng >=12
   license: MPL-2.0
   license_family: MOZILLA
+  size: 16934588
+  timestamp: 1719587223927
+- kind: conda
+  name: go-sops
+  version: 3.9.0
+  build: h12ea02d_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.9.0-h12ea02d_0.conda
+  sha256: 5a24e9bdd75ebcbfc6d4dc250b35b0d4dacf96187cb0160ab80d8b17c1b861b7
+  md5: 1b88eb153baa811d9eb5bcee550f1765
+  depends:
+  - libgcc-ng >=12
+  license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 16934588
   timestamp: 1719587223927
@@ -2634,9 +2709,39 @@ packages:
   - __osx >=11.0
   license: MPL-2.0
   license_family: MOZILLA
+  size: 16449620
+  timestamp: 1719587311990
+- kind: conda
+  name: go-sops
+  version: 3.9.0
+  build: h99b78c6_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/go-sops-3.9.0-h99b78c6_0.conda
+  sha256: b4f1de5dafd75f00e3e0305890f3a5c480aabd6883f5f5a44ddc886abe22d915
+  md5: 9a1003365ccfa22e04286e3305a65f6e
+  depends:
+  - __osx >=11.0
+  license: MPL-2.0
+  license_family: MOZILLA
   purls: []
   size: 16449620
   timestamp: 1719587311990
+- kind: conda
+  name: go-sops
+  version: 3.9.0
+  build: hfdf4475_0
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/go-sops-3.9.0-hfdf4475_0.conda
+  sha256: fa89d092e62c7200633b9d693ba696dae6e34c3589e540035b30f6be7c70ec3c
+  md5: c5a862911e4589510b7be0093bd1d5a2
+  depends:
+  - __osx >=10.13
+  constrains:
+  - __osx>=10.12
+  license: MPL-2.0
+  license_family: MOZILLA
+  size: 17192754
+  timestamp: 1719587282512
 - kind: conda
   name: go-sops
   version: 3.9.0
@@ -3745,9 +3850,41 @@ packages:
   - libiconv >=1.17,<2.0a0
   - libintl 0.22.5 h8414b35_3
   license: GPL-3.0-or-later
+  size: 159800
+  timestamp: 1723627007035
+- kind: conda
+  name: libgettextpo
+  version: 0.22.5
+  build: h8414b35_3
+  build_number: 3
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/libgettextpo-0.22.5-h8414b35_3.conda
+  sha256: bc446fad58155e96a01b28e99254415c2151bdddf57f9a2c00c44e6f0298bb62
+  md5: c8cd7295cfb7bda5cbabea4fef904349
+  depends:
+  - __osx >=11.0
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 h8414b35_3
+  license: GPL-3.0-or-later
   license_family: GPL
   size: 159800
   timestamp: 1723627007035
+- kind: conda
+  name: libgettextpo
+  version: 0.22.5
+  build: hdfe23c8_3
+  build_number: 3
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/libgettextpo-0.22.5-hdfe23c8_3.conda
+  sha256: 8f7631d03a093272a5a8423181ac2c66514503e082e5494a2e942737af8a34ad
+  md5: ba6eeccaee150e24a544be8ae71aeca1
+  depends:
+  - __osx >=10.13
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 hdfe23c8_3
+  license: GPL-3.0-or-later
+  size: 172305
+  timestamp: 1723626852373
 - kind: conda
   name: libgettextpo
   version: 0.22.5
@@ -3796,9 +3933,43 @@ packages:
   - libiconv >=1.17,<2.0a0
   - libintl 0.22.5 h8414b35_3
   license: GPL-3.0-or-later
+  size: 37153
+  timestamp: 1723627048279
+- kind: conda
+  name: libgettextpo-devel
+  version: 0.22.5
+  build: h8414b35_3
+  build_number: 3
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/libgettextpo-devel-0.22.5-h8414b35_3.conda
+  sha256: ea3ca757bf11ed25965b39466b50411c7c2a43f3b90ab4a36fc0ef43f7ab98ac
+  md5: 7074dc1c9aae1bb5d7bccb4ff03746ca
+  depends:
+  - __osx >=11.0
+  - libgettextpo 0.22.5 h8414b35_3
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 h8414b35_3
+  license: GPL-3.0-or-later
   license_family: GPL
   size: 37153
   timestamp: 1723627048279
+- kind: conda
+  name: libgettextpo-devel
+  version: 0.22.5
+  build: hdfe23c8_3
+  build_number: 3
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/libgettextpo-devel-0.22.5-hdfe23c8_3.conda
+  sha256: 8ea6bcba8c002f547edfd51e27e1e81465c8838033877c56439d20bcbc8f32a3
+  md5: efbba22e1657ef214c9ce9105b2ca562
+  depends:
+  - __osx >=10.13
+  - libgettextpo 0.22.5 hdfe23c8_3
+  - libiconv >=1.17,<2.0a0
+  - libintl 0.22.5 hdfe23c8_3
+  license: GPL-3.0-or-later
+  size: 36977
+  timestamp: 1723626874373
 - kind: conda
   name: libgettextpo-devel
   version: 0.22.5
@@ -5111,10 +5282,22 @@ packages:
   size: 499307
   timestamp: 1719274858092
 - kind: pypi
-  name: psycopg2
+  name: psycopg2-binary
   version: 2.9.9
-  url: https://files.pythonhosted.org/packages/c9/5e/dc6acaf46d78979d6b03458b7a1618a68e152a6776fce95daac5e0f0301b/psycopg2-2.9.9.tar.gz
-  sha256: d1454bde93fb1e224166811694d600e746430c006fbb031ea06ecc2ea41bf156
+  url: https://files.pythonhosted.org/packages/18/ca/da384fd47233e300e3e485c90e7aab5d7def896d1281239f75901faf87d4/psycopg2_binary-2.9.9-cp312-cp312-macosx_11_0_arm64.whl
+  sha256: b0605eaed3eb239e87df0d5e3c6489daae3f7388d455d0c0b4df899519c6a38d
+  requires_python: '>=3.7'
+- kind: pypi
+  name: psycopg2-binary
+  version: 2.9.9
+  url: https://files.pythonhosted.org/packages/19/57/9f172b900795ea37246c78b5f52e00f4779984370855b3e161600156906d/psycopg2_binary-2.9.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  sha256: 6e6f98446430fdf41bd36d4faa6cb409f5140c1c2cf58ce0bbdaf16af7d3f119
+  requires_python: '>=3.7'
+- kind: pypi
+  name: psycopg2-binary
+  version: 2.9.9
+  url: https://files.pythonhosted.org/packages/a7/d0/5f2db14e7b53552276ab613399a83f83f85b173a862d3f20580bc7231139/psycopg2_binary-2.9.9-cp312-cp312-macosx_10_9_x86_64.whl
+  sha256: 8532fd6e6e2dc57bcb3bc90b079c60de896d2128c5d9d6f24a63875a95a088cf
   requires_python: '>=3.7'
 - kind: conda
   name: ptyprocess
@@ -6177,12 +6360,12 @@ packages:
   name: support-sphere-py
   version: 0.1.0a0
   path: ./src/support_sphere_py
-  sha256: 600adc731927a444b31c032f20cad94c0e11aaf4879b25a64f8747088a3cf4d8
+  sha256: 9d2b6bf8da72e988848647ee65d66b9880311ed746c49663f94cd5916f35c809
   requires_dist:
   - sqlmodel>=0.0.21,<0.1
   - supabase>=2.6.0,<2.7
   - sqlmodel>=0.0.21,<0.0.22
-  - psycopg2>=2.9.9,<3
+  - psycopg2-binary>=2.9.9,<3
   - fastapi[standard]>=0.111.0
   - uvicorn>=0.30.6
   - geoalchemy2>=0.15.2
@@ -6732,6 +6915,7 @@ packages:
   - libzlib >=1.2.13,<2.0.0a0
   license: BSD-3-Clause
   license_family: BSD
+  purls: []
   size: 498900
   timestamp: 1714723303098
 - kind: conda
@@ -6748,6 +6932,7 @@ packages:
   - libzlib >=1.2.13,<2.0.0a0
   license: BSD-3-Clause
   license_family: BSD
+  purls: []
   size: 554846
   timestamp: 1714722996770
 - kind: conda
@@ -6763,5 +6948,6 @@ packages:
   - libzlib >=1.2.13,<2.0.0a0
   license: BSD-3-Clause
   license_family: BSD
+  purls: []
   size: 405089
   timestamp: 1714723101397

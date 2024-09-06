@@ -10,7 +10,6 @@ neighborhood = sanitize(os.environ.get('TF_VAR_neighborhood', 'Laurelhurst'))
 resource_prefix = f'{project_name}-{neighborhood}'
 
 USER_GROUP_NAME = "ssec-eng"
-ACCOUNT_ID = "871683513797"
 
 iam = boto3.client('iam')
 

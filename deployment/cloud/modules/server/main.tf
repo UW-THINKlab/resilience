@@ -3,6 +3,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.61"
+      configuration_aliases = [ aws.east ]
     }
   }
 }
@@ -32,6 +33,16 @@ module "vpc" {
     enable_dns_hostnames = true
     enable_dhcp_options  = true
 }
+
+data "aws_kms_alias" "us_west_2" {
+  name = "alias/${var.resource_prefix}-kms-key-us-west-2"
+}
+
+data "aws_kms_alias" "us_east_1" {
+  provider = aws.east
+  name = "alias/${var.resource_prefix}-kms-key-us-east-1"
+}
+
 
 // instance role
 
@@ -71,6 +82,23 @@ resource "aws_iam_role" "instance" {
               "aws:ResourceTag/Project" = data.aws_default_tags.this.tags.Project
             }
           }
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "ec2:DescribeAddresses"
+          ],
+          Resource = "*"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "kms:Decrypt"
+          ],
+          Resource = [
+            data.aws_kms_alias.us_west_2.target_key_arn,
+            data.aws_kms_alias.us_east_1.target_key_arn
+          ]
         }
       ]
     })
@@ -89,14 +117,6 @@ resource "aws_iam_instance_profile" "this" {
 resource "aws_security_group" "this" {
   name = "${var.resource_prefix}-security-group"
   vpc_id = module.vpc.vpc_id
-
-# TODO: restrict to UW IPs https://github.com/uw-ssec/post-disaster-comms/issues/64
-#   ingress {
-#     from_port = 22
-#     to_port = 22
-#     protocol = "tcp"
-#     cidr_blocks = []
-#   }
 
   ingress {
     from_port = 443
@@ -121,6 +141,12 @@ resource "aws_security_group" "this" {
 
 // launch template -- userdata tbd for now
 
+resource "aws_eip" "this" {
+  domain = "vpc"
+}
+
+
+
 resource "aws_launch_template" "this" {
   name = "${var.resource_prefix}-template"
   // https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/#finding-images-with-ssm
@@ -131,12 +157,23 @@ resource "aws_launch_template" "this" {
     name = aws_iam_instance_profile.this.name
   }
 
+  block_device_mappings {
+    device_name = "/dev/sda1"
+
+    ebs {
+      volume_size = var.volume_size
+    }
+  }
+
   network_interfaces {
     associate_public_ip_address = true
     security_groups = [aws_security_group.this.id]
   }
 
-  user_data = ""
+  user_data = base64encode(templatefile("${path.module}/userdata", {
+    allocationid = aws_eip.this.allocation_id,
+    region = data.aws_region.this.name
+  }))
 
   update_default_version = true
 }

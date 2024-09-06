@@ -135,6 +135,19 @@ export GPG_TTY=$(tty)
 
 The following commands will allow you to do what you gotta do to update and deploy the infrastructure
 
+#### Initialize the infrastructure on your machine
+
+From the `tofu init` docs
+
+> This is the first command that should be run for any new or existing
+  OpenTofu configuration per machine. This sets up all the local data
+  necessary to run OpenTofu that is typically not committed to version
+  control.
+
+```
+pixi run cloud-init
+```
+
 #### Preview the changes to your infrastructure
 
 ```

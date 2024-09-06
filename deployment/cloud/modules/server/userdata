@@ -1,0 +1,92 @@
+#cloud-config
+repo_update: true
+repo_upgrade: all
+
+groups:
+  - docker
+users:
+  - default
+  # the docker service account
+  - name: docker-service
+    groups: docker
+
+packages:
+  - git
+  - curl
+  - wget
+  - python-pip
+  - postgresql-client
+  - awscli
+  - ca-certificates
+  - gnupg-agent
+  - software-properties-common
+  - apt-transport-https
+  - cargo
+  - libpq-dev
+  - jq
+
+runcmd:
+  # docker installation borrowed from https://gist.github.com/vtrifonov-esfiddle/068dd818b5f929709b688c805c507e65
+ # install docker following the guide: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+  - echo "Installing Docker"
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get -y update
+  - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+  - sudo systemctl enable docker
+  # install docker-compose following the guide: https://docs.docker.com/compose/install/
+  - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
+
+  # install pixi
+  - echo "Installing Pixi"
+  - export PIXI_HOME=/opt/pixi
+  - curl -fsSL https://pixi.sh/install.sh | bash
+  - export PATH=$PIXI_HOME/bin:$PATH
+  - ln -s $PIXI_HOME/bin/pixi /usr/local/bin/pixi
+
+  # clone repo
+  - echo "Cloning the repository"
+  - cd /opt
+  - git clone https://github.com/uw-ssec/post-disaster-comms.git
+  - cd post-disaster-comms
+
+  # install backend tools
+  - echo "Setting up backend infra"
+  - export PATH=/usr/lib/postgresql/14/bin/:$PATH
+  - pixi run -e backend install-tools
+
+  # install backend infra
+  - echo "Setting up backend infra"
+  - pixi run -e backend setup-infra-cloud
+
+  # TODO REMOVE THIS once we have a better way to populate sample entries
+  - echo "Port forwarding supabase db to 5432 as a background process"
+  - pixi run -e backend kubectl port-forward service/supabase-supabase-db 5432:5432 &
+
+  # associate elastic IP
+  - echo "Associating Elastic IP with the instance"
+  - |
+    aws ec2 associate-address \
+        --instance-id $(curl http://169.254.169.254/latest/meta-data/instance-id) \
+        --allocation-id ${allocationid} \
+        --region ${region}
+
+  # set up pdccluster in /etc/hosts
+  - echo "Setting up pdccluster in /etc/hosts"
+  - export EIP=$(aws ec2 describe-addresses --allocation-id ${allocationid} --region us-west-2 | jq -r '.Addresses[0].PublicIp')
+  - echo "$EIP pdccluster" >> /etc/hosts
+
+  - sleep 5
+
+  # populate sample entries
+  # TODO: put these in a pod so we don't need to run these steps
+  - echo "Populating sample entries"
+  - pixi run populate-sample-entries-cloud
+
+  # cleanup decrypted secrets so the cleartext file won't be available on the host
+  - echo "Cleaning up decrypted secrets"
+  - pixi run -e backend cleanup-decrypted-supabase-cloud-values
+
+  # Done! :)
+  - echo "Done!"
