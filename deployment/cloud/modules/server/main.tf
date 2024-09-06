@@ -125,7 +125,7 @@ resource "aws_launch_template" "this" {
   name = "${var.resource_prefix}-template"
   // https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/#finding-images-with-ssm
   image_id = "resolve:ssm:/aws/service/canonical/ubuntu/server/jammy/stable/current/amd64/hvm/ebs-gp2/ami-id"
-  instance_type = "r5.large"
+  instance_type = var.instance_type
   key_name = ""
   iam_instance_profile {
     name = aws_iam_instance_profile.this.name

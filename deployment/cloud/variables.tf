@@ -13,3 +13,9 @@ variable "additional_tags" {
     type        = map(string)
     default = {}
 }
+
+variable "instance_type" {
+    description = "The instance type to use for the server"
+    type        = string
+    default     = "r5.large"
+}

@@ -40,6 +40,7 @@ module "server" {
   source = "./modules/server"
   
   resource_prefix = local.resource_prefix
+  instance_type = var.instance_type
 }
 
 resource "aws_resourcegroups_group" "this" {
