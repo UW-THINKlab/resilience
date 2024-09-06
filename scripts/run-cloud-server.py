@@ -4,8 +4,11 @@ import argparse
 
 sts = boto3.client('sts')
 
-project_name = os.environ.get('TF_VAR_project_name', 'Support Sphere').lower().strip().replace(" ", "")
-neighborhood = os.environ.get('TF_VAR_neighborhood', 'Laurelhurst').lower().strip().replace(" ", "")
+def sanitize(input):
+    return input.lower().strip().replace(" ", "")
+
+project_name = sanitize(os.environ.get('TF_VAR_project_name', 'Support Sphere'))
+neighborhood = sanitize(os.environ.get('TF_VAR_neighborhood', 'Laurelhurst'))
 
 resource_prefix = f'{project_name}-{neighborhood}'
 
