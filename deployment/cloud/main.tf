@@ -41,6 +41,7 @@ module "server" {
   
   resource_prefix = local.resource_prefix
   instance_type = var.instance_type
+  stage = var.stage
 }
 
 resource "aws_resourcegroups_group" "this" {
