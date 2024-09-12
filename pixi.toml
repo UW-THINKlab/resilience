@@ -31,7 +31,8 @@ cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_
 # ==== Backend environment ====
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
-setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase", "port-forward-supabase-db"] }
+setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
+open-db-port = { depends-on = ["port-forward-supabase-db"] }
 
 [feature.backend.dependencies]
 curl = ">=8.8.0,<8.9"
