@@ -71,7 +71,7 @@ def populate_cluster_and_household_details():
     BaseRepository.add(household)
 
 
-def get_supabase_client(cloud: bool | False) -> Client:
+def get_supabase_client(cloud: bool | None = False) -> Client:
 
     # Setting up the supabase client for python
     file_path = Path("./deployment/values.dev.yaml") if not cloud else Path("./deployment/values.cloud.yaml")

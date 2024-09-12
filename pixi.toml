@@ -21,12 +21,16 @@ support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 [feature.db.tasks]
 populate-sample-entries = { depends-on = ["configure-role-based-access", "populate-user-details"]}
+populate-sample-entries-cloud = { depends-on = ["configure-role-based-access", "populate-user-details-cloud"]}
 
 [feature.db.tasks.configure-role-based-access]
 cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/role_based_access_control.py"
 
 [feature.db.tasks.populate-user-details]
 cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py"
+
+[feature.db.tasks.populate-user-details-cloud]
+cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py --cloud"
 
 # ==== Backend environment ====
 [feature.backend.tasks]
