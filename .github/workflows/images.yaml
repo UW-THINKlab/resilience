@@ -21,40 +21,40 @@ jobs:
         include:
           - name: "db"
             repository: supabase/postgres
-            tag: "latest"
+            tag: "15.1.0.147"
           - name: "studio"
             repository: supabase/studio
-            tag: "latest"
+            tag: "20240326-5e5586d"
           - name: "auth"
             repository: supabase/gotrue
-            tag: "latest"
+            tag: "v2.143.0"
           - name: "rest"
             repository: postgrest/postgrest
-            tag: "latest"
+            tag: "v12.0.1"
           - name: "realtime"
             repository: supabase/realtime
-            tag: "latest"
+            tag: "v2.27.5"
           - name: "meta"
             repository: supabase/postgres-meta
-            tag: "latest"
+            tag: "v0.80.0"
           - name: "storage"
             repository: supabase/storage-api
-            tag: "latest"
+            tag: "v0.46.4"
           - name: "imgproxy"
             repository: darthsim/imgproxy
-            tag: "latest"
+            tag: "v3.8.0"
           - name: "kong"
             repository: kong
-            tag: "latest"
+            tag: "2.8.1"
           - name: "analytics"
             repository: supabase/logflare
-            tag: "latest"
+            tag: "1.4.0"
           - name: "vector"
             repository: timberio/vector
-            tag: "latest"
+            tag: "0.34.0-alpine"
           - name: "functions"
             repository: supabase/edge-runtime
-            tag: "latest"
+            tag: "v1.41.2"
           - name: "minio"
             repository: minio/minio
             tag: "latest"
