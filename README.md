@@ -149,6 +149,14 @@ The server will stop daily at 01:00 UTC (6PM PDT/5PM PST), but if you wanna be a
 pixi run cloud-server-stop
 ```
 
+### Access the development server when it's running
+
+This command uses [AWS's Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html) to access the development server without needing to distribute ssh keys. Assuming you have access to the IAM roles needed for everything else related to the cloud here, this command should just work!
+
+```
+pixi run cloud-server-access
+```
+
 
 ## Contributing
 

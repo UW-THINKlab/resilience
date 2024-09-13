@@ -43,5 +43,5 @@ echo "Starting session with instance $instance_id"
 
 aws ssm start-session \
 --document-name AWS-StartInteractiveCommand \
---parameters command="cd /opt/post-disaster-comms && bash -l" \
+--parameters command="cd ~ && bash -l" \
 --target $instance_id

@@ -152,6 +152,8 @@ depends-on = ["install-flutter"]
 python = ">=3.10"
 opentofu = ">=1.8.1"
 boto3 = ">=1.35"
+awscli = ">=2.4.0"
+aws-session-manager-plugin = ">=1.2.0"
 
 # OpenTofu tasks
 [feature.cloud.tasks.cloud-deploy]
