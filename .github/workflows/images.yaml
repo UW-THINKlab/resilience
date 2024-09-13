@@ -1,0 +1,100 @@
+name: Supabase Images
+
+on:
+  workflow_dispatch:
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_ORG: ${{ github.repository_owner }}
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_REF: ${{ github.ref }}
+
+jobs:
+  copy-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "db"
+            repository: supabase/postgres
+            tag: "latest"
+          - name: "studio"
+            repository: supabase/studio
+            tag: "latest"
+          - name: "auth"
+            repository: supabase/gotrue
+            tag: "latest"
+          - name: "rest"
+            repository: postgrest/postgrest
+            tag: "latest"
+          - name: "realtime"
+            repository: supabase/realtime
+            tag: "latest"
+          - name: "meta"
+            repository: supabase/postgres-meta
+            tag: "latest"
+          - name: "storage"
+            repository: supabase/storage-api
+            tag: "latest"
+          - name: "imgproxy"
+            repository: darthsim/imgproxy
+            tag: "latest"
+          - name: "kong"
+            repository: kong
+            tag: "latest"
+          - name: "analytics"
+            repository: supabase/logflare
+            tag: "latest"
+          - name: "vector"
+            repository: timberio/vector
+            tag: "latest"
+          - name: "functions"
+            repository: supabase/edge-runtime
+            tag: "latest"
+          - name: "minio"
+            repository: minio/minio
+            tag: "latest"
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Get date tag
+        id: get_date
+        run: |
+          DATE_TAG="$( date -u '+%Y.%m.%d' )"
+          echo "date_tag=$DATE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Get registry and org
+        id: registry_org
+        run: |
+          ORG=$(echo "${{ env.DOCKER_ORG }}" | tr '[:upper:]' '[:lower:]')
+          echo "image_base=${{ env.DOCKER_REGISTRY }}/${ORG}" >> $GITHUB_OUTPUT
+
+      # https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
+      - name: Free up disk space
+        run: |
+          df -h
+          docker image ls
+          sudo apt clean
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+          df -h
+
+      - name: Log in to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image to GHCR
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ steps.registry_org.outputs.image_base }}/supabase-${{ matrix.name }}:${{ steps.get_date.outputs.date_tag }} \
+            ${{ matrix.repository }}:${{ matrix.tag }}
