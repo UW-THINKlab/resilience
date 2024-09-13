@@ -220,3 +220,45 @@ resource "aws_iam_role" "scaling" {
         })
     }
 }
+
+resource "aws_iam_role" "access" {
+    name = "${var.resource_prefix}-server-access-role"
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+            {
+                Effect = "Allow",
+                Principal = {
+                    AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:root"
+                },
+                Action = "sts:AssumeRole"
+            }
+        ]
+    })
+
+    inline_policy {
+        name = "${var.resource_prefix}_server_access_policy"
+        policy = jsonencode({
+            Version = "2012-10-17",
+            Statement = [
+                {
+                    Effect = "Allow",
+                    Action = [
+                        "ssm:StartSession"
+                    ],
+                    Resource = [
+                      "arn:aws:ssm:${data.aws_region.this.name}::document/AWS-StartInteractiveCommand",
+                      "arn:aws:ec2:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:instance/*"
+                    ]
+                },
+                {
+                    Effect = "Allow",
+                    Action = [
+                        "ec2:DescribeInstances"
+                    ],
+                    Resource = "*"
+                }
+            ]
+        })
+    }
+}
