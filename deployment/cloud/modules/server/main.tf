@@ -169,9 +169,10 @@ resource "aws_autoscaling_group" "this" {
 }
 
 // Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
-// Replaces an overcomplicated lambda function/eventbridge rule setup
-
 resource "aws_autoscaling_schedule" "scale_down" {
+  # only create this resource in non-prod environments
+  count = var.stage != "prod" ? 1 : 0
+
   scheduled_action_name = "${var.resource_prefix}-asg-shutdown-after-working-hours"
   min_size = 0
   desired_capacity = 0

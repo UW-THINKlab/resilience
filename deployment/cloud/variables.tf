@@ -8,6 +8,16 @@ variable "neighborhood" {
     type        = string
 }
 
+variable "stage" {
+    description = "Which stage this infrastructure's being deployed to - dev, beta, prod, etc."
+    type        = string
+
+    validation {
+        condition = can(regex("^(dev|beta|prod)$", var.stage))
+        error_message = "Stage must be one of dev, beta, or prod"
+    }
+}
+
 variable "additional_tags" {
     description = "Additional tags to apply to resources"
     type        = map(string)
