@@ -111,6 +111,26 @@ For now, contact Niki for least-privileged IAM user credentials. These will be u
 
 This user will assume the necessary roles to get things going
 
+### Editing deployment/values.cloud.yaml
+
+(Optional) To open the file with VSCode, run the following first
+
+```
+export EDITOR="code --wait"
+```
+
+Then run the following. Save and close the file when you're done editing for all of your new values to be re-encrypted.
+
+```
+pixi run edit-cloud-values
+```
+
+If you run into an issue like `gpg: decryption failed: Inappropriate ioctl for device`, run the following command and retry
+
+```
+export GPG_TTY=$(tty)
+```
+
 ### Deploying infrastructure changes
 
 The following commands will allow you to do what you gotta do to update and deploy the infrastructure

@@ -11,6 +11,9 @@ frontend = ["frontend"]
 backend = ["backend", "db"]
 deployment = ["cloud"]
 
+[dependencies]
+go-sops = ">=3.9.0"
+
 # ==== Backend Database environment ====
 [feature.db.dependencies]
 python = ">=3.10"
@@ -201,3 +204,6 @@ cmd = "python scripts/run-cloud-server.py --scale-down"
 
 [feature.cloud.tasks.cloud-server-access]
 cmd = "scripts/access-cloud-server.sh"
+
+[feature.cloud.tasks.edit-cloud-values]
+cmd = "sops edit deployment/values.cloud.yaml"

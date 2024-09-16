@@ -1,0 +1,4 @@
+# configuration file for SOPS/encryption
+creation_rules:
+  - path_regex: values\.cloud\.yaml$
+    pgp: 'AD28C8D8C60268C5F329509B31FEC69867EB2B81'

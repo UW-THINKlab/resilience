@@ -1,198 +1,208 @@
 secret:
-  jwt:
-    anonKey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE
-    serviceKey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJzZXJ2aWNlX3JvbGUiLAogICAgImlzcyI6ICJzdXBhYmFzZS1kZW1vIiwKICAgICJpYXQiOiAxNjQxNzY5MjAwLAogICAgImV4cCI6IDE3OTk1MzU2MDAKfQ.DaYlNEoUrrEn2Ig7tqibS-PHK5vgusbcbo7X36XVt4Q
-    secret: your-super-secret-jwt-token-with-at-least-32-characters-long
-  smtp:
-    username: your-mail@example.com
-    password: example123456
-  dashboard:
-    username: supabase
-    password: this_password_is_insecure_and_should_be_updated
-  db:
-    username: postgres
-    password: example123456
-    database: postgres
-  analytics:
-    apiKey: your-super-secret-and-long-logflare-key
-
+    jwt:
+        anonKey: ENC[AES256_GCM,data:ONVOL14HBvdu1F69ISXQgiGPf9g91p+Oe6v3/Ul0dKqlESQ7Zo+kj8R9VRgCBY42cqrd+Q0sdaD8t/qEz+RJ8jWzs7+rbi+OFAqd1wW2etHK6FXpuqxlmGqNIfa6QlN71FYONfq29wdMKB8jbf4dUIEUUguZC21Wdr57+LOsjDv9vlWoOU2mpdck5ZqKcHw9GCZRigDJLW3mNUw67Ea2WJg2cNuIKQ5peDlLzykgXy4FGTj8WcLcySMJ7sPTyyfhbL4pj0FM1Tm218fkn7r/2lW+UxI=,iv:DL/MwQPPsJf9ctq4kiitY/i+Yqu8/olXPmGAvSW8g3A=,tag:zgi0MZjnHCy8NjmA8XypeA==,type:str]
+        serviceKey: ENC[AES256_GCM,data:253TeVISJno/ZqBW+Z94CcTmKuQQe6BaviAgySAsc7tW+3Fy8T+Dsd0Z8fQtgisqzRrI4tGgZEeQWcewxCZ/JOaQ67yxqMzRhzTgCpWEzHgB3t9mvp488TfQ8P67zZMHV8YWLLW8QuR8U5pslgEPQGbr48A87sQwLUwZwc4heV2Rl6dboMo6UjU2n0ZHY4J5EuebxIj6/RaIooSiyCq7LmwTa2N1gg2i2zqyH/zM3oZSx9JXUNQmmvhdew2TT89M4QLDUboT0FGOglhQZYxH4A6FYFku92D6KoruMwBlJA==,iv:iJlVfNJh0vUGuDkq4vYYbkL/YpqV5zpd6qDlKjctYXc=,tag:M6I9fvBr5jv1/BLc8HKNHA==,type:str]
+        secret: ENC[AES256_GCM,data:ZB5gkMhbrm0GPw9wKy15//wwKoBLy4+f7lQVT06vol5yyGxQP6MGrGBeINThhVooqSHR2UI6PDqxRoH7,iv:sLBhb7UXja62AzPYKu1C3YpTAl2mH5hgfooZTE0Boq0=,tag:lQ209daW5WQm2/3ti9ilcg==,type:str]
+    smtp:
+        username: ENC[AES256_GCM,data:xQkxcgTxdrwOKIrDW/v74oo/iLuf,iv:GSDqiq7ZIPOwweeqi4QwvcfwdwMYLzSstYG/N2GHjG4=,tag:M1s79s40ct8FRxtZVlg36Q==,type:str]
+        password: ENC[AES256_GCM,data:aYj2KPf1z7P+6nmGT6o=,iv:Ll1OOP3QLx3H16NFEp1d4r7e27BFnRNwfZmeWuUOqjE=,tag:HZoH69Bie7L+wOG13PYljg==,type:str]
+    dashboard:
+        username: ENC[AES256_GCM,data:UNDdJTmXXCE=,iv:tnecnOVF77oJZmJUv2LSMeI1BrHSuhUbfzVAIqgW3R0=,tag:UcVPv9W6/F1G1U5209+a5Q==,type:str]
+        password: ENC[AES256_GCM,data:ob9yW1cJEZyGDwx64XvST4x1GfKar3Y28AjBW1B2Bido/az5H6vut/wcCJcdmmo=,iv:YMSqqZVZSdmQhxN6kzU9ihAxcTpkQZw7/NItMEoorv4=,tag:McNHhJIwCqRLlSSlYK+soA==,type:str]
+    db:
+        username: ENC[AES256_GCM,data:DcP/fovnbRU=,iv:S46JHcBIl4OVYtOMiY4VHkb8Zqku5NyqB5wYr+MYYRQ=,tag:aE16lUdd0qBgTPpkAe4zcw==,type:str]
+        password: ENC[AES256_GCM,data:focFu7KlH4yyLVvkgw==,iv:MRv6Y5Trhn7StIHIyTmT+ilYpmpveXRk79oiJlq583A=,tag:XBohIREtLs0VO/z2nzZ5cw==,type:str]
+        database: ENC[AES256_GCM,data:SJsi/Y+0N7Q=,iv:Pfr0oelwTye7NkRf3lxiEpKVuZMSKnoCdFlwKhCYeNM=,tag:iPuzQuCH5qdQFe8Igei92g==,type:str]
+    analytics:
+        apiKey: ENC[AES256_GCM,data:0GHP1HqBUvw69OPPxtRc7kN0pczCrU+XVmz59/lw3BWy6YB3vB/a,iv:8gur58TOuBcMw/OGXBnMT78oSQMtKX13z246iW0uQTg=,tag:vZVw6N0BDAd6Lsq479AWbQ==,type:str]
 db:
-  imagePullSecrets:
-  - name: regcred
-  enabled: true
-  image:
-    repository: ghcr.io/uw-ssec/supabase-db
-    tag: 2024.09.13
-  livenessProbe:
-    exec:
-      command:
-        - pg_isready
-        - -U
-        - postgres
-    initialDelaySeconds: 3
-  persistence:
-    enabled: false
-  config:
-    # Enable the PostGIS extension on deployment
-    postgis.sql: |
-      BEGIN;
-        -- Create postgis extension
-        CREATE EXTENSION IF NOT EXISTS postgis SCHEMA extensions;
-      COMMIT;
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:aP6vYvkcJg==,iv:anp28Q8qULDOYAe5seuWK1kgvH/dPAJS2EbDigknw2w=,tag:Jt3s8vFj45Jtb7maDzKK0g==,type:str]
+    enabled: ENC[AES256_GCM,data:60qyQw==,iv:Qfhs6ov9pe5uxh4W9hJ4EDYRq8+hkQc59NszGD3u0vE=,tag:1X/ibhR5d5XZxz7/m8QTAg==,type:bool]
+    image:
+        repository: ENC[AES256_GCM,data:qfNCn4tw0PFc9wVlftHqs77uNhaCSFRdCHa1,iv:bLYkiqcSDw3O0Y1L3HoAdikKs6bPQgHP0NI/TV82CzI=,tag:477JrWHvwfrm8Hz+/XeKeA==,type:str]
+        tag: ENC[AES256_GCM,data:IBwkjyT3v5MDIw==,iv:jk9gLo9tj6mOZj0bfTapGCiohzTIyxQ0dcBHmJDFdq4=,tag:DWgWFepbEGtiERgPdA9roA==,type:str]
+    livenessProbe:
+        exec:
+            command:
+                - ENC[AES256_GCM,data:A+qN5YqP4VFMYg==,iv:PvgMBkKuqHILjqPAD5Xtc87NvMEw+uRivh9qKosoPdg=,tag:+RRluRIdsBWWEFg9KE8xHA==,type:str]
+                - ENC[AES256_GCM,data:6+Y=,iv:n5d6hXiUH20vPSBfzCu/UVFUCstPtRKoKSCC6Kx/koI=,tag:R10sUgT66glZz3671qj9pg==,type:str]
+                - ENC[AES256_GCM,data:obZo8yR9Gjw=,iv:GI7ovnskjmLEKewAk3sbXFlEAM6WOJzF8keXSAG+DCU=,tag:jGHWFJxq/zZocjcTyxEH5g==,type:str]
+        initialDelaySeconds: ENC[AES256_GCM,data:Bg==,iv:TpX0Klr4xzyzQ0TKcthuXKWvTBTvhjiEXFHtvDIU668=,tag:CtIhPBlLHVH3Qr5nEXld2g==,type:int]
+    persistence:
+        enabled: ENC[AES256_GCM,data:8a3c54U=,iv:YrG8BEp4bWAEjaiifOApOMAPA2zo0tSBykBwW3Su71I=,tag:Zc/uJMOR06XXlGFQ5YjXwQ==,type:bool]
+    config:
+        #ENC[AES256_GCM,data:fgOj7qcR8OkLYzUvZyNx28LYtCNyLIEq+oSzeqtAIwi+3yIuHAFMBIeANw==,iv:J3aovR9cdh1hGNHEB8w0oofv+A7NxavEpgXBTIzl/yo=,tag:8ytv+qvr+em58+ZqtqJmhw==,type:comment]
+        postgis.sql: ENC[AES256_GCM,data:Af+xe3ZyrW9pgmkzuhLAe9i3AdM2XI2VINb4vpsQTqoKK9tKbO5iRROWu/rFvpFDxD+VH7Ff8UWGt2NrPAe5PX+6LYSGnJH5DQ61ODKvR2MzN6Z5NXt+B3YElmYFaF5DwQ0uCURT8R9v,iv:0+SQwtf3EGqh7j8FU40sSa47sSuqYJalu4fSBHJ+hsI=,tag:meDymGHJOet9t9BeSqVwMQ==,type:str]
 studio:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-studio
-    tag: 2024.09.13
-  environment:
-    STUDIO_DEFAULT_ORGANIZATION: "My Organization"
-    STUDIO_DEFAULT_PROJECT: "My Project"
-    SUPABASE_PUBLIC_URL: http://pdccluster/
-    NEXT_PUBLIC_ENABLE_LOGS: "true"
-  livenessProbe:
-    httpGet:
-      path: /api/profile
-      port: 3000
-    initialDelaySeconds: 3
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:oF+zBOGv6Q==,iv:D/SZDyr5CPjXrjWKOLTvaanHAvOdFK06YAZfS2245LY=,tag:uUysLYJY9rNwAOHWCn8cPA==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:ULFRO+I8On5GuDuJ8ozJwEOFiSXJHYl6WG38PN2gag==,iv:vt9CC32UBgA4KJhOxAO2eIKMGuCeOpS0+K1LyBWnPGg=,tag:kufD8yqAmj7zD00CoSdjrQ==,type:str]
+        tag: ENC[AES256_GCM,data:+rzYROk8qRzdjA==,iv:xz5C+/aLwkY//PSg7IauZB6rvYIS+238KgnPhZNB08Y=,tag:A01Ur08Rga+qMJQm9iDU+g==,type:str]
+    environment:
+        STUDIO_DEFAULT_ORGANIZATION: ENC[AES256_GCM,data:O/ZuXlYgOgY9i9LhYZnh,iv:RGe29W3pPo0rpWiakg487FmGNl80jtkzxF0dbJ04Zl4=,tag:Hm2qH3xkz9KZe9WZBB14aQ==,type:str]
+        STUDIO_DEFAULT_PROJECT: ENC[AES256_GCM,data:ZJ7frkXk5RM4lw==,iv:lfVu1N+sjRw/qBnD3TB1s3lg8xqvR0pFOZhhuxMBAf0=,tag:enBg9L+cMrMpBKq7qZ6WVw==,type:str]
+        SUPABASE_PUBLIC_URL: ENC[AES256_GCM,data:/Ldxn3T3yazra8c/VHAj1pUh,iv:R6fqDdqO/b8Q2mC0kg/hAtznXzw1mNjBE6zQlWnvHy8=,tag:fBvKsAWNWdmlOni5iGs2rQ==,type:str]
+        NEXT_PUBLIC_ENABLE_LOGS: ENC[AES256_GCM,data:xBHKew==,iv:4TENoAxNOHPIJPv8EQyHWECIVps82d7HBKcuDYFo1t0=,tag:gQTHN3nb7yXAc0TAEVNOCQ==,type:str]
+    livenessProbe:
+        httpGet:
+            path: ENC[AES256_GCM,data:90yHeyzZVZ4sy1AF,iv:FljJ1nXR7dMqHfC5nqm+h1oPPEkrY4vxZG7WK+WwGWU=,tag:fkjrT4+3b7NyAw+PcKQMqw==,type:str]
+            port: ENC[AES256_GCM,data:zHUOyw==,iv:VP4E4yzQ6RgFyXWJr092jW2kSvhGRCYOUlaj+ETt9DQ=,tag:cHt2u2iARD3jpFn1kgJqcA==,type:int]
+        initialDelaySeconds: ENC[AES256_GCM,data:xw==,iv:GeXPJ1rj7QOxNo6aZ/gmxZdiz96HtWU9kwGRoz6+xZ8=,tag:HptrQEc/Niz+1utlZrQ1lg==,type:int]
 auth:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-auth
-    tag: 2024.09.13
-  environment:
-    API_EXTERNAL_URL: http://pdccluster
-    GOTRUE_SITE_URL: http://pdccluster
-    GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
-    GOTRUE_MAILER_AUTOCONFIRM: "true"
-    GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@example.com"
-    GOTRUE_SMTP_HOST: "smtp.example.com"
-    GOTRUE_SMTP_PORT: "587"
-    GOTRUE_SMTP_SENDER_NAME: "your-mail@example.com"
-    GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
-    GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/public/custom_access_token"
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:sYzc3gtXuw==,iv:Z4t5DO59uHgL0UnAy6pOVptU7HCViBYNyKKIBQf549E=,tag:DGOGZ0J9vUUNMH0sL6JCMw==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:jzUvf7UW7fK0ffq7Fh9YHxLpcdGHZ5cIwZiJmz0=,iv:AldbOWGYaVAANMg4n0yWZod3DKN9p8xPRV8ZeG09STU=,tag:enIw+PrUJ/XRdRKsk1fhxA==,type:str]
+        tag: ENC[AES256_GCM,data:WFLW+I10wBH+Hw==,iv:Xm/2o2sr9X4SytuJLp51LWyUA6u1ErK31L3Wr0WEW4w=,tag:E7bhbsL7EaJbiSCcBzXMqA==,type:str]
+    environment:
+        API_EXTERNAL_URL: ENC[AES256_GCM,data:X/jmk7xLsO3vOwKCWYCeB9E=,iv:AE3/ibZrEIXIosams3XyHJyGSqArbJs5+l4x63n+ocI=,tag:rce9jdBV2GrTHAJQWIkdhw==,type:str]
+        GOTRUE_SITE_URL: ENC[AES256_GCM,data:jg+tHOoIcHDtwBHo8aIcPoo=,iv:8TtAXa5yGuaPPMmsuvj7mRmlircs+hgKDAYcIXJUtPc=,tag:KeCUWgHmI+K8rMVNThdFzw==,type:str]
+        GOTRUE_EXTERNAL_EMAIL_ENABLED: ENC[AES256_GCM,data:UMELxA==,iv:7+0tfLStzR/ECuncPnqM1O5vvzL5S0cbdmgMRiNYfZ4=,tag:yFUt49u60XqZLa6jAQf1xA==,type:str]
+        GOTRUE_MAILER_AUTOCONFIRM: ENC[AES256_GCM,data:5ll6rg==,iv:v61g+WCAnRCHl7Cq5f0dlUQig1KSY67mzMQbTm/Uk0w=,tag:tMBlaaOvevIvKHus5CYN1A==,type:str]
+        GOTRUE_SMTP_ADMIN_EMAIL: ENC[AES256_GCM,data:VgnfY+WoFLhYGTt4daj2tkHkvVmN,iv:8kUc5zSiFm79JDZZ1WWapty0Y8jwabkjbL3Ik6Y0Y6g=,tag:6dLiYnJJ6UlZxSMbyv/NRA==,type:str]
+        GOTRUE_SMTP_HOST: ENC[AES256_GCM,data:tZeOFSQ1aKWlM+59Sdqz+w==,iv:BwMdKomdmjQ8hZI1M9zNnbXRmGr0uDlFiocXPac5lLM=,tag:+TP4fEvpIpwUdgQCgcCY0g==,type:str]
+        GOTRUE_SMTP_PORT: ENC[AES256_GCM,data:0TmL,iv:wVr2o1sObclBcesHc/nOGKe1KQscWNPpuD+uFdhfaHA=,tag:JvCvLDn+jMw6J7jF7sUGug==,type:str]
+        GOTRUE_SMTP_SENDER_NAME: ENC[AES256_GCM,data:xUwSm0HYLvhmfUd187SXc5OtQqL3,iv:OYrfZQUOpBiEiCTy6hMszOkHKgu9lxo6iYXeNSauljE=,tag:gX6VCJQ+I8Z/MONLiH3JCA==,type:str]
+        GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: ENC[AES256_GCM,data:swFYVQ==,iv:WrqQU3nOh9kUF5xmRLWmN+LKmN6PFV9n3JMlVgeVAqU=,tag:2p3Evy2TV2EuIt1Lc30XQw==,type:str]
+        GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: ENC[AES256_GCM,data:5pY8luHQhq+9/o0nUdRC+hS2G231ntkDxr74hUcrWRURopUCjtkkXdsb1aO5yB3ouUM=,iv:GdkMfN3zktp2wIj3YM6DX6qsAGdj4DYlvft9n6gJYY8=,tag:5GU1ZNjAg+IZsD5YHXR1Zg==,type:str]
 rest:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-rest
-    tag: 2024.09.13
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:0giq+sz6Zg==,iv:QMZqVKJax+nAeERgXafyIzcZTlvCkWVu0PO0NdK3ZKE=,tag:79bFimRNt021hbxfKrWr+A==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:tG3uM2v9HLY2NBLt7fyZ04445uFbSbIV5VGRw0I=,iv:JDaFY+4/qPTvSN4iJrNmBxMFEsx13Xhw90OnAnTo128=,tag:04/LWvfPKq1Qg+AYaRej+w==,type:str]
+        tag: ENC[AES256_GCM,data:q+ggUBzFHbJ1jQ==,iv:61O8ebMcMAxpseRSjs6SPTkUAVfsUnaarjXsEJZTFMc=,tag:b02fvOjSu1Kp91UyhGOYdw==,type:str]
 realtime:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-realtime
-    tag: 2024.09.13
-  livenessProbe:
-    httpGet:
-      path: /
-      port: 4000
-    initialDelaySeconds: 3
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:DbOqrQ56vw==,iv:uY3R3sVLGh2PR39WpbBnLjW5mryEBNZg0XI4blNKTgo=,tag:7qsmc8a6C2ZSan1jlPZbfA==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:77i5lEkfxT8hA/mNHZ8VnlIyboT3v/RWN9OEtkzG2Avk,iv:O+MW97JzQ0tud5meIPuQgeN53aCemkq9bXUsdNWZu8w=,tag:FDs0YiVIFjSsY+cvZ/Ng5w==,type:str]
+        tag: ENC[AES256_GCM,data:wtHlC7cLdRXDuA==,iv:ar48paAU4qktJzdEaWrQJujVKCKYU+a3rHMoYFyr6H8=,tag:qGN71PjjmkskH4My8q3Z6g==,type:str]
+    livenessProbe:
+        httpGet:
+            path: ENC[AES256_GCM,data:Ag==,iv:g+l8bWSeSlQScGH1tIjfQamLJKtO0udaVADv4kBAXjs=,tag:WOnJxbML92U4n274ZAAfWA==,type:str]
+            port: ENC[AES256_GCM,data:w+JieA==,iv:7+2FyfjfLNxZz2XkoHyMqXgGRtUHLljSZGEKDtBiWOs=,tag:OX21YENhnfH+YSX1pN+Nkg==,type:int]
+        initialDelaySeconds: ENC[AES256_GCM,data:nw==,iv:NIC7AkTHxvYysDwtZfkgWqfiX8x2Xe08iWxSVH5DMWc=,tag:a019u5bb2NEm4qn+8GNRdg==,type:int]
 meta:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-meta
-    tag: 2024.09.13
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:dCkiQXvLSQ==,iv:3WPqpe7ihziEMXFJCiUIhPZaV+7txoVe5EaGE4yRQSI=,tag:C59B3LXszKOk86+h71q0CA==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:ur2mSv2oXjYqJN99oxIFhIhJ5LfMc6ScMsEOWGQ=,iv:uQzENsuHdVX2SzPAXFXhQPufz5Voe3U6gXTPNv9zG8s=,tag:ziTxFJ71lacL67HEtAFK2Q==,type:str]
+        tag: ENC[AES256_GCM,data:cRMj4DqC2bB18Q==,iv:nLr/twL3dv3Du5O/PTThMXmePHCeXfdCdLBpiJF/KQE=,tag:7b6S5pjKid8AbqDn9JRu/A==,type:str]
 storage:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-storage
-    tag: 2024.09.13
-  livenessProbe:
-    httpGet:
-      path: /status
-      port: 5000
-    initialDelaySeconds: 3
-  persistence:
-    enabled: false
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:JkEGH+5vDA==,iv:o6LYJBExg41q8HcryJ1zFMLkY8ir5DCK61uqVUEtxG0=,tag:VMKL4kxzsr5fSUwjrB4xpA==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:0lTUuU2MrktVYKjf82CTh7yzUBXp6CmtUQXrwXWq0AI=,iv:XRg36ls3WaN6T12IY4xiPTIxJJg7j1PDHb7hciOvC90=,tag:az1C7Ee85WHULk0st4vXNQ==,type:str]
+        tag: ENC[AES256_GCM,data:sPt1Dqqwk9kO7w==,iv:U6hlp9Jr1yCh5qE19nfd1hUt8WF0ptff0oh3rFgZvH8=,tag:jg9vc53CF3cUv85wcFTe2A==,type:str]
+    livenessProbe:
+        httpGet:
+            path: ENC[AES256_GCM,data:u8wtnevb9A==,iv:+ZsDyiBppU8TGpIvlI4O4Bh8QoIGvGhXC+ANvRxdRyc=,tag:B7UWyQooOxVgPSMJ9x9Kgg==,type:str]
+            port: ENC[AES256_GCM,data:l9U1Lw==,iv:83/w5XI7paDA+WfVBlhPijQMAIKhQm0DnRRIUuuKhJA=,tag:0hEqOqnpyGwH/8/DJE7U3Q==,type:int]
+        initialDelaySeconds: ENC[AES256_GCM,data:Kg==,iv:jS+1l1l4L5OvhkT2/SQaWFBUlQhFuml6XGjEEFFsEIc=,tag:ETp2Bpw8IudfdQ8lifZb8g==,type:int]
+    persistence:
+        enabled: ENC[AES256_GCM,data:R2IeRyA=,iv:g6ZdpYuKsXjxQ3i+oVGpgsfvsZ+Fxj0DKHI4uB+Defo=,tag:G/q64tfjWTvSJHT294RjDg==,type:bool]
 imgproxy:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-imgproxy
-    tag: 2024.09.13
-  environment:
-    IMGPROXY_ENABLE_WEBP_DETECTION: "true"
-  livenessProbe:
-    exec:
-      command:
-        - imgproxy
-        - health
-    initialDelaySeconds: 3
-  persistence:
-    enabled: false
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:PJKfBZ53UA==,iv:3jSKh0B6q5c37MiBK6DJ9UNvbCvBCjpFbky7tPBjw8Q=,tag:u9lVNP90lwKeAtbrT7HnLw==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:1bv1KJL18K4F6OHPT4JqFGwiz3YvRsxzNSCkU7NemvYZ,iv:kJJnmXRMjytAMTGOdj5wYfXRJRYH1kVKKkE2CmoS4Ik=,tag:BGgZhJWyCWYWjvFOVmm3UA==,type:str]
+        tag: ENC[AES256_GCM,data:AIchBWR5JNMjiA==,iv:Aa1FDyducfa9Xo1IaaCI5Rn8AbmVRqUiYRk7jcm2BAc=,tag:IN6E8zzhDrK2Ip9UswtSyA==,type:str]
+    environment:
+        IMGPROXY_ENABLE_WEBP_DETECTION: ENC[AES256_GCM,data:aspqoA==,iv:Wo/s3SlQeGIzzcowAj/UjUnRHtZ1wkA4bAAQfkIeSmU=,tag:RfLRKK5fhejRdqqOfuqikg==,type:str]
+    livenessProbe:
+        exec:
+            command:
+                - ENC[AES256_GCM,data:jMVjeE+JDwo=,iv:o3q4M6Fld3WaW1Nn6l+FHP9hdgfa/XB5Fu4LJwIxX7w=,tag:xZuv2PX4RnjzFgfui96mSA==,type:str]
+                - ENC[AES256_GCM,data:WiCkB5cg,iv:8z3Z6eocfeHddZI6D/h9eUZN3t5RpXNO1forIPsoLOc=,tag:Rtfdvqd2diH1zr9aHPIneA==,type:str]
+        initialDelaySeconds: ENC[AES256_GCM,data:SA==,iv:yJDMYC0Mlnsx0xfTYsEUH+536TydXxQ6enN6x00M/Fc=,tag:zBJaWCyMG7mrZdqrMDujtw==,type:int]
+    persistence:
+        enabled: ENC[AES256_GCM,data:6tLB2S0=,iv:GyZC/Zum/oY65OA/Bb206Rkmd1lg75bOK2nqzCWyEDs=,tag:4SwQL92MZcri2oPRQ6drwA==,type:bool]
 kong:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-kong
-    tag: 2024.09.13
-  environment:
-    KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
-    KONG_LOG_LEVEL: info
-  ingress:
-    enabled: true
-    className: "traefik"
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    tls: []
-      # - secretName: example-ingress-tls
-      #   hosts:
-      #     - example.com
-    hosts:
-      - host: pdccluster
-        paths:
-          - path: /
-            pathType: Prefix
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:nboaQPo/XA==,iv:R8otXSHHT33Mmx0pinwaZOTgodjrepH5frlj50TX5MQ=,tag:G3TCgsWhrEG1nujPxuRrhQ==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:6WHBgee1xZ1czK22rYqELawjjWifcOpu55TjO7I=,iv:bzkx5+rZ17BapJWLY1HOieWIvrDfJ+KWgcpgJTWqxno=,tag:AGAu/bLn6+ZDL2qkkm8Brw==,type:str]
+        tag: ENC[AES256_GCM,data:s+64OO1JmzeApA==,iv:kGroTD1X73KEBkFcx+wCd46AfsOLBB01wHQPbLlEvog=,tag:R6hDIUsE2Ic7JPBShsHZcw==,type:str]
+    environment:
+        KONG_DECLARATIVE_CONFIG: ENC[AES256_GCM,data:WlVUCHgxAxnYW4X2ghRZuFngE/GLF0aS,iv:DoFhlQuh3wjqGR3k4hbxBxbEVrzWmNfMINXLFxXlHFk=,tag:5UQZZKsIsAKb17HLChg6tw==,type:str]
+        KONG_LOG_LEVEL: ENC[AES256_GCM,data:Y6GEug==,iv:Btv5YXZmbIQiciNIq41eU/rts+Gl5O5eMjB/bxaKd+0=,tag:7CP9u50oHMj0m3lQKl63/w==,type:str]
+    ingress:
+        enabled: ENC[AES256_GCM,data:WXt/5w==,iv:A+PatqnQZ+OYM2Fd1DtL6p5lVErhQUq0i9J97/xhSKU=,tag:+d1poNVUyrxnKKY9ARslLw==,type:bool]
+        className: ENC[AES256_GCM,data:yMLBOjOtdQ==,iv:pYe7Vt4aHy/tDaTLCAZPvh9im9TiwGZv6a9CQ+zmprg=,tag:MjzGy9AJZxZgKxNtsc2iiA==,type:str]
+        annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: ENC[AES256_GCM,data:Yw==,iv:B0ouXyt1jDz4JWGpWyCaB+YkmIzyp00TCDdWC1VZNhI=,tag:ZrBBxH+58YBXiopgWvL7gw==,type:str]
+        tls: []
+        #ENC[AES256_GCM,data:7m1WTX7NTEqekq7hSR+E+rnpYreo/V7C7sGvr19bKpm/iw==,iv:/asCDJljDr1iaFRpD2PlZekaII2FF/6iTuwRpvB47nc=,tag:gR3MK06kdRflpaBVRGfYDg==,type:comment]
+        #ENC[AES256_GCM,data:rfH72oc1EUXg,iv:zHSmN3gsb7NtbeIMWoLM2WBjs3Htyjql1GcN4j0qkZI=,tag:/gtMX5j9ecrzJS+rtlPxKw==,type:comment]
+        #ENC[AES256_GCM,data:xTX6SOr9RLWl+ybzyGFsE8sv,iv:uqEhiWyqm+I8QY3wsetvQIQSB0DVqstAsDWGvvASuf4=,tag:uAwmQ36AlZtERHKXjicupg==,type:comment]
+        hosts:
+            - host: ENC[AES256_GCM,data:NOxRJEFXtfzMwA==,iv:3nyE97eldclHXgQWai1jn85YPg18aH0D6C1NE7dFmlM=,tag:/YXKzcccnGZWeq3Hg153aA==,type:str]
+              paths:
+                - path: ENC[AES256_GCM,data:2g==,iv:/NvsnuqI8hj3Y86JyGJjcadBpfD4FM5smc3yaAY61wE=,tag:xRwY6M4jzOGWtgbL3xBsIg==,type:str]
+                  pathType: ENC[AES256_GCM,data:23hVLqN6,iv:JjAEny26Gjl5SCUBOGdJRwU3jBYZuMmJNAaRAncqsvc=,tag:ATcbgXFWta2Nvb0yEZmRuw==,type:str]
 analytics:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-analytics
-    tag: 2024.09.13
-  livenessProbe:
-    httpGet:
-      path: /health
-      port: 4000
-    initialDelaySeconds: 3
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:Tb58t10cdw==,iv:hhRf1CKjBGz+933U7BjKJmNyXKv0STEgZiZoMvYpqmw=,tag:fO6pxCUKZK+X7Dx6Tzre2A==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:c5HOFJoFtrjdG6BClk0vmjjg1PFgNq0z56QQ1KEjw1oAbg==,iv:GWL7CPi/Vj1rSUMyAd5SvO0zTJG5tNy0w/pLArEA8OM=,tag:zwMZHh1NXLA5WLz1X49tdg==,type:str]
+        tag: ENC[AES256_GCM,data:+yCCJh2ZPLj/iw==,iv:3b/j9OQzmTZle+RBNYNGq0Vj+1o7wjqQ8eitIslhe3A=,tag:SWrLARlw++SKPJ2GPK3lgw==,type:str]
+    livenessProbe:
+        httpGet:
+            path: ENC[AES256_GCM,data:dpM+wxk/sg==,iv:CqBn3leuJWeXrwaEVYeB6NlCxKIpuS4TKkEtRe6Q3R8=,tag:14+g+GHb+Ses3H014RvCDg==,type:str]
+            port: ENC[AES256_GCM,data:Qa2hXw==,iv:+L1A7lndOh5JUCwr+aZoTYtRwjYBcTBwZtmW99ZJtfM=,tag:NfqzOzX9i51id2+xXB5qTg==,type:int]
+        initialDelaySeconds: ENC[AES256_GCM,data:/w==,iv:MqlWnr0UXj3Dhu7zGisnlAZ7SL0XQQpqi+tfTOkNWV4=,tag:eTb02Ep3pXaa2eLP8Gjn6g==,type:int]
 vector:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-vector
-    tag: 2024.09.13
-  livenessProbe:
-    httpGet:
-      path: /health
-      port: 9001
-    initialDelaySeconds: 3
-  ## Vector requires logs from the control plane to function.
-  ## This is normally stored in /var/log/pods
-  ## Modify these values according to your environment.
-  volumeMounts:
-    - name: pod-logs
-      mountPath: /var/log/pods
-  volumes:
-    - name: pod-logs
-      hostPath:
-        path: /var/log/pods
-
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:2oixFBiwQw==,iv:SpKphMhw7c5VYM54iexgdJQqxqlwl1YpzeAtNvTAOTo=,tag:IikTGlaBVR60ebD/8tdQOA==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:LPyodxTf8aGht1l18ES62HBHqASDYehVyQmqUGkEuA==,iv:X89wArynlwdncUpmATfcGZn9+tqibVVHsrQ9n74ge14=,tag:J18EhZPZX02C774PxnG1vQ==,type:str]
+        tag: ENC[AES256_GCM,data:2EmpYx++01WkHA==,iv:o1ADoGiOenAbIg58/HCeHxdeff1ImWQsNQLXp2cyxf8=,tag:jsuPS17CFAmmkL10iiLblw==,type:str]
+    livenessProbe:
+        httpGet:
+            path: ENC[AES256_GCM,data:ljIxVl7twg==,iv:LRbQDZqmmZGO0jwrCUyY0fC9fxwQrk3E+0sDSPi3lZM=,tag:yPb93jeXZWmNKf3RD5zfFA==,type:str]
+            port: ENC[AES256_GCM,data:92J2jA==,iv:ZZXRW277I2w/qSBC0AWclePqvKBEZqCsCHjFHqAlzSQ=,tag:gkVzTKGylMIN+OR2WXy9Rg==,type:int]
+        initialDelaySeconds: ENC[AES256_GCM,data:CA==,iv:yPel7ekux/4UJhg1rZkyw9FEh7ZvjAMSs++bRLasHmY=,tag:PXn8wjd/c+eCU7POS/BHWg==,type:int]
+    #ENC[AES256_GCM,data:xZwyX2L9SR0y6KtRD1Fn86dskAudLqxufJ5oqhk98NcsDn9ko914M2wpX2tk+cUS46ATqzU2QsYeQw==,iv:ioppyBv2QN9O2TsS/yaU9GwKAqw85hnxxxIPepK22Ds=,tag:WFtUNPxcz3GGGffrLcvA0g==,type:comment]
+    #ENC[AES256_GCM,data:NGrtcpnUse6wDHzi3RHfrvZdrBwyInd2EM9RGx/fSN08dvR9jyyn/gJp,iv:SDX08qXoZvbipLaESJew223z8VXtsyi3IU+ucZvyoSY=,tag:I50LSegHJsJ2hGvyiL943w==,type:comment]
+    #ENC[AES256_GCM,data:JO0Zje/s/o1NSRo66ojWVWjx9xUX13YEtt/6lP3YrDfAPGFfnZRKSkiOhq+lNzrWCAZaog==,iv:Mw+ciq8MC1V0mpcZ3ps8rq0XYMEHs0mPjHODP0GB3Jw=,tag:QMk2xfCWbktBpy6b0msA1g==,type:comment]
+    volumeMounts:
+        - name: ENC[AES256_GCM,data:lzG47vZwNKM=,iv:8taU0Sl5f/7VTTas0VQE/kJ+JjxQmmCoOGd/qnXCteo=,tag:XGRic1dmshYvltJg9G6Y0w==,type:str]
+          mountPath: ENC[AES256_GCM,data:AWm7aqRo8FGI+Ju6/Q==,iv:xCRHo3BhmAJiUVywpYokG+cJMyjsDtIk3IridFmt4Pg=,tag:Bxjs3CJUXVKnGrMGH51t/A==,type:str]
+    volumes:
+        - name: ENC[AES256_GCM,data:U1Ndf2waXfk=,iv:Nzh5xRCVGpymnxelf8ZdH9KZBLr3aVVDn/vlBk1Pi3M=,tag:yetAvfKAzq8TTzLwRBecWw==,type:str]
+          hostPath:
+            path: ENC[AES256_GCM,data:TXLENUPMyWl68aJALg==,iv:tR4hHwDzQP/cSDLEMYr24NA1B5xEd1TE/sOfIles/hU=,tag:dVD4teGdMaNHv2vtVlF9vg==,type:str]
 functions:
-  imagePullSecrets:
-  - name: regcred
-  image:
-    repository: ghcr.io/uw-ssec/supabase-functions
-    tag: 2024.09.13
+    imagePullSecrets:
+        - name: ENC[AES256_GCM,data:7aDXtWvQzA==,iv:W7rGkEdpIm7iMWi2ud/Ik2BLw0HeOq3sYlvOXcfqkc8=,tag:Zmo0BjdaXzTVwyZtDaylDQ==,type:str]
+    image:
+        repository: ENC[AES256_GCM,data:7W65kLwunBgAUvWXeAjpFJ5DC+VtLJbSz251n5JuA2RJ6g==,iv:vwQfVBZl1MCpC7lIPQfq6SLVm9BbyvmcJj/ng2kFXvw=,tag:aVy9qi8x67ATyZomODaqyA==,type:str]
+        tag: ENC[AES256_GCM,data:08tQ0GFmoIyiKw==,iv:JSlZVddZyXSnac6O2Zov1SW89BiNWOWN+22QYum1VpA=,tag:RCCF24Rej0r+CHb/R9sSWA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2024-09-16T20:40:37Z"
+    mac: ENC[AES256_GCM,data:W87EFgeCMPpEPmc/6yM5oAjPgCWt/ahwph825UC04MIx7ITkGRUnK4J3tAaPVg7qhXa9ph5qwnRvBR0LpWcomFiZepXnqlNvd3iXF5Fn45NKOrqa0vi5fOEVKDwB/q3H842TgpqGg4Mz8AU8Q4sx+dN6QWtwauAS/F9edp4nw+8=,iv:uSM0PWPKZhFXwdlCxAaBmb8fcQOCMQBLk551M6r+N1Y=,tag:SqFbmSA+HZDJFiSCtq12Hw==,type:str]
+    pgp:
+        - created_at: "2024-09-16T20:33:02Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQEMA/9sAeRcxx4GAQf/byCdr5PSo/jBqaIkqmyMURfK3Ax1LCgupdEn3Gpe+tHS
+            jGeOIhxfwD6g5wZzjVvTLPRPQ1MlW03nUF96yOAn8B+WwdbBk9g+R2JgInq00s2d
+            2s4L7tK1ncpdK9Gok08SeizI4AmSZJcVlOjT8qALyw4rLQo3FA2A0MF2+/7H61Nk
+            vLJWQ0bAB2KXkS24L09HEW8Q5wSiSc04HFLV1VslJeAvMUtsuC7tug4UYdn31gUO
+            nDfxhEtysETWrMyVJ2wdilgGf992n1BqtpncEX/W3q9KAHx0TgQQIAmiDTizvFB4
+            6mBKIMRL18mu9lXtwyTPzNG8Gz6eg7zqI00Gy8ZlXtRoAQkCEGlTSt2EcuBYQG7U
+            FxUU0Uz44hDvAfoG2JfUvPSf+NR/Oai2fYCwq13laTycKMhJPjkGjlA4emwVVJWC
+            pCTuBoE6w0rOLSzk/rwjmxBLC6UAWD3RBwvk8qSGHvr3O65HTqlNw6M=
+            =85Cf
+            -----END PGP MESSAGE-----
+          fp: AD28C8D8C60268C5F329509B31FEC69867EB2B81
+    unencrypted_suffix: _unencrypted
+    version: 3.9.0

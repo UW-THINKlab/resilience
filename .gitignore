@@ -177,3 +177,7 @@ cython_debug/
 # OpenTofu
 .terraform/
 *.tfstate*
+
+# PGP keys
+public.pgp
+private.pgp
