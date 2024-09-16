@@ -207,3 +207,7 @@ cmd = "scripts/access-cloud-server.sh"
 
 [feature.cloud.tasks.edit-cloud-values]
 cmd = "sops edit deployment/values.cloud.yaml"
+
+
+[feature.cloud.tasks.cloud-account-setup]
+cmd = "python scripts/cloud-account-setup.py"

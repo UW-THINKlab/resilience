@@ -12,12 +12,12 @@ neighborhood = sanitize(os.environ.get('TF_VAR_neighborhood', 'Laurelhurst'))
 
 resource_prefix = f'{project_name}-{neighborhood}'
 
-deploy_role_arn = f'arn:aws:iam::871683513797:role/{resource_prefix}-scaling-role'
+scaling_role_arn = f'arn:aws:iam::871683513797:role/{resource_prefix}-scaling-role'
 asg_name = f'{resource_prefix}-asg'
 
 def start_session():
     response = sts.assume_role(
-        RoleArn=deploy_role_arn,
+        RoleArn=scaling_role_arn,
         RoleSessionName='run-cloud-server',
     )
 
