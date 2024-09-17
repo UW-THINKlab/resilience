@@ -5,16 +5,16 @@ secret:
         secret: ENC[AES256_GCM,data:uggkz5jTmNd5g/IIqfN3ReChbB4gBjqCffAWJX1Ygbu8wraeVYKTyQd2Sm8HDeyaCuSxWO1a086i/Y/pvnZ/wAv8N7OmsWxK9z9TE7ZmFAZI4O/O7k63vA==,iv:63/jmEYtqxUK+50snnI2qN66ZiUZcVDS2U6c+xpL6+Q=,tag:QcFl3yrSUYkdf/jtvS82zQ==,type:str]
     smtp:
         username: ENC[AES256_GCM,data:xQkxcgTxdrwOKIrDW/v74oo/iLuf,iv:GSDqiq7ZIPOwweeqi4QwvcfwdwMYLzSstYG/N2GHjG4=,tag:M1s79s40ct8FRxtZVlg36Q==,type:str]
-        password: ENC[AES256_GCM,data:rjx9XUc5WlH8zfv/yI5p8TEHn7oGd0ghu9S4Aspr38k=,iv:tz02rK9goubKw7BuK7iEVS+MJEO0Tfj95Gwet1gGjtI=,tag:CIQG4Sdjo+vOqRK+TaceQw==,type:str]
+        password: ENC[AES256_GCM,data:Qa5DpqJgnRRpQ0u5P8mGaUmTHA2XbUL7YMPLsHgHR/c=,iv:PtllWKs0l1xY62XrqBN/gact1sYAeK8tjt1puXnHkvA=,tag:SveXsYO/w/vym22HqqqzAg==,type:str]
     dashboard:
         username: ENC[AES256_GCM,data:UNDdJTmXXCE=,iv:tnecnOVF77oJZmJUv2LSMeI1BrHSuhUbfzVAIqgW3R0=,tag:UcVPv9W6/F1G1U5209+a5Q==,type:str]
-        password: ENC[AES256_GCM,data:b8LrDhXKzTMgDcVGUa6krG0sdKzx7vpC7GAAQ5Gz6q8=,iv:CKFdCjZr5lOihszmwpYkcFFiTlAUrIfCwWC4FW9Ld7U=,tag:vp9GBc5a0YuKcIVK9po1Dg==,type:str]
+        password: ENC[AES256_GCM,data:tMn4UTJFijvshxcZxVybt8uyKV0wgpeww2aU392rQNc=,iv:feHewi4qRwz9dyWLPadAggjcgpCPzYx3A/BtIxuTN8E=,tag:CCrVubhwnLeLf/IExHztrQ==,type:str]
     db:
         username: ENC[AES256_GCM,data:DcP/fovnbRU=,iv:S46JHcBIl4OVYtOMiY4VHkb8Zqku5NyqB5wYr+MYYRQ=,tag:aE16lUdd0qBgTPpkAe4zcw==,type:str]
-        password: ENC[AES256_GCM,data:lsdupFNpm1a+QlNq2LVHitKhYvPZzEOxlj12+U3tpbk=,iv:W/CW/sJEDaqHkXZhS7mtl4WD8w89aerMLpGBej608T8=,tag:wbAcnqhkI3+4IoxFCMnMsg==,type:str]
+        password: ENC[AES256_GCM,data:Npyvc8TSeR4LLcUN8MwrA8ybxzbHO25jItRJemtRKYI=,iv:8Lb7DhDObDUqGUNkrF9SC06jNMOuQQyY0stMga2/ios=,tag:weDzrz10q8eT42/xeQ/+ZA==,type:str]
         database: ENC[AES256_GCM,data:SJsi/Y+0N7Q=,iv:Pfr0oelwTye7NkRf3lxiEpKVuZMSKnoCdFlwKhCYeNM=,tag:iPuzQuCH5qdQFe8Igei92g==,type:str]
     analytics:
-        apiKey: ENC[AES256_GCM,data:2m35R3Cc/W0w+wmNjH7YnPN+TROhJlDyZF/gR7DCiTQ=,iv:EbNAxkCJnIjxA0wFqBLUEguKSquUhAjq45iouT1Wcvk=,tag:Kpee1zmN9e7F5b9ObryfSQ==,type:str]
+        apiKey: ENC[AES256_GCM,data:3iuKNIkgx68G1UT/Ub9Q+o5w40F/b9WayfT4oBlRa8E=,iv:uSYD4LylyQx4VSNgOGvTJcTiVF2UGsIxsvpqAiyUTgY=,tag:b5y/5Iapc+jRrXmA/TldUw==,type:str]
 db:
     imagePullSecrets:
         - name: ENC[AES256_GCM,data:aP6vYvkcJg==,iv:anp28Q8qULDOYAe5seuWK1kgvH/dPAJS2EbDigknw2w=,tag:Jt3s8vFj45Jtb7maDzKK0g==,type:str]
@@ -194,8 +194,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-09-17T17:14:23Z"
-    mac: ENC[AES256_GCM,data:PRhq4uQnGNTuacLucwv4uD2fgR5YCY0ecLoCqRd4MPS5JmSOkR0zTpEdde/E6fg6JWAscn0M2rORXziJNSclxZv+nGSrExeA411gKLBb1vg+JMIGbYNzEdHBSrBPtB2vxWriyKFcxyBla8tZs4y7KSuViJuUlgaN36WAqB7v8CQ=,iv:vhXGBvhLaEHyVU1UJ6RyklWn+kuZC9TCsgZCQkHsdOQ=,tag:cJ7076sKvPf6hbKJGPuYtg==,type:str]
+    lastmodified: "2024-09-17T18:28:00Z"
+    mac: ENC[AES256_GCM,data:j4Q9tRQb0SeT/ZCoKPRDMNnZ5zvJprQIn0QF3p0/msVNPf/A19D7a76amQrzb9rBdYlqnUTgVYoblTixE9DjgIr9Uvz4V/rfF7TALhVUQjuSF8jNIWUElmsDpkmEVqUYjQSk0z2R7uZ8a41DpnuDQiaNrrJ+LASfGCeRFdBV48Y=,iv:VOn3pIKSKFkr5wQSmrOi0EsL29iF86PuQlidc4pVILI=,tag:XH3XKbfnZ3gJ9DYMIk6/3A==,type:str]
     pgp:
         - created_at: "2024-09-16T22:38:57Z"
           enc: |-
