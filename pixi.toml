@@ -42,7 +42,7 @@ cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
 setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
-setup-infra-cloud = { depends-on = ["k3d-create-cluster", "setup-supabase-cloud", "cleanup-decrypted-supabase-cloud-values"] }
+setup-infra-cloud = { depends-on = ["k3d-create-cluster", "setup-supabase-cloud"] }
 open-db-port = { depends-on = ["port-forward-supabase-db"] }
 
 [feature.backend.dependencies]

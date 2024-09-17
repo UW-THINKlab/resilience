@@ -74,7 +74,7 @@ def populate_cluster_and_household_details():
 def get_supabase_client(cloud: bool | None = False) -> Client:
 
     # Setting up the supabase client for python
-    file_path = Path("./deployment/values.dev.yaml") if not cloud else Path("./deployment/values.cloud.yaml")
+    file_path = Path("./deployment/values.dev.yaml") if not cloud else Path("./deployment/values.cloud.decrypted.yaml")
     with file_path.open(mode='r') as file:
         config = yaml.safe_load(file)
         url = config['studio']['environment']['SUPABASE_PUBLIC_URL']
