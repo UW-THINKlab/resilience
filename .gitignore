@@ -178,6 +178,5 @@ cython_debug/
 .terraform/
 *.tfstate*
 
-# PGP keys
-public.pgp
-private.pgp
+# Decrypted values
+*.decrypted.yaml

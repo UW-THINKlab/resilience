@@ -39,7 +39,7 @@ cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
 setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
-setup-infra-cloud = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase-cloud"] }
+setup-infra-cloud = { depends-on = ["k3d-create-cluster", "setup-supabase-cloud", "cleanup-decrypted-supabase-cloud-values"] }
 open-db-port = { depends-on = ["port-forward-supabase-db"] }
 
 [feature.backend.dependencies]
@@ -71,6 +71,8 @@ cmd = [
 ]
 depends-on = ["fetch-supabase-chart"]
 
+[feature.backend.tasks.decrypt-supabase-cloud-values]
+cmd = "sops -d deployment/values.cloud.yaml > deployment/values.cloud.decrypted.yaml"
 
 [feature.backend.tasks.setup-supabase-cloud]
 cmd = [
@@ -82,9 +84,13 @@ cmd = [
     "--wait",
     "--cleanup-on-fail",
     "--values",
-    "deployment/values.cloud.yaml"
+    "deployment/values.cloud.decrypted.yaml"
 ]
-depends-on = ["fetch-supabase-chart"]
+depends-on = ["fetch-supabase-chart", "decrypt-supabase-cloud-values"]
+
+[feature.backend.tasks.cleanup-decrypted-supabase-cloud-values]
+cmd = "rm deployment/values.cloud.decrypted.yaml"
+depends-on = ["setup-supabase-cloud"]
 
 [feature.backend.tasks.port-forward-supabase-db]
 cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"

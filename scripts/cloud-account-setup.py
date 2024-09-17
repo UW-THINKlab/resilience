@@ -35,6 +35,7 @@ def grant_decrypt_permission_to_user_group(key_arn: str, region: str):
                 {{
                     "Effect": "Allow",
                     "Action": [
+                        "kms:Encrypt",
                         "kms:Decrypt"
                     ],
                     "Resource": "{key_arn}"
