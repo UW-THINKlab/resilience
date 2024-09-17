@@ -36,9 +36,6 @@ cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_
 cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py --cloud"
 
 # ==== Backend environment ====
-[feature.backend.activation.env]
-"KUBECONFIG" = ".kube/config"
-
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
 setup-infra = { depends-on = ["k3d-create-cluster", "set-registry-secret", "setup-supabase"] }
