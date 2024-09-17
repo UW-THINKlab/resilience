@@ -9,7 +9,7 @@ platforms = ["linux-64", "osx-64", "osx-arm64"]
 [environments]
 frontend = ["frontend"]
 backend = ["backend", "db"]
-deployment = ["cloud"]
+deployment = ["cloud", "backup-secret"]
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -213,6 +213,15 @@ cmd = "scripts/access-cloud-server.sh"
 [feature.cloud.tasks.edit-cloud-values]
 cmd = "sops edit deployment/values.cloud.yaml"
 
-
 [feature.cloud.tasks.cloud-account-setup]
 cmd = "python scripts/cloud-account-setup.py"
+
+# ==== Backup Secret environment ====
+[feature.backup-secret.dependencies]
+gnupg = ">=2.4.5"
+
+[feature.backup-secret.activation.env]
+"GPG_TTY" = "$(tty)"
+
+[feature.backup-secret.tasks.import-gpg-key]
+cmd = "gpg --pinentry-mode loopback --output - keys.asc | gpg --import"

@@ -178,5 +178,6 @@ cython_debug/
 .terraform/
 *.tfstate*
 
-# Decrypted values
+# Encryption-related files
 *.decrypted.yaml
+keys.asc
