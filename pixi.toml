@@ -93,7 +93,6 @@ depends-on = ["fetch-supabase-chart", "decrypt-supabase-cloud-values"]
 
 [feature.backend.tasks.cleanup-decrypted-supabase-cloud-values]
 cmd = "rm deployment/values.cloud.decrypted.yaml"
-depends-on = ["setup-supabase-cloud"]
 
 [feature.backend.tasks.port-forward-supabase-db]
 cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"
