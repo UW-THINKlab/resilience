@@ -21,10 +21,18 @@ class UserProfile(BasePublicSchemaModel, table=True):
         A relationship to the `User` model (from the `auth.users` table), with back_populates set
         to "user_profile", establishing a one-to-one connection between UserProfile and User.
         This is NOT a column in the table but represents relationship only.
-    user_roles: Optional[UserRole]
+    user_role: Optional[UserRole]
         A `UserRole` objects associated with this user_profile. Represents a one-to-one relationship where
         each `user_profile` can have a single `UserRole` entity. The relationship is configured with `back_populates`
         to match the `user_profile` attribute in the `UserRole` model, and cascading delete is disabled.
+    operational_events : list[OperationalEvent]
+        A list of `OperationalEvent` objects related to this user profile. This establishes a one-to-many relationship
+        where a user profile can have multiple operational events. Cascading delete is disabled.
+    user_resources : list[UserResource]
+        A list of `UserResource` objects associated with this user profile, allowing the user to manage resources.
+        Cascading delete is disabled.
+    user_checklists : list[Checklist]
+        A list of `UserChecklist` objects associated with this user profile
 
     Notes
     -----
@@ -42,4 +50,5 @@ class UserProfile(BasePublicSchemaModel, table=True):
                                                       cascade_delete=False, sa_relationship_kwargs={"uselist": False})
     user_role: Optional["UserRole"] = Relationship(back_populates="user_profile", cascade_delete=False)
     operational_events: list["OperationalEvent"] = Relationship(back_populates="user_profile", cascade_delete=False)
-
+    user_resources: list["UserResource"] = Relationship(back_populates="user_profile", cascade_delete=False)
+    user_checklists: list["UserChecklist"] = Relationship(back_populates="user_profile", cascade_delete=False)

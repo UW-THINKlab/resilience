@@ -42,27 +42,20 @@ To run this app locally, follow these steps:
 
 1. Run the Docker daemon
 
-2. Set environment variables with your Docker username and password
-
-   ```console
-   export DOCKER_USERNAME=<your docker username>
-   export DOCKER_PASSWORD=<your docker password>
-   ```
-
-3. Set up the infrastructure. You should have a Supabase instance running at http://localhost
+2. Set up the infrastructure. You should have a Supabase instance running at http://localhost
 
    ```console
    pixi run -e backend setup-infra
    ```
 
-4. Optional: If you want to add sample entries in your local Supabase Instance. 
+3. Optional: If you want to add sample entries in your local Supabase Instance. 
    Run the following command in a new terminal session.
    
    ```console
    pixi run populate-sample-entries
    ```
    
-5. Run the API server locally by running the following command in a new terminal session.  
+4. Run the API server locally by running the following command in a new terminal session.  
    Note: the argument `fast-api-server-dev` in the command below runs the server in editable mode, where each change in 
    the source file triggers the restart of the fastapi local server.  
    For production: replace `fast-api-server-dev` with `fast-api-server-run`.
@@ -98,6 +91,98 @@ To run this app locally, follow these steps:
    ```
 
    At this point your frontend is now ready to go! You are all set.
+
+## Running in the cloud
+
+### Where's the cloud stuff?
+
+It's in `./deployment/cloud` and we're using [OpenTofu](https://opentofu.org/)
+
+### Credentials
+
+For now, contact Niki for least-privileged IAM user credentials. These will be used to assume the necessary roles. ([TODO as part of this issue](https://github.com/uw-ssec/post-disaster-comms/issues/61): find a better way to distribute these)
+
+This user will assume the necessary roles to get things going
+
+### Editing deployment/values.cloud.yaml
+
+(Optional) To open the file with VSCode, run the following first
+
+```
+export EDITOR="code --wait"
+```
+
+Then run the following. Save and close the file when you're done editing for all of your new values to be re-encrypted.
+
+```
+pixi run edit-cloud-values
+```
+
+If you run into an issue like `gpg: decryption failed: Inappropriate ioctl for device`, run the following command and retry
+
+```
+export GPG_TTY=$(tty)
+```
+
+### Deploying infrastructure changes
+
+The following commands will allow you to do what you gotta do to update and deploy the infrastructure
+
+#### Initialize the infrastructure on your machine
+
+From the `tofu init` docs
+
+> This is the first command that should be run for any new or existing
+  OpenTofu configuration per machine. This sets up all the local data
+  necessary to run OpenTofu that is typically not committed to version
+  control.
+
+```
+pixi run cloud-init
+```
+
+#### Preview the changes to your infrastructure
+
+```
+pixi run cloud-plan
+```
+
+#### Deploy your infrastructure changes
+
+```
+pixi run cloud-deploy
+```
+
+#### Destroy all cloud infra (WARNING: ask if you think you gotta do this)
+
+```
+pixi run cloud-destroy
+```
+
+### Run the development server
+
+Right now, this server does nothing. TODO: fix that as part of these issues ([1](https://github.com/uw-ssec/post-disaster-comms/issues/38) and [2](https://github.com/uw-ssec/post-disaster-comms/issues/40))
+
+```
+pixi run cloud-server-run
+```
+
+### Stop the development server
+
+The server will stop daily at 01:00 UTC (6PM PDT/5PM PST), but if you wanna be a good citizen and stop it when you're done, run the following
+
+```
+pixi run cloud-server-stop
+```
+
+### Access the development server when it's running
+
+This command uses [AWS's Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html) to access the development server without needing to distribute ssh keys. Assuming you have access to the IAM roles needed for everything else related to the cloud here, this command should just work!
+
+```
+pixi run cloud-server-access
+```
+
 
 ## Contributing
 

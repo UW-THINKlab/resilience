@@ -1,4 +1,4 @@
-
+import uuid
 from support_sphere.models.base import BasePublicSchemaModel
 from sqlmodel import Field, Relationship
 from geoalchemy2 import Geometry
@@ -11,7 +11,7 @@ class Cluster(BasePublicSchemaModel, table=True):
 
     Attributes
     ----------
-    id : int, optional
+    id : uuid
         The unique identifier for the cluster. This field is the primary key of the table.
     name : str, optional
         The name of the cluster.
@@ -41,7 +41,7 @@ class Cluster(BasePublicSchemaModel, table=True):
 
     __tablename__ = "clusters"
 
-    id: int|None = Field(primary_key=True)
+    id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str|None = Field(nullable=True)
     meeting_place: str|None = Field(nullable=True)
     notes: str | None = Field(nullable=True)

@@ -15,7 +15,7 @@ class PeopleGroup(BasePublicSchemaModel, table=True):
     people_id : uuid.UUID
         The unique identifier for the person in the people group, which is a foreign key referencing
         the `people` table.
-    household_id : int, optional
+    household_id : uuid.UUID
         The unique identifier for the household associated with the entry, which is a foreign key
         referencing the `households` table. This field is optional.
     notes : str, optional
@@ -38,7 +38,7 @@ class PeopleGroup(BasePublicSchemaModel, table=True):
     __tablename__ = "people_groups"
 
     people_id: uuid.UUID = Field(primary_key=True, foreign_key="public.people.id")
-    household_id: int|None = Field(foreign_key="public.households.id")
+    household_id: uuid.UUID|None = Field(foreign_key="public.households.id")
     notes: str|None = Field(nullable=True)
 
     household: Optional["Household"] = Relationship(back_populates="people_group", cascade_delete=False)

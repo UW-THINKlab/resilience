@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 from support_sphere.models.base import BasePublicSchemaModel
@@ -11,9 +12,9 @@ class Household(BasePublicSchemaModel, table=True):
 
     Attributes
     ----------
-    id : int, optional
+    id : uuid
         The unique identifier for the household. This field is the primary key of the table.
-    cluster_id : int, optional
+    cluster_id : uuid
         The unique identifier for the cluster associated with the household. This field is a foreign key
         referencing the `clusters` table.
     name : str, optional
@@ -43,8 +44,8 @@ class Household(BasePublicSchemaModel, table=True):
 
     __tablename__ = "households"
 
-    id: int|None = Field(primary_key=True)
-    cluster_id: int|None = Field(foreign_key="public.clusters.id")
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    cluster_id: uuid.UUID = Field(foreign_key="public.clusters.id")
 
     name: str|None = Field(nullable=True)
     address: str|None = Field(nullable=True)
@@ -55,4 +56,3 @@ class Household(BasePublicSchemaModel, table=True):
 
     cluster: Optional["Cluster"] = Relationship(back_populates="households", cascade_delete=False)
     people_group: list["PeopleGroup"] = Relationship(back_populates="household", cascade_delete=False)
-

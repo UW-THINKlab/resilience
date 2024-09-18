@@ -14,7 +14,7 @@ class UserCaptainCluster(BasePublicSchemaModel, table=True):
     ----------
     id : uuid.UUID
         The unique identifier for the cluster role entry, generated automatically using UUID.
-    cluster_id : int
+    cluster_id : uuid.UUID
         The identifier for the cluster that this role is associated with, representing a foreign key
         to the 'public.clusters' table.
     user_role_id : uuid.UUID
@@ -36,7 +36,7 @@ class UserCaptainCluster(BasePublicSchemaModel, table=True):
     __tablename__ = "user_captain_clusters"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    cluster_id: int = Field(foreign_key="public.clusters.id", nullable=False)
+    cluster_id: uuid.UUID = Field(foreign_key="public.clusters.id", nullable=False)
     user_role_id: uuid.UUID = Field(foreign_key="public.user_roles.id", nullable=False)
 
     cluster: Optional["Cluster"] = Relationship(back_populates="user_captains", cascade_delete=False)

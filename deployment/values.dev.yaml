@@ -21,7 +21,8 @@ db:
   - name: regcred
   enabled: true
   image:
-    tag: 15.1.0.147
+    repository: ghcr.io/uw-ssec/supabase-db
+    tag: 2024.09.13
   livenessProbe:
     exec:
       command:
@@ -43,7 +44,8 @@ studio:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: 20240326-5e5586d
+    repository: ghcr.io/uw-ssec/supabase-studio
+    tag: 2024.09.13
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
@@ -59,7 +61,8 @@ auth:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v2.143.0
+    repository: ghcr.io/uw-ssec/supabase-auth
+    tag: 2024.09.13
   environment:
     API_EXTERNAL_URL: http://localhost
     GOTRUE_SITE_URL: http://localhost
@@ -76,7 +79,8 @@ rest:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v12.0.1
+    repository: ghcr.io/uw-ssec/supabase-rest
+    tag: 2024.09.13
 
 realtime:
   # Override the fullname of the realtime deployment
@@ -86,7 +90,8 @@ realtime:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v2.27.5
+    repository: ghcr.io/uw-ssec/supabase-realtime
+    tag: 2024.09.13
   livenessProbe:
     httpGet:
       path: /
@@ -97,13 +102,15 @@ meta:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v0.80.0
+    repository: ghcr.io/uw-ssec/supabase-meta
+    tag: 2024.09.13
 
 storage:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v0.46.4
+    repository: ghcr.io/uw-ssec/supabase-storage
+    tag: 2024.09.13
   livenessProbe:
     httpGet:
       path: /status
@@ -116,7 +123,8 @@ imgproxy:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v3.8.0
+    repository: ghcr.io/uw-ssec/supabase-imgproxy
+    tag: 2024.09.13
   environment:
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
   livenessProbe:
@@ -132,8 +140,8 @@ kong:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: kong
-    tag: 2.8.1
+    repository: ghcr.io/uw-ssec/supabase-kong
+    tag: 2024.09.13
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info
@@ -156,7 +164,8 @@ analytics:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: 1.4.0
+    repository: ghcr.io/uw-ssec/supabase-analytics
+    tag: 2024.09.13
   livenessProbe:
     httpGet:
       path: /health
@@ -167,7 +176,8 @@ vector:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: 0.34.0-alpine
+    repository: ghcr.io/uw-ssec/supabase-vector
+    tag: 2024.09.13
   livenessProbe:
     httpGet:
       path: /health
@@ -188,4 +198,5 @@ functions:
   imagePullSecrets:
   - name: regcred
   image:
-    tag: v1.41.2
+    repository: ghcr.io/uw-ssec/supabase-functions
+    tag: 2024.09.13
