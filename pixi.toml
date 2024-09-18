@@ -199,19 +199,19 @@ aws-session-manager-plugin = ">=1.2.0"
 # OpenTofu tasks
 [feature.cloud.tasks.cloud-deploy]
 cmd = "tofu apply"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/infrastructure"
 
 [feature.cloud.tasks.cloud-init]
 cmd = "tofu init"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/infrastructure"
 
 [feature.cloud.tasks.cloud-plan]
 cmd = "tofu plan"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/infrastructure"
 
 [feature.cloud.tasks.cloud-destroy]
 cmd = "tofu destroy"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/infrastructure"
 
 # server tasks
 [feature.cloud.tasks.cloud-server-run]
