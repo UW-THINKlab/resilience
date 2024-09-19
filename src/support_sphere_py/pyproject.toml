@@ -1,10 +1,19 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+#[tool.hatch.version]
+#source = "vcs"
+
+#[tool.hatch.build.hooks.vcs]
+#version-file = "src/support_sphere/version.py"
+#
+#[tool.hatch.version.raw-options]
+#local_scheme = "no-local-version"
 
 [project]
 name = "support-sphere-py"
-version = "0.1.0-alpha"
+version = "0.0.8"
 description = "Package for support sphere api service"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -22,7 +31,6 @@ classifiers = [
 dependencies = [
     "sqlmodel>=0.0.21,<0.1",
     "supabase>=2.6.0,<2.7",
-    "sqlmodel>=0.0.21,<0.0.22",
     "psycopg2-binary>=2.9.9,<3",
     "fastapi[standard]>=0.111.0",
     "uvicorn>=0.30.6",

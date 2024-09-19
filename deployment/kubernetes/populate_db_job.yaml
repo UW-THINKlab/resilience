@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: populate-db-job
+spec:
+  ttlSecondsAfterFinished: 120 # the job pod will auto-delete 120 secs after completion
+  template:
+    spec:
+      containers:
+      - name: populate-db-job
+        image: pdc/populate_db:1.0
+        imagePullPolicy: Never
+        env:
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config-dev
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: config-dev
+                key: DB_PORT
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: supabase-db
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: supabase-db
+                key: password
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: supabase-db
+                key: database
+          - name: SUPABASE_KONG_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config-dev
+                key: SUPABASE_KONG_HOST
+          - name: SUPABASE_KONG_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: config-dev
+                key: SUPABASE_KONG_PORT
+          - name: JWT_ANON_KEY
+            valueFrom:
+              secretKeyRef:
+                name: supabase-jwt
+                key: anonKey
+      restartPolicy: Never
+  backoffLimit: 0

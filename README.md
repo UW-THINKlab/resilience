@@ -52,7 +52,7 @@ To run this app locally, follow these steps:
    Run the following command in a new terminal session.
    
    ```console
-   pixi run populate-sample-entries
+   pixi run setup-db-data-via-k8s-job
    ```
    
 4. Run the API server locally by running the following command in a new terminal session.  

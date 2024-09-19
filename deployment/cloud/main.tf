@@ -5,6 +5,12 @@ terraform {
       version = "~> 5.61"
     }
   }
+
+  backend "s3" {
+    bucket = "${local.resource_prefix}-${var.account_id}-opentofu-state"
+    key = "infrastructure/${var.stage}/terraform.tfstate"
+    region = "us-west-2"
+  }
 }
 
 locals {

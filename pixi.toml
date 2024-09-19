@@ -23,17 +23,35 @@ pip = "*"
 support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 [feature.db.tasks]
-populate-sample-entries = { depends-on = ["configure-role-based-access", "populate-user-details"]}
-populate-sample-entries-cloud = { depends-on = ["configure-role-based-access", "populate-user-details-cloud"]}
+setup-db-data-via-k8s-job = { depends-on = [
+    "build-docker-image-for-api-service",
+    "import-docker-image-in-k8s-cluster",
+    "create-configmap",
+    "run-container-job"
+]}
 
-[feature.db.tasks.configure-role-based-access]
-cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/role_based_access_control.py"
+[feature.db.tasks.build-docker-image-for-api-service]
+cmd = "docker build -t pdc/populate_db:1.0 -f deployment/docker/populate_db.Dockerfile ."
 
-[feature.db.tasks.populate-user-details]
-cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py"
+[feature.db.tasks.import-docker-image-in-k8s-cluster]
+cmd = "k3d image import pdc/populate_db:1.0 -c pdc-cluster"
 
-[feature.db.tasks.populate-user-details-cloud]
-cmd = "python3 ./src/support_sphere_py/tests/resources/scripts/update_db_sample_data.py --cloud"
+
+[feature.db.tasks.create-configmap]
+cmd = """
+kubectl create configmap config-dev \
+  --from-literal=DB_HOST="supabase-supabase-db" \
+  --from-literal=DB_PORT="5432" \
+  --from-literal=SUPABASE_KONG_HOST="supabase-supabase-kong" \
+  --from-literal=SUPABASE_KONG_PORT="8000"
+"""
+
+[feature.db.tasks.run-container-job]
+cmd = """
+kubectl apply -f deployment/kubernetes/populate_db_job.yaml && \
+  sleep 10 && \
+  kubectl get pods --selector=job-name=populate-db-job
+"""
 
 # ==== Backend environment ====
 [feature.backend.tasks]
@@ -72,7 +90,7 @@ cmd = "sops -d deployment/values.cloud.yaml > deployment/values.cloud.decrypted.
 cmd = [
     "helm",
     "upgrade",
-    "supabase", 
+    "supabase",
     "vendors/supabase-kubernetes/charts/supabase",
     "--install",
     "--wait",
@@ -166,6 +184,7 @@ depends-on = ["install-flutter"]
 "TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_neighborhood" = "Laurelhurst"
 "TF_VAR_stage" = "dev"
+"TF_VAR_account_id" = "871683513797"
 
 [feature.cloud.tasks]
 # empty for now

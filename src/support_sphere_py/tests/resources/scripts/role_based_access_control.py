@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
-from support_sphere import engine
+from support_sphere.repositories import engine
 
 logger = logging.getLogger(__name__)
 

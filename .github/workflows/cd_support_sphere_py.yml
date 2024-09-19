@@ -1,0 +1,95 @@
+name: Publish Support Sphere Python Package to PyPI and TestPyPI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: 3
+
+jobs:
+  dist:
+    name: Distribution build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./src/support_sphere_py
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: hynek/build-and-inspect-python-package@v2
+        with:
+          path: src/support_sphere_py/
+
+  test-built-dist:
+    needs: [dist]
+    name: Test built distribution
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-python@v5.1.1
+        name: Install Python
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: dist
+      - name: List contents of built dist
+        run: |
+          ls -ltrh
+          ls -ltrh dist
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.9.0
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
+          skip-existing: true
+      - name: Check pypi packages
+        run: |
+          sleep 3
+          python -m pip install --upgrade pip
+
+          echo "=== Testing wheel file ==="
+          # Install wheel to get dependencies and check import
+          python -m pip install --extra-index-url https://test.pypi.org/simple --upgrade --pre --only-binary=:all: support_sphere_py
+          python -c "import support_sphere; print(support_sphere.__version__)"
+          echo "=== Done testing wheel file ==="
+
+          echo "=== Testing source tar file ==="
+          # Install tar gz and check import
+          python -m pip uninstall --yes support_sphere_py
+          python -m pip install --extra-index-url https://test.pypi.org/simple --upgrade --pre --no-binary=support_sphere_py support_sphere_py
+          python -c "import support_sphere; print(support_sphere.__version__)"
+          echo "=== Done testing source tar file ==="
+
+  publish:
+    needs: [dist, test-built-dist]
+    name: Publish to PyPI
+    environment: pypi
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.9.0
+        if: startsWith(github.ref, 'refs/tags')

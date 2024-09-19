@@ -1,6 +1,6 @@
 from typing import Type, TypeVar
 from sqlmodel import Session, SQLModel, select
-from support_sphere import engine
+from support_sphere.repositories import engine
 
 T = TypeVar("T", bound=SQLModel)
 

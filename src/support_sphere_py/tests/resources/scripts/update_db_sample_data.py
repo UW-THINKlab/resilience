@@ -1,11 +1,8 @@
 import csv
 import datetime
 import uuid
-import argparse
 
-import yaml
 from pathlib import Path
-from supabase import create_client, Client
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
                                           RolePermission, UserRole, UserCaptainCluster)
@@ -13,6 +10,7 @@ from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
 from support_sphere.repositories.public import UserProfileRepository, PeopleRepository
+from support_sphere.repositories import supabase_client
 
 from support_sphere.models.enums import AppRoles, AppPermissions, OperationalStatus
 
@@ -21,24 +19,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def populate_user_details(supabase: Client):
+def populate_user_details():
     """
         This utility function populates your local supabase database tables with sample data entries.
     """
 
     all_households = BaseRepository.select_all(Household)
 
-    file_path = Path("./src/support_sphere_py/tests/resources/data/sample_data.csv")
+    file_path = Path("./support_sphere_py/tests/resources/data/sample_data.csv")
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
         for row in csv_reader:
             user_profile = None
             if bool(eval(row['has_profile'])):
-
                 # Create a auth.user with encrypted_password (ONLY FOR LOCAL TESTING)
-                supabase.auth.sign_up({"email": row['email'], "password": row['username']})
-                supabase.auth.sign_out()
+                supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                supabase_client.auth.sign_out()
                 user: User = UserRepository.find_by_email(row['email'])
 
                 # Create a user profile
@@ -61,7 +58,6 @@ def populate_user_details(supabase: Client):
 
 
 def populate_cluster_and_household_details():
-
     # Creating entries in 'Cluster' and 'Household' table.
     cluster = Cluster(name="Cluster1")
     BaseRepository.add(cluster)
@@ -71,26 +67,12 @@ def populate_cluster_and_household_details():
     BaseRepository.add(household)
 
 
-def get_supabase_client(cloud: bool | None = False) -> Client:
-
-    # Setting up the supabase client for python
-    file_path = Path("./deployment/values.dev.yaml") if not cloud else Path("./deployment/values.cloud.decrypted.yaml")
-    with file_path.open(mode='r') as file:
-        config = yaml.safe_load(file)
-        url = config['studio']['environment']['SUPABASE_PUBLIC_URL']
-        key = config['secret']['jwt']['anonKey']
-
-    supabase: Client = create_client(url, key)
-    return supabase
-
-
-def authenticate_user_signup_signin_signout_via_supabase(supabase: Client):
-
+def authenticate_user_signup_signin_signout_via_supabase():
     # The password is stored in an encrypted format in the auth.users table
-    response_sign_up = supabase.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
-    supabase.auth.sign_out()
-    response_sign_in = supabase.auth.sign_in_with_password({"email": "zeta@abc.com", "password": "zetazeta"})
-    supabase.auth.sign_out()
+    response_sign_up = supabase_client.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
+    supabase_client.auth.sign_out()
+    response_sign_in = supabase_client.auth.sign_in_with_password({"email": "zeta@abc.com", "password": "zetazeta"})
+    supabase_client.auth.sign_out()
 
 
 def update_user_permissions_roles_by_cluster():
@@ -119,55 +101,49 @@ def update_user_permissions_roles_by_cluster():
     BaseRepository.add(user_role)
 
 
-def test_app_mode_status_update(supabase: Client):
-
-    response_sign_in = supabase.auth.sign_in_with_password(
+def test_app_mode_status_update():
+    response_sign_in = supabase_client.auth.sign_in_with_password(
         {"email": "beth.bodmas@example.com", "password": "bethbodmas"})
 
     user_profile = UserProfileRepository.find_by_username('bethbodmas')
-    supabase.table("operational_events").insert({"id": str(uuid.uuid4()),
-                                                 "created_by": str(user_profile.id),
-                                                 "created_at": datetime.datetime.now().isoformat(),
-                                                 "status": OperationalStatus.EMERGENCY.name}).execute()
+    supabase_client.table("operational_events").insert({"id": str(uuid.uuid4()),
+                                                        "created_by": str(user_profile.id),
+                                                        "created_at": datetime.datetime.now().isoformat(),
+                                                        "status": OperationalStatus.EMERGENCY.name}).execute()
 
-    supabase.table("operational_events").insert({"id": str(uuid.uuid4()),
-                                                 "created_by": str(user_profile.id),
-                                                 "created_at": datetime.datetime.now().isoformat(),
-                                                 "status": OperationalStatus.TEST.name}).execute()
+    supabase_client.table("operational_events").insert({"id": str(uuid.uuid4()),
+                                                        "created_by": str(user_profile.id),
+                                                        "created_at": datetime.datetime.now().isoformat(),
+                                                        "status": OperationalStatus.TEST.name}).execute()
 
-    supabase.table("operational_events").insert({"id": str(uuid.uuid4()),
-                                                 "created_by": str(user_profile.id),
-                                                 "created_at": datetime.datetime.now().isoformat(),
-                                                 "status": OperationalStatus.NORMAL.name}).execute()
-    supabase.auth.sign_out()
+    supabase_client.table("operational_events").insert({"id": str(uuid.uuid4()),
+                                                        "created_by": str(user_profile.id),
+                                                        "created_at": datetime.datetime.now().isoformat(),
+                                                        "status": OperationalStatus.NORMAL.name}).execute()
+    supabase_client.auth.sign_out()
 
 
-def test_unauthorized_app_mode_update(supabase: Client):
+def test_unauthorized_app_mode_update():
     try:
-        response_sign_in = supabase.auth.sign_in_with_password(
+        response_sign_in = supabase_client.auth.sign_in_with_password(
             {"email": "adam.abacus@example.com", "password": "adamabacus"})
         user_profile = UserProfileRepository.find_by_username('adamabacus')
-        supabase.table("operational_events").insert({"id": str(uuid.uuid4()),
-                                                     "created_by": str(user_profile.id),
-                                                     "created_at": datetime.datetime.now().isoformat(),
-                                                     "status": OperationalStatus.EMERGENCY.name}).execute()
+        supabase_client.table("operational_events").insert({"id": str(uuid.uuid4()),
+                                                            "created_by": str(user_profile.id),
+                                                            "created_at": datetime.datetime.now().isoformat(),
+                                                            "status": OperationalStatus.EMERGENCY.name}).execute()
     except Exception as ex:
         logger.info(ex)
         logger.info("[CORRECT BEHAVIOUR]: User Denied Access for missing AUTHz.")
     finally:
-        supabase.auth.sign_out()
+        supabase_client.auth.sign_out()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Populate sample entries')
-    parser.add_argument('--cloud', action='store_true', help='Flag for running in the cloud')
-    args = parser.parse_args()
 
-    supabase = get_supabase_client(args.cloud)
-
-    authenticate_user_signup_signin_signout_via_supabase(supabase)
+    authenticate_user_signup_signin_signout_via_supabase()
     populate_cluster_and_household_details()
-    populate_user_details(supabase)
+    populate_user_details()
     update_user_permissions_roles_by_cluster()
-    test_app_mode_status_update(supabase)
-    test_unauthorized_app_mode_update(supabase)
+    test_app_mode_status_update()
+    test_unauthorized_app_mode_update()
