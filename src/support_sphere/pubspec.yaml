@@ -50,6 +50,7 @@ dependencies:
   formz: ^0.7.0
   flow_builder: ^0.1.0
   modal_bottom_sheet: ^3.0.0
+  form_builder_validators: ^11.0.0
 
 dev_dependencies:
   flutter_test:

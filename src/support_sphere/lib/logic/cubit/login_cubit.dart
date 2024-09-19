@@ -1,8 +1,6 @@
 import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:support_sphere/data/validators/login/email.dart';
-import 'package:support_sphere/data/validators/login/password.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 import 'package:formz/formz.dart';
 
@@ -14,24 +12,23 @@ class LoginCubit extends Cubit<LoginState> {
   final AuthenticationRepository _authenticationRepository;
 
   void emailChanged(String value) {
-    final email = Email.dirty(value);
     emit(
       state.copyWith(
-        email: email,
-        isValid: Formz.validate([email, state.password]),
+        email: value,
       ),
     );
   }
 
   void passwordChanged(String value) {
-    final password = Password.dirty(value);
     emit(
       state.copyWith(
-        password: password,
-        isValid: Formz.validate([state.email, password]),
+        password: value,
       ),
     );
   }
+
+  void setValid() => emit(state.copyWith(isValid: true));
+  void setInvalid() => emit(state.copyWith(isValid: false));
 
   void toggleShowPassword() {
     changeShowPassword(emit, state);
@@ -42,8 +39,8 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       await _authenticationRepository.logIn(
-        email: state.email.value,
-        password: state.password.value,
+        email: state.email,
+        password: state.password,
       );
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } catch (_) {
