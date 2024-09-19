@@ -10,6 +10,9 @@
             "request": "launch",
             "type": "dart",
             // See: ../deployment/values.dev.yaml or the cloud yaml
+            // Retrieve the `SUPABASE_ANON_KEY` from the `secret.jwt.anonKey` value in that file
+            // Retrieve the `SUPABASE_URL` from the `studio.environment.SUPABASE_PUBLIC_URL` value in that file
+            // This will allow the values to be passed into the frontend app during build.
             "toolArgs": [
                 "--dart-define",
                 "SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE",
