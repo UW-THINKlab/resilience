@@ -115,7 +115,7 @@ class _PasswordInput extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) => validateValue([
             FormBuilderValidators.required(),
-            FormBuilderValidators.password(),
+            FormBuilderValidators.minLength(8),
           ], value, context),
           decoration: InputDecoration(
             labelText: LoginStrings.password,
