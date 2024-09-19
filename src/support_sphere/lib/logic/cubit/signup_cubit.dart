@@ -1,10 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
-import 'package:support_sphere/data/validators/login/email.dart';
 import 'package:support_sphere/data/validators/login/password.dart';
-import 'package:support_sphere/data/validators/signup/signup_code.dart';
-import 'package:support_sphere/data/validators/signup/confirmed_password.dart';
 import 'package:formz/formz.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 
@@ -16,48 +13,40 @@ class SignupCubit extends Cubit<SignupState> {
   final AuthenticationRepository _authenticationRepository;
 
   void emailChanged(String value) {
-    final email = Email.dirty(value);
     emit(
       state.copyWith(
-        email: email,
-        isValid: Formz.validate([email, state.password, state.confirmedPassword]),
+        email: value,
       ),
     );
   }
 
   void passwordChanged(String value) {
-    final password = Password.dirty(value);
     emit(
       state.copyWith(
-        password: password,
-        isValid: Formz.validate([state.email, password, state.confirmedPassword]),
+        password: value,
       ),
     );
   }
 
   void signupCodeChanged(String value) {
-    final signupCode = SignupCode.dirty(value);
     emit(
       state.copyWith(
-        signupCode: signupCode,
-        isValid: Formz.validate([state.email, state.password, state.confirmedPassword, signupCode]),
+        signupCode: value,
       ),
     );
   }
 
   void confirmedPasswordChanged(String value) {
-    final confirmedPassword = ConfirmedPassword.dirty(password: state.password.value, value: value);
     emit(
       state.copyWith(
-        confirmedPassword: confirmedPassword,
-        isValid: Formz.validate([state.email, state.password, confirmedPassword]),
+        confirmedPassword: value,
       ),
     );
   }
 
-  void toggleShowPassword() {
-    changeShowPassword(emit, state);
-  }
+  void toggleShowPassword() => changeShowPassword(emit, state);
+  void setValid() => emit(state.copyWith(isValid: true));
+  void setInvalid() => emit(state.copyWith(isValid: false));
 
   Future<void> signUpWithEmailAndPassword() async {
     if (!state.isValid) return;
@@ -65,9 +54,9 @@ class SignupCubit extends Cubit<SignupState> {
     try {
       // TODO: Add coupon code check for signup
       await _authenticationRepository.signUp(
-        email: state.email.value,
-        password: state.password.value,
-        signupCode: state.signupCode.value,
+        email: state.email,
+        password: state.password,
+        signupCode: state.signupCode,
       );
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } catch (_) {

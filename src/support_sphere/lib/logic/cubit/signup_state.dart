@@ -2,20 +2,20 @@ part of 'signup_cubit.dart';
 
 class SignupState extends Equatable {
   const SignupState({
-    this.email = const Email.pure(),
-    this.password = const Password.pure(),
-    this.confirmedPassword = const ConfirmedPassword.pure(),
-    this.signupCode = const SignupCode.pure(),
+    this.email = '',
+    this.password = '',
+    this.confirmedPassword = '',
+    this.signupCode = '',
     this.status = FormzSubmissionStatus.initial,
     this.isValid = false,
     this.showPassword = false,
     this.errorMessage,
   });
 
-  final Email email;
-  final Password password;
-  final ConfirmedPassword confirmedPassword;
-  final SignupCode signupCode;
+  final String email;
+  final String password;
+  final String confirmedPassword;
+  final String signupCode;
   final FormzSubmissionStatus status;
   final bool isValid;
   final bool showPassword;
@@ -34,10 +34,10 @@ class SignupState extends Equatable {
       ];
 
   SignupState copyWith({
-    Email? email,
-    Password? password,
-    ConfirmedPassword? confirmedPassword,
-    SignupCode? signupCode,
+    String? email,
+    String? password,
+    String? confirmedPassword,
+    String? signupCode,
     FormzSubmissionStatus? status,
     bool? isValid,
     bool? showPassword,
