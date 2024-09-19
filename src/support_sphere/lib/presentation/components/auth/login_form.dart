@@ -42,6 +42,14 @@ class LoginForm extends StatelessWidget {
   }
 }
 
+/// Function to validate the form fields
+/// 
+/// Takes in a list of [validators], the input [value],
+/// and build [context] containing [LoginCubit] as arguments.
+/// It will return the error message if the value is invalid
+/// and null if the value is valid.
+/// Also, it will set the [LoginState.isValid] flag based on
+/// the validity of the value.
 String? validateValue(List<FormFieldValidator<String?>> validators,
     String? value, BuildContext context) {
   Function validate = FormBuilderValidators.compose(validators);
