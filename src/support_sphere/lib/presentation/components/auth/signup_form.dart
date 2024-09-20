@@ -30,6 +30,10 @@ class SignupForm extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            _FirstNameInput(),
+            const SizedBox(height: 8),
+            _LastNameInput(),
+            const SizedBox(height: 8),
             _EmailInput(),
             const SizedBox(height: 8),
             _PasswordInput(),
@@ -65,6 +69,81 @@ String? validateValue(List<FormFieldValidator<String?>> validators,
   }
   context.read<SignupCubit>().setValid();
   return null;
+}
+
+class _FirstNameInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SignupCubit, SignupState>(
+      buildWhen: (previous, current) =>
+          previous.givenName != current.givenName ||
+          previous.status != current.status,
+      builder: (context, state) {
+        return TextFormField(
+          key: const Key('signupForm_firstNameInput_textFormField'),
+          onChanged: (value) => context.read<SignupCubit>().firstNameChanged(value),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) => validateValue(
+            [
+              FormBuilderValidators.required(),
+              FormBuilderValidators.firstName()
+            ],
+            value,
+            context,
+          ),
+          decoration: InputDecoration(
+            labelText: LoginStrings.givenName,
+            helperText: '',
+            border: border(context),
+            enabledBorder: border(context),
+            focusedBorder: focusBorder(context),
+            prefixIcon: Icon(
+              Ionicons.person_sharp,
+              size: 15.0,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _LastNameInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SignupCubit, SignupState>(
+      buildWhen: (previous, current) =>
+          previous.familyName != current.familyName|| previous.status != current.status,
+      builder: (context, state) {
+        return TextFormField(
+          key: const Key('signupForm_lastNameInput_textFormField'),
+          onChanged: (value) => context.read<SignupCubit>().lastNameChanged(value),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) => validateValue(
+            [
+              FormBuilderValidators.required(),
+              FormBuilderValidators.lastName()
+            ],
+            value,
+            context,
+          ),
+          decoration: InputDecoration(
+            labelText: LoginStrings.familyName,
+            helperText: '',
+            border: border(context),
+            enabledBorder: border(context),
+            focusedBorder: focusBorder(context),
+            prefixIcon: Icon(
+              Ionicons.person_sharp,
+              size: 15.0,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _EmailInput extends StatelessWidget {

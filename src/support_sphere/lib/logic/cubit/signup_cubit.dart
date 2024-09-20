@@ -11,6 +11,22 @@ class SignupCubit extends Cubit<SignupState> {
 
   final AuthenticationRepository _authenticationRepository;
 
+  void firstNameChanged(String value) {
+    emit(
+      state.copyWith(
+        givenName: value,
+      ),
+    );
+  }
+
+  void lastNameChanged(String value) {
+    emit(
+      state.copyWith(
+        familyName: value,
+      ),
+    );
+  }
+
   void emailChanged(String value) {
     emit(
       state.copyWith(

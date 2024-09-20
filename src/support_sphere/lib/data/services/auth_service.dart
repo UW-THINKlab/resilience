@@ -5,9 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // TODO: ADD API Handling in here for exceptions
 
 List<String> _validSignupCodes = const [
-  'SUPPRT',
-  'SPHERE',
-  'SIGNUP',
+  'SUPPORT',
+  'SPPHERE',
+  'ISIGNUP',
 ];
 
 class AuthService extends Equatable{

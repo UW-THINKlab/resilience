@@ -17,6 +17,8 @@ class LoginStrings {
   static const String dontHaveAnAccount = 'Don\'t have an account?';
   static const String alreadyHaveAnAccount = 'Already have an account?';
   static const String signUp = 'Sign Up';
+  static const String givenName = 'First Name';
+  static const String familyName = 'Last Name';
 }
 
 /// Error messages
