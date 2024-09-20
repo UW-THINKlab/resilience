@@ -29,7 +29,6 @@ class Signup extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15.0, vertical: 20.0),
                     children: [
-                      // SizedBox(height: MediaQuery.of(context).size.height / 5),
                       Text(
                         AppStrings.signUpWelcome,
                         style: TextStyle(
