@@ -1,4 +1,5 @@
 import 'package:flow_builder/flow_builder.dart';
+import 'package:formz/formz.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -21,14 +22,14 @@ class Signup extends StatelessWidget {
         buildWhen: (previous, current) => previous.status != current.status,
         builder: (context, state) {
           return LoadingOverlay(
-              isLoading: false,
+              isLoading: state.status == FormzSubmissionStatus.inProgress,
               child: Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.onPrimary,
                 body: ListView(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15.0, vertical: 20.0),
                     children: [
-                      SizedBox(height: MediaQuery.of(context).size.height / 5),
+                      // SizedBox(height: MediaQuery.of(context).size.height / 5),
                       Text(
                         AppStrings.signUpWelcome,
                         style: TextStyle(

@@ -348,9 +348,7 @@ class _SignupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignupCubit, SignupState>(
       builder: (context, state) {
-        return state.status.isInProgress
-            ? const CircularProgressIndicator()
-            : ElevatedButton(
+        return ElevatedButton(
                 onPressed: state.isValid
                     ? () =>
                         context.read<SignupCubit>().signUpWithEmailAndPassword()
