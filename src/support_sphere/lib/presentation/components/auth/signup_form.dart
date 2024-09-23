@@ -119,6 +119,8 @@ class _SignupCodeInput extends StatelessWidget {
           onChanged: (value) =>
               context.read<SignupCubit>().signupCodeChanged(value),
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          /// Checks input for Signup code to be length of 7 characters
+          /// and uppercase value
           validator: (value) => validateValue(
             [
               FormBuilderValidators.required(),
@@ -162,6 +164,9 @@ class _PasswordInput extends StatelessWidget {
               context.read<SignupCubit>().passwordChanged(password),
           obscureText: !state.showPassword,
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          /// Checks input for password to have minimum character length of 8
+          /// at least 1 uppercase, 1 lowercase, 1 number, and 1 special character
+          /// see docs: https://pub.dev/documentation/form_builder_validators/latest/form_builder_validators/PasswordValidator-class.html
           validator: (value) => validateValue(
             [
               FormBuilderValidators.required(),
@@ -221,7 +226,8 @@ class _ConfirmedPasswordInput extends StatelessWidget {
           validator: (value) => validateValue(
             [
               FormBuilderValidators.required(),
-              FormBuilderValidators.password(),
+              /// Validates that the confirmed password matches
+              /// current password input
               (String? val) =>
                   val != state.password ? 'Passwords do not match' : null,
             ],
