@@ -7,26 +7,6 @@ import 'package:uuid/v4.dart';
 
 class AppRepository {
   final _supabaseClient = supabase;
-  final _supabaseAuth = supabase.auth;
-
-  Stream<Session?> getCurrentSession() => _supabaseAuth.onAuthStateChange.map((data) => data.session);
-
-  Stream<String> get currentUserRole {
-    // Transform the regular supabase user object to our own User model
-    return getCurrentSession().map((session) => parseUserRole(session));
-  }
-
-  String parseUserRole(Session? session) {
-    String defaultReturn = '';
-    if (session != null) {
-      String token = session.accessToken;
-      Map<String, dynamic> decodedToken = Jwtdecode(token);
-      String userRole = decodedToken['user_role'] ?? defaultReturn;
-      print("User role: ${userRole}");
-      return userRole;
-    }
-    return defaultReturn;
-  }
 
   Future<void> changeOperationalStatus({
     required String? operationalStatus,

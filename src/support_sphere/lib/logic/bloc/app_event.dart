@@ -5,15 +5,6 @@ class AppEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class AppOnUserRoleChanged extends AppEvent {
-  AppOnUserRoleChanged(this.userRole);
-
-  final String userRole;
-
-  @override
-  List<Object> get props => [userRole];
-}
-
 class AppOnModeChanged extends AppEvent {
   AppOnModeChanged(this.mode);
 
