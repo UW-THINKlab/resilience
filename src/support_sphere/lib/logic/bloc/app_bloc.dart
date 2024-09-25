@@ -18,11 +18,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     _operationalStatusSubscription = _appRepository.operationalStatus.listen(
       (data) => add(AppOnModeChanged(data.appMode)),
     );
+
+    _userRoleSubscription = _appRepository.currentUserRole.listen(
+      (userRole) => add(AppOnUserRoleChanged(userRole)),
+    );
   }
 
   final AppRepository _appRepository;
   late final StreamSubscription<OperationalEvent>
       _operationalStatusSubscription;
+  late final StreamSubscription<String> _userRoleSubscription;
 
   void _onModeChanged(AppOnModeChanged event, Emitter<AppState> emit) {
     emit(state.copyWith(mode: event.mode));
@@ -40,6 +45,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   @override
   Future<void> close() {
     _operationalStatusSubscription.cancel();
+    _userRoleSubscription.cancel();
     return super.close();
   }
 }
