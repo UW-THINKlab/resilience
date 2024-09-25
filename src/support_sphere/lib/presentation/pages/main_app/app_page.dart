@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // TODO: Activate Ionicons package when used
 // import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/repositories/app.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/presentation/router/app_body_select.dart';
@@ -14,7 +15,7 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AppBloc(),
+      create: (_) => AppBloc(appRepository: AppRepository()),
       child: BlocBuilder<AppBloc, AppState>(
         buildWhen: (previous, current) =>
             previous.selectedBottomNavIndex != current.selectedBottomNavIndex,
