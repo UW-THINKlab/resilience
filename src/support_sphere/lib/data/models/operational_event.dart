@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 
 class OperationalEvent extends Equatable {
@@ -16,17 +17,4 @@ class OperationalEvent extends Equatable {
 
   @override
   List<Object?> get props => [id, createdBy, createdAt, operationalStatus];
-
-  AppModes get appMode {
-    switch (operationalStatus) {
-      case 'NORMAL':
-        return AppModes.normal;
-      case 'EMERGENCY':
-        return AppModes.emergency;
-      case 'TEST':
-        return AppModes.testEmergency;
-      default:
-        return AppModes.normal;
-    }
-  }
 }

@@ -8,7 +8,7 @@ class AppEvent extends Equatable {
 class AppOnModeChanged extends AppEvent {
   AppOnModeChanged(this.mode);
 
-  final AppModes mode;
+  final String mode;
 
   @override
   List<Object> get props => [mode];
@@ -17,7 +17,7 @@ class AppOnModeChanged extends AppEvent {
 class AppOnStatusChangeRequested extends AppEvent {
   AppOnStatusChangeRequested(this.mode);
 
-  final AppModes mode;
+  final String mode;
 
   @override
   List<Object> get props => [mode];

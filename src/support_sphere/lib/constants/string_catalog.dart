@@ -27,4 +27,11 @@ class ErrorMessageStrings {
   static const String invalidSignUpCode = 'Invalid sign up code';
 }
 
+/// App Modes Strings
+class AppModes {
+  static const String normal = 'NORMAL';
+  static const String emergency = 'EMERGENCY';
+  static const String testEmergency = 'TEST';
+}
+
 
