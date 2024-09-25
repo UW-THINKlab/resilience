@@ -83,6 +83,10 @@ rest:
     tag: 2024.09.13
 
 realtime:
+  # Override the fullname of the realtime deployment
+  # as this is needed by supabase realtime to work properly
+  # See: https://github.com/supabase-community/supabase-kubernetes/issues/74
+  fullnameOverride: "realtime-dev"
   imagePullSecrets:
   - name: regcred
   image:
