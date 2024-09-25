@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/operational_event.dart';
-import 'package:support_sphere/data/utils.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
