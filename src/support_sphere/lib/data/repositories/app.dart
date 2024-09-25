@@ -1,10 +1,25 @@
 import 'dart:async';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/operational_event.dart';
+import 'package:support_sphere/data/utils.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
 class AppRepository {
   final _supabaseClient = supabase;
+  final _supabaseAuth = supabase.auth;
+
+  String? getCurrentUserRole() {
+    Session? session = _supabaseAuth.currentSession;
+    if (session != null) {
+      String token = session.accessToken;
+      Map<String, dynamic> decodedToken = Jwtdecode(token);
+      String? userRole = decodedToken['user_role'];
+      print("User role: ${userRole}");
+      return userRole;
+    }
+    return '';
+  }
 
   Future<void> changeOperationalStatus({
     required String? operationalStatus,
