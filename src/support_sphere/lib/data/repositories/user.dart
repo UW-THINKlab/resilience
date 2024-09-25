@@ -14,7 +14,7 @@ class UserRepository {
     // TODO: Fetch user from API
     return Future.delayed(
       const Duration(milliseconds: 300),
-      () => _user = AuthUser(uuid: const Uuid().v4()),
+      () => _user = AuthUser(uuid: const Uuid().v4(), userRole: ''),
     );
   }
 }
