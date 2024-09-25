@@ -97,6 +97,16 @@ BEGIN;
 COMMIT;
 """
 
+# SQL For activating realtime tables
+activate_realtime_tables_sql = """
+BEGIN;
+  -- See: https://supabase.com/docs/guides/realtime for more details about enabling realtime on tables
+
+  -- Enable realtime on the 'operational_events' table
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.operational_events;
+COMMIT;
+"""
+
 # Execute the SQL commands
 def execute_custom_sql_statement(sql_text):
     with session:
@@ -115,3 +125,6 @@ if __name__ == '__main__':
 
     logger.info("Execution role_based_authorization_sql...")
     execute_custom_sql_statement(role_based_authorization_sql)
+
+    logger.info("Activating realtime tables...")
+    execute_custom_sql_statement(activate_realtime_tables_sql)
