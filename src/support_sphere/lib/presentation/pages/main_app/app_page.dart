@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-// TODO: Activate Ionicons package when used
-// import 'package:ionicons/ionicons.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/data/repositories/app.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/router/app_body_select.dart';
+import 'package:support_sphere/data/repositories/app.dart';
 
 class AppPage extends StatelessWidget {
   const AppPage({super.key});
@@ -42,12 +42,7 @@ class AppPage extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 actions: const [
-                  // TODO: Add mode change button
-                  // IconButton(
-                  //   onPressed: () => showChangeModeAlert(context),
-                  //   icon: Icon(Ionicons.radio_outline),
-                  //   color: Colors.white,
-                  // ),
+                  _DeclareEmergencyButton(),
                   // TODO: Add notifications badge
                   // IconButton(
                   //   icon: const Badge(
@@ -83,5 +78,35 @@ class AppPage extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+/// Button to declare an emergency
+/// Only visible to users that have a role
+/// of community admin and above
+class _DeclareEmergencyButton extends StatelessWidget {
+  const _DeclareEmergencyButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+
+    Widget iconButton = IconButton(
+      onPressed: () => print("Emergency button pressed"),
+      icon: Icon(Ionicons.radio_outline),
+      color: Colors.white,
+    );
+
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+      switch (state.user.userRole) {
+        // TODO: Change key to enums
+        case 'MANAGER':
+          return iconButton;
+        case 'ADMIN':
+          return iconButton;
+        default:
+          return SizedBox();
+      }
+    });
   }
 }
