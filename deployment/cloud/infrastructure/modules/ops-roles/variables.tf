@@ -13,23 +13,12 @@ variable "stage" {
     }
 }
 
-variable "instance_type" {
-    description = "The instance type to use for the server"
+variable "ops_group_name" {
+    description = "The name of the admin group"
     type        = string
 }
 
-variable "volume_size" {
-    description = "The instance volume size to use for the server"
-    type        = string
-
-}
-
-variable "kms_key_arn_west" {
-    description = "The ARN of the KMS key to use for encryption in the west region"
-    type        = string
-}
-
-variable "kms_key_arn_east" {
-    description = "The ARN of the KMS key to use for encryption in the east region"
+variable "autoscaling_group_arn" {
+    description = "The ARN of the autoscaling group for the server"
     type        = string
 }

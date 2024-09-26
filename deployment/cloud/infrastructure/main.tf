@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "${local.resource_prefix}-${var.account_id}-opentofu-state"
+    bucket = "${local.account_resource_prefix}-${var.account_id}-opentofu-state"
     key = "infrastructure/${var.stage}/terraform.tfstate"
     region = "us-west-2"
   }
@@ -16,8 +16,10 @@ terraform {
 locals {
   // The resource prefix is a combination of the project name and neighborhood
   // This will be used to name all resources created by this module
+  account_resource_prefix = lower(trimspace(replace(var.project_name, " ", "")))
+
   resource_prefix = join("-", 
-    [lower(trimspace(replace(var.project_name, " ", ""))), 
+    [local.account_resource_prefix, 
     lower(trimspace(replace(var.neighborhood, " ", "")))]
   )
 }
@@ -45,6 +47,28 @@ provider "aws" {
 provider "aws" {
   alias = "east"
   region = "us-east-1"
+  
+  default_tags {
+    tags = merge({
+        Project = var.project_name,
+        Neighborhood = var.neighborhood
+      },
+      var.additional_tags
+    )
+  }
+}
+
+module "keys" {
+  source = "./modules/keys"
+  
+  resource_prefix = local.resource_prefix
+  stage = var.stage
+  ops_group_name = "ssec-eng"
+
+  providers = {
+    aws = aws
+    aws.east = aws.east
+  }
 }
 
 module "server" {
@@ -54,11 +78,17 @@ module "server" {
   instance_type = var.instance_type
   stage = var.stage
   volume_size = var.volume_size
+  kms_key_arn_west = module.keys.kms_key_arn_west
+  kms_key_arn_east = module.keys.kms_key_arn_east
+}
 
-  providers = {
-    aws = aws
-    aws.east = aws.east
-  }
+module "ops-roles" {
+  source = "./modules/ops-roles"
+  
+  resource_prefix = local.resource_prefix
+  stage = var.stage
+  ops_group_name = "ssec-eng"
+  autoscaling_group_arn = module.server.autoscaling_group_arn
 }
 
 resource "aws_resourcegroups_group" "this" {
