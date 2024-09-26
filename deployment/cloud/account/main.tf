@@ -26,10 +26,6 @@ provider "aws" {
 }
 
 # s3 tf state bucket
-import {
-    to = aws_s3_bucket.tf_state
-    id = "${var.account_resource_prefix}-${var.account_id}-opentofu-state"
-}
 
 resource "aws_s3_bucket" "tf_state" {
   bucket = "${var.account_resource_prefix}-${var.account_id}-opentofu-state"
@@ -54,11 +50,6 @@ resource "aws_s3_bucket_public_access_block" "example" {
 }
 
 # deploy role
-import {
-    to = aws_iam_role.deploy
-    id = "${var.account_resource_prefix}-deploy"
-}
-
 resource "aws_iam_role" "deploy" {
   name = "${var.account_resource_prefix}-deploy"
   description = "Role used to deploy infrastructure for the Support Sphere app, part of the Post-Disaster communications project."
@@ -130,19 +121,9 @@ resource "aws_iam_role_policy" "kms_key_access" {
 }
 
 # user group
-import {
-    to = aws_iam_group.this
-    id = var.ops_group_name
-}
-
 resource "aws_iam_group" "this" {
   # TODO: decide if we want to use the account_resource_prefix here
   name = var.ops_group_name
-}
-
-import {
-    to = aws_iam_group_policy.assume_deploy
-    id = "ssec-eng:assume-deploy-role"
 }
 
 resource "aws_iam_group_policy" "assume_deploy" {
