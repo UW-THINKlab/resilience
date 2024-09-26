@@ -3,15 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:support_sphere/data/models/all_models.dart';
 import 'package:support_sphere/presentation/router/auth_select.dart';
-import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 import 'package:support_sphere/utils/config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
-import 'package:flow_builder/flow_builder.dart';
-import 'package:support_sphere/presentation/pages/landing_page.dart';
 
 void main() async {
   try {

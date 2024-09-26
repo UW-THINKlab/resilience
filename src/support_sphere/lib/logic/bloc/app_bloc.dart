@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/operational_event.dart';
 import 'package:support_sphere/data/repositories/app.dart';
 
@@ -16,7 +17,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<AppOnStatusChangeRequested>(_updateStatus);
 
     _operationalStatusSubscription = _appRepository.operationalStatus.listen(
-      (data) => add(AppOnModeChanged(data.appMode)),
+      (data) => add(AppOnModeChanged(data.operationalStatus)),
     );
   }
 
@@ -29,7 +30,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _updateStatus(AppOnStatusChangeRequested event, Emitter<AppState> emit) {
-    _appRepository.changeOperationalStatus(operationalStatus: event.mode.name);
+    _appRepository.changeOperationalStatus(operationalStatus: event.mode);
   }
 
   void _onBottomNavIndexChanged(
