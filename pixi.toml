@@ -185,6 +185,7 @@ depends-on = ["install-flutter"]
 "TF_VAR_neighborhood" = "Laurelhurst"
 "TF_VAR_stage" = "dev"
 "TF_VAR_account_id" = "871683513797"
+"TF_VAR_ops_group_name" = "ssec-eng"
 
 [feature.cloud.tasks]
 # empty for now
@@ -199,19 +200,34 @@ aws-session-manager-plugin = ">=1.2.0"
 # OpenTofu tasks
 [feature.cloud.tasks.cloud-deploy]
 cmd = "tofu apply"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-init]
 cmd = "tofu init"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-plan]
 cmd = "tofu plan"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-destroy]
 cmd = "tofu destroy"
-cwd = "deployment/cloud"
+cwd = "deployment/cloud/aws/infrastructure"
+
+[feature.cloud.tasks.cloud-account-deploy]
+cmd = "tofu apply"
+cwd = "deployment/cloud/aws/account"
+depends-on = ["cloud-account-setup"]
+
+[feature.cloud.tasks.cloud-account-init]
+cmd = "tofu init"
+cwd = "deployment/cloud/aws/account"
+depends-on = ["cloud-account-setup"]
+
+[feature.cloud.tasks.cloud-account-plan]
+cmd = "tofu plan"
+cwd = "deployment/cloud/aws/account"
+depends-on = ["cloud-account-setup"]
 
 # server tasks
 [feature.cloud.tasks.cloud-server-run]
@@ -231,6 +247,9 @@ cmd = "sops edit deployment/values.cloud.yaml"
 
 [feature.cloud.tasks.cloud-account-setup]
 cmd = "python scripts/cloud-account-setup.py"
+
+[feature.cloud.tasks.cloud-account-user-controls]
+cmd = "python scripts/aws-user-controls.py"
 
 # ==== Backup Secret environment ====
 [feature.backup-secret.dependencies]

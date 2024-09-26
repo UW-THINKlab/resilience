@@ -3,7 +3,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.61"
-      configuration_aliases = [ aws.east ]
     }
   }
 }
@@ -32,15 +31,6 @@ module "vpc" {
     one_nat_gateway_per_az = false
     enable_dns_hostnames = true
     enable_dhcp_options  = true
-}
-
-data "aws_kms_alias" "us_west_2" {
-  name = "alias/${var.resource_prefix}-kms-key-us-west-2"
-}
-
-data "aws_kms_alias" "us_east_1" {
-  provider = aws.east
-  name = "alias/${var.resource_prefix}-kms-key-us-east-1"
 }
 
 
@@ -96,8 +86,8 @@ resource "aws_iam_role" "instance" {
             "kms:Decrypt"
           ],
           Resource = [
-            data.aws_kms_alias.us_west_2.target_key_arn,
-            data.aws_kms_alias.us_east_1.target_key_arn
+            var.kms_key_arn_west,
+            var.kms_key_arn_east
           ]
         }
       ]
@@ -216,86 +206,4 @@ resource "aws_autoscaling_schedule" "scale_down" {
   max_size = 1
   recurrence = "0 1 * * MON-FRI"
   autoscaling_group_name = aws_autoscaling_group.this.name
-}
-
-// role to scale up and down the server asg
-resource "aws_iam_role" "scaling" {
-    name = "${var.resource_prefix}-scaling-role"
-    assume_role_policy = jsonencode({
-        Version = "2012-10-17",
-        Statement = [
-            {
-                Effect = "Allow",
-                Principal = {
-                    AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:root"
-                },
-                Action = "sts:AssumeRole"
-            }
-        ]
-    })
-
-    inline_policy {
-        name = "${var.resource_prefix}_server_run_policy"
-        policy = jsonencode({
-            Version = "2012-10-17",
-            Statement = [
-                {
-                    Effect = "Allow",
-                    Action = [
-                        "autoscaling:SetDesiredCapacity"
-                    ],
-                    Resource = aws_autoscaling_group.this.arn
-                },
-                {
-                    Effect = "Allow",
-                    Action = [
-                        "autoscaling:DescribeAutoScalingGroups"
-                    ],
-                    Resource = "*"
-                }
-            ]
-        })
-    }
-}
-
-resource "aws_iam_role" "access" {
-    name = "${var.resource_prefix}-server-access-role"
-    assume_role_policy = jsonencode({
-        Version = "2012-10-17",
-        Statement = [
-            {
-                Effect = "Allow",
-                Principal = {
-                    AWS = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:root"
-                },
-                Action = "sts:AssumeRole"
-            }
-        ]
-    })
-
-    inline_policy {
-        name = "${var.resource_prefix}_server_access_policy"
-        policy = jsonencode({
-            Version = "2012-10-17",
-            Statement = [
-                {
-                    Effect = "Allow",
-                    Action = [
-                        "ssm:StartSession"
-                    ],
-                    Resource = [
-                      "arn:aws:ssm:${data.aws_region.this.name}::document/AWS-StartInteractiveCommand",
-                      "arn:aws:ec2:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:instance/*"
-                    ]
-                },
-                {
-                    Effect = "Allow",
-                    Action = [
-                        "ec2:DescribeInstances"
-                    ],
-                    Resource = "*"
-                }
-            ]
-        })
-    }
 }

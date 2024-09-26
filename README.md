@@ -98,11 +98,9 @@ To run this app locally, follow these steps:
 
 It's in `./deployment/cloud` and we're using [OpenTofu](https://opentofu.org/)
 
-### Credentials
+### Overview of AWS account setup, including information on getting credentials
 
-For now, contact Niki for least-privileged IAM user credentials. These will be used to assume the necessary roles. ([TODO as part of this issue](https://github.com/uw-ssec/post-disaster-comms/issues/61): find a better way to distribute these)
-
-This user will assume the necessary roles to get things going
+Please see our information [here](./deployment/cloud/aws/README.md)
 
 ### Editing deployment/values.cloud.yaml
 

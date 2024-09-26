@@ -6,99 +6,33 @@ def sanitize(input):
 
 project_name = sanitize(os.environ.get('TF_VAR_project_name', 'Support Sphere'))
 neighborhood = sanitize(os.environ.get('TF_VAR_neighborhood', 'Laurelhurst'))
+account_id = os.environ.get('TF_VAR_account_id', '123456789012')
 
 resource_prefix = f'{project_name}-{neighborhood}'
 
-USER_GROUP_NAME = "ssec-eng"
-
 iam = boto3.client('iam')
 
-def kms_key_exists(alias: str, region: str):
-    kms = boto3.client('kms', region_name=region)
+def setup_s3_bucket():
+    s3 = boto3.client('s3')
+
+    bucket_name = f'{project_name}-{account_id}-opentofu-state'
+
     try:
-        kms.describe_key(
-            KeyId=alias
-        )
-        return True
-    except kms.exceptions.NotFoundException:
-        return False
-    
-
-def grant_decrypt_permission_to_user_group(key_arn: str, region: str):
-    iam.put_group_policy(
-        GroupName=USER_GROUP_NAME,
-        PolicyName=f'AllowDecryptKey{region}',
-        PolicyDocument=f'''{{
-            "Version": "2012-10-17",
-            "Statement": [
-                {{
-                    "Effect": "Allow",
-                    "Action": [
-                        "kms:Encrypt",
-                        "kms:Decrypt"
-                    ],
-                    "Resource": "{key_arn}"
-                }}
-            ]
-        }}'''
-    )
-
-
-def create_kms_key(region: str):
-    kms = boto3.client('kms', region_name=region)
-
-    key_alias_name = f'alias/{resource_prefix}-kms-key-{region}'
-
-    if kms_key_exists(key_alias_name, region):
-        print(f'Key already exists in {region}')
-        return
-    
-    response = kms.create_key(
-        Description='Key for encrypting and decrypting server config values for the Support Sphere project.',
-        KeyUsage='ENCRYPT_DECRYPT',
-        Origin='AWS_KMS',
-        Tags=[
-            {
-                'TagKey': 'Project',
-                'TagValue': project_name
+        s3.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={
+                'LocationConstraint': 'us-west-2'
             },
-            {
-                'TagKey': 'Neighborhood',
-                'TagValue': neighborhood
-            }
-        ]
-    )
-    
-    key_id = response['KeyMetadata']['KeyId']
-    key_arn = response['KeyMetadata']['Arn']
-    print(f'Created key {key_id} in {region} with ARN {key_arn}')
-
-    kms.create_alias(
-        AliasName=key_alias_name,
-        TargetKeyId=key_id
-    )
-
-    grant_decrypt_permission_to_user_group(key_arn, region)
-
-def setup_kms_keys():
-    # Create key us-west-2 (Portland)
-    create_kms_key('us-west-2')
-
-    # Create key us-east-1 (Virginia)
-    #    This is mainly a backup key in case the Portland region experiences issues
-    create_kms_key('us-east-1')
-    
+            ACL='private'
+        )
+        print(f'Created bucket {bucket_name}')
+    except s3.exceptions.BucketAlreadyExists:
+        print(f'Bucket {bucket_name} already exists')
+    except s3.exceptions.BucketAlreadyOwnedByYou:
+        print(f'Bucket {bucket_name} already owned by you, continuing :)')
+    except Exception as e:
+        print(f'Error creating bucket {bucket_name}: {e}')
 
 if __name__ == '__main__':
-    # The following TODOs will be implemented when working on the following issue 
-    #    https://github.com/uw-ssec/post-disaster-comms/issues/63
-    # Not doing this now because this work is focused on setting up a KMS key for the project
-
-    # TODO: set up user group
-
-    # TODO: set up no-trust user
-
-    # TODO: set up deploy role
-
-    # KMS key setup
-    setup_kms_keys()
+    # S3 bucket setup
+    setup_s3_bucket()
