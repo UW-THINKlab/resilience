@@ -760,7 +760,7 @@ packages:
   url: https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl
   sha256: 1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53
   requires_dist:
-  - typing-extensions>=4.0.0 ; python_version < '3.9'
+  - typing-extensions>=4.0.0 ; python_full_version < '3.9'
   requires_python: '>=3.8'
 - kind: pypi
   name: anyio
@@ -770,8 +770,8 @@ packages:
   requires_dist:
   - idna>=2.8
   - sniffio>=1.1
-  - exceptiongroup>=1.0.2 ; python_version < '3.11'
-  - typing-extensions>=4.1 ; python_version < '3.11'
+  - exceptiongroup>=1.0.2 ; python_full_version < '3.11'
+  - typing-extensions>=4.1 ; python_full_version < '3.11'
   - packaging ; extra == 'doc'
   - sphinx~=7.4 ; extra == 'doc'
   - sphinx-rtd-theme ; extra == 'doc'
@@ -784,7 +784,7 @@ packages:
   - pytest>=7.0 ; extra == 'test'
   - pytest-mock>=3.6.1 ; extra == 'test'
   - trustme ; extra == 'test'
-  - uvloop>=0.21.0b1 ; (platform_python_implementation == 'CPython' and platform_system != 'Windows') and extra == 'test'
+  - uvloop>=0.21.0b1 ; platform_python_implementation == 'CPython' and platform_system != 'Windows' and extra == 'test'
   - trio>=0.26.1 ; extra == 'trio'
   requires_python: '>=3.8'
 - kind: conda
@@ -1933,7 +1933,7 @@ packages:
   sha256: ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28
   requires_dist:
   - colorama ; platform_system == 'Windows'
-  - importlib-metadata ; python_version < '3.8'
+  - importlib-metadata ; python_full_version < '3.8'
   requires_python: '>=3.7'
 - kind: conda
   name: colorama
@@ -2691,7 +2691,7 @@ packages:
   url: https://files.pythonhosted.org/packages/95/04/ff642e65ad6b90db43e668d70ffb6736436c7ce41fcc549f4e9472234127/h11-0.14.0-py3-none-any.whl
   sha256: e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761
   requires_dist:
-  - typing-extensions ; python_version < '3.8'
+  - typing-extensions ; python_full_version < '3.8'
   requires_python: '>=3.7'
 - kind: pypi
   name: h2
@@ -5186,10 +5186,10 @@ packages:
   requires_dist:
   - annotated-types>=0.6.0
   - pydantic-core==2.23.4
-  - typing-extensions>=4.12.2 ; python_version >= '3.13'
-  - typing-extensions>=4.6.1 ; python_version < '3.13'
+  - typing-extensions>=4.12.2 ; python_full_version >= '3.13'
+  - typing-extensions>=4.6.1 ; python_full_version < '3.13'
   - email-validator>=2.0.0 ; extra == 'email'
-  - tzdata ; (python_version >= '3.9' and sys_platform == 'win32') and extra == 'timezone'
+  - tzdata ; python_full_version >= '3.9' and sys_platform == 'win32' and extra == 'timezone'
   requires_python: '>=3.8'
 - kind: pypi
   name: pydantic-core
@@ -5632,7 +5632,7 @@ packages:
   - ipywidgets>=7.5.1,<9 ; extra == 'jupyter'
   - markdown-it-py>=2.2.0
   - pygments>=2.13.0,<3.0.0
-  - typing-extensions>=4.0.0,<5.0 ; python_version < '3.9'
+  - typing-extensions>=4.0.0,<5.0 ; python_full_version < '3.9'
   requires_python: '>=3.7.0'
 - kind: conda
   name: rich
@@ -5943,8 +5943,8 @@ packages:
   sha256: eb60b026d8ad0c97917cb81d3662d0b39b8ff1335e3fabb24984c6acd0c900a2
   requires_dist:
   - typing-extensions>=4.6.0
-  - greenlet!=0.4.17 ; python_version < '3.13' and (platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32'))))))
-  - importlib-metadata ; python_version < '3.8'
+  - greenlet!=0.4.17 ; (python_full_version < '3.13' and platform_machine == 'AMD64') or (python_full_version < '3.13' and platform_machine == 'WIN32') or (python_full_version < '3.13' and platform_machine == 'aarch64') or (python_full_version < '3.13' and platform_machine == 'amd64') or (python_full_version < '3.13' and platform_machine == 'ppc64le') or (python_full_version < '3.13' and platform_machine == 'win32') or (python_full_version < '3.13' and platform_machine == 'x86_64')
+  - importlib-metadata ; python_full_version < '3.8'
   - greenlet!=0.4.17 ; extra == 'aiomysql'
   - aiomysql>=0.2.0 ; extra == 'aiomysql'
   - greenlet!=0.4.17 ; extra == 'aioodbc'
@@ -5982,8 +5982,8 @@ packages:
   sha256: 6921ee01caf375363be5e9ae70d08ce7ca9d7e0e8983183080211a062d299468
   requires_dist:
   - typing-extensions>=4.6.0
-  - greenlet!=0.4.17 ; python_version < '3.13' and (platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32'))))))
-  - importlib-metadata ; python_version < '3.8'
+  - greenlet!=0.4.17 ; (python_full_version < '3.13' and platform_machine == 'AMD64') or (python_full_version < '3.13' and platform_machine == 'WIN32') or (python_full_version < '3.13' and platform_machine == 'aarch64') or (python_full_version < '3.13' and platform_machine == 'amd64') or (python_full_version < '3.13' and platform_machine == 'ppc64le') or (python_full_version < '3.13' and platform_machine == 'win32') or (python_full_version < '3.13' and platform_machine == 'x86_64')
+  - importlib-metadata ; python_full_version < '3.8'
   - greenlet!=0.4.17 ; extra == 'aiomysql'
   - aiomysql>=0.2.0 ; extra == 'aiomysql'
   - greenlet!=0.4.17 ; extra == 'aioodbc'
@@ -6021,8 +6021,8 @@ packages:
   sha256: 93a71c8601e823236ac0e5d087e4f397874a421017b3318fd92c0b14acf2b6db
   requires_dist:
   - typing-extensions>=4.6.0
-  - greenlet!=0.4.17 ; python_version < '3.13' and (platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32'))))))
-  - importlib-metadata ; python_version < '3.8'
+  - greenlet!=0.4.17 ; (python_full_version < '3.13' and platform_machine == 'AMD64') or (python_full_version < '3.13' and platform_machine == 'WIN32') or (python_full_version < '3.13' and platform_machine == 'aarch64') or (python_full_version < '3.13' and platform_machine == 'amd64') or (python_full_version < '3.13' and platform_machine == 'ppc64le') or (python_full_version < '3.13' and platform_machine == 'win32') or (python_full_version < '3.13' and platform_machine == 'x86_64')
+  - importlib-metadata ; python_full_version < '3.8'
   - greenlet!=0.4.17 ; extra == 'aiomysql'
   - aiomysql>=0.2.0 ; extra == 'aiomysql'
   - greenlet!=0.4.17 ; extra == 'aioodbc'
@@ -6139,7 +6139,7 @@ packages:
   sha256: 632f420a9d13e3ee2a6f18f437b0a9f1faecb0bc42e1942aa2ea0e379a4c4206
   requires_dist:
   - anyio<5,>=3.4.0
-  - typing-extensions>=3.10.0 ; python_version < '3.10'
+  - typing-extensions>=3.10.0 ; python_full_version < '3.10'
   - httpx>=0.22.0 ; extra == 'full'
   - itsdangerous ; extra == 'full'
   - jinja2 ; extra == 'full'
@@ -6194,9 +6194,9 @@ packages:
   requires_python: '>=3.8,<4.0'
 - kind: pypi
   name: support-sphere-py
-  version: 0.0.7
+  version: 0.0.8
   path: ./src/support_sphere_py
-  sha256: 67b861bce2c950a07ce356877a21203b138f86d1268ca9f8f646cc2c00291319
+  sha256: 6155a1e86be679b3c383235205d36249c211eab01e4e009072702f73a2ef3600
   requires_dist:
   - sqlmodel>=0.0.21,<0.1
   - supabase>=2.6.0,<2.7
@@ -6404,12 +6404,12 @@ packages:
   requires_dist:
   - click>=7.0
   - h11>=0.8
-  - typing-extensions>=4.0 ; python_version < '3.11'
+  - typing-extensions>=4.0 ; python_full_version < '3.11'
   - colorama>=0.4 ; sys_platform == 'win32' and extra == 'standard'
   - httptools>=0.5.0 ; extra == 'standard'
   - python-dotenv>=0.13 ; extra == 'standard'
   - pyyaml>=5.1 ; extra == 'standard'
-  - uvloop!=0.15.0,!=0.15.1,>=0.14.0 ; (sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')) and extra == 'standard'
+  - uvloop!=0.15.0,!=0.15.1,>=0.14.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32' and extra == 'standard'
   - watchfiles>=0.13 ; extra == 'standard'
   - websockets>=10.4 ; extra == 'standard'
   requires_python: '>=3.8'
@@ -6428,8 +6428,8 @@ packages:
   - pyopenssl~=23.0.0 ; extra == 'test'
   - mypy>=0.800 ; extra == 'test'
   - cython<0.30.0,>=0.29.36 ; extra == 'test'
-  - aiohttp>=3.8.1 ; python_version < '3.12' and extra == 'test'
-  - aiohttp==3.9.0b0 ; python_version >= '3.12' and extra == 'test'
+  - aiohttp>=3.8.1 ; python_full_version < '3.12' and extra == 'test'
+  - aiohttp==3.9.0b0 ; python_full_version >= '3.12' and extra == 'test'
   requires_python: '>=3.8.0'
 - kind: pypi
   name: uvloop
@@ -6446,8 +6446,8 @@ packages:
   - pyopenssl~=23.0.0 ; extra == 'test'
   - mypy>=0.800 ; extra == 'test'
   - cython<0.30.0,>=0.29.36 ; extra == 'test'
-  - aiohttp>=3.8.1 ; python_version < '3.12' and extra == 'test'
-  - aiohttp==3.9.0b0 ; python_version >= '3.12' and extra == 'test'
+  - aiohttp>=3.8.1 ; python_full_version < '3.12' and extra == 'test'
+  - aiohttp==3.9.0b0 ; python_full_version >= '3.12' and extra == 'test'
   requires_python: '>=3.8.0'
 - kind: pypi
   name: uvloop
@@ -6464,8 +6464,8 @@ packages:
   - pyopenssl~=23.0.0 ; extra == 'test'
   - mypy>=0.800 ; extra == 'test'
   - cython<0.30.0,>=0.29.36 ; extra == 'test'
-  - aiohttp>=3.8.1 ; python_version < '3.12' and extra == 'test'
-  - aiohttp==3.9.0b0 ; python_version >= '3.12' and extra == 'test'
+  - aiohttp>=3.8.1 ; python_full_version < '3.12' and extra == 'test'
+  - aiohttp==3.9.0b0 ; python_full_version >= '3.12' and extra == 'test'
   requires_python: '>=3.8.0'
 - kind: pypi
   name: watchfiles
