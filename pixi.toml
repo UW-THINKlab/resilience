@@ -185,6 +185,7 @@ depends-on = ["install-flutter"]
 "TF_VAR_neighborhood" = "Laurelhurst"
 "TF_VAR_stage" = "dev"
 "TF_VAR_account_id" = "871683513797"
+"TF_VAR_ops_group_name" = "ssec-eng"
 
 [feature.cloud.tasks]
 # empty for now
