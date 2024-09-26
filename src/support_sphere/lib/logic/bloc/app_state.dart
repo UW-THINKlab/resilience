@@ -24,7 +24,8 @@ class AppState extends Equatable {
   }) {
     return AppState(
       mode: mode ?? this.mode,
-      selectedBottomNavIndex: selectedBottomNavIndex ?? this.selectedBottomNavIndex,
+      selectedBottomNavIndex:
+          selectedBottomNavIndex ?? this.selectedBottomNavIndex,
     );
   }
 }
