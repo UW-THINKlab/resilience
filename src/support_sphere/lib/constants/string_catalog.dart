@@ -4,6 +4,21 @@ class AppStrings {
   static const String signUpWelcome = 'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
 }
 
+class EmergencyAlertDialogStrings {
+  static const String title = 'Emergency Declared';
+  static const String message = 'An emergency has been declared.\nWould you like to return to normal mode?';
+  static const String buttonYes = 'Yes';
+  static const String buttonNo = 'No';
+}
+
+class NormalAlertDialogStrings {
+  static const String title = 'Declare An Emergency';
+  static const String message = 'You are about to declare an emergency.\nWould you like to declare an actual emergency or a test?';
+  static const String buttonEmergency = 'Emergency';
+  static const String buttonTest = 'Test';
+  static const String buttonCancel = 'Cancel';
+}
+
 /// Login related strings
 class LoginStrings {
   static const String login = 'Login';

@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/logic/bloc/app_bloc.dart';
 
 class OperationalEvent extends Equatable {
   const OperationalEvent({

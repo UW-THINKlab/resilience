@@ -37,7 +37,8 @@ class AppPage extends StatelessWidget {
         },
         child: BlocBuilder<AppBloc, AppState>(
           buildWhen: (previous, current) =>
-              previous.selectedBottomNavIndex != current.selectedBottomNavIndex ||
+              previous.selectedBottomNavIndex !=
+                  current.selectedBottomNavIndex ||
               previous.mode != current.mode,
           builder: (context, state) {
             return SafeArea(
@@ -55,8 +56,7 @@ class AppPage extends StatelessWidget {
                   //   },
                   // ),
                   // TODO: Change color to red during emergency mode
-                  backgroundColor:
-                      state.mode == AppModes.normal
+                  backgroundColor: state.mode == AppModes.normal
                       ? Theme.of(context).colorScheme.primaryContainer
                       : Colors.red,
                   // TODO: Add "Emergency Declared" title during emergency mode
@@ -113,7 +113,6 @@ class _DeclareEmergencyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     Future<void> showChangeModeAlert(BuildContext parentContext) async {
       print(parentContext);
       return showDialog<void>(
@@ -124,7 +123,7 @@ class _DeclareEmergencyButton extends StatelessWidget {
         },
       );
     }
-  
+
     Widget iconButton = IconButton(
       onPressed: () => showChangeModeAlert(context),
       icon: Icon(Ionicons.radio_outline),
@@ -187,18 +186,17 @@ class _EmergencyAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Emergency Declared'),
+      title: const Text(EmergencyAlertDialogStrings.title),
       content: const SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text('An emergency has been declared.'),
-            Text('Would you like to return to normal mode?'),
+            Text(EmergencyAlertDialogStrings.message),
           ],
         ),
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('Yes'),
+          child: const Text(EmergencyAlertDialogStrings.buttonYes),
           onPressed: () {
             Navigator.of(context).pop();
             parentContext
@@ -207,7 +205,7 @@ class _EmergencyAlertDialog extends StatelessWidget {
           },
         ),
         TextButton(
-          child: const Text('No'),
+          child: const Text(EmergencyAlertDialogStrings.buttonNo),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -232,24 +230,25 @@ class _NormalAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Declare An Emergency'),
+      title: const Text(NormalAlertDialogStrings.title),
       content: const SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text('You are about to declare an emergency.'),
-            Text('Would you like to declare an actual emergency or a test?'),
+            Text(NormalAlertDialogStrings.message),
           ],
         ),
       ),
       actions: <Widget>[
+        // Cancel button
         TextButton(
-          child: const Text('Cancel'),
+          child: const Text(NormalAlertDialogStrings.buttonCancel),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
+        // Test button
         TextButton(
-          child: const Text('Test'),
+          child: const Text(NormalAlertDialogStrings.buttonTest),
           onPressed: () {
             Navigator.of(context).pop();
             parentContext
@@ -257,8 +256,9 @@ class _NormalAlertDialog extends StatelessWidget {
                 .add(AppOnStatusChangeRequested(AppModes.testEmergency));
           },
         ),
+        // Emergency button
         TextButton(
-          child: const Text('Emergency'),
+          child: const Text(NormalAlertDialogStrings.buttonEmergency),
           onPressed: () {
             Navigator.of(context).pop();
             parentContext
