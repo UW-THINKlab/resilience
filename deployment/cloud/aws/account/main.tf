@@ -120,6 +120,36 @@ resource "aws_iam_role_policy" "kms_key_access" {
   })
 }
 
+resource "aws_iam_role_policy" "disallow_deploy_role_iam_user_operations" {
+  name = "${var.account_resource_prefix}_disallow_deploy_role_iam_user_operations"
+  role = aws_iam_role.deploy.name
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Deny",
+        Action = [
+          "iam:CreateUser",
+          "iam:DeleteUser",
+          "iam:UpdateUser",
+          "iam:CreateLoginProfile",
+          "iam:DeleteLoginProfile",
+          "iam:UpdateLoginProfile",
+          "iam:CreateAccessKey",
+          "iam:DeleteAccessKey",
+          "iam:UpdateAccessKey",
+          "iam:AttachUserPolicy",
+          "iam:DetachUserPolicy",
+          "iam:PutUserPolicy",
+          "iam:DeleteUserPolicy",
+          "iam:UpdateUserPolicy",
+        ],
+        Resource = "*",
+      }
+    ]
+  })
+}
+
 # user group
 resource "aws_iam_group" "this" {
   # TODO: decide if we want to use the account_resource_prefix here
