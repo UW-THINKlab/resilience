@@ -63,7 +63,7 @@ module "keys" {
   
   resource_prefix = local.resource_prefix
   stage = var.stage
-  ops_group_name = "ssec-eng"
+  ops_group_name = var.ops_group_name
 
   providers = {
     aws = aws
