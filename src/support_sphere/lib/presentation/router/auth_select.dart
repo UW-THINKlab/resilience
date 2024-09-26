@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
+import 'package:support_sphere/presentation/pages/main_app/app_page.dart';
 import 'package:support_sphere/presentation/router/flows/onboarding_flow.dart';
 
 /// Selects the appropriate page to display based on the user's authentication status
@@ -20,8 +21,7 @@ class AuthSelect extends StatelessWidget {
           switch (authStatus) {
             case AuthenticationStatus.authenticated:
               /// If the user is authenticated, display the main app page
-              // TODO: Add the main app page here
-              return Container();
+              return const AppPage();
               // return const AppPage();
             case AuthenticationStatus.unauthenticated:
               /// If the user is not authenticated, display the onboarding flow
