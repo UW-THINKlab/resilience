@@ -87,7 +87,7 @@ module "ops-roles" {
   
   resource_prefix = local.resource_prefix
   stage = var.stage
-  ops_group_name = "ssec-eng"
+  ops_group_name = var.ops_group_name
   autoscaling_group_arn = module.server.autoscaling_group_arn
 }
 
