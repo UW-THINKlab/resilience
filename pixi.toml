@@ -213,6 +213,21 @@ cwd = "deployment/cloud/infrastructure"
 cmd = "tofu destroy"
 cwd = "deployment/cloud/infrastructure"
 
+[feature.cloud.tasks.cloud-account-deploy]
+cmd = "tofu apply"
+cwd = "deployment/cloud/account"
+depends-on = ["cloud-account-setup"]
+
+[feature.cloud.tasks.cloud-account-init]
+cmd = "tofu init"
+cwd = "deployment/cloud/account"
+depends-on = ["cloud-account-setup"]
+
+[feature.cloud.tasks.cloud-account-plan]
+cmd = "tofu plan"
+cwd = "deployment/cloud/account"
+depends-on = ["cloud-account-setup"]
+
 # server tasks
 [feature.cloud.tasks.cloud-server-run]
 cmd = "python scripts/run-cloud-server.py --scale-up"
@@ -231,6 +246,9 @@ cmd = "sops edit deployment/values.cloud.yaml"
 
 [feature.cloud.tasks.cloud-account-setup]
 cmd = "python scripts/cloud-account-setup.py"
+
+[feature.cloud.tasks.cloud-account-user-controls]
+cmd = "python scripts/aws-user-controls.py"
 
 # ==== Backup Secret environment ====
 [feature.backup-secret.dependencies]
