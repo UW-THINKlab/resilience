@@ -25,7 +25,7 @@ class AppPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showMaterialBanner(
               const MaterialBanner(
                 padding: EdgeInsets.all(5),
-                content: Text('This is a test emergency.'),
+                content: Text(AppStrings.testEmergencyBannerText),
                 leading: Icon(Ionicons.warning_sharp),
                 backgroundColor: Colors.yellow,
                 actions: [SizedBox()],
