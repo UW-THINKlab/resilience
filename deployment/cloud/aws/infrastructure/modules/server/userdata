@@ -51,6 +51,9 @@ runcmd:
   - git clone https://github.com/uw-ssec/post-disaster-comms.git
   - cd post-disaster-comms
 
+  # TODO REMOVE THIS ONCE ABOUT TO MERGE
+  - git checkout --track origin/cloud-dns
+
   # install backend tools
   - echo "Setting up backend infra"
   - export PATH=/usr/lib/postgresql/14/bin/:$PATH
@@ -64,20 +67,20 @@ runcmd:
   - echo "Port forwarding supabase db to 5432 as a background process"
   - pixi run -e backend kubectl port-forward service/supabase-supabase-db 5432:5432 &
 
-  # associate elastic IP
-  - echo "Associating Elastic IP with the instance"
-  - |
-    aws ec2 associate-address \
-        --instance-id $(curl http://169.254.169.254/latest/meta-data/instance-id) \
-        --allocation-id ${allocationid} \
-        --region ${region}
+  # # associate elastic IP
+  # - echo "Associating Elastic IP with the instance"
+  # - |
+  #   aws ec2 associate-address \
+  #       --instance-id $(curl http://169.254.169.254/latest/meta-data/instance-id) \
+  #       --allocation-id ${allocationid} \
+  #       --region ${region}
 
-  # set up pdccluster in /etc/hosts
-  - echo "Setting up pdccluster in /etc/hosts"
-  - export EIP=$(aws ec2 describe-addresses --allocation-id ${allocationid} --region us-west-2 | jq -r '.Addresses[0].PublicIp')
-  - echo "$EIP pdccluster" >> /etc/hosts
+  # # set up pdccluster in /etc/hosts
+  # - echo "Setting up pdccluster in /etc/hosts"
+  # - export EIP=$(aws ec2 describe-addresses --allocation-id ${allocationid} --region us-west-2 | jq -r '.Addresses[0].PublicIp')
+  # - echo "$EIP pdccluster" >> /etc/hosts
 
-  - sleep 5
+  # - sleep 5
 
   # populate sample entries
   # TODO: put these in a pod so we don't need to run these steps
