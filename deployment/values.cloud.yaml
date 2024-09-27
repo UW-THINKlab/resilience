@@ -43,7 +43,7 @@ studio:
     environment:
         STUDIO_DEFAULT_ORGANIZATION: ENC[AES256_GCM,data:O/ZuXlYgOgY9i9LhYZnh,iv:RGe29W3pPo0rpWiakg487FmGNl80jtkzxF0dbJ04Zl4=,tag:Hm2qH3xkz9KZe9WZBB14aQ==,type:str]
         STUDIO_DEFAULT_PROJECT: ENC[AES256_GCM,data:ZJ7frkXk5RM4lw==,iv:lfVu1N+sjRw/qBnD3TB1s3lg8xqvR0pFOZhhuxMBAf0=,tag:enBg9L+cMrMpBKq7qZ6WVw==,type:str]
-        SUPABASE_PUBLIC_URL: ENC[AES256_GCM,data:/Ldxn3T3yazra8c/VHAj1pUh,iv:R6fqDdqO/b8Q2mC0kg/hAtznXzw1mNjBE6zQlWnvHy8=,tag:fBvKsAWNWdmlOni5iGs2rQ==,type:str]
+        SUPABASE_PUBLIC_URL: ENC[AES256_GCM,data:gmlx3YmETruyZFVZ/Dw6aAHJWkNTB0M0zLIT2qk30RMYroc11M6mHhut9IW2/5tRBHWTuvTYlYxg+VqtwszjbIQAWJTUpXGkDcpp,iv:YajIo2C3DDfuPCGjwveMvKE0x0zPGWtuWjt65pwrNjQ=,tag:U9SjcwjSGm/lElAQOx9UjA==,type:str]
         NEXT_PUBLIC_ENABLE_LOGS: ENC[AES256_GCM,data:xBHKew==,iv:4TENoAxNOHPIJPv8EQyHWECIVps82d7HBKcuDYFo1t0=,tag:gQTHN3nb7yXAc0TAEVNOCQ==,type:str]
     livenessProbe:
         httpGet:
@@ -57,8 +57,8 @@ auth:
         repository: ENC[AES256_GCM,data:jzUvf7UW7fK0ffq7Fh9YHxLpcdGHZ5cIwZiJmz0=,iv:AldbOWGYaVAANMg4n0yWZod3DKN9p8xPRV8ZeG09STU=,tag:enIw+PrUJ/XRdRKsk1fhxA==,type:str]
         tag: ENC[AES256_GCM,data:WFLW+I10wBH+Hw==,iv:Xm/2o2sr9X4SytuJLp51LWyUA6u1ErK31L3Wr0WEW4w=,tag:E7bhbsL7EaJbiSCcBzXMqA==,type:str]
     environment:
-        API_EXTERNAL_URL: ENC[AES256_GCM,data:X/jmk7xLsO3vOwKCWYCeB9E=,iv:AE3/ibZrEIXIosams3XyHJyGSqArbJs5+l4x63n+ocI=,tag:rce9jdBV2GrTHAJQWIkdhw==,type:str]
-        GOTRUE_SITE_URL: ENC[AES256_GCM,data:jg+tHOoIcHDtwBHo8aIcPoo=,iv:8TtAXa5yGuaPPMmsuvj7mRmlircs+hgKDAYcIXJUtPc=,tag:KeCUWgHmI+K8rMVNThdFzw==,type:str]
+        API_EXTERNAL_URL: ENC[AES256_GCM,data:j6Ay2BRieP9OxT6ZKbAMF/EYi4aX80nfJ7Dihiypp+niUhJaaJ259DtunVE/+/oXOEXS7hyXZ4xmuQ3QcU7oy2RRMJygyrHhu+I=,iv:cfl/ABYMGEjdPmeAgLoAPrqrM9UtZZLwLLTYM8UYLwY=,tag:SA6AZ+hUy8OBKpD0kqGMCg==,type:str]
+        GOTRUE_SITE_URL: ENC[AES256_GCM,data:Rd7tBtpbyZMABjNbiqXsEI157R+eBmf+TI9mhmPUu6/rThv0jpQVwVJ9HtQDjpQpjXkMek9wUOEuCaWj5Evcc6f9yjBR2sRqAyQ=,iv:FfZR2cSxPuUddbPgv7lc+6F1tLpBJEC2YpSbKs5d7cw=,tag:72uXCxx8qVqfZD0D99ztoQ==,type:str]
         GOTRUE_EXTERNAL_EMAIL_ENABLED: ENC[AES256_GCM,data:UMELxA==,iv:7+0tfLStzR/ECuncPnqM1O5vvzL5S0cbdmgMRiNYfZ4=,tag:yFUt49u60XqZLa6jAQf1xA==,type:str]
         GOTRUE_MAILER_AUTOCONFIRM: ENC[AES256_GCM,data:5ll6rg==,iv:v61g+WCAnRCHl7Cq5f0dlUQig1KSY67mzMQbTm/Uk0w=,tag:tMBlaaOvevIvKHus5CYN1A==,type:str]
         GOTRUE_SMTP_ADMIN_EMAIL: ENC[AES256_GCM,data:VgnfY+WoFLhYGTt4daj2tkHkvVmN,iv:8kUc5zSiFm79JDZZ1WWapty0Y8jwabkjbL3Ik6Y0Y6g=,tag:6dLiYnJJ6UlZxSMbyv/NRA==,type:str]
@@ -142,7 +142,7 @@ kong:
         #ENC[AES256_GCM,data:rfH72oc1EUXg,iv:zHSmN3gsb7NtbeIMWoLM2WBjs3Htyjql1GcN4j0qkZI=,tag:/gtMX5j9ecrzJS+rtlPxKw==,type:comment]
         #ENC[AES256_GCM,data:xTX6SOr9RLWl+ybzyGFsE8sv,iv:uqEhiWyqm+I8QY3wsetvQIQSB0DVqstAsDWGvvASuf4=,tag:uAwmQ36AlZtERHKXjicupg==,type:comment]
         hosts:
-            - host: ENC[AES256_GCM,data:NOxRJEFXtfzMwA==,iv:3nyE97eldclHXgQWai1jn85YPg18aH0D6C1NE7dFmlM=,tag:/YXKzcccnGZWeq3Hg153aA==,type:str]
+            - host: ENC[AES256_GCM,data:vT+51/kSwSLFeFvDjx8HYN/+U/oqyqNXDYXccxr/Opw3+yofuFYe9qFZmxcILc8CbyxHxb7Lb1uNTUPYPiQzLZJ52g==,iv:goG1/AQ7VYUXrWpFnuAUUUMFlJevZUcr+3v6jCxnA6o=,tag:OYd7B7PS+HWT1nP06IXQng==,type:str]
               paths:
                 - path: ENC[AES256_GCM,data:2g==,iv:/NvsnuqI8hj3Y86JyGJjcadBpfD4FM5smc3yaAY61wE=,tag:xRwY6M4jzOGWtgbL3xBsIg==,type:str]
                   pathType: ENC[AES256_GCM,data:23hVLqN6,iv:JjAEny26Gjl5SCUBOGdJRwU3jBYZuMmJNAaRAncqsvc=,tag:ATcbgXFWta2Nvb0yEZmRuw==,type:str]
@@ -198,8 +198,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-09-26T22:57:42Z"
-    mac: ENC[AES256_GCM,data:i30Eka7OB47wIcXm5rUlUgth3CbTNSaKJKAgLwRUSafBkQmig1HTTzO/x7P9GJ8mAIqJWBNcERRffJHiYKJsmQKK+uN/x0KN8qlxUd2Uo+JMWf1fEdIzjCFWPSspJpzH/cTW9xJH6UknHzZXsiXIK0LG8TrJ+LBt4qj6LfIv390=,iv:pBXYSLPxgXcJWXGsIyFgv53sFGUBQ9LbLQ/gC+45DNE=,tag:cl8e/Dc/B9wXDwSIjsHsnA==,type:str]
+    lastmodified: "2024-09-27T00:12:30Z"
+    mac: ENC[AES256_GCM,data:uG5mMO4rX9t9s2IYW0mgOXQrV5ijsYQ0cP7x+tomZ1GOlA7syIHl0qRseFZ2e4N6wc54IqqOSSP+p/WUuTfswH2OVrZ9aWZPFR7p+LA20eWldjhhQClMa7pUFG3r7mI60CMz6xLn2UM1eaJGJyMiwADLtSPkoIQha0IXGWHO3Lk=,iv:z7aU8s+HXmLY0kOB0MG/MjlUvi3zoNrHrdZ724WrRSQ=,tag:0tlIlJthikaCfAPg8V9kmw==,type:str]
     pgp:
         - created_at: "2024-09-16T22:38:57Z"
           enc: |-
