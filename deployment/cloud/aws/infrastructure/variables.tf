@@ -40,3 +40,9 @@ variable "volume_size" {
     type        = string
     default     = 16
 }
+
+variable "ops_group_name" {
+    description = "The name of the admin group"
+    type        = string
+    default     = "ssec-eng"
+}

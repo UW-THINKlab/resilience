@@ -15,6 +15,7 @@ class AuthService extends Equatable{
   static final GoTrueClient _supabaseAuth = supabase.auth;
 
   User? getSignedInUser() => _supabaseAuth.currentUser;
+  Session? getUserSession() => _supabaseAuth.currentSession;
 
   Future<bool> isSignupCodeValid(String code) async {
     // TODO: Replace with API call to check if code is valid
@@ -32,7 +33,7 @@ class AuthService extends Equatable{
     return response;
   }
 
-  Stream<User?> getCurrentUser() => _supabaseAuth.onAuthStateChange.map((data) => data.session?.user);
+  Stream<Session?> getCurrentSession() => _supabaseAuth.onAuthStateChange.map((data) => data.session);
 
   Future<void> signOut() async => await _supabaseAuth.signOut();
 

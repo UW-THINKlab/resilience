@@ -2,6 +2,22 @@
 class AppStrings {
   static const String appName = 'Support Sphere';
   static const String signUpWelcome = 'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
+  static const String testEmergencyBannerText = "This is a test emergency.";
+}
+
+class EmergencyAlertDialogStrings {
+  static const String title = 'Emergency Declared';
+  static const String message = 'An emergency has been declared.\nWould you like to return to normal mode?';
+  static const String buttonYes = 'Yes';
+  static const String buttonNo = 'No';
+}
+
+class NormalAlertDialogStrings {
+  static const String title = 'Declare An Emergency';
+  static const String message = 'You are about to declare an emergency.\nWould you like to declare an actual emergency or a test?';
+  static const String buttonEmergency = 'Emergency';
+  static const String buttonTest = 'Test';
+  static const String buttonCancel = 'Cancel';
 }
 
 /// Login related strings
@@ -28,6 +44,13 @@ class ErrorMessageStrings {
   static const String invalidConfirmPassword = 'Passwords do not match';
   static const String invalidSignUpCode = 'Invalid sign up code';
   static const String mustNotContainSpecialCharacters = 'Must not contain any special characters';
+}
+
+/// App Modes Strings
+class AppModes {
+  static const String normal = 'NORMAL';
+  static const String emergency = 'EMERGENCY';
+  static const String testEmergency = 'TEST';
 }
 
 

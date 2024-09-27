@@ -74,6 +74,10 @@ rest:
         repository: ENC[AES256_GCM,data:tG3uM2v9HLY2NBLt7fyZ04445uFbSbIV5VGRw0I=,iv:JDaFY+4/qPTvSN4iJrNmBxMFEsx13Xhw90OnAnTo128=,tag:04/LWvfPKq1Qg+AYaRej+w==,type:str]
         tag: ENC[AES256_GCM,data:q+ggUBzFHbJ1jQ==,iv:61O8ebMcMAxpseRSjs6SPTkUAVfsUnaarjXsEJZTFMc=,tag:b02fvOjSu1Kp91UyhGOYdw==,type:str]
 realtime:
+    #ENC[AES256_GCM,data:EDS4m8r+s8zdDOlO6jigXyeXpJoFuHHXQgcHg+rEdM/6NXsX7Kd+pPZ0jItpNOsaIw==,iv:sE8tUcSG0OkPlpCcTKUY6GbvoR1a/4VMdgleXMjkTRM=,tag:D/gWiI8OwdYHzY+7w7YR9Q==,type:comment]
+    #ENC[AES256_GCM,data:dPuDUWJfFGBUSZ9XAHaNMvVqrc1ER0rH6yZYWyCmC19HiqV7TP5K3SpsDP+kqp1BHlcIIkgJWrs=,iv:BOQPCWhNXHwew9NM30q74XkERVxUFTfzkKHOFOi0xKc=,tag:+ybAHHX/ltiLZUmFy6DjKA==,type:comment]
+    #ENC[AES256_GCM,data:EjwjlAAjAG6xMfJv4/Sar832jBdWeBSoB47L63Tsc24kGr349MEVgKhWQbHpjSNbOZf0g8c+hy7bmPcjkIbytQoiUYUfpIyHrg==,iv:6eNxwkAPYUffdmKZVHwuFpvyBbbaUS340KiWk4eZJaY=,tag:E79Vu1GOA02CL506M+Qzzw==,type:comment]
+    fullnameOverride: ENC[AES256_GCM,data:Fx1nZzfYXtTRBY8M,iv:wrgyoAuawMwHgO+EasrcGwxPLHDxYEnjMo23SVEum0Y=,tag:gDYob19PHCjQBG/vre78Bg==,type:str]
     imagePullSecrets:
         - name: ENC[AES256_GCM,data:DbOqrQ56vw==,iv:uY3R3sVLGh2PR39WpbBnLjW5mryEBNZg0XI4blNKTgo=,tag:7qsmc8a6C2ZSan1jlPZbfA==,type:str]
     image:
@@ -194,8 +198,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-09-17T18:28:00Z"
-    mac: ENC[AES256_GCM,data:j4Q9tRQb0SeT/ZCoKPRDMNnZ5zvJprQIn0QF3p0/msVNPf/A19D7a76amQrzb9rBdYlqnUTgVYoblTixE9DjgIr9Uvz4V/rfF7TALhVUQjuSF8jNIWUElmsDpkmEVqUYjQSk0z2R7uZ8a41DpnuDQiaNrrJ+LASfGCeRFdBV48Y=,iv:VOn3pIKSKFkr5wQSmrOi0EsL29iF86PuQlidc4pVILI=,tag:XH3XKbfnZ3gJ9DYMIk6/3A==,type:str]
+    lastmodified: "2024-09-26T22:57:42Z"
+    mac: ENC[AES256_GCM,data:i30Eka7OB47wIcXm5rUlUgth3CbTNSaKJKAgLwRUSafBkQmig1HTTzO/x7P9GJ8mAIqJWBNcERRffJHiYKJsmQKK+uN/x0KN8qlxUd2Uo+JMWf1fEdIzjCFWPSspJpzH/cTW9xJH6UknHzZXsiXIK0LG8TrJ+LBt4qj6LfIv390=,iv:pBXYSLPxgXcJWXGsIyFgv53sFGUBQ9LbLQ/gC+45DNE=,tag:cl8e/Dc/B9wXDwSIjsHsnA==,type:str]
     pgp:
         - created_at: "2024-09-16T22:38:57Z"
           enc: |-
