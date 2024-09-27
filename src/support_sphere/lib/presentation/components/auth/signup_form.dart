@@ -366,7 +366,7 @@ class _ConfirmedPasswordInput extends StatelessWidget {
               /// Validates that the confirmed password matches
               /// current password input
               (String? val) =>
-                  val != state.password ? 'Passwords do not match' : null,
+                  val != state.password ? ErrorMessageStrings.invalidConfirmPassword : null,
             ],
             value,
             context,
