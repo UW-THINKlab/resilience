@@ -84,8 +84,8 @@ runcmd:
 
   # populate sample entries
   # TODO: put these in a pod so we don't need to run these steps
-  - echo "Populating sample entries"
-  - pixi run populate-sample-entries-cloud
+  - echo "Set up DB data"
+  - pixi run setup-db-data-via-k8s-job
 
   # cleanup decrypted secrets so the cleartext file won't be available on the host
   - echo "Cleaning up decrypted secrets"
