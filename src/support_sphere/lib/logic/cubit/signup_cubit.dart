@@ -1,15 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:formz/formz.dart';
+import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 
 part 'signup_state.dart';
 
 class SignupCubit extends Cubit<SignupState> {
-  SignupCubit(this._authenticationRepository) : super(const SignupState());
+  SignupCubit(this._authenticationRepository, this._userRepository) : super(const SignupState());
 
   final AuthenticationRepository _authenticationRepository;
+  final UserRepository _userRepository;
 
   void firstNameChanged(String value) {
     emit(
@@ -71,16 +74,33 @@ class SignupCubit extends Cubit<SignupState> {
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
+  /// Sign up with email and password.
   Future<void> signUpWithEmailAndPassword() async {
+    // If the form is invalid, do nothing
     if (!state.isValid) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       // TODO: Add coupon code check for signup
-      await _authenticationRepository.signUp(
+      final response = await _authenticationRepository.signUp(
         email: state.email,
         password: state.password,
         signupCode: state.signupCode,
       );
+      User? user = response.user;
+      if (user == null) {
+        // If for some reason the user is null, we should set form status to failure
+        emit(state.copyWith(status: FormzSubmissionStatus.failure));
+        return;
+      }
+
+      // Once we have an authenticated user, we can create the user profile and person
+      await _userRepository.createNewUser(
+        user: user,
+        userName: state.userName,
+        givenName: state.givenName,
+        familyName: state.familyName,
+      );
+
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } catch (_) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
