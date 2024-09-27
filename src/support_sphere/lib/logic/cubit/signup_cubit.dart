@@ -27,6 +27,14 @@ class SignupCubit extends Cubit<SignupState> {
     );
   }
 
+  void userNameChanged(String value) {
+    emit(
+      state.copyWith(
+        userName: value,
+      ),
+    );
+  }
+
   void emailChanged(String value) {
     emit(
       state.copyWith(

@@ -27,6 +27,7 @@ class ErrorMessageStrings {
   static const String invalidPassword = 'Invalid password';
   static const String invalidConfirmPassword = 'Passwords do not match';
   static const String invalidSignUpCode = 'Invalid sign up code';
+  static const String mustNotContainSpecialCharacters = 'Must not contain any special characters';
 }
 
 
