@@ -129,10 +129,6 @@ resource "aws_security_group" "this" {
   }
 }
 
-resource "aws_eip" "this" {
-  domain = "vpc"
-}
-
 
 
 resource "aws_launch_template" "this" {
@@ -159,8 +155,7 @@ resource "aws_launch_template" "this" {
   }
 
   user_data = base64encode(templatefile("${path.module}/userdata", {
-    allocationid = aws_eip.this.allocation_id,
-    region = data.aws_region.this.name
+
   }))
 
   update_default_version = true

@@ -27,7 +27,7 @@ packages:
 
 runcmd:
   # docker installation borrowed from https://gist.github.com/vtrifonov-esfiddle/068dd818b5f929709b688c805c507e65
- # install docker following the guide: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+  # install docker following the guide: https://docs.docker.com/install/linux/docker-ce/ubuntu/
   - echo "Installing Docker"
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -41,18 +41,17 @@ runcmd:
   # install pixi
   - echo "Installing Pixi"
   - export PIXI_HOME=/opt/pixi
+  - export HOME=/root
   - curl -fsSL https://pixi.sh/install.sh | bash
   - export PATH=$PIXI_HOME/bin:$PATH
   - ln -s $PIXI_HOME/bin/pixi /usr/local/bin/pixi
+  - unset HOME
 
   # clone repo
   - echo "Cloning the repository"
   - cd /opt
   - git clone https://github.com/uw-ssec/post-disaster-comms.git
   - cd post-disaster-comms
-
-  # TODO REMOVE THIS ONCE ABOUT TO MERGE
-  - git checkout --track origin/cloud-dns
 
   # install backend tools
   - echo "Setting up backend infra"
@@ -63,27 +62,7 @@ runcmd:
   - echo "Setting up backend infra"
   - pixi run -e backend setup-infra-cloud
 
-  # TODO REMOVE THIS once we have a better way to populate sample entries
-  - echo "Port forwarding supabase db to 5432 as a background process"
-  - pixi run -e backend kubectl port-forward service/supabase-supabase-db 5432:5432 &
-
-  # # associate elastic IP
-  # - echo "Associating Elastic IP with the instance"
-  # - |
-  #   aws ec2 associate-address \
-  #       --instance-id $(curl http://169.254.169.254/latest/meta-data/instance-id) \
-  #       --allocation-id ${allocationid} \
-  #       --region ${region}
-
-  # # set up pdccluster in /etc/hosts
-  # - echo "Setting up pdccluster in /etc/hosts"
-  # - export EIP=$(aws ec2 describe-addresses --allocation-id ${allocationid} --region us-west-2 | jq -r '.Addresses[0].PublicIp')
-  # - echo "$EIP pdccluster" >> /etc/hosts
-
-  # - sleep 5
-
   # populate sample entries
-  # TODO: put these in a pod so we don't need to run these steps
   - echo "Set up DB data"
   - pixi run setup-db-data-via-k8s-job
 
