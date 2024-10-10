@@ -1,5 +1,11 @@
 import 'package:equatable/equatable.dart';
 
+/// A class representing a person.
+/// A person is an entity that describes a real life person's details
+/// such as their [nickname], [givenName], [familyName], whether they are [isSafe],
+/// and whether they [needsHelp].
+/// If this person has a [profile], it means that they have a login account
+/// and their profile details are stored in the database.
 class Person extends Equatable {
   const Person({
     this.nickname,
@@ -46,6 +52,11 @@ class Person extends Equatable {
       ];
 }
 
+
+/// A class representing a user's profile.
+/// A profile is an entity that describes a user's details such as their [id] and [userName].
+/// A profile is associated with a person that describes the user's real life details.
+/// The profile is use for user app purposes.
 class Profile extends Equatable {
 
   const Profile({
