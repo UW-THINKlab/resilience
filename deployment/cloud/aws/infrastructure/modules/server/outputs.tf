@@ -3,5 +3,5 @@ output "autoscaling_group_name" {
 }
 
 output "autoscaling_group_arn" {
-    value = aws_autoscaling_group.this.arn
+  value = aws_autoscaling_group.this.arn
 }

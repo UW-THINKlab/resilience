@@ -1,9 +1,9 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.61"
-      configuration_aliases = [ aws.east ]
+      source                = "hashicorp/aws"
+      version               = "~> 5.61"
+      configuration_aliases = [aws.east]
     }
   }
 }
@@ -18,23 +18,23 @@ data "aws_region" "east" {
 
 resource "aws_kms_key" "west" {
   description = "Key in us-west-2 for encrypting and decrypting server config values for the Support Sphere project."
-  key_usage = "ENCRYPT_DECRYPT"
+  key_usage   = "ENCRYPT_DECRYPT"
 }
 
 resource "aws_kms_alias" "west" {
-  name = "alias/${var.resource_prefix}-kms-key-${data.aws_region.west.name}"
+  name          = "alias/${var.resource_prefix}-kms-key-${data.aws_region.west.name}"
   target_key_id = aws_kms_key.west.key_id
 }
 
 resource "aws_kms_key" "east" {
-  provider = aws.east
+  provider    = aws.east
   description = "Key in us-east-1 for encrypting and decrypting server config values for the Support Sphere project."
-  key_usage = "ENCRYPT_DECRYPT"
+  key_usage   = "ENCRYPT_DECRYPT"
 }
 
 resource "aws_kms_alias" "east" {
-  provider = aws.east
-  name = "alias/${var.resource_prefix}-kms-key-${data.aws_region.east.name}"
+  provider      = aws.east
+  name          = "alias/${var.resource_prefix}-kms-key-${data.aws_region.east.name}"
   target_key_id = aws_kms_key.east.key_id
 }
 
@@ -45,7 +45,7 @@ data "aws_iam_group" "this" {
 }
 
 resource "aws_iam_group_policy" "this" {
-  name = "${var.resource_prefix}-kms-key-policy"
+  name  = "${var.resource_prefix}-kms-key-policy"
   group = var.ops_group_name
 
   policy = jsonencode({
