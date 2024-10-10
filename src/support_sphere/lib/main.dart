@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthenticationRepository(),
         ),
         RepositoryProvider(
-          create: (context) => UserRepository(),
+          create: (_) => UserRepository(),
         ),
       ],
       child: BlocProvider(
