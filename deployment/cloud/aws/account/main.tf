@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "${var.account_resource_prefix}-${var.account_id}-opentofu-state"
-    key = "account/terraform.tfstate"
+    key    = "account/terraform.tfstate"
     region = "us-west-2"
   }
 }
@@ -37,7 +37,7 @@ resource "aws_s3_bucket_versioning" "this" {
   versioning_configuration {
     status = "Enabled"
   }
-  
+
 }
 
 resource "aws_s3_bucket_public_access_block" "example" {
@@ -51,7 +51,7 @@ resource "aws_s3_bucket_public_access_block" "example" {
 
 # deploy role
 resource "aws_iam_role" "deploy" {
-  name = "${var.account_resource_prefix}-deploy"
+  name        = "${var.account_resource_prefix}-deploy"
   description = "Role used to deploy infrastructure for the Support Sphere app, part of the Post-Disaster communications project."
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -73,12 +73,11 @@ resource "aws_iam_role" "deploy" {
     "arn:aws:iam::aws:policy/IAMFullAccess",
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
     "arn:aws:iam::aws:policy/ResourceGroupsandTagEditorFullAccess",
-  ] 
+  ]
 }
 
-resource "aws_iam_role_policy" "deploy_bucket_access" {
-  name = "${var.account_resource_prefix}_access_state_from_s3_new"
-  role = aws_iam_role.deploy.name
+resource "aws_iam_policy" "tf_state_access" {
+  name = "${var.account_resource_prefix}-tf-state-access"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -97,6 +96,11 @@ resource "aws_iam_role_policy" "deploy_bucket_access" {
       },
     ],
   })
+}
+
+resource "aws_iam_role_policy_attachment" "deploy_bucket_access" {
+  role       = aws_iam_role.deploy.name
+  policy_arn = aws_iam_policy.tf_state_access.arn
 }
 
 resource "aws_iam_role_policy" "kms_key_access" {
@@ -157,14 +161,14 @@ resource "aws_iam_group" "this" {
 }
 
 resource "aws_iam_group_policy" "assume_deploy" {
-  name = "assume-deploy-role"
+  name  = "assume-deploy-role"
   group = aws_iam_group.this.name
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow",
-        Action = "sts:AssumeRole",
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
         Resource = aws_iam_role.deploy.arn,
       },
     ],
@@ -172,6 +176,11 @@ resource "aws_iam_group_policy" "assume_deploy" {
 }
 
 resource "aws_iam_group_policy_attachment" "readonly" {
-  group = aws_iam_group.this.name
+  group      = aws_iam_group.this.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_group_policy_attachment" "access_tf_state_bucket_group" {
+  group      = aws_iam_group.this.name
+  policy_arn = aws_iam_policy.tf_state_access.arn
 }

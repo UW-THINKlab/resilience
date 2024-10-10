@@ -199,7 +199,7 @@ aws-session-manager-plugin = ">=1.2.0"
 
 # OpenTofu tasks
 [feature.cloud.tasks.cloud-deploy]
-cmd = "tofu apply"
+cmd = "tofu fmt -recursive && tofu apply"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-init]
@@ -207,7 +207,7 @@ cmd = "tofu init"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-plan]
-cmd = "tofu plan"
+cmd = "tofu fmt -recursive && tofu plan"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-destroy]
@@ -215,7 +215,7 @@ cmd = "tofu destroy"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-account-deploy]
-cmd = "tofu apply"
+cmd = "tofu fmt -recursive && tofu apply"
 cwd = "deployment/cloud/aws/account"
 depends-on = ["cloud-account-setup"]
 
@@ -225,7 +225,7 @@ cwd = "deployment/cloud/aws/account"
 depends-on = ["cloud-account-setup"]
 
 [feature.cloud.tasks.cloud-account-plan]
-cmd = "tofu plan"
+cmd = "tofu fmt -recursive && tofu plan"
 cwd = "deployment/cloud/aws/account"
 depends-on = ["cloud-account-setup"]
 
