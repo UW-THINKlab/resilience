@@ -22,7 +22,7 @@ class UserRepository {
 
       return Person(
         id: personData["id"],
-        profile: Profile(id: userId, userName: data["username"]),
+        profile: Profile(id: userId),
         givenName: personData["given_name"],
         familyName: personData["family_name"],
         nickname: personData["nickname"],
@@ -41,14 +41,12 @@ class UserRepository {
   /// Returns a [Future] that completes when the user is created.
   Future<void> createNewUser({
     required supabase_flutter.User user,
-    required String userName,
     required String givenName,
     required String familyName,
   }) async {
     String userId = user.id;
     await _userService.createUserProfile(
       userId: userId,
-      userName: userName,
     );
     await _userService.createPerson(
         userId: userId, givenName: givenName, familyName: familyName);

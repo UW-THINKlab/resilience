@@ -54,22 +54,19 @@ class Person extends Equatable {
 
 
 /// A class representing a user's profile.
-/// A profile is an entity that describes a user's details such as their [id] and [userName].
+/// A profile is an entity that describes a user's details such as their [id]
+/// which is the same as their auth user id.
 /// A profile is associated with a person that describes the user's real life details.
 /// The profile is use for user app purposes.
 class Profile extends Equatable {
 
   const Profile({
     required this.id,
-    required this.userName,
   });
 
   /// The current user's id, which matches the auth user id
   final String id;
 
-  /// The current user's username.
-  final String userName;
-
   @override
-  List<Object?> get props => [id, userName];
+  List<Object?> get props => [id];
 }

@@ -30,14 +30,6 @@ class SignupCubit extends Cubit<SignupState> {
     );
   }
 
-  void userNameChanged(String value) {
-    emit(
-      state.copyWith(
-        userName: value,
-      ),
-    );
-  }
-
   void emailChanged(String value) {
     emit(
       state.copyWith(
@@ -96,7 +88,6 @@ class SignupCubit extends Cubit<SignupState> {
       // Once we have an authenticated user, we can create the user profile and person
       await _userRepository.createNewUser(
         user: user,
-        userName: state.userName,
         givenName: state.givenName,
         familyName: state.familyName,
       );

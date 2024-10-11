@@ -34,8 +34,6 @@ class SignupForm extends StatelessWidget {
             const SizedBox(height: 8),
             _LastNameInput(),
             const SizedBox(height: 8),
-            _UserNameInput(),
-            const SizedBox(height: 8),
             _EmailInput(),
             const SizedBox(height: 8),
             _PasswordInput(),
@@ -141,58 +139,6 @@ class _LastNameInput extends StatelessWidget {
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
               Ionicons.person_sharp,
-              size: 15.0,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _UserNameInput extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SignupCubit, SignupState>(
-      buildWhen: (previous, current) =>
-          previous.userName != current.userName ||
-          previous.status != current.status,
-      builder: (context, state) {
-        return TextFormField(
-          key: const Key('signupForm_userNameInput_textFormField'),
-          onChanged: (value) =>
-              context.read<SignupCubit>().userNameChanged(value),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue(
-            [
-              FormBuilderValidators.required(),
-              FormBuilderValidators.minLength(3),
-              FormBuilderValidators.maxLength(32),
-              FormBuilderValidators.lowercase(),
-              
-              /// Validates that the username does not contain any special characters
-              (String? val) {
-                Function validate = FormBuilderValidators.hasSpecialChars();
-                String? validateResult = validate(val);
-                if (validateResult != null) {
-                  return null;
-                }
-                return ErrorMessageStrings.mustNotContainSpecialCharacters;
-              }
-              
-            ],
-            value,
-            context,
-          ),
-          decoration: InputDecoration(
-            labelText: LoginStrings.username,
-            helperText: '',
-            border: border(context),
-            enabledBorder: border(context),
-            focusedBorder: focusBorder(context),
-            prefixIcon: Icon(
-              Ionicons.happy_sharp,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),

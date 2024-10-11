@@ -28,11 +28,12 @@ class UserService {
   /// Creates a user profile with the given user id and username.
   Future<void> createUserProfile({
     required String userId,
-    required String userName,
   }) async {
     await _supabaseClient.from('user_profiles').insert({
       'id': userId,
-      'username': userName,
+      // The username is empty by default
+      // this is because it can't be null in the database
+      'username': '',
     });
   }
 
