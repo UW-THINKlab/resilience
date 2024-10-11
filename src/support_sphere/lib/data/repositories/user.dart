@@ -36,7 +36,7 @@ class UserRepository {
 
   /// Create a new user with the given user info.
   /// This will perform two operations:
-  /// 1. Create a user profile with the given user id and username.
+  /// 1. Create a user profile with the given user id and empty username
   /// 2. Create a person with the given user id, given name, and family name.
   /// Returns a [Future] that completes when the user is created.
   Future<void> createNewUser({
