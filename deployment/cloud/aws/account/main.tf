@@ -76,7 +76,7 @@ resource "aws_iam_role" "deploy" {
   ]
 }
 
-resource "aws_iam_policy" "tf_state_access" {
+resource "aws_iam_policy" "this" {
   name = "${var.account_resource_prefix}-tf-state-access"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -98,7 +98,7 @@ resource "aws_iam_policy" "tf_state_access" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "deploy_bucket_access" {
+resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.deploy.name
   policy_arn = aws_iam_policy.tf_state_access.arn
 }
@@ -180,7 +180,7 @@ resource "aws_iam_group_policy_attachment" "readonly" {
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
-resource "aws_iam_group_policy_attachment" "access_tf_state_bucket_group" {
+resource "aws_iam_group_policy_attachment" "this" {
   group      = aws_iam_group.this.name
   policy_arn = aws_iam_policy.tf_state_access.arn
 }
