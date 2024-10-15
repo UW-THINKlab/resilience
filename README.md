@@ -90,7 +90,7 @@ To run this app locally, follow these steps:
    To ensure the app connects to Supabase, set the `SUPABASE_URL` and `SUPABASE_ANON_KEY` with:
 
    ```console
-   pixi run flutter-run --dart-define=SUPABASE_ANON_KEY=secret.jwt.anonKeyValue --dart-define=SUPABASE_URL=http://localhost
+   pixi run -e frontend flutter-run --dart-define=SUPABASE_ANON_KEY=secret.jwt.anonKeyValue --dart-define=SUPABASE_URL=http://localhost
    ```
    The credentials can be found in `deployment/values.dev.yaml`.
 
