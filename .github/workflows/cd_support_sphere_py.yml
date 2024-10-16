@@ -3,6 +3,8 @@ name: Publish Support Sphere Python Package to PyPI and TestPyPI
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 'src/support_sphere_py/**'
     branches:
       - main
   release:
