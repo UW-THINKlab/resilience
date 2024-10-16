@@ -30,7 +30,8 @@ class AuthenticationRepository {
   Future<void> logIn({
     required String email,
     required String password,
-  }) async => _authService.signInWithEmailAndPassword(email, password);
+  }) async =>
+      _authService.signInWithEmailAndPassword(email, password);
 
   Future<void> logOut() async => await _authService.signOut();
 
@@ -48,7 +49,13 @@ class AuthenticationRepository {
   }
 
   AuthUser _parseUser(supabase_flutter.User? user, String userRole) {
-    return user == null ? AuthUser.empty : AuthUser(uuid: user.id, userRole: userRole);
+    return user == null
+        ? AuthUser.empty
+        : AuthUser(
+            uuid: user.id,
+            userRole: userRole,
+            email: user.email,
+            phone: user.phone);
   }
 
   String _parseUserRole(supabase_flutter.Session? session) {

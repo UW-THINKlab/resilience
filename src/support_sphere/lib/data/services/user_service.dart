@@ -5,6 +5,38 @@ import 'package:uuid/v4.dart';
 class UserService {
   final SupabaseClient _supabaseClient = supabase;
 
+  /// Retrieves the person household by person id.
+  Future<PostgrestMap?> getPersonHouseholdByPersonId(String personId) async {
+    return await _supabaseClient.from('people_groups').select('''
+      people(
+        id
+      ),
+      households(
+        id,
+        name,
+        address,
+        notes,
+        pets,
+        accessibility_needs
+      )
+    ''').eq('people_id', personId).maybeSingle();
+  }
+
+  /// Retrieves the household members by household id.
+  Future<PostgrestList?> getHouseholdMembersByHouseholdId(String householdId) async {
+    return await _supabaseClient.from('people_groups').select('''
+      people(
+        id,
+        user_profile_id,
+        given_name,
+        family_name,
+        nickname,
+        is_safe,
+        needs_help
+      )
+    ''').eq('household_id', householdId);
+  }
+
   /// Retrieves the user profile and person by user id.
   /// Returns a [PostgrestMap] object if the user profile and person exist.
   /// Returns null if the user profile and person do not exist.
@@ -12,7 +44,6 @@ class UserService {
     /// This query will perform a join on the user_profiles and people tables
     return await _supabaseClient.from('user_profiles').select('''
       id,
-      username,
       people(
         id,
         user_profile_id,
@@ -31,9 +62,6 @@ class UserService {
   }) async {
     await _supabaseClient.from('user_profiles').insert({
       'id': userId,
-      // The username is empty by default
-      // this is because it can't be null in the database
-      'username': '',
     });
   }
 
