@@ -5,10 +5,11 @@ import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:formz/formz.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
+import 'package:support_sphere/utils/form_validation.dart';
 
 part 'signup_state.dart';
 
-class SignupCubit extends Cubit<SignupState> {
+class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   SignupCubit(this._authenticationRepository, this._userRepository) : super(const SignupState());
 
   final AuthenticationRepository _authenticationRepository;

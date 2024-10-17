@@ -7,6 +7,7 @@ import 'package:formz/formz.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/logic/cubit/signup_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/utils/form_validation.dart';
 
 class SignupForm extends StatelessWidget {
   const SignupForm({super.key});
@@ -51,26 +52,6 @@ class SignupForm extends StatelessWidget {
   }
 }
 
-/// Function to validate the form fields
-///
-/// Takes in a list of [validators], the input [value],
-/// and build [context] containing [SignupCubit] as arguments.
-/// It will return the error message if the value is invalid
-/// and null if the value is valid.
-/// Also, it will set the [SignupState.isValid] flag based on
-/// the validity of the value.
-String? validateValue(List<FormFieldValidator<String?>> validators,
-    String? value, BuildContext context) {
-  Function validate = FormBuilderValidators.compose(validators);
-  String? validateResult = validate(value);
-  if (validateResult != null) {
-    context.read<SignupCubit>().setInvalid();
-    return validateResult;
-  }
-  context.read<SignupCubit>().setValid();
-  return null;
-}
-
 class _FirstNameInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -91,6 +72,7 @@ class _FirstNameInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.givenName,
@@ -130,6 +112,7 @@ class _LastNameInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.familyName,
@@ -169,6 +152,7 @@ class _EmailInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.email,
@@ -211,6 +195,7 @@ class _SignupCodeInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.signUpCode,
@@ -259,6 +244,7 @@ class _PasswordInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.password,
@@ -316,6 +302,7 @@ class _ConfirmedPasswordInput extends StatelessWidget {
             ],
             value,
             context,
+            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.confirmPassword,

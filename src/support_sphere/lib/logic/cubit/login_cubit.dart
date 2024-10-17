@@ -3,10 +3,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 import 'package:formz/formz.dart';
+import 'package:support_sphere/utils/form_validation.dart';
 
 part 'login_state.dart';
 
-class LoginCubit extends Cubit<LoginState> {
+class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   LoginCubit(this._authenticationRepository) : super(const LoginState());
 
   final AuthenticationRepository _authenticationRepository;
