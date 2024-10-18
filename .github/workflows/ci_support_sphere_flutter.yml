@@ -1,0 +1,39 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - 'src/support_sphere/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/support_sphere/**'
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/support_sphere
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+
+      # build_runner required when mocking classes for testing
+      - run: flutter pub run build_runner build
+
+      # Run Flutter tests
+      - name: Run Unit tests
+        run: flutter test ./test/unit_tests
+
