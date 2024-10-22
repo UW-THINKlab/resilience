@@ -3,6 +3,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
@@ -288,39 +289,53 @@ class _ClusterInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cluster Information
-    return _ProfileSection(
-      title: "Cluster Information",
-      readOnly: true,
-      children: [
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      buildWhen: (previous, current) => previous.cluster != current.cluster,
+      builder: (context, state) {
+        Cluster? cluster = state.cluster;
+        String name = cluster?.name ?? '';
+        String meetingPlace = cluster?.meeting_place ?? '';
+        List<Person?> captains = cluster?.captains?.people ?? [];
+        List<String> captainsNames = captains.map((captain) {
+          String givenName = captain?.givenName ?? '';
+          String familyName = captain?.familyName ?? '';
+          String fullName = '$givenName $familyName';
+          return fullName;
+        }).toList();
+        return _ProfileSection(
+          title: "Cluster Information",
+          readOnly: true,
           children: [
-            Text("Name"),
-            Text("Cluster 1"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Name"),
+                Text(name),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Meeting place"),
+                Text(meetingPlace),
+              ],
+            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Captain(s)"),
+              ],
+            ),
+            Container(
+              height: 50.0,
+              child: ListView(
+                shrinkWrap: true,
+                children: captainsNames.map((n) => Text(n)).toList(),
+              ),
+            ),
           ],
-        ),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Meeting place"),
-            Text("410 Example Street"),
-          ],
-        ),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Captain(s)"),
-          ],
-        ),
-        Container(
-          height: 50.0,
-          child: ListView(shrinkWrap: true, children: const [
-            Text("Jane Smith"),
-            Text("John Smith"),
-          ]),
-        ),
-      ],
+        );
+      },
     );
   }
 }

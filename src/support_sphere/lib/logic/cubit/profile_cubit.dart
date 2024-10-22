@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/user.dart';
@@ -26,6 +27,10 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   void householdChanged(Household? household) {
     emit(state.copyWith(household: household));
+  }
+
+  void clusterChanged(Cluster? cluster) {
+    emit(state.copyWith(cluster: cluster));
   }
 
   Future<void> fetchProfile() async {
@@ -54,9 +59,29 @@ class ProfileCubit extends Cubit<ProfileState> {
       } else {
         throw Exception('Household not found');
       }
+
+      /// Get the cluster and its captains information
+      Cluster? cluster = household == null 
+        ? null
+        : await _userRepository.getClusterById(clusterId: household.cluster_id);
+
+      if (cluster != null) {
+        /// Get the captains of the cluster
+        final Captains? captains = await _userRepository.getCaptainsByClusterId(clusterId: cluster.id);
+
+        if (captains != null) {
+          cluster = cluster.copyWith(captains: captains);
+        }
+        clusterChanged(cluster);
+      } else {
+        throw Exception('Cluster not found');
+      }
     } catch (_) {
+      print(_);
       /// TODO: Handle error if there are no user profile or household for some reason
       profileChanged(null);
+      householdChanged(null);
+      clusterChanged(null);
     }
   }
 }
