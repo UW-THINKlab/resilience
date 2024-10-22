@@ -77,7 +77,6 @@ class ProfileCubit extends Cubit<ProfileState> {
         throw Exception('Cluster not found');
       }
     } catch (_) {
-      print(_);
       /// TODO: Handle error if there are no user profile or household for some reason
       profileChanged(null);
       householdChanged(null);

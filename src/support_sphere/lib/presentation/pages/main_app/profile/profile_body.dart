@@ -294,7 +294,7 @@ class _ClusterInformation extends StatelessWidget {
       builder: (context, state) {
         Cluster? cluster = state.cluster;
         String name = cluster?.name ?? '';
-        String meetingPlace = cluster?.meeting_place ?? '';
+        String meetingPlace = cluster?.meetingPlace ?? '';
         List<Person?> captains = cluster?.captains?.people ?? [];
         List<String> captainsNames = captains.map((captain) {
           String givenName = captain?.givenName ?? '';

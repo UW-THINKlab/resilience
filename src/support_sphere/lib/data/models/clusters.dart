@@ -6,29 +6,29 @@ class Cluster extends Equatable {
   const Cluster({
     required this.id,
     this.name = '',
-    this.meeting_place = '',
-    this.captains = null,
+    this.meetingPlace = '',
+    this.captains,
   });
 
   /// The current user's id, which matches the auth user id
   final String id;
   final String? name;
-  final String? meeting_place;
+  final String? meetingPlace;
   final Captains? captains;
 
   @override
-  List<Object?> get props => [id, name, meeting_place, captains];
+  List<Object?> get props => [id, name, meetingPlace, captains];
 
   copyWith({
     String? id,
     String? name,
-    String? meeting_place,
+    String? meetingPlace,
     Captains? captains,
   }) {
     return Cluster(
       id: id ?? this.id,
       name: name ?? this.name,
-      meeting_place: meeting_place ?? this.meeting_place,
+      meetingPlace: meetingPlace ?? this.meetingPlace,
       captains: captains ?? this.captains,
     );
   }

@@ -103,7 +103,7 @@ class UserRepository {
       return Cluster(
         id: data["id"],
         name: data["name"],
-        meeting_place: data["meeting_place"],
+        meetingPlace: data["meeting_place"],
       );
     }
     return null;
