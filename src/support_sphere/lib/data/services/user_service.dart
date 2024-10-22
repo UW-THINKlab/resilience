@@ -17,7 +17,8 @@ class UserService {
         address,
         notes,
         pets,
-        accessibility_needs
+        accessibility_needs,
+        cluster_id
       )
     ''').eq('people_id', personId).maybeSingle();
   }

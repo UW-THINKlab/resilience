@@ -2,14 +2,17 @@ import 'dart:async';
 
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
   final UserService _userService = UserService();
+  final ClusterService _clusterService = ClusterService();
 
   /// Get the household members by household id.
   /// Returns a [HouseHoldMembers] object if the household members exist.
@@ -60,6 +63,7 @@ class UserRepository {
         notes: householdData["notes"],
         pets: householdData["pets"],
         accessibility_needs: householdData["accessibility_needs"],
+        cluster_id: householdData["cluster_id"],
       );
     }
     return null;
@@ -84,6 +88,46 @@ class UserRepository {
         isSafe: personData["is_safe"],
         needsHelp: personData["needs_help"],
       );
+    }
+    return null;
+  }
+
+  /// Get the cluster by cluster id retrieved from [Household].
+  /// Returns a [Cluster] object
+  Future<Cluster?> getClusterById({
+    required String clusterId,
+  }) async {
+    final data = await _clusterService.getClusterById(clusterId);
+
+    if (data != null) {
+      return Cluster(
+        id: data["id"],
+        name: data["name"],
+        meeting_place: data["meeting_place"],
+      );
+    }
+    return null;
+  }
+
+  Future<Captains?> getCaptainsByClusterId({
+    required String clusterId,
+  }) async {
+    final data = await _clusterService.getCaptainsByClusterId(clusterId);
+
+    if (data != null) {
+      List<Person> captains = [];
+
+      for (var record in data) {
+        Map<String, dynamic> captainData = record["captain"]["user_profile"]["person"];
+
+        captains.add(Person(
+          id: captainData["id"],
+          givenName: captainData["given_name"],
+          familyName: captainData["family_name"],
+        ));
+      }
+
+      return Captains(people: captains);
     }
     return null;
   }

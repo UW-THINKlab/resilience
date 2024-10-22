@@ -5,6 +5,7 @@ class Household extends Equatable {
 
   const Household({
     required this.id,
+    required this.cluster_id,
     this.name = '',
     this.address = '',
     this.notes = '',
@@ -15,6 +16,7 @@ class Household extends Equatable {
 
   /// The current user's id, which matches the auth user id
   final String id;
+  final String cluster_id;
   final String? name;
   final String? address;
   final String? notes;
@@ -23,7 +25,7 @@ class Household extends Equatable {
   final HouseHoldMembers? houseHoldMembers;
 
   @override
-  List<Object?> get props => [id, name, address, notes, pets, accessibility_needs, houseHoldMembers];
+  List<Object?> get props => [id, name, address, notes, pets, accessibility_needs, houseHoldMembers, cluster_id];
 
   copyWith({
     String? id,
@@ -33,6 +35,7 @@ class Household extends Equatable {
     String? pets,
     String? accessibility_needs,
     HouseHoldMembers? houseHoldMembers,
+    String? cluster_id,
   }) {
     return Household(
       id: id ?? this.id,
@@ -42,6 +45,7 @@ class Household extends Equatable {
       pets: pets ?? this.pets,
       accessibility_needs: accessibility_needs ?? this.accessibility_needs,
       houseHoldMembers: houseHoldMembers ?? this.houseHoldMembers,
+      cluster_id: cluster_id ?? this.cluster_id,
     );
   }
 }
