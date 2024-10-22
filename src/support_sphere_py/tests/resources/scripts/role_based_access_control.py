@@ -52,12 +52,6 @@ BEGIN;
   
   GRANT ALL ON TABLE public.user_roles TO supabase_auth_admin;
   
-  REVOKE ALL ON TABLE public.user_roles FROM authenticated, anon, public;
-  
-  CREATE POLICY "Allow auth admin to read user roles" ON public.user_roles AS PERMISSIVE FOR SELECT TO supabase_auth_admin USING (true);
-  
-  ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-  
   COMMIT;
 """
 
