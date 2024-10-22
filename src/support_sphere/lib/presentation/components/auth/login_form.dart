@@ -56,13 +56,12 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue([
+          validator: (value) => validateValue<LoginCubit>([
             FormBuilderValidators.required(),
             FormBuilderValidators.email(),
           ], 
           value, 
           context,
-          context.read<LoginCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.email,
@@ -98,13 +97,12 @@ class _PasswordInput extends StatelessWidget {
               context.read<LoginCubit>().passwordChanged(password),
           obscureText: !state.showPassword,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue([
+          validator: (value) => validateValue<LoginCubit>([
             FormBuilderValidators.required(),
             FormBuilderValidators.minLength(8),
           ], 
           value,
           context, 
-          context.read<LoginCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.password,

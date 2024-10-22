@@ -65,14 +65,13 @@ class _FirstNameInput extends StatelessWidget {
           onChanged: (value) =>
               context.read<SignupCubit>().firstNameChanged(value),
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               FormBuilderValidators.firstName()
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.givenName,
@@ -105,14 +104,13 @@ class _LastNameInput extends StatelessWidget {
           onChanged: (value) =>
               context.read<SignupCubit>().lastNameChanged(value),
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               FormBuilderValidators.lastName()
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.familyName,
@@ -145,14 +143,13 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<SignupCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               FormBuilderValidators.email(),
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.email,
@@ -187,7 +184,7 @@ class _SignupCodeInput extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           /// Checks input for Signup code to be length of 7 characters
           /// and uppercase value
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(7),
@@ -195,7 +192,6 @@ class _SignupCodeInput extends StatelessWidget {
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.signUpCode,
@@ -235,7 +231,7 @@ class _PasswordInput extends StatelessWidget {
           /// Checks input for password to have minimum character length of 8
           /// at least 1 uppercase, 1 lowercase, 1 number, and 1 special character
           /// see docs: https://pub.dev/documentation/form_builder_validators/latest/form_builder_validators/PasswordValidator-class.html
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               FormBuilderValidators.password(
@@ -244,7 +240,6 @@ class _PasswordInput extends StatelessWidget {
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.password,
@@ -292,7 +287,7 @@ class _ConfirmedPasswordInput extends StatelessWidget {
               context.read<SignupCubit>().confirmedPasswordChanged(password),
           obscureText: !state.showPassword,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => validateValue(
+          validator: (value) => validateValue<SignupCubit>(
             [
               FormBuilderValidators.required(),
               /// Validates that the confirmed password matches
@@ -302,7 +297,6 @@ class _ConfirmedPasswordInput extends StatelessWidget {
             ],
             value,
             context,
-            context.read<SignupCubit>(),
           ),
           decoration: InputDecoration(
             labelText: LoginStrings.confirmPassword,
