@@ -15,14 +15,26 @@ class AppRoute extends Equatable {
 }
 
 class AppNavigation {
-  // TODO: Add body for each route
-  static List<AppRoute> destinations = [
-    const AppRoute(
-        icon: Icon(Ionicons.home_sharp), label: 'Home'),
-    const AppRoute(
-        icon: Icon(Ionicons.person_sharp), label: 'Me', body: ProfileBody()),
-    const AppRoute(
-        icon: Icon(Ionicons.shield_checkmark_sharp), label: 'Prepare'),
-    const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: 'Resources'),
-  ];
+  static List<AppRoute> getDestinations(String? role) {
+    // TODO: Add body for each route
+    List<AppRoute> destinations = [
+      const AppRoute(
+          icon: Icon(Ionicons.home_sharp), label: 'Home'),
+      const AppRoute(
+          icon: Icon(Ionicons.person_sharp), label: 'Me', body: ProfileBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.shield_checkmark_sharp), label: 'Prepare'),
+      const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: 'Resources'),
+    ];
+    if (role == "COM_ADMIN") {
+      // TODO: Make this display only for certain screen size
+      destinations = destinations + [
+        const AppRoute(
+            icon: Icon(Ionicons.construct_sharp), label: 'Manage Resources'),
+        const AppRoute(
+            icon: Icon(Ionicons.list_sharp), label: 'Manage Checklists'),
+      ];
+    }
+    return destinations;
+  }
 }

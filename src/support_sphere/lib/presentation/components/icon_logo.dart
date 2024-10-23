@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
 
@@ -16,8 +17,8 @@ const IconLogo({ Key? key }) : super(key: key);
               alignment: Alignment.center,
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0),
-                child: Icon(
-                  Ionicons.earth_sharp,
+                child: FaIcon(
+                  FontAwesomeIcons.peopleRoof,
                   size: 150.0,
                   color: Color.fromARGB(255, 15, 64, 86),
                 ),

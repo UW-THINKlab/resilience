@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
@@ -21,6 +23,8 @@ class AppPage extends StatelessWidget {
           /// Show a banner if the app is in test emergency mode
           /// This is to help users understand that the emergency
           /// is not real and is only a test
+
+          // TODO: Fix this... still buggy
           if (state.mode == AppModes.testEmergency) {
             ScaffoldMessenger.of(context).showMaterialBanner(
               const MaterialBanner(
@@ -41,6 +45,10 @@ class AppPage extends StatelessWidget {
                   current.selectedBottomNavIndex ||
               previous.mode != current.mode,
           builder: (context, state) {
+            final AuthUser authUser = context.select(
+              (AuthenticationBloc bloc) => bloc.state.user,
+            );
+            AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole);
             return SafeArea(
               child: Scaffold(
                 appBar: AppBar(
@@ -80,7 +88,7 @@ class AppPage extends StatelessWidget {
                 // drawer: const Drawer(
                 //   child: null,
                 // ),
-                body: AppBodySelect.getBody(state.selectedBottomNavIndex),
+                body: bodySelector.getBody(state.selectedBottomNavIndex),
                 bottomNavigationBar: NavigationBar(
                   selectedIndex: state.selectedBottomNavIndex,
                   onDestinationSelected: (value) {
@@ -89,7 +97,7 @@ class AppPage extends StatelessWidget {
                         .add(AppOnBottomNavIndexChanged(value));
                   },
                   destinations: [
-                    for (final destination in AppBodySelect.destinations)
+                    for (final destination in bodySelector.destinations)
                       NavigationDestination(
                         icon: destination.icon,
                         label: destination.label,
@@ -124,19 +132,36 @@ class _DeclareEmergencyButton extends StatelessWidget {
       );
     }
 
-    Widget iconButton = IconButton(
-      onPressed: () => showChangeModeAlert(context),
-      icon: Icon(Ionicons.radio_outline),
-      color: Colors.white,
-    );
-
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
+      final String appMode = context.select(
+        (AppBloc bloc) => bloc.state.mode,
+      );
+
+      Widget iconButton;
+
+      if (appMode == AppModes.normal) {
+        iconButton = IconButton(
+          onPressed: () => showChangeModeAlert(context),
+          icon: FaIcon(
+            FontAwesomeIcons.houseCrack,
+          ),
+          color: const Color.fromARGB(255, 255, 0, 0),
+        );
+      } else {
+        iconButton = IconButton(
+          onPressed: () => showChangeModeAlert(context),
+          icon: FaIcon(
+            FontAwesomeIcons.houseCircleCheck,
+          ),
+          color: const Color.fromARGB(255, 0, 255, 98),
+        );
+      }
       switch (state.user.userRole) {
         // TODO: Change key to enums
-        case 'MANAGER':
-          return iconButton;
         case 'ADMIN':
+          return iconButton;
+        case 'COM_ADMIN':
           return iconButton;
         default:
           return SizedBox();
