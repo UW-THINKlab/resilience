@@ -156,6 +156,11 @@ cmd = "flutter run"
 cwd = "src/support_sphere"
 depends-on = ["flutter-devices", "flutter-get"]
 
+[feature.frontend.tasks.flutter-add]
+cmd = "flutter pub add"
+cwd = "src/support_sphere"
+depends-on = ["check-flutter"]
+
 [feature.frontend.tasks.flutter-get]
 cmd = "flutter pub get"
 cwd = "src/support_sphere"
