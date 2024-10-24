@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
-                                          RolePermission, UserRole, UserCaptainCluster)
+                                          RolePermission, UserRole, UserCaptainCluster, SignupCode)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -67,6 +67,37 @@ def populate_cluster_and_household_details():
 
     household = Household(cluster=all_clusters[-1], name="Household1")
     BaseRepository.add(household)
+
+def populate_real_cluster_and_household():
+    household_data = Path("./support_sphere_py/tests/resources/data/households.csv")
+    with household_data.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+
+        cluster_uids = {}
+        for row in csv_reader:
+            # Get and set cluster
+            cluster_name = row["CLUSTER"]
+            if cluster_name not in cluster_uids:
+                cluster = Cluster(name=cluster_name)
+                cluster_id = cluster.id
+                cluster_uids[cluster_name] = cluster.id
+                
+                # Add cluster to the database
+                BaseRepository.add(cluster)
+            else:
+                cluster_id = cluster_uids[cluster_name]
+
+            # Setup household
+            household_address = row['ADDRESS']
+            household = Household(cluster_id=cluster_id, address=household_address)
+            
+            # Generate random signup code
+            uid = uuid.uuid4()
+            code = uid.hex[:7].upper()
+            signup_code = SignupCode(code=code, household_id=household.id)
+            
+            # Add household and signup code to the database
+            BaseRepository.add_all([household, signup_code])
 
 
 def authenticate_user_signup_signin_signout_via_supabase():
@@ -151,3 +182,6 @@ if __name__ == '__main__':
     update_user_permissions_roles_by_cluster()
     test_app_mode_status_update()
     test_unauthorized_app_mode_update()
+
+    # Populate real data
+    populate_real_cluster_and_household()

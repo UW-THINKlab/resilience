@@ -40,6 +40,12 @@ class Household(BasePublicSchemaModel, table=True):
         A list of `PeopleGroup` objects associated with this household. Represents a one-to-many relationship where
         each `Household` can have multiple `PeopleGroup` entities. The relationship is configured with `back_populates`
         to match the `household` attribute in the `PeopleGroup` model, and cascading delete is disabled.
+
+    signup_code : Optional[SignupCode]
+        The associated `SignupCode` object for this household. Represents a one-to-one relationship where each
+        `Household` can have a single `SignupCode`. The relationship is configured with `back_populates` to match
+        the `household` attribute in the `SignupCode` model, and cascading delete is
+
     """
 
     __tablename__ = "households"
@@ -56,3 +62,4 @@ class Household(BasePublicSchemaModel, table=True):
 
     cluster: Optional["Cluster"] = Relationship(back_populates="households", cascade_delete=False)
     people_group: list["PeopleGroup"] = Relationship(back_populates="household", cascade_delete=False)
+    signup_code: Optional["SignupCode"] = Relationship(back_populates="household", cascade_delete=False)
