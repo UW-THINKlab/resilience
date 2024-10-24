@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:support_sphere/presentation/pages/main_app/manage_resources/new_resource_skill.dart';
 
 class ManageResourcesBody extends StatelessWidget {
   const ManageResourcesBody({super.key});
