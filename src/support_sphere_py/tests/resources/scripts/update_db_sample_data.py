@@ -69,6 +69,10 @@ def populate_cluster_and_household_details():
     BaseRepository.add(household)
 
 def populate_real_cluster_and_household():
+    """
+    Populate clusters and households based on household data container cluster name and address.
+    During the creation of household, random signup code is also generated using uuid.
+    """
     household_data = Path("./support_sphere_py/tests/resources/data/households.csv")
     with household_data.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
