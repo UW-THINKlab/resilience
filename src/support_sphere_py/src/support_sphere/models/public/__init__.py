@@ -12,6 +12,7 @@ from support_sphere.models.public.resource import Resource
 from support_sphere.models.public.resource_subtype_tag import ResourceSubtypeTag
 from support_sphere.models.public.resource_tag import ResourceTag
 from support_sphere.models.public.resource_type import ResourceType
+from support_sphere.models.public.resource_cv import ResourceCV
 from support_sphere.models.public.role_permission import RolePermission
 from support_sphere.models.public.user_captain_cluster import UserCaptainCluster
 from support_sphere.models.public.user_checklist import UserChecklist
@@ -39,6 +40,7 @@ __all__ = [
     "ResourceSubtypeTag",
     "ResourceTag",
     "ResourceType",
+    "ResourceCV",
     "RolePermission",
     "UserCaptainCluster",
     "UserChecklist",
