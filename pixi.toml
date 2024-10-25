@@ -76,6 +76,7 @@ setup-infra-cloud = { depends-on = [
   "setup-supabase-cloud",
 ] }
 open-db-port = { depends-on = ["port-forward-supabase-db"] }
+setup-and-load ={ depends-on = ["setup-infra", "setup-db-data-via-k8s-job"] }
 
 [feature.backend.dependencies]
 curl = ">=8.8.0,<8.9"
