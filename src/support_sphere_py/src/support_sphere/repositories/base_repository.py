@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 from sqlmodel import Session, SQLModel, select
 from support_sphere.repositories import engine
 
@@ -28,3 +28,13 @@ class BaseRepository:
             statement = select(from_table)
             results = session.exec(statement)
             return results.all()
+        
+    @classmethod
+    def check_exists(cls, from_table: Type[T], col: str, value: Any) -> T:
+        with Session(BaseRepository.repository_engine) as session:
+            statement = select(from_table).where(getattr(from_table, col) == value)
+            results = session.exec(statement)
+            result_obj = results.first()
+            if result_obj:
+                return True
+            return False

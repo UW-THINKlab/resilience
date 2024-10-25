@@ -1,6 +1,7 @@
 import csv
 import datetime
 import uuid
+import time
 
 from pathlib import Path
 
@@ -68,6 +69,29 @@ def populate_cluster_and_household_details():
     household = Household(cluster=all_clusters[-1], name="Household1")
     BaseRepository.add(household)
 
+
+def generate_signup_codes(household_id: uuid.UUID):
+    """
+    Generate random signup code for a household.
+    """
+    # Generate random signup code
+    while True:
+        try:
+            uid = uuid.uuid4()
+            code = uid.hex[:7].upper()
+            if BaseRepository.check_exists(SignupCode, 'code', code):
+                raise Exception("Code already exists")
+
+            signup_code = SignupCode(code=code, household_id=household_id)
+            # Add signup code to the database
+            BaseRepository.add(signup_code)
+        except Exception as e:
+            logger.error(f"Error: {e}... trying again")
+            time.sleep(2)
+            continue
+        break
+
+
 def populate_real_cluster_and_household():
     """
     Populate clusters and households based on household data container cluster name and address.
@@ -94,14 +118,11 @@ def populate_real_cluster_and_household():
             # Setup household
             household_address = row['ADDRESS']
             household = Household(cluster_id=cluster_id, address=household_address)
-            
+            # Add household to the database
+            BaseRepository.add(household)
+
             # Generate random signup code
-            uid = uuid.uuid4()
-            code = uid.hex[:7].upper()
-            signup_code = SignupCode(code=code, household_id=household.id)
-            
-            # Add household and signup code to the database
-            BaseRepository.add_all([household, signup_code])
+            generate_signup_codes(household.id)
 
 
 def authenticate_user_signup_signin_signout_via_supabase():
