@@ -159,9 +159,9 @@ class _DeclareEmergencyButton extends StatelessWidget {
       }
       switch (state.user.userRole) {
         // TODO: Change key to enums
-        case 'ADMIN':
+        case AppRoles.admin:
           return iconButton;
-        case 'COM_ADMIN':
+        case AppRoles.communityAdmin:
           return iconButton;
         default:
           return SizedBox();

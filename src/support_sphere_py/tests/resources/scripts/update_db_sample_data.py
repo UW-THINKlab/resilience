@@ -6,7 +6,8 @@ import time
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
-                                          RolePermission, UserRole, UserCaptainCluster, SignupCode)
+                                          RolePermission, UserRole, UserCaptainCluster, SignupCode,
+                                          ResourceType, ResourceCV)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -18,6 +19,35 @@ from support_sphere.models.enums import AppRoles, AppPermissions, OperationalSta
 import logging
 
 logger = logging.getLogger(__name__)
+
+def populate_resource_types():
+    """
+    Populate resource types to the database.
+    """
+    resource_types_data = {
+        "Durable": "These are physical instruments and devices that help you perform specific tasks, such as repairs, navigation, or building shelters during an emergency.",
+        "Consumable": "These are essential supplies, including food, water, and personal hygiene products that are consumed or used up during an emergency.",
+        "Skill": "These are the skills and knowledge that individuals or groups should possess or develop in preparation for an emergency."
+    }
+    resource_types = [
+        ResourceType(name=type_name, description=type_description)
+        for type_name, type_description in resource_types_data.items()
+    ]
+    BaseRepository.add_all(resource_types)
+
+def populate_resource_cv():
+    """
+    Populate resource controlled vocabulary (CV) to the database.
+    """
+    file_path = Path("./support_sphere_py/tests/resources/data/resources_cv.csv")
+    all_resources = []
+    with file_path.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+
+        for row in csv_reader:
+            resource_cv = ResourceCV(name=row['Item'], description=row['Description'])
+            all_resources.append(resource_cv)
+    BaseRepository.add_all(all_resources)
 
 
 def populate_user_details():
@@ -200,6 +230,9 @@ def test_unauthorized_app_mode_update():
 
 
 if __name__ == '__main__':
+
+    populate_resource_types()
+    populate_resource_cv()
 
     authenticate_user_signup_signin_signout_via_supabase()
     populate_cluster_and_household_details()

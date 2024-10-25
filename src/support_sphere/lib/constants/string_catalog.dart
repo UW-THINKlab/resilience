@@ -53,4 +53,20 @@ class AppModes {
   static const String testEmergency = 'TEST';
 }
 
+class AppRoles {
+  static const String user = 'USER';
+  static const String subcommunityAgent = 'SUBCOM_AGENT';
+  static const String communityAdmin = 'COM_ADMIN';
+  static const String admin = 'ADMIN';
+}
+
+class NavRouteLabels {
+  static const String home = 'Home';
+  static const String profile = 'Me';
+  static const String prepare = 'Prepare';
+  static const String resources = 'Resources';
+  static const String manageResources = 'Manage Resources';
+  static const String manageChecklists = 'Manage Checklists';
+}
+
 

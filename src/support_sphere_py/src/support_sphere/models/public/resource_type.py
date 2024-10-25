@@ -14,6 +14,8 @@ class ResourceType(BasePublicSchemaModel, table=True):
         The unique identifier for the resource type.
     name : str
         The name of the resource type. It is a required field, meaning it cannot be nullable.
+    description : str, optional
+        The description about the resource type.
     resources : list[ResourceTag]
         Defines a one-to-many relationship with the `ResourceTag` model. Each `ResourceType` can have
         multiple associated `ResourceTag` entities. `back_populates` is set to "resource_subtype_tag", establishing
@@ -25,5 +27,6 @@ class ResourceType(BasePublicSchemaModel, table=True):
 
     id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str|None = Field(nullable=False)
+    description: str|None = Field(nullable=True)
 
     resources: list["Resource"] = Relationship(back_populates="resource_type", cascade_delete=False)
