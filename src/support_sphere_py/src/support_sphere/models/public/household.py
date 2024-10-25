@@ -44,7 +44,7 @@ class Household(BasePublicSchemaModel, table=True):
     signup_code : Optional[SignupCode]
         The associated `SignupCode` object for this household. Represents a one-to-one relationship where each
         `Household` can have a single `SignupCode`. The relationship is configured with `back_populates` to match
-        the `household` attribute in the `SignupCode` model, and cascading delete is
+        the `household` attribute in the `SignupCode` model, and cascading delete is disabled.
 
     """
 
