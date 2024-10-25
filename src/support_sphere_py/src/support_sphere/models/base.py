@@ -16,4 +16,4 @@ class BasePublicSchemaModel(SQLModel):
         arbitrary/custom column types for inheriting models.
     """
     __table_args__ = {"schema": "public"}
-    model_config: ConfigDict = ConfigDict(arbitrary_types_allowed=True)
+    model_config: ConfigDict = ConfigDict(arbitrary_types_allowed=True, validate_assignment=True)

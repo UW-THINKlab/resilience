@@ -25,7 +25,7 @@ class SignupCode(BasePublicSchemaModel, table=True):
 
     __tablename__ = "signup_codes"
 
-    code: str = Field(primary_key=True)
+    code: str = Field(primary_key=True, min_length=7, max_length=7)
     household_id: uuid.UUID = Field(foreign_key="public.households.id")
 
     household: Optional["Household"] = Relationship(back_populates="signup_code", cascade_delete=False)
