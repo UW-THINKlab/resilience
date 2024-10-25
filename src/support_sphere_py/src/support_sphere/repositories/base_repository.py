@@ -30,11 +30,9 @@ class BaseRepository:
             return results.all()
         
     @classmethod
-    def check_exists(cls, from_table: Type[T], col: str, value: Any) -> T:
+    def check_exists(cls, from_table: Type[T], col: str, value: Any) -> bool:
         with Session(BaseRepository.repository_engine) as session:
             statement = select(from_table).where(getattr(from_table, col) == value)
             results = session.exec(statement)
             result_obj = results.first()
-            if result_obj:
-                return True
-            return False
+            return result_obj is not None
