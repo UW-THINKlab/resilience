@@ -25,11 +25,6 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
-  void validateAllFieldsFilled() {
-    bool isAllFieldsFilled = state.email.isNotEmpty && state.password.isNotEmpty;
-    emit(state.copyWith(isAllFieldsFilled: isAllFieldsFilled));
-}
-
   Future<void> logInWithCredentials() async {
     if (!state.isValid && !state.isAllFieldsFilled) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));

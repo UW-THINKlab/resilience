@@ -21,7 +21,6 @@ class LoginForm extends StatelessWidget {
               previous.password != current.password,
           listener: (context, state) {
             context.read<LoginCubit>().setValid();
-            context.read<LoginCubit>().validateAllFieldsFilled();
           },
         ),
         BlocListener<LoginCubit, LoginState>(
@@ -157,7 +156,7 @@ class _LoginButton extends StatelessWidget {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
-                onPressed: context.read<LoginCubit>().state.isLoginButtonEnabled
+                onPressed: state.isLoginButtonEnabled
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
                 style: ButtonStyle(
@@ -167,7 +166,7 @@ class _LoginButton extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: WidgetStateProperty.all<Color>(
-                    (context.read<LoginCubit>().state.isLoginButtonEnabled)
+                    (state.isLoginButtonEnabled)
                         ? Theme.of(context).colorScheme.primary
                         : Colors.grey,
                   ),

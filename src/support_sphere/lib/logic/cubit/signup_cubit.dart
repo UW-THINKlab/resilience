@@ -44,16 +44,6 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
-  void validateAllFieldsFilled() {
-    bool isAllFieldsFilled = state.givenName.isNotEmpty &&
-                            state.familyName.isNotEmpty &&
-                            state.email.isNotEmpty &&
-                            state.password.isNotEmpty &&
-                            state.confirmedPassword.isNotEmpty &&
-                            state.signupCode.isNotEmpty;
-    emit(state.copyWith(isAllFieldsFilled: isAllFieldsFilled));
-}
-
   /// Sign up with email and password.
   Future<void> signUpWithEmailAndPassword() async {
     // If the form is invalid, do nothing

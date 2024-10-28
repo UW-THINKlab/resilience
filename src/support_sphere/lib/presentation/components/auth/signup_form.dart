@@ -26,7 +26,6 @@ class SignupForm extends StatelessWidget {
               previous.signupCode != current.signupCode,
           listener: (context, state) {
             context.read<SignupCubit>().setValid();
-            context.read<SignupCubit>().validateAllFieldsFilled();
           },
         ),
         BlocListener<SignupCubit, SignupState>(
@@ -347,7 +346,7 @@ class _SignupButton extends StatelessWidget {
     return BlocBuilder<SignupCubit, SignupState>(
       builder: (context, state) {
         return ElevatedButton(
-          onPressed: context.read<SignupCubit>().state.isSignupButtonEnabled
+          onPressed: state.isSignupButtonEnabled
               ? () => context.read<SignupCubit>().signUpWithEmailAndPassword()
               : null,
           style: ButtonStyle(
@@ -357,7 +356,7 @@ class _SignupButton extends StatelessWidget {
               ),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              (context.read<SignupCubit>().state.isSignupButtonEnabled)
+              (state.isSignupButtonEnabled)
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey,
             ),
