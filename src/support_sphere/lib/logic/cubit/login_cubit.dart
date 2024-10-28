@@ -21,9 +21,12 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
-
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
+
+  bool isLoginButtonEnabled() {
+    return state.isValid && state.isAllFieldsFilled;
+  }
 
   Future<void> logInWithCredentials() async {
     if (!state.isValid && !state.isAllFieldsFilled) return;

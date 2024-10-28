@@ -156,7 +156,7 @@ class _LoginButton extends StatelessWidget {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
-                onPressed: state.isLoginButtonEnabled
+                onPressed: context.read<LoginCubit>().isLoginButtonEnabled()
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
                 style: ButtonStyle(
@@ -166,7 +166,7 @@ class _LoginButton extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: WidgetStateProperty.all<Color>(
-                    (state.isLoginButtonEnabled)
+                    (context.read<LoginCubit>().isLoginButtonEnabled())
                         ? Theme.of(context).colorScheme.primary
                         : Colors.grey,
                   ),

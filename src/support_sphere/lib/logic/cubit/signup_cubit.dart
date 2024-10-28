@@ -40,9 +40,12 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
-
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
+
+  bool isSignupButtonEnabled() {
+    return state.isValid && state.isAllFieldsFilled;
+  }
 
   /// Sign up with email and password.
   Future<void> signUpWithEmailAndPassword() async {

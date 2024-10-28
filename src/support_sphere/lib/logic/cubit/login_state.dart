@@ -20,8 +20,6 @@ final class LoginState extends Equatable {
   bool get isAllFieldsFilled => email.isNotEmpty &&
                                 password.isNotEmpty;
 
-  bool get isLoginButtonEnabled => isValid && isAllFieldsFilled;
-
   @override
   List<Object?> get props => [email, password, status, isValid, errorMessage, showPassword];
 

@@ -346,7 +346,7 @@ class _SignupButton extends StatelessWidget {
     return BlocBuilder<SignupCubit, SignupState>(
       builder: (context, state) {
         return ElevatedButton(
-          onPressed: state.isSignupButtonEnabled
+          onPressed: context.read<SignupCubit>().isSignupButtonEnabled()
               ? () => context.read<SignupCubit>().signUpWithEmailAndPassword()
               : null,
           style: ButtonStyle(
@@ -356,7 +356,7 @@ class _SignupButton extends StatelessWidget {
               ),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              (state.isSignupButtonEnabled)
+              (context.read<SignupCubit>().isSignupButtonEnabled())
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey,
             ),

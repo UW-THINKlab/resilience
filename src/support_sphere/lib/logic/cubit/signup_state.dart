@@ -31,7 +31,6 @@ class SignupState extends Equatable {
                               password.isNotEmpty &&
                               confirmedPassword.isNotEmpty &&
                               signupCode.isNotEmpty;
-  bool get isSignupButtonEnabled => isValid && isAllFieldsFilled;
 
   @override
   List<Object?> get props => [
