@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
@@ -8,6 +7,18 @@ import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
+import 'package:support_sphere/presentation/components/profile_section.dart';
+
+enum ProfileSectionType {
+  personalInfo("Personal Information", "PERSONAL_INFO"),
+  householdInfo("Household Information", "HOUSEHOLD_INFO"),
+  clusterInfo("Cluster Information", "CLUSTER_INFO");
+
+  final String title;
+  final String type;
+
+  const ProfileSectionType(this.title, this.type);
+}
 
 /// Profile Body Widget
 class ProfileBody extends StatelessWidget {
@@ -84,70 +95,6 @@ class _LogOutButton extends StatelessWidget {
   }
 }
 
-class _ProfileSection extends StatelessWidget {
-  const _ProfileSection(
-      {super.key,
-      this.title = "Section Header",
-      this.children = const [],
-      this.displayTitle = true,
-      this.readOnly = false});
-
-  final String title;
-  final List<Widget> children;
-  final bool displayTitle;
-  final bool readOnly;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          _getTitle(context) ?? const SizedBox(),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: children,
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Future<dynamic> _showModalBottomSheet(BuildContext context) {
-    return showCupertinoModalBottomSheet(
-        expand: true,
-        context: context,
-
-        /// TODO: Implement Edit modal
-        builder: (context) => Container());
-  }
-
-  /// Get the title of the section
-  /// If the title is not displayed, return null
-  /// If the title is displayed, return a ListTile with the title and an edit icon
-  /// If the section is read only, don't show the edit icon
-  /// If the section is not read only, show the edit icon
-  Widget? _getTitle(BuildContext context) {
-    if (displayTitle) {
-      // return Center(child: Text(title));
-      return ListTile(
-        title: Text(title),
-        trailing: readOnly
-            ? null
-            : GestureDetector(
-                onTap: () => _showModalBottomSheet(context),
-                child: const Icon(Ionicons.create_outline),
-              ),
-      );
-    }
-    return null;
-  }
-}
-
 class _PersonalInformation extends StatelessWidget {
   const _PersonalInformation({super.key});
 
@@ -164,8 +111,10 @@ class _PersonalInformation extends StatelessWidget {
         String fullName = '$givenName $familyName';
         String phoneNumber = authUser?.phone ?? '';
         String email = authUser?.email ?? '';
-        return _ProfileSection(
-          title: "Personal Information",
+        return ProfileSection(
+          title: ProfileSectionType.personalInfo.title,
+          sectionType: ProfileSectionType.personalInfo.type,
+          state: state,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,8 +165,10 @@ class _HouseholdInformation extends StatelessWidget {
           String fullName = '$givenName $familyName';
           return fullName;
         }).toList();
-        return _ProfileSection(
-          title: "Household Information",
+        return ProfileSection(
+          title: ProfileSectionType.householdInfo.title,
+          sectionType: ProfileSectionType.householdInfo.type,
+          state: state,
           children: [
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,8 +253,8 @@ class _ClusterInformation extends StatelessWidget {
           String fullName = '$givenName $familyName';
           return fullName;
         }).toList();
-        return _ProfileSection(
-          title: "Cluster Information",
+        return ProfileSection(
+          title: ProfileSectionType.clusterInfo.title,
           readOnly: true,
           children: [
             Row(
