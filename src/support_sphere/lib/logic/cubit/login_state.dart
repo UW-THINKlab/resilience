@@ -19,6 +19,8 @@ final class LoginState extends Equatable {
   final bool showPassword;
   final String? errorMessage;
 
+  bool get isLoginButtonEnabled => isValid && isAllFieldsFilled;
+
   @override
   List<Object?> get props => [email, password, status, isValid, isAllFieldsFilled, errorMessage, showPassword];
 

@@ -27,6 +27,8 @@ class SignupState extends Equatable {
   final bool isAllFieldsFilled;
   final String? errorMessage;
 
+  bool get isSignupButtonEnabled => isValid && isAllFieldsFilled;
+
   @override
   List<Object?> get props => [
         givenName,

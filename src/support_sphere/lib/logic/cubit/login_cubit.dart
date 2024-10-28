@@ -25,10 +25,6 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
-  bool isLoginButtonEnabled() {
-    return state.isValid && state.isAllFieldsFilled;
-  }
-
   void validateAllFieldsFilled() {
     bool isAllFieldsFilled = state.email.isNotEmpty && state.password.isNotEmpty;
     emit(state.copyWith(isAllFieldsFilled: isAllFieldsFilled));

@@ -44,10 +44,6 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
-  bool isSignupButtonEnabled() {
-    return state.isValid && state.isAllFieldsFilled;
-  }
-
   void validateAllFieldsFilled() {
     bool isAllFieldsFilled = state.givenName.isNotEmpty &&
                             state.familyName.isNotEmpty &&
