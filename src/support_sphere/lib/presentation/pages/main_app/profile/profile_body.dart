@@ -8,17 +8,8 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
-
-enum ProfileSectionType {
-  personalInfo("Personal Information", "PERSONAL_INFO"),
-  householdInfo("Household Information", "HOUSEHOLD_INFO"),
-  clusterInfo("Cluster Information", "CLUSTER_INFO");
-
-  final String title;
-  final String type;
-
-  const ProfileSectionType(this.title, this.type);
-}
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 /// Profile Body Widget
 class ProfileBody extends StatelessWidget {
@@ -100,9 +91,12 @@ class _PersonalInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormBuilderState>();
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       buildWhen: (previous, current) =>
-          previous.userProfile != current.userProfile,
+          previous.userProfile != current.userProfile ||
+          previous.authUser != current.authUser,
       builder: (context, state) {
         Person? userProfile = state.userProfile;
         AuthUser? authUser = state.authUser;
@@ -111,9 +105,9 @@ class _PersonalInformation extends StatelessWidget {
         String fullName = '$givenName $familyName';
         String phoneNumber = authUser?.phone ?? '';
         String email = authUser?.email ?? '';
+
         return ProfileSection(
-          title: ProfileSectionType.personalInfo.title,
-          sectionType: ProfileSectionType.personalInfo.type,
+          title: "Personal Information",
           state: state,
           children: [
             Row(
@@ -138,6 +132,57 @@ class _PersonalInformation extends StatelessWidget {
               ],
             ),
           ],
+          modalBody: FormBuilder(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FormBuilderTextField(
+                  name: 'givenName',
+                  decoration: const InputDecoration(labelText: 'Given Name'),
+                  initialValue: givenName,
+                ),
+                const SizedBox(height: 4),
+                FormBuilderTextField(
+                  name: 'familyName',
+                  decoration: const InputDecoration(labelText: 'Family Name'),
+                  initialValue: familyName,
+                ),
+                const SizedBox(height: 4),
+                FormBuilderTextField(
+                  name: 'phone',
+                  decoration: const InputDecoration(labelText: 'Phone'),
+                  initialValue: phoneNumber,
+                  validator: FormBuilderValidators.phoneNumber(
+                      checkNullOrEmpty: false),
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.saveAndValidate() ?? false) {
+                      final formData = formKey.currentState?.value;
+
+                      if (formData != null && userProfile != null) {
+                        context.read<ProfileCubit>().savePersonalInfoModal(
+                              personId: userProfile.id,
+                              givenName: formData['givenName'],
+                              familyName: formData['familyName'],
+                              phone: formData['phone'],
+                            );
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -149,6 +194,8 @@ class _HouseholdInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormBuilderState>();
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       buildWhen: (previous, current) => previous.household != current.household,
       builder: (context, state) {
@@ -156,7 +203,7 @@ class _HouseholdInformation extends StatelessWidget {
         String address = household?.address ?? '';
         String pets = household?.pets ?? '';
         String notes = household?.notes ?? '';
-        String accessibilityNeeds = household?.accessibility_needs ?? 'None';
+        String accessibilityNeeds = household?.accessibility_needs ?? '';
         List<Person?> householdMembers =
             household?.houseHoldMembers?.members ?? [];
         List<String> members = householdMembers.map((person) {
@@ -165,9 +212,9 @@ class _HouseholdInformation extends StatelessWidget {
           String fullName = '$givenName $familyName';
           return fullName;
         }).toList();
+
         return ProfileSection(
-          title: ProfileSectionType.householdInfo.title,
-          sectionType: ProfileSectionType.householdInfo.type,
+          title: "Household Information",
           state: state,
           children: [
             const Row(
@@ -206,7 +253,7 @@ class _HouseholdInformation extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Accessiblity Needs"),
-                Text(accessibilityNeeds),
+                Text(accessibilityNeeds.isEmpty ? "None" : accessibilityNeeds),
               ],
             ),
             const Row(
@@ -227,6 +274,63 @@ class _HouseholdInformation extends StatelessWidget {
               ),
             )
           ],
+          modalBody: FormBuilder(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FormBuilderTextField(
+                  name: 'address',
+                  decoration: const InputDecoration(labelText: 'Address'),
+                  initialValue: address,
+                ),
+                const SizedBox(height: 4),
+                FormBuilderTextField(
+                  name: 'pets',
+                  decoration: const InputDecoration(labelText: 'Pets'),
+                  initialValue: pets,
+                ),
+                const SizedBox(height: 4),
+                FormBuilderTextField(
+                  name: 'accessibilityNeeds',
+                  decoration:
+                      const InputDecoration(labelText: 'Accessibility Needs'),
+                  initialValue: accessibilityNeeds,
+                ),
+                const SizedBox(height: 4),
+                FormBuilderTextField(
+                  name: 'notes',
+                  decoration: const InputDecoration(labelText: 'Notes'),
+                  initialValue: notes,
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.saveAndValidate() ?? false) {
+                      final formData = formKey.currentState?.value;
+
+                      if (formData != null && household != null) {
+                        context.read<ProfileCubit>().saveHouseholdInfoModal(
+                              householdId: household.id,
+                              address: formData['address'],
+                              pets: formData['pets'],
+                              accessibilityNeeds: formData['accessibilityNeeds'],
+                              notes: formData['notes'],
+                            );
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -254,7 +358,7 @@ class _ClusterInformation extends StatelessWidget {
           return fullName;
         }).toList();
         return ProfileSection(
-          title: ProfileSectionType.clusterInfo.title,
+          title: "Cluster Information",
           readOnly: true,
           children: [
             Row(

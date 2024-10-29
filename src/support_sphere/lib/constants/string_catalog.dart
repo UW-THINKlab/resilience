@@ -44,6 +44,7 @@ class ErrorMessageStrings {
   static const String invalidConfirmPassword = 'Passwords do not match';
   static const String invalidSignUpCode = 'Invalid sign up code';
   static const String mustNotContainSpecialCharacters = 'Must not contain any special characters';
+  static const String noUserIsSignedIn = 'No user is currently signed in, please try re-login';
 }
 
 /// App Modes Strings

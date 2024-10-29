@@ -69,4 +69,13 @@ class AuthenticationRepository {
     }
     return defaultReturn;
   }
+
+  Future<AuthUser> updateUserPhoneNumber({
+    String? phone,
+  }) async {
+    final response = await _authService.updateUserPhone(phone);
+    supabase_flutter.Session? session = _authService.getUserSession();
+
+    return _parseUser(response.user, _parseUserRole(session));
+  }
 }
