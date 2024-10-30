@@ -34,10 +34,9 @@ class Resource(BasePublicSchemaModel, table=True):
 
     __tablename__ = "resources"
 
-    id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
+    resource_cv_id: uuid.UUID | None = Field(foreign_key="public.resources_cv.id", nullable=False, primary_key=True)
     resource_type_id: uuid.UUID | None = Field(foreign_key="public.resource_types.id", nullable=False)
-    resource_cv_id: uuid.UUID | None = Field(foreign_key="public.resources_cv.id", nullable=False)
-    notes: str | None = Field(nullable=False)
+    notes: str | None = Field(nullable=True)
 
     qty_needed: int|None = Field(nullable=False, default=0)
     qty_available: int|None = Field(nullable=False, default=0)

@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
-                                          RolePermission, UserRole, UserCaptainCluster, ResourceType, ResourceCV)
+                                          RolePermission, UserRole, UserCaptainCluster, ResourceType, ResourceCV, Resource)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def populate_resource_types():
+def populate_resource_types() -> dict[str, uuid.UUID]:
     """
     Populate resource types to the database.
     """
@@ -31,21 +31,39 @@ def populate_resource_types():
         ResourceType(name=type_name, description=type_description)
         for type_name, type_description in resource_types_data.items()
     ]
+    resource_type_uids = {r.name: r.id for r in resource_types}
     BaseRepository.add_all(resource_types)
+    return resource_type_uids
 
-def populate_resource_cv():
+def populate_resources(cv_only=False, resource_type_uids: dict[str, uuid.UUID]|None = None):
     """
-    Populate resource controlled vocabulary (CV) to the database.
+    Populate resource controlled vocabulary (CV) and resources to the database.
     """
-    file_path = Path("./support_sphere_py/tests/resources/data/resources_cv.csv")
-    all_resources = []
+    # Check for the resource_type_uids if cv_only is False
+    if not cv_only:
+        if not isinstance(resource_type_uids, dict):
+            raise ValueError("resource_type_uids must be provided if cv_only is False")
+
+    file_path = Path("./support_sphere_py/tests/resources/data/resources.csv")
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
         for row in csv_reader:
             resource_cv = ResourceCV(name=row['Item'], description=row['Description'])
-            all_resources.append(resource_cv)
-    BaseRepository.add_all(all_resources)
+            BaseRepository.add(resource_cv)
+
+            if not cv_only:
+                resource_type_uid = resource_type_uids.get(row['Category'], None)
+                # Check if the resource type exists
+                # this is needed so errors are raised early
+                if resource_type_uid is None:
+                    raise ValueError(f"Resource type with name '{row['Category']}' not found in the database.")
+                resource = Resource(
+                    resource_type_id=resource_type_uid,
+                    resource_cv_id=resource_cv.id
+                )
+                BaseRepository.add(resource)
+
 
 
 def populate_user_details():
@@ -174,8 +192,8 @@ def test_unauthorized_app_mode_update():
 
 if __name__ == '__main__':
 
-    populate_resource_types()
-    populate_resource_cv()
+    resource_type_uids = populate_resource_types()
+    populate_resources(resource_type_uids=resource_type_uids)
 
     authenticate_user_signup_signin_signout_via_supabase()
     populate_cluster_and_household_details()

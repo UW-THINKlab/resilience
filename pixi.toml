@@ -123,7 +123,6 @@ cmd = "rm deployment/values.cloud.decrypted.yaml"
 
 [feature.backend.tasks.port-forward-supabase-db]
 cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"
-depends-on = ["setup-supabase"]
 
 # K3D Tasks
 [feature.backend.tasks.install-k3d]

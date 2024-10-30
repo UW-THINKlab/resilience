@@ -47,7 +47,7 @@ class UserResource(BasePublicSchemaModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="public.user_profiles.id", nullable=True)
-    resource_id: uuid.UUID = Field(foreign_key="public.resources.id", nullable=True)
+    resource_id: uuid.UUID = Field(foreign_key="public.resources.resource_cv_id", nullable=True)
     quantity: int|None = Field(default=0)
     notes: str|None = Field(nullable=True)
     created_at: datetime = Field(nullable=False)
