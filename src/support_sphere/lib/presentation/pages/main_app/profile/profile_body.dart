@@ -10,6 +10,7 @@ import 'package:support_sphere/logic/cubit/profile_cubit.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 /// Profile Body Widget
 class ProfileBody extends StatelessWidget {
@@ -30,7 +31,7 @@ class ProfileBody extends StatelessWidget {
               height: 50,
               child: const Center(
                 // TODO: Add profile picture
-                child: Text('User Profile',
+                child: Text(UserProfileStrings.userProfile,
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
@@ -78,7 +79,7 @@ class _LogOutButton extends StatelessWidget {
             onPressed: () =>
                 context.read<AuthenticationBloc>().add(AuthOnLogoutRequested()),
             icon: const Icon(Ionicons.log_out_outline),
-            label: const Text('Log Out'),
+            label: const Text(LoginStrings.logout),
           ),
         );
       },
@@ -107,27 +108,27 @@ class _PersonalInformation extends StatelessWidget {
         String email = authUser?.email ?? '';
 
         return ProfileSection(
-          title: "Personal Information",
+          title: UserProfileStrings.personalInformation,
           state: state,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Name"),
+                const Text(UserProfileStrings.fullName),
                 Text(fullName),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Phone"),
+                const Text(UserProfileStrings.phone),
                 Text(phoneNumber),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Email"),
+                const Text(UserProfileStrings.email),
                 Text(email),
               ],
             ),
@@ -139,19 +140,22 @@ class _PersonalInformation extends StatelessWidget {
               children: [
                 FormBuilderTextField(
                   name: 'givenName',
-                  decoration: const InputDecoration(labelText: 'Given Name'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.givenName),
                   initialValue: givenName,
                 ),
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'familyName',
-                  decoration: const InputDecoration(labelText: 'Family Name'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.familyName),
                   initialValue: familyName,
                 ),
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'phone',
-                  decoration: const InputDecoration(labelText: 'Phone'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.phone),
                   initialValue: phoneNumber,
                   validator: FormBuilderValidators.phoneNumber(
                       checkNullOrEmpty: false),
@@ -178,7 +182,7 @@ class _PersonalInformation extends StatelessWidget {
                       }
                     }
                   },
-                  child: const Text('Submit'),
+                  child: const Text(UserProfileStrings.submit),
                 ),
               ],
             ),
@@ -214,13 +218,13 @@ class _HouseholdInformation extends StatelessWidget {
         }).toList();
 
         return ProfileSection(
-          title: "Household Information",
+          title: UserProfileStrings.householdInformation,
           state: state,
           children: [
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Household Members"),
+                const Text(UserProfileStrings.householdMembers),
               ],
             ),
             Container(
@@ -238,28 +242,30 @@ class _HouseholdInformation extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Address"),
+                const Text(UserProfileStrings.address),
                 Text(address),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Pets"),
+                const Text(UserProfileStrings.pets),
                 Text(pets),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Accessiblity Needs"),
-                Text(accessibilityNeeds.isEmpty ? "None" : accessibilityNeeds),
+                const Text(UserProfileStrings.accessibilityNeeds),
+                Text(accessibilityNeeds.isEmpty
+                    ? UserProfileStrings.accessibilityNeedsDefaultText
+                    : accessibilityNeeds),
               ],
             ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Notes (visible to cluster captain(s))"),
+                const Text(UserProfileStrings.notesWithNote),
               ],
             ),
             Container(
@@ -281,26 +287,29 @@ class _HouseholdInformation extends StatelessWidget {
               children: [
                 FormBuilderTextField(
                   name: 'address',
-                  decoration: const InputDecoration(labelText: 'Address'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.address),
                   initialValue: address,
                 ),
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'pets',
-                  decoration: const InputDecoration(labelText: 'Pets'),
+                  decoration:
+                      const InputDecoration(labelText: UserProfileStrings.pets),
                   initialValue: pets,
                 ),
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'accessibilityNeeds',
-                  decoration:
-                      const InputDecoration(labelText: 'Accessibility Needs'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.accessibilityNeeds),
                   initialValue: accessibilityNeeds,
                 ),
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'notes',
-                  decoration: const InputDecoration(labelText: 'Notes'),
+                  decoration: const InputDecoration(
+                      labelText: UserProfileStrings.notes),
                   initialValue: notes,
                 ),
                 const SizedBox(height: 32),
@@ -319,14 +328,15 @@ class _HouseholdInformation extends StatelessWidget {
                               householdId: household.id,
                               address: formData['address'],
                               pets: formData['pets'],
-                              accessibilityNeeds: formData['accessibilityNeeds'],
+                              accessibilityNeeds:
+                                  formData['accessibilityNeeds'],
                               notes: formData['notes'],
                             );
                         Navigator.of(context).pop();
                       }
                     }
                   },
-                  child: const Text('Submit'),
+                  child: const Text(UserProfileStrings.submit),
                 ),
               ],
             ),
@@ -358,27 +368,27 @@ class _ClusterInformation extends StatelessWidget {
           return fullName;
         }).toList();
         return ProfileSection(
-          title: "Cluster Information",
+          title: UserProfileStrings.clusterInformation,
           readOnly: true,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Name"),
+                const Text(UserProfileStrings.clusterName),
                 Text(name),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Meeting place"),
+                const Text(UserProfileStrings.meetingPlace),
                 Text(meetingPlace),
               ],
             ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Captain(s)"),
+                const Text(UserProfileStrings.captains),
               ],
             ),
             Container(
