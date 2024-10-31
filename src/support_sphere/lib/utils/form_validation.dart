@@ -27,6 +27,5 @@ String? validateValue<T extends ValidatableCubit>(
     return validateResult;
   }
 
-  cubit.setValid();
   return null;
 }
