@@ -6,11 +6,13 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
+import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
+  final AuthService _authService = AuthService();
   final UserService _userService = UserService();
   final ClusterService _clusterService = ClusterService();
 
@@ -149,5 +151,33 @@ class UserRepository {
     );
     await _userService.createPerson(
         userId: userId, givenName: givenName, familyName: familyName);
+  }
+
+  Future<void> updateUserName({
+    required String personId,
+    String? givenName,
+    String? familyName,
+  }) async {
+    await _userService.updatePerson(
+      id: personId,
+      givenName: givenName,
+      familyName: familyName,
+    );
+  }
+
+  Future<void> updateHousehold({
+    required String householdId,
+    String? address,
+    String? pets,
+    String? accessibilityNeeds,
+    String? notes,
+  }) async {
+    await _userService.updateHousehold(
+      id: householdId,
+      address: address,
+      pets: pets,
+      accessibilityNeeds: accessibilityNeeds,
+      notes: notes,
+    );
   }
 }

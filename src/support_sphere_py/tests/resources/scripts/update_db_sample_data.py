@@ -1,11 +1,13 @@
 import csv
 import datetime
 import uuid
+import time
 
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
-                                          RolePermission, UserRole, UserCaptainCluster, ResourceType, ResourceCV, Resource)
+                                          RolePermission, UserRole, UserCaptainCluster, SignupCode,
+                                          ResourceType, ResourceCV, Resource)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -116,6 +118,61 @@ def populate_cluster_and_household_details():
     BaseRepository.add(household)
 
 
+def generate_signup_codes(household_id: uuid.UUID):
+    """
+    Generate random signup code for a household.
+    """
+    # Generate random signup code
+    while True:
+        try:
+            uid = uuid.uuid4()
+            code = uid.hex[:7].upper()
+            if BaseRepository.check_exists(SignupCode, 'code', code):
+                raise Exception("Code already exists")
+
+            signup_code = SignupCode(code=code, household_id=household_id)
+            # Add signup code to the database
+            BaseRepository.add(signup_code)
+        except Exception as e:
+            logger.error(f"Error: {e}... trying again")
+            time.sleep(2)
+            continue
+        break
+
+
+def populate_real_cluster_and_household():
+    """
+    Populate clusters and households based on household data container cluster name and address.
+    During the creation of household, random signup code is also generated using uuid.
+    """
+    household_data = Path("./support_sphere_py/tests/resources/data/households.csv")
+    with household_data.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+
+        cluster_uids = {}
+        for row in csv_reader:
+            # Get and set cluster
+            cluster_name = row["CLUSTER"]
+            if cluster_name not in cluster_uids:
+                cluster = Cluster(name=cluster_name)
+                cluster_id = cluster.id
+                cluster_uids[cluster_name] = cluster.id
+                
+                # Add cluster to the database
+                BaseRepository.add(cluster)
+            else:
+                cluster_id = cluster_uids[cluster_name]
+
+            # Setup household
+            household_address = row['ADDRESS']
+            household = Household(cluster_id=cluster_id, address=household_address)
+            # Add household to the database
+            BaseRepository.add(household)
+
+            # Generate random signup code
+            generate_signup_codes(household.id)
+
+
 def authenticate_user_signup_signin_signout_via_supabase():
     # The password is stored in an encrypted format in the auth.users table
     response_sign_up = supabase_client.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
@@ -201,3 +258,6 @@ if __name__ == '__main__':
     update_user_permissions_roles_by_cluster()
     test_app_mode_status_update()
     test_unauthorized_app_mode_update()
+
+    # Populate real data
+    populate_real_cluster_and_household()

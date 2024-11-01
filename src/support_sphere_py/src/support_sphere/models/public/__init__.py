@@ -20,6 +20,7 @@ from support_sphere.models.public.user_checklist_state import UserChecklistState
 from support_sphere.models.public.user_profile import UserProfile
 from support_sphere.models.public.user_resource import UserResource
 from support_sphere.models.public.user_role import UserRole
+from support_sphere.models.public.signup_code import SignupCode
 
 
 
@@ -42,6 +43,7 @@ __all__ = [
     "ResourceType",
     "ResourceCV",
     "RolePermission",
+    "SignupCode",
     "UserCaptainCluster",
     "UserChecklist",
     "UserChecklistState",
