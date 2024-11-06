@@ -59,12 +59,20 @@ provider "aws" {
   }
 }
 
+data "aws_iam_openid_connect_provider" "github" {
+  arn = "arn:aws:iam::${var.account_id}:oidc-provider/token.actions.githubusercontent.com"
+}
+
 module "keys" {
   source = "./modules/keys"
 
   resource_prefix = local.resource_prefix
   stage           = var.stage
   ops_group_name  = var.ops_group_name
+
+  github_oidc_provider_arn = data.aws_iam_openid_connect_provider.github.arn
+  github_organization      = var.github_organization
+  github_repo              = var.github_repo
 
   providers = {
     aws      = aws
@@ -90,6 +98,10 @@ module "ops-roles" {
   stage                 = var.stage
   ops_group_name        = var.ops_group_name
   autoscaling_group_arn = module.server.autoscaling_group_arn
+
+  github_oidc_provider_arn = data.aws_iam_openid_connect_provider.github.arn
+  github_organization      = var.github_organization
+  github_repo              = var.github_repo
 }
 
 resource "aws_resourcegroups_group" "this" {

@@ -16,7 +16,10 @@ resource_prefix = f'{project_name}-{neighborhood}'
 scaling_role_arn = f'arn:aws:iam::871683513797:role/{resource_prefix}-scaling-role'
 asg_name = f'{resource_prefix}-asg'
 
-def start_session():
+def start_session(github):
+    if github:
+        return boto3.session.Session(region_name='us-west-2')
+    
     response = sts.assume_role(
         RoleArn=scaling_role_arn,
         RoleSessionName='run-cloud-server',
@@ -97,11 +100,12 @@ if __name__ == '__main__':
     parser.add_argument('--scale-up', action='store_true', help='Scale up the server by running 1 instance')
     parser.add_argument('--scale-down', action='store_true', help='Scale down the server having 0 instances running')
     parser.add_argument('--replace', action='store_true', help='Replace the server by scaling down and then scaling up')
+    parser.add_argument('--github', action='store_true', help='Run the server with github repository')
 
     args = parser.parse_args() 
 
     print('Assuming role')
-    session = start_session()
+    session = start_session(args.github)
     autoscaling = session.client('autoscaling')
     print('Role assumed')
     if args.scale_up:

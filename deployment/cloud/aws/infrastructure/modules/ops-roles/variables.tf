@@ -22,3 +22,18 @@ variable "autoscaling_group_arn" {
   description = "The ARN of the autoscaling group for the server"
   type        = string
 }
+
+variable "github_oidc_provider_arn" {
+  description = "ARN for the OIDC provider for GitHub Actions"
+  type        = string
+}
+
+variable "github_organization" {
+  description = "Organization that the GitHub repo belongs to"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repo name that this project lives in"
+  type        = string
+}
