@@ -2,6 +2,7 @@ import csv
 import datetime
 import uuid
 import time
+import typer
 
 from pathlib import Path
 
@@ -18,7 +19,12 @@ from support_sphere.models.enums import AppRoles, AppPermissions, OperationalSta
 
 import logging
 
+DATA_DIRECTORY = Path(__file__).parent / 'resources' / 'data'
+
 logger = logging.getLogger(__name__)
+
+db_init_app = typer.Typer()
+
 
 def populate_resource_types() -> dict[str, uuid.UUID]:
     """
@@ -37,7 +43,8 @@ def populate_resource_types() -> dict[str, uuid.UUID]:
     BaseRepository.add_all(resource_types)
     return resource_type_uids
 
-def populate_resources(cv_only=False, resource_type_uids: dict[str, uuid.UUID]|None = None):
+
+def populate_resources(cv_only=False, resource_type_uids: dict[str, uuid.UUID] | None = None):
     """
     Populate resource controlled vocabulary (CV) and resources to the database.
     """
@@ -46,7 +53,7 @@ def populate_resources(cv_only=False, resource_type_uids: dict[str, uuid.UUID]|N
         if not isinstance(resource_type_uids, dict):
             raise ValueError("resource_type_uids must be provided if cv_only is False")
 
-    file_path = Path("./support_sphere_py/tests/resources/data/resources.csv")
+    file_path = DATA_DIRECTORY / 'resources.csv'
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
@@ -67,7 +74,6 @@ def populate_resources(cv_only=False, resource_type_uids: dict[str, uuid.UUID]|N
                 BaseRepository.add(resource)
 
 
-
 def populate_user_details():
     """
         This utility function populates your local supabase database tables with sample data entries.
@@ -75,7 +81,7 @@ def populate_user_details():
 
     all_households = BaseRepository.select_all(Household)
 
-    file_path = Path("./support_sphere_py/tests/resources/data/sample_data.csv")
+    file_path = DATA_DIRECTORY / 'sample_data.csv'
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
@@ -108,6 +114,7 @@ def populate_user_details():
     logger.info("Database Populated Successfully")
 
 
+@db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():
     # Creating entries in 'Cluster' and 'Household' table.
     cluster = Cluster(name="Cluster1")
@@ -140,12 +147,13 @@ def generate_signup_codes(household_id: uuid.UUID):
         break
 
 
+@db_init_app.command(help="Populate clusters and households based on household data container cluster name and address")
 def populate_real_cluster_and_household():
     """
     Populate clusters and households based on household data container cluster name and address.
     During the creation of household, random signup code is also generated using uuid.
     """
-    household_data = Path("./support_sphere_py/tests/resources/data/households.csv")
+    household_data = DATA_DIRECTORY / 'households.csv'
     with household_data.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
@@ -157,7 +165,7 @@ def populate_real_cluster_and_household():
                 cluster = Cluster(name=cluster_name)
                 cluster_id = cluster.id
                 cluster_uids[cluster_name] = cluster.id
-                
+
                 # Add cluster to the database
                 BaseRepository.add(cluster)
             else:
@@ -173,6 +181,7 @@ def populate_real_cluster_and_household():
             generate_signup_codes(household.id)
 
 
+@db_init_app.command(help="Sanity check for sign-up and sign-in via supabase")
 def authenticate_user_signup_signin_signout_via_supabase():
     # The password is stored in an encrypted format in the auth.users table
     response_sign_up = supabase_client.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
@@ -247,17 +256,48 @@ def test_unauthorized_app_mode_update():
         supabase_client.auth.sign_out()
 
 
-if __name__ == '__main__':
-
+@db_init_app.command(help="Command to setup resource type and resources")
+def setup_utility_resources():
     resource_type_uids = populate_resource_types()
     populate_resources(resource_type_uids=resource_type_uids)
 
-    authenticate_user_signup_signin_signout_via_supabase()
-    populate_cluster_and_household_details()
+
+@db_init_app.command(help="Command to setup the database with dummy users, roles, and permissions")
+def setup_user_details():
     populate_user_details()
     update_user_permissions_roles_by_cluster()
+
+
+@db_init_app.command(help="Sanity check for testing authorization for app mode change")
+def test_app_mode_change():
     test_app_mode_status_update()
     test_unauthorized_app_mode_update()
 
+
+@db_init_app.command(help="Command to setup the database with "
+                          "dummy users, roles, permissions, households, clusters, and app mode with sanity check")
+def run_all():
+    logger.info("Starting to populate db with sample entries...")
+
+    # Setup utility resources to be shared during emergency
+    setup_utility_resources()
+
+    # Sanity check for user sign-up and sign-in flow via supabase
+    authenticate_user_signup_signin_signout_via_supabase()
+
+    # Set up a dummy cluster and a household
+    populate_cluster_and_household_details()
+
+    # Set up the database with dummy users, roles, and permissions
+    setup_user_details()
+
+    # Sanity check app mode update
+    test_app_mode_change()
+
     # Populate real data
     populate_real_cluster_and_household()
+    logger.info("Completed Successfully!")
+
+
+if __name__ == '__main__':
+    db_init_app()

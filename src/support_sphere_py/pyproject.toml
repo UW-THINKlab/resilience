@@ -35,6 +35,7 @@ dependencies = [
     "fastapi[standard]>=0.111.0",
     "uvicorn>=0.30.6",
     "geoalchemy2>=0.15.2",
+    "typer",
 ]
 
 [project.license]
@@ -45,3 +46,7 @@ exclude = ["/tests"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/support_sphere"]
+
+[project.scripts]
+support_sphere = "support_sphere.scripts.cli_app:app"
+
