@@ -1,5 +1,6 @@
 import uuid
 from typing import Optional
+import datetime
 
 from support_sphere.models.base import BasePublicSchemaModel
 from sqlmodel import Field, Relationship
@@ -28,10 +29,14 @@ class ChecklistStepsOrder(BasePublicSchemaModel, table=True):
 
     __tablename__ = "checklist_steps_orders"
 
-    checklist_types_id: uuid.UUID | None = Field(primary_key=True, foreign_key="public.checklist_types.id")
-    checklist_steps_templates_id: uuid.UUID | None = Field(foreign_key="public.checklist_steps_templates.id")
-    priority: int | None = Field(nullable=False)
-    version: int | None = Field(nullable=False)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    checklist_id: uuid.UUID = Field(foreign_key="public.checklists.id", nullable=False)
+    checklist_step_id: uuid.UUID = Field(foreign_key="public.checklist_steps.id", nullable=False)
+    priority: int = Field(nullable=False)
+    updated_at: datetime.datetime = Field(
+        default_factory=lambda: datetime.datetime.now(datetime.UTC),
+        nullable=False
+    )
 
-    checklist_steps_template: Optional["ChecklistStepsTemplate"] = Relationship(back_populates="checklist_steps_order",                                                                            cascade_delete=False)
-    checklist_type: Optional["ChecklistType"] = Relationship(back_populates="checklist_steps_order", cascade_delete=False)
+    checklists: list["Checklist"] = Relationship(back_populates="checklist_steps_orders", cascade_delete=False)
+    checklist_steps: list["ChecklistStep"] = Relationship(back_populates="checklist_steps_orders", cascade_delete=False)
