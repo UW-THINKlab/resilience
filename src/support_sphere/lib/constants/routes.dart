@@ -25,7 +25,7 @@ class AppNavigation {
       const AppRoute(
           icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(
-          icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare),
+          icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources),
     ];
     if (role == AppRoles.communityAdmin) {
@@ -34,7 +34,7 @@ class AppNavigation {
         const AppRoute(
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources),
         const AppRoute(
-            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistBody()),
+            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists),
       ];
     }
     return destinations;
