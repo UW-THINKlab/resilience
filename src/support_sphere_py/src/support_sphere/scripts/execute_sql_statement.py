@@ -107,6 +107,53 @@ BEGIN;
 COMMIT;
 """
 
+# SQL For Checklist triggers setup
+checklist_triggers_sql = """
+BEGIN;
+  CREATE OR REPLACE FUNCTION insert_user_checklists_for_all_users()
+  RETURNS TRIGGER AS $$
+  DECLARE
+      user_record RECORD;
+  BEGIN
+      -- Loop through each user in the user_profiles table
+      FOR user_record IN SELECT id FROM public.user_profiles LOOP
+          -- Insert a new row into user_checklists for each user
+          INSERT INTO public.user_checklists (id, checklist_id, user_profile_id)
+          VALUES (gen_random_uuid(), NEW.id, user_record.id);
+      END LOOP;
+
+      RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  CREATE OR REPLACE FUNCTION insert_checklist_steps_state_for_all_users()
+  RETURNS TRIGGER AS $$
+  DECLARE
+      user_record RECORD;
+  BEGIN
+      -- Loop through each user in the user_profiles table
+      FOR user_record IN SELECT id FROM public.user_profiles LOOP
+          -- Insert a new row into checklist_steps_states for each user
+          INSERT INTO public.checklist_steps_states (id, checklist_steps_order_id, user_profile_id, is_completed)
+          VALUES (gen_random_uuid(), NEW.id, user_record.id, FALSE);
+      END LOOP;
+
+      RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  CREATE OR REPLACE TRIGGER trigger_insert_user_checklists_for_all_users
+  AFTER INSERT ON public.checklists
+  FOR EACH ROW
+  EXECUTE FUNCTION insert_user_checklists_for_all_users();
+
+  CREATE OR REPLACE TRIGGER trigger_insert_checklist_steps_state_for_all_users
+  AFTER INSERT ON public.checklist_steps_orders
+  FOR EACH ROW
+  EXECUTE FUNCTION insert_checklist_steps_state_for_all_users();
+COMMIT;
+"""
+
 
 # Execute the SQL commands
 def run_custom_sql_statement(
@@ -136,6 +183,9 @@ def run_all():
 
     logger.info("Activating realtime tables...")
     run_custom_sql_statement(activate_realtime_tables_sql)
+
+    logger.info("Setting up checklist triggers...")
+    run_custom_sql_statement(checklist_triggers_sql)
 
 
 if __name__ == '__main__':
