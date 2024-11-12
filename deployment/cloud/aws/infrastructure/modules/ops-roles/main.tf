@@ -62,6 +62,8 @@ locals {
   }
 }
 
+
+# IAM roles for user operations
 resource "aws_iam_role" "ops_roles" {
   for_each = local.roles_to_create
   name     = "${var.resource_prefix}-${each.key}"
@@ -115,5 +117,39 @@ resource "aws_iam_group_policy" "assume_ops_roles" {
       }
     ]
   })
+}
+
+
+# IAM roles for GitHub actions
+resource "aws_iam_role" "github_scaling_role" {
+  name = "${var.resource_prefix}-github-scaling-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = var.github_oidc_provider_arn
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          },
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_organization}/${var.github_repo}:*"
+          }
+        }
+      }
+    ]
+  })
+
+  inline_policy {
+    name = "${var.resource_prefix}-github-scaling-policy"
+    policy = jsonencode({
+      Version   = "2012-10-17",
+      Statement = local.roles_to_create["scaling-role"].policy_statements
+    })
+  }
 }
 

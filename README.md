@@ -163,7 +163,7 @@ pixi run cloud-destroy
 
 ### Run the development server
 
-Right now, this server does nothing. TODO: fix that as part of these issues ([1](https://github.com/uw-ssec/post-disaster-comms/issues/38) and [2](https://github.com/uw-ssec/post-disaster-comms/issues/40))
+This will start up the development server and populate it with sample data.
 
 ```
 pixi run cloud-server-run

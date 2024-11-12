@@ -44,9 +44,8 @@ data "aws_iam_group" "this" {
   group_name = var.ops_group_name
 }
 
-resource "aws_iam_group_policy" "this" {
-  name  = "${var.resource_prefix}-kms-key-policy"
-  group = var.ops_group_name
+resource "aws_iam_policy" "this" {
+  name = "${var.resource_prefix}-kms-key-policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -64,4 +63,38 @@ resource "aws_iam_group_policy" "this" {
       }
     ]
   })
+}
+
+resource "aws_iam_group_policy_attachment" "this" {
+  group      = var.ops_group_name
+  policy_arn = aws_iam_policy.this.arn
+}
+
+resource "aws_iam_role" "this" {
+  name = "${var.resource_prefix}-kms-key-role-github"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = var.github_oidc_provider_arn
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" : "sts.amazonaws.com"
+          },
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" : "repo:${var.github_organization}/${var.github_repo}:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  role       = aws_iam_role.this.name
+  policy_arn = aws_iam_policy.this.arn
 }

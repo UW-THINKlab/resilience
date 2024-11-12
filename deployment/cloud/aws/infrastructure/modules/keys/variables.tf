@@ -17,3 +17,18 @@ variable "ops_group_name" {
   description = "The name of the admin group"
   type        = string
 }
+
+variable "github_oidc_provider_arn" {
+  description = "ARN for the OIDC provider for GitHub Actions"
+  type        = string
+}
+
+variable "github_organization" {
+  description = "Organization that the GitHub repo belongs to"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repo name that this project lives in"
+  type        = string
+}
