@@ -1,20 +1,23 @@
 /// Strings used in the app
 class AppStrings {
   static const String appName = 'Support Sphere';
-  static const String signUpWelcome = 'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
+  static const String signUpWelcome =
+      'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
   static const String testEmergencyBannerText = "This is a test emergency.";
 }
 
 class EmergencyAlertDialogStrings {
   static const String title = 'Emergency Declared';
-  static const String message = 'An emergency has been declared.\nWould you like to return to normal mode?';
+  static const String message =
+      'An emergency has been declared.\nWould you like to return to normal mode?';
   static const String buttonYes = 'Yes';
   static const String buttonNo = 'No';
 }
 
 class NormalAlertDialogStrings {
   static const String title = 'Declare An Emergency';
-  static const String message = 'You are about to declare an emergency.\nWould you like to declare an actual emergency or a test?';
+  static const String message =
+      'You are about to declare an emergency.\nWould you like to declare an actual emergency or a test?';
   static const String buttonEmergency = 'Emergency';
   static const String buttonTest = 'Test';
   static const String buttonCancel = 'Cancel';
@@ -62,14 +65,30 @@ class UserProfileStrings {
   static const String submit = 'Submit';
 }
 
+/// Checklist messages
+class ChecklistStrings {
+  static const String toBeDone = 'To be Done';
+  static const String completed = 'Completed';
+  static const String noCompletedChecklist = 'No completed checklists yet';
+  static const String inProgress = 'In Progress';
+  static String stepsCount(int count) => '$count Steps';
+  static String completedOnDate(String dateStr) => 'Completed on $dateStr';
+  static const String allDone = 'All Done! 🎉';
+  static String congratulations(String dateStr) =>
+      "Congratulations, you\'ve completed all available Preparedness Checklists! Your next checklist is not due until $dateStr.";
+  static const String checkCompletedTab = 'Check the Completed tab to review your completed checklists.';
+}
+
 /// Error messages
 class ErrorMessageStrings {
   static const String invalidEmail = 'Invalid email';
   static const String invalidPassword = 'Invalid password';
   static const String invalidConfirmPassword = 'Passwords do not match';
   static const String invalidSignUpCode = 'Invalid sign up code';
-  static const String mustNotContainSpecialCharacters = 'Must not contain any special characters';
-  static const String noUserIsSignedIn = 'No user is currently signed in, please try re-login';
+  static const String mustNotContainSpecialCharacters =
+      'Must not contain any special characters';
+  static const String noUserIsSignedIn =
+      'No user is currently signed in, please try re-login';
 }
 
 /// App Modes Strings
