@@ -49,6 +49,18 @@ resource "aws_s3_bucket_public_access_block" "example" {
   restrict_public_buckets = true
 }
 
+# OIDC provider for GitHub Actions
+
+resource "aws_iam_openid_connect_provider" "this" {
+  url = "https://token.actions.githubusercontent.com"
+
+  client_id_list = ["sts.amazonaws.com"]
+
+  # thumbprint set to all f's because it is unused when OIDC is connecting to IAM
+  # source: https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#configuring-iam-to-trust-github
+  thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
+}
+
 # deploy role
 resource "aws_iam_role" "deploy" {
   name        = "${var.account_resource_prefix}-deploy"
@@ -76,7 +88,7 @@ resource "aws_iam_role" "deploy" {
   ]
 }
 
-resource "aws_iam_policy" "this" {
+resource "aws_iam_policy" "tf_state_access" {
   name = "${var.account_resource_prefix}-tf-state-access"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -180,7 +192,7 @@ resource "aws_iam_group_policy_attachment" "readonly" {
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
-resource "aws_iam_group_policy_attachment" "this" {
+resource "aws_iam_group_policy_attachment" "tf_state_access" {
   group      = aws_iam_group.this.name
   policy_arn = aws_iam_policy.tf_state_access.arn
 }

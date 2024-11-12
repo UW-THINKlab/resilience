@@ -10,25 +10,39 @@ platforms = ["linux-64", "osx-64", "osx-arm64"]
 frontend = ["frontend"]
 backend = ["backend", "db"]
 deployment = ["cloud", "backup-secret"]
+data-analysis = ["data-analysis", "db"]
 
 [dependencies]
 go-sops = ">=3.9.0"
+
+# ==== Data Analysis environment ====
+[feature.data-analysis.dependencies]
+python = ">=3.10"
+pip = "*"
+jupyterlab = ">=4.2.5,<5"
+pandas = ">=2.2.3,<3"
+geopandas = ">=1.0.1,<2"
+pixi-kernel = ">=0.5.1,<0.6"
+
+[feature.data-analysis.tasks]
+start-jupyterlab = { cmd = "jupyter lab", cwd = "notebooks" }
 
 # ==== Backend Database environment ====
 [feature.db.dependencies]
 python = ">=3.10"
 pip = "*"
+psycopg2-binary = ">=2.9.9,<3"
 
 [feature.db.pypi-dependencies]
 support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 [feature.db.tasks]
 setup-db-data-via-k8s-job = { depends-on = [
-    "build-docker-image-for-api-service",
-    "import-docker-image-in-k8s-cluster",
-    "create-configmap",
-    "run-container-job"
-]}
+  "build-docker-image-for-api-service",
+  "import-docker-image-in-k8s-cluster",
+  "create-configmap",
+  "run-container-job",
+] }
 
 [feature.db.tasks.build-docker-image-for-api-service]
 cmd = "docker build -t pdc/populate_db:1.0 -f deployment/docker/populate_db_dev.Dockerfile ."
@@ -57,8 +71,12 @@ kubectl apply -f deployment/kubernetes/populate_db_job.yaml && \
 [feature.backend.tasks]
 install-tools = { depends-on = ["install-k3d", "fetch-supabase-chart"] }
 setup-infra = { depends-on = ["k3d-create-cluster", "setup-supabase"] }
-setup-infra-cloud = { depends-on = ["k3d-create-cluster", "setup-supabase-cloud"] }
+setup-infra-cloud = { depends-on = [
+  "k3d-create-cluster",
+  "setup-supabase-cloud",
+] }
 open-db-port = { depends-on = ["port-forward-supabase-db"] }
+setup-and-load ={ depends-on = ["setup-infra", "setup-db-data-via-k8s-job"] }
 
 [feature.backend.dependencies]
 curl = ">=8.8.0,<8.9"
@@ -71,15 +89,15 @@ cmd = "git submodule update --init"
 
 [feature.backend.tasks.setup-supabase]
 cmd = [
-    "helm",
-    "upgrade",
-    "supabase", 
-    "vendors/supabase-kubernetes/charts/supabase",
-    "--install",
-    "--wait",
-    "--cleanup-on-fail",
-    "--values",
-    "deployment/values.dev.yaml"
+  "helm",
+  "upgrade",
+  "supabase",
+  "vendors/supabase-kubernetes/charts/supabase",
+  "--install",
+  "--wait",
+  "--cleanup-on-fail",
+  "--values",
+  "deployment/values.dev.yaml",
 ]
 depends-on = ["fetch-supabase-chart"]
 
@@ -88,15 +106,15 @@ cmd = "sops -d deployment/values.cloud.yaml > deployment/values.cloud.decrypted.
 
 [feature.backend.tasks.setup-supabase-cloud]
 cmd = [
-    "helm",
-    "upgrade",
-    "supabase",
-    "vendors/supabase-kubernetes/charts/supabase",
-    "--install",
-    "--wait",
-    "--cleanup-on-fail",
-    "--values",
-    "deployment/values.cloud.decrypted.yaml"
+  "helm",
+  "upgrade",
+  "supabase",
+  "vendors/supabase-kubernetes/charts/supabase",
+  "--install",
+  "--wait",
+  "--cleanup-on-fail",
+  "--values",
+  "deployment/values.cloud.decrypted.yaml",
 ]
 depends-on = ["fetch-supabase-chart", "decrypt-supabase-cloud-values"]
 
@@ -105,7 +123,6 @@ cmd = "rm deployment/values.cloud.decrypted.yaml"
 
 [feature.backend.tasks.port-forward-supabase-db]
 cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"
-depends-on = ["setup-supabase"]
 
 # K3D Tasks
 [feature.backend.tasks.install-k3d]
@@ -118,12 +135,14 @@ USE_SUDO = "false"
 
 [feature.backend.tasks.k3d-create-cluster]
 cmd = [
-    "k3d",
-    "cluster",
-    "create",
-    "pdc-cluster",
-    "-p", "80:80@loadbalancer",
-    "-p", "5432:5432@loadbalancer",
+  "k3d",
+  "cluster",
+  "create",
+  "pdc-cluster",
+  "-p",
+  "80:80@loadbalancer",
+  "-p",
+  "5432:5432@loadbalancer",
 ]
 depends-on = ["install-k3d", "k3d-delete-cluster"]
 
@@ -186,6 +205,8 @@ depends-on = ["install-flutter"]
 "TF_VAR_stage" = "dev"
 "TF_VAR_account_id" = "871683513797"
 "TF_VAR_ops_group_name" = "ssec-eng"
+"TF_VAR_github_repo" = "post-disaster-comms"
+"TF_VAR_github_organization" = "uw-ssec"
 
 [feature.cloud.tasks]
 # empty for now

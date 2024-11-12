@@ -48,4 +48,6 @@ class UserProfile(BasePublicSchemaModel, table=True):
     user_role: Optional["UserRole"] = Relationship(back_populates="user_profile", cascade_delete=False)
     operational_events: list["OperationalEvent"] = Relationship(back_populates="user_profile", cascade_delete=False)
     user_resources: list["UserResource"] = Relationship(back_populates="user_profile", cascade_delete=False)
-    user_checklists: list["UserChecklist"] = Relationship(back_populates="user_profile", cascade_delete=False)
+    user_checklists: list["UserChecklists"] = Relationship(back_populates="user_profile", cascade_delete=False)
+    checklist_steps_state: list["ChecklistStepsState"] = Relationship(back_populates="user_profile",
+                                                                          cascade_delete=False)

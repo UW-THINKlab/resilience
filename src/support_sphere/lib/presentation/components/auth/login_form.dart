@@ -13,19 +13,31 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
-        if (state.status.isFailure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(
-                content: Text('Authentication Failure'),
-              ),
-            );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<LoginCubit, LoginState>(
+          listenWhen: (previous, current) => 
+              previous.email != current.email ||
+              previous.password != current.password,
+          listener: (context, state) {
+            context.read<LoginCubit>().setValid();
+          },
+        ),
+        BlocListener<LoginCubit, LoginState>(
+          listenWhen: (previous, current) => previous.status != current.status,
+          listener: (context, state) {
+            if (state.status.isFailure) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  const SnackBar(
+                    content: Text('Authentication Failure'),
+                  ),
+                );
+            }
+          },
+        ),
+      ],
       child: Form(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -57,12 +69,13 @@ class _EmailInput extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) => validateValue<LoginCubit>([
-            FormBuilderValidators.required(),
-            FormBuilderValidators.email(),
-          ], 
-          value, 
-          context,
+              FormBuilderValidators.required(),
+              FormBuilderValidators.email(),
+            ],
+            value,
+            context,
           ),
+
           decoration: InputDecoration(
             labelText: LoginStrings.email,
             helperText: '',
@@ -98,12 +111,13 @@ class _PasswordInput extends StatelessWidget {
           obscureText: !state.showPassword,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) => validateValue<LoginCubit>([
-            FormBuilderValidators.required(),
-            FormBuilderValidators.minLength(8),
-          ], 
-          value,
-          context, 
+              FormBuilderValidators.required(),
+              FormBuilderValidators.minLength(8),
+            ],
+            value,
+            context,
           ),
+
           decoration: InputDecoration(
             labelText: LoginStrings.password,
             helperText: '',
@@ -142,7 +156,7 @@ class _LoginButton extends StatelessWidget {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
-                onPressed: state.isValid
+                onPressed: context.read<LoginCubit>().isLoginButtonEnabled()
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
                 style: ButtonStyle(
@@ -152,7 +166,9 @@ class _LoginButton extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: WidgetStateProperty.all<Color>(
-                    Theme.of(context).colorScheme.primary,
+                    (context.read<LoginCubit>().isLoginButtonEnabled())
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey,
                   ),
                 ),
                 // highlightElevation: 4.0,

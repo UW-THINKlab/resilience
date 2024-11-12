@@ -25,7 +25,7 @@ class ResourceTag(BasePublicSchemaModel, table=True):
  """
     __tablename__ = "resource_tags"
 
-    resource_id: uuid.UUID = Field(primary_key=True, foreign_key="public.resources.id")
+    resource_id: uuid.UUID = Field(primary_key=True, foreign_key="public.resources.resource_cv_id")
     resource_subtype_tag_id: uuid.UUID = Field(nullable=True, foreign_key="public.resource_subtype_tags.id")
 
     resources: list["Resource"] = Relationship(back_populates="resource_tags", cascade_delete=False)

@@ -1,0 +1,27 @@
+# Runs the dev server with server code that's in the main branch
+name: Run Dev Server
+on:
+  workflow_dispatch:
+  workflow_call:
+env:
+  AWS_REGION : "us-west-2"
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+jobs:
+  start-dev-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: arn:aws:iam::871683513797:role/supportsphere-laurelhurst-github-scaling-role
+          role-session-name: github-workflow-run
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Run the server
+        run: |
+          pip3 install boto3
+          python3 ./scripts/run-cloud-server.py --scale-up --github
