@@ -6,6 +6,8 @@ on:
   #   types: [labeled, synchronize]
 
 jobs:
+  call-run-server:
+    uses: uw-ssec/post-disaster-comms/.github/workflows/run-dev-server.yml@main
   add-preview:
     runs-on: ubuntu-latest
     # This workflow accesses secrets and checks out a PR, so only run if labelled
@@ -25,7 +27,7 @@ jobs:
       with:
         channel: stable
     - run: flutter pub get
-    - run: flutter build web --web-renderer html
+    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
 
     - name: Deploy Website Preview
       if: always()

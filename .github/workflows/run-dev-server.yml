@@ -2,6 +2,7 @@
 name: Run Dev Server
 on:
   workflow_dispatch:
+  workflow_call:
 env:
   AWS_REGION : "us-west-2"
 # permission can be added at job level or workflow level
