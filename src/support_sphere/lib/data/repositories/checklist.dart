@@ -17,10 +17,10 @@ class ChecklistRepository {
       
       return Checklist(
         id: item['id'],
-        title: item['title'],
-        description: item['description'],
+        title: item['title'] ?? '',
+        description: item['description'] ?? '',
         stepCount: item['checklist_steps']?.length ?? 0,
-        frequency: recurringType['name'],
+        frequency: recurringType['name'] ?? '',
         isCompleted: checklistState?['completed'] ?? false,
         completedAt: checklistState?['completed_at'] != null 
             ? DateTime.parse(checklistState['completed_at'])
@@ -28,7 +28,7 @@ class ChecklistRepository {
         dueDate: item['due_date'] != null 
             ? DateTime.parse(item['due_date'])
             : null,
-        lastCompletedVersion: item['last_completed_version'],
+        lastCompletedVersion: item['last_completed_version'] ?? 0,
       );
     }).toList();
   }

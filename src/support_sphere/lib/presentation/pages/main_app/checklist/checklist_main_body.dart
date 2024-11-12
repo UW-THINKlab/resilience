@@ -66,7 +66,7 @@ class _ToBeDoneTab extends StatelessWidget {
               title: checklist.title,
               stepCount: checklist.stepCount,
               frequency: checklist.frequency,
-              description: checklist.description ?? '',
+              description: checklist.description,
               isInProgress: checklist.lastCompletedVersion > 0,
               onButtonClicked: () {
                 // TODO: Navigate to checklist detail page
@@ -104,7 +104,7 @@ class _CompletedTab extends StatelessWidget {
               title: checklist.title,
               stepCount: checklist.stepCount,
               frequency: checklist.frequency,
-              description: checklist.description ?? '',
+              description: checklist.description,
               completedDate: checklist.completedAt,
               onButtonClicked: () {
                 // TODO: Navigate to completed checklist review
