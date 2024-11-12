@@ -3,7 +3,7 @@ name: Run Dev Server
 on:
   workflow_dispatch:
 env:
-  AWS_REGION : "AWS-REGION"
+  AWS_REGION : "us-west-2"
 # permission can be added at job level or workflow level
 permissions:
   id-token: write   # This is required for requesting the JWT
