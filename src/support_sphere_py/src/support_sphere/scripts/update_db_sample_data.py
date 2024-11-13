@@ -3,12 +3,14 @@ import datetime
 import uuid
 import time
 import typer
+import json
 
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
                                           RolePermission, UserRole, UserCaptainCluster, SignupCode,
-                                          ResourceType, ResourceCV, Resource)
+                                          ResourceType, ResourceCV, Resource, Checklist, ChecklistStep, 
+                                          ChecklistStepsOrder)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -112,6 +114,26 @@ def populate_user_details():
             people_group = PeopleGroup(people=person, household=all_households[-1])
             BaseRepository.add(people_group)
     logger.info("Database Populated Successfully")
+
+def populate_checklists():
+    """
+    Populate checklists to the database.
+    """
+    file_path = DATA_DIRECTORY / 'checklists.json'
+    with open(file_path) as f:
+        data = json.load(f)
+
+    for ch in data['checklists']:
+        checklist = Checklist(
+            title=ch['title'],
+            description=ch['purpose']
+        )
+        BaseRepository.add(checklist)
+        for idx, st in enumerate(ch['steps']):
+            step = ChecklistStep(label=st['step'], description=st['description'])
+            BaseRepository.add(step)
+            step_order = ChecklistStepsOrder(checklist_id=checklist.id, checklist_step_id=step.id, priority=idx)
+            BaseRepository.add(step_order)
 
 
 @db_init_app.command(help="Setup a dummy cluster and a household")
@@ -260,6 +282,7 @@ def test_unauthorized_app_mode_update():
 def setup_utility_resources():
     resource_type_uids = populate_resource_types()
     populate_resources(resource_type_uids=resource_type_uids)
+    populate_checklists()
 
 
 @db_init_app.command(help="Command to setup the database with dummy users, roles, and permissions")
