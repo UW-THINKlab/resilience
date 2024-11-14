@@ -24,6 +24,7 @@ class NormalAlertDialogStrings {
 class LoginStrings {
   static const String login = 'Login';
   static const String loginIntoExisting = 'Login into an existing account';
+  static const String logout = 'Log Out';
   static const String email = 'Email';
   static const String password = 'Password';
   static const String confirmPassword = 'Confirm Password';
@@ -37,6 +38,30 @@ class LoginStrings {
   static const String familyName = 'Last Name';
 }
 
+/// User Profile related strings
+class UserProfileStrings {
+  static const String userProfile = 'User Profile';
+  static const String personalInformation = 'Personal Information';
+  static const String householdInformation = 'Household Information';
+  static const String clusterInformation = 'Cluster Information';
+  static const String fullName = 'Name';
+  static const String phone = 'Phone';
+  static const String email = 'Email';
+  static const String givenName = 'Given Name';
+  static const String familyName = 'Family Name';
+  static const String householdMembers = 'Household Members';
+  static const String address = 'Address';
+  static const String pets = 'Pets';
+  static const String accessibilityNeeds = 'Accessibility Needs';
+  static const String accessibilityNeedsDefaultText = 'Not Applicable';
+  static const String notes = 'Notes';
+  static const String notesWithNote = 'Notes (visible to cluster captain(s))';
+  static const String clusterName = 'Name';
+  static const String meetingPlace = 'Meeting place';
+  static const String captains = 'Captain(s)';
+  static const String submit = 'Submit';
+}
+
 /// Error messages
 class ErrorMessageStrings {
   static const String invalidEmail = 'Invalid email';
@@ -44,6 +69,7 @@ class ErrorMessageStrings {
   static const String invalidConfirmPassword = 'Passwords do not match';
   static const String invalidSignUpCode = 'Invalid sign up code';
   static const String mustNotContainSpecialCharacters = 'Must not contain any special characters';
+  static const String noUserIsSignedIn = 'No user is currently signed in, please try re-login';
 }
 
 /// App Modes Strings

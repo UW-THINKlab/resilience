@@ -16,61 +16,41 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   final UserRepository _userRepository;
 
   void firstNameChanged(String value) {
-    emit(
-      state.copyWith(
-        givenName: value,
-      ),
-    );
+    emit(state.copyWith(givenName: value));
   }
 
   void lastNameChanged(String value) {
-    emit(
-      state.copyWith(
-        familyName: value,
-      ),
-    );
+    emit(state.copyWith(familyName: value));
   }
 
   void emailChanged(String value) {
-    emit(
-      state.copyWith(
-        email: value,
-      ),
-    );
+    emit(state.copyWith(email: value));    
   }
 
   void passwordChanged(String value) {
-    emit(
-      state.copyWith(
-        password: value,
-      ),
-    );
+    emit(state.copyWith(password: value));
   }
 
   void signupCodeChanged(String value) {
-    emit(
-      state.copyWith(
-        signupCode: value,
-      ),
-    );
+    emit(state.copyWith(signupCode: value));
   }
 
   void confirmedPasswordChanged(String value) {
-    emit(
-      state.copyWith(
-        confirmedPassword: value,
-      ),
-    );
+    emit(state.copyWith(confirmedPassword: value));
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
   void setValid() => emit(state.copyWith(isValid: true));
   void setInvalid() => emit(state.copyWith(isValid: false));
 
+  bool isSignupButtonEnabled() {
+    return state.isValid && state.isAllFieldsFilled;
+  }
+
   /// Sign up with email and password.
   Future<void> signUpWithEmailAndPassword() async {
     // If the form is invalid, do nothing
-    if (!state.isValid) return;
+    if (!state.isValid && !state.isAllFieldsFilled) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       // TODO: Add coupon code check for signup

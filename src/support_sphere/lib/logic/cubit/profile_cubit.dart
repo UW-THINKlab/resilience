@@ -4,6 +4,7 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 
 part 'profile_state.dart';
@@ -15,6 +16,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   final AuthUser authUser;
+  final AuthenticationRepository _authRepository = AuthenticationRepository();
   final UserRepository _userRepository = UserRepository();
 
   void profileChanged(Person? userProfile) {
@@ -81,6 +83,51 @@ class ProfileCubit extends Cubit<ProfileState> {
       profileChanged(null);
       householdChanged(null);
       clusterChanged(null);
+    }
+  }
+
+  Future<void> savePersonalInfoModal({
+    required String personId,
+    String? givenName,
+    String? familyName,
+    String? phone,
+  }) async {
+    try {
+      await _userRepository.updateUserName(
+        personId: personId,
+        givenName: givenName,
+        familyName: familyName,
+      );
+      AuthUser updatedAuthUser = await _authRepository.updateUserPhoneNumber(
+        phone: phone,
+      );
+      authUserChanged(updatedAuthUser);
+      // TODO: Consider optimizing this to perform a partial update from the API result instead of fetching the entire profile
+      await fetchProfile();
+    } catch (error) {
+      // TODO: Handle error
+    }
+  }
+
+  Future<void> saveHouseholdInfoModal({
+    required String householdId,
+    String? address,
+    String? pets,
+    String? accessibilityNeeds,
+    String? notes,
+  }) async {
+    try {
+      await _userRepository.updateHousehold(
+        householdId: householdId,
+        address: address,
+        pets: pets,
+        accessibilityNeeds: accessibilityNeeds,
+        notes: notes,
+      );
+      // TODO: Consider optimizing this to perform a partial update from the API result instead of fetching the entire profile
+      await fetchProfile();
+    } catch (error) {
+      // TODO: Handle error
     }
   }
 }

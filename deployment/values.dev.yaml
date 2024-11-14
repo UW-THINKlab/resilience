@@ -74,6 +74,7 @@ auth:
     GOTRUE_SMTP_SENDER_NAME: "your-mail@example.com"
     GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
     GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/public/custom_access_token"
+    GOTRUE_SMS_AUTOCONFIRM: "true"
 
 rest:
   imagePullSecrets:

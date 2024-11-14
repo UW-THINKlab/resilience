@@ -18,4 +18,4 @@ ENV JWT_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm
 RUN pip3 install --no-cache-dir --extra-index-url https://test.pypi.org/simple --only-binary=:all: support_sphere_py
 
 # Command to run the Python script
-ENTRYPOINT ["sh", "-c", "python3 -m support_sphere.tests.resources.scripts.role_based_access_control && python3 -m support_sphere.tests.resources.scripts.update_db_sample_data"]
+ENTRYPOINT ["sh", "-c", "support_sphere execute_sql run-all && support_sphere db_init run-all"]

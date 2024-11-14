@@ -82,4 +82,48 @@ class UserService {
       'needs_help': false,
     });
   }
+
+  /// Updates a person's details in the people table.
+  Future<void> updatePerson({
+    required String id,
+    String? givenName,
+    String? familyName,
+    String? nickname,
+    bool? isSafe,
+    bool? needsHelp,
+  }) async {
+    final payload = <String, dynamic>{};
+
+    if (givenName != null) payload['given_name'] = givenName;
+    if (familyName != null) payload['family_name'] = familyName;
+    if (nickname != null) payload['nickname'] = nickname;
+    if (isSafe != null) payload['is_safe'] = isSafe;
+    if (needsHelp != null) payload['needs_help'] = needsHelp;
+
+    await _supabaseClient
+        .from('people')
+        .update(payload)
+        .eq('id', id);
+  }
+
+  /// Updates a household's details in the households table.
+  Future<void> updateHousehold({
+    required String id,
+    String? address,
+    String? pets,
+    String? accessibilityNeeds,
+    String? notes,
+  }) async {
+    final payload = <String, dynamic>{};
+
+    if (address != null) payload['address'] = address;
+    if (pets != null) payload['pets'] = pets;
+    if (accessibilityNeeds != null) payload['accessibility_needs'] = accessibilityNeeds;
+    if (notes != null) payload['notes'] = notes;
+
+    await _supabaseClient
+        .from('households')
+        .update(payload)
+        .eq('id', id);
+  }
 }

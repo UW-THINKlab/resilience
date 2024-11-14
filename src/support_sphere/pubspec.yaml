@@ -53,6 +53,7 @@ dependencies:
   form_builder_validators: ^11.0.0
   font_awesome_flutter: ^10.7.0
   dropdown_search: ^6.0.1
+  flutter_form_builder: ^9.5.0
 
 dev_dependencies:
   flutter_test:

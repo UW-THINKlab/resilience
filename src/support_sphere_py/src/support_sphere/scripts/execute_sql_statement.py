@@ -1,12 +1,18 @@
+import typer
+
 import logging
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 from support_sphere.repositories import engine
+from typing_extensions import Annotated
 
 logger = logging.getLogger(__name__)
 
 Session = sessionmaker(bind=engine)
 session = Session()
+
+# The types sub-app which will be the part of main app.
+execute_sql_app = typer.Typer()
 
 # SQL for custom_access_token_hook function
 custom_access_token_hook_sql = """
@@ -49,9 +55,9 @@ BEGIN;
 
   -- Revoke permissions
   REVOKE EXECUTE ON FUNCTION public.custom_access_token FROM authenticated, anon, public;
-  
+
   GRANT ALL ON TABLE public.user_roles TO supabase_auth_admin;
-  
+
   COMMIT;
 """
 
@@ -81,13 +87,13 @@ BEGIN;
     RETURN bind_permissions > 0;
   END;
   $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = '';
-  
+
   CREATE POLICY "Allow authorized SELECT access" on public.operational_events FOR SELECT USING ( (SELECT authorize('OPERATIONAL_EVENT_READ')) );
   CREATE POLICY "Allow authorized INSERT access" on public.operational_events FOR INSERT WITH CHECK (authorize('OPERATIONAL_EVENT_CREATE'));
   CREATE POLICY "Allow authorized UPDATE access" on public.operational_events FOR UPDATE USING ( (SELECT authorize('OPERATIONAL_EVENT_CREATE')) );
-  
+
   ALTER TABLE public.operational_events ENABLE ROW LEVEL SECURITY;
-  
+
 COMMIT;
 """
 
@@ -101,8 +107,62 @@ BEGIN;
 COMMIT;
 """
 
+# SQL For Checklist triggers setup
+checklist_triggers_sql = """
+BEGIN;
+  CREATE OR REPLACE FUNCTION insert_user_checklists_for_all_users()
+  RETURNS TRIGGER AS $$
+  DECLARE
+      user_record RECORD;
+  BEGIN
+      -- Loop through each user in the user_profiles table
+      FOR user_record IN SELECT id FROM public.user_profiles LOOP
+          -- Insert a new row into user_checklists for each user
+          INSERT INTO public.user_checklists (id, checklist_id, user_profile_id)
+          VALUES (gen_random_uuid(), NEW.id, user_record.id);
+      END LOOP;
+
+      RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  CREATE OR REPLACE FUNCTION insert_checklist_steps_state_for_all_users()
+  RETURNS TRIGGER AS $$
+  DECLARE
+      user_record RECORD;
+  BEGIN
+      -- Loop through each user in the user_profiles table
+      FOR user_record IN SELECT id FROM public.user_profiles LOOP
+          -- Insert a new row into checklist_steps_states for each user
+          INSERT INTO public.checklist_steps_states (id, checklist_steps_order_id, user_profile_id, is_completed)
+          VALUES (gen_random_uuid(), NEW.id, user_record.id, FALSE);
+      END LOOP;
+
+      RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  CREATE OR REPLACE TRIGGER trigger_insert_user_checklists_for_all_users
+  AFTER INSERT ON public.checklists
+  FOR EACH ROW
+  EXECUTE FUNCTION insert_user_checklists_for_all_users();
+
+  CREATE OR REPLACE TRIGGER trigger_insert_checklist_steps_state_for_all_users
+  AFTER INSERT ON public.checklist_steps_orders
+  FOR EACH ROW
+  EXECUTE FUNCTION insert_checklist_steps_state_for_all_users();
+COMMIT;
+"""
+
+
 # Execute the SQL commands
-def execute_custom_sql_statement(sql_text):
+def run_custom_sql_statement(
+        sql_text: Annotated[
+        str,
+        typer.Option(
+            help="SQL command to execute. Entered as multi-line string",
+        ),
+    ],):
     with session:
         try:
             session.execute(text(sql_text))
@@ -113,12 +173,20 @@ def execute_custom_sql_statement(sql_text):
             logger.info(f"Error occurred while executing {sql_text}:\n{ex}")
 
 
-if __name__ == '__main__':
+@execute_sql_app.command(help="Runs the SQL code to setup custom hooks, role based authorization and real-time tables")
+def run_all():
     logger.info("Executing custom_access_token_hook_sql...")
-    execute_custom_sql_statement(custom_access_token_hook_sql)
+    run_custom_sql_statement(custom_access_token_hook_sql)
 
     logger.info("Execution role_based_authorization_sql...")
-    execute_custom_sql_statement(role_based_authorization_sql)
+    run_custom_sql_statement(role_based_authorization_sql)
 
     logger.info("Activating realtime tables...")
-    execute_custom_sql_statement(activate_realtime_tables_sql)
+    run_custom_sql_statement(activate_realtime_tables_sql)
+
+    logger.info("Setting up checklist triggers...")
+    run_custom_sql_statement(checklist_triggers_sql)
+
+
+if __name__ == '__main__':
+    execute_sql_app()

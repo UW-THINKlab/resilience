@@ -1,0 +1,9 @@
+# Ignore shapefiles
+*.shp
+*.prj
+*.dbf
+*.shx
+*.cpg
+
+# Dev notebooks are ignored
+*-dev.ipynb

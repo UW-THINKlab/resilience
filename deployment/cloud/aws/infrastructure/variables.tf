@@ -46,3 +46,13 @@ variable "ops_group_name" {
   type        = string
   default     = "ssec-eng"
 }
+
+variable "github_organization" {
+  description = "Organization that the GitHub repo belongs to"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repo name that this project lives in"
+  type        = string
+}
