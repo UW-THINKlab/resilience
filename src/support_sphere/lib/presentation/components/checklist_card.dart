@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 
 class ChecklistCard extends StatelessWidget {
   final String title;
-  final int stepCount;
-  final String frequency;
-  final String description;
+  final String? frequency;
+  final int? stepCount;
+  final String? description;
   final bool isInProgress;
   final DateTime? completedDate;
   final VoidCallback onButtonClicked;
@@ -13,8 +14,8 @@ class ChecklistCard extends StatelessWidget {
   const ChecklistCard({
     super.key,
     required this.title,
-    required this.stepCount,
-    required this.frequency,
+    this.stepCount = 0,
+    this.frequency = '',
     this.description = '',
     this.onButtonClicked = _defaultButtonClicked,
     this.isInProgress = false,
@@ -39,28 +40,30 @@ class ChecklistCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
+                Row(children: [
+                  if (stepCount != null && stepCount != 0) ...[
                     const Icon(Icons.check_circle_outline, size: 16),
                     const SizedBox(width: 3),
-                    Text(ChecklistStrings.stepsCount(stepCount)),
-                    const SizedBox(width: 16),
+                    Text(ChecklistStrings.stepsCount(stepCount!))
+                  ],
+                  const SizedBox(width: 16),
+                  if (frequency != null && frequency!.isNotEmpty) ...[
                     const Icon(Icons.calendar_today, size: 16),
                     const SizedBox(width: 4),
-                    Text(frequency),
-                  ],
-                ),
+                    Text(frequency!)
+                  ]
+                ]),
                 if (completedDate != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text(
                     ChecklistStrings.completedOnDate(
-                        _formatDate(completedDate!)),
+                      DateFormat.yMMMd('en').format(completedDate!)),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
-                  description,
+                  description ?? '',
                   style: Theme.of(context).textTheme.bodyMedium,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -68,7 +71,7 @@ class ChecklistCard extends StatelessWidget {
               ],
             ),
           ),
-          if (isInProgress)
+          if (stepCount != null && stepCount! > 0 && isInProgress)
             Positioned(
               top: 0,
               right: 0,
@@ -87,11 +90,6 @@ class ChecklistCard extends StatelessWidget {
         ]),
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    // TODO: update proper date formatting
-    return date.toString().split(' ')[0];
   }
 
   static void _defaultButtonClicked() {}

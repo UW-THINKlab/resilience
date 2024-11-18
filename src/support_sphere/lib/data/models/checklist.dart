@@ -1,26 +1,23 @@
 import 'package:equatable/equatable.dart';
+import 'package:support_sphere/data/models/frequency.dart';
 
 class Checklist extends Equatable {
   final String id;
   final String title;
-  final String description;
-  final int stepCount;
-  final String frequency;
-  final bool isCompleted;
+  final String? description;
+  final List<ChecklistSteps> steps;
+  final Frequency? frequency;
   final DateTime? completedAt;
-  final DateTime? dueDate;
-  final int lastCompletedVersion;
+  final DateTime updatedAt;
 
   const Checklist({
     required this.id,
     required this.title,
-    required this.description,
-    required this.stepCount,
-    required this.frequency,
-    required this.isCompleted,
+    this.description = '',
+    this.steps = const [],
+    this.frequency,
     this.completedAt,
-    this.dueDate,
-    required this.lastCompletedVersion,
+    required this.updatedAt
   });
 
   @override
@@ -28,11 +25,37 @@ class Checklist extends Equatable {
     id,
     title,
     description,
-    stepCount,
+    steps,
     frequency,
-    isCompleted,
     completedAt,
-    dueDate,
-    lastCompletedVersion,
+    updatedAt
+  ];
+}
+
+class ChecklistSteps extends Equatable {
+  final String id;
+  final int priority;
+  final String? label;
+  final String? description;
+  final bool isCompleted;
+  final DateTime updatedAt;
+
+  const ChecklistSteps({
+    required this.id,
+    required this.priority,
+    this.label = '',
+    this.description = '',
+    required this.isCompleted,
+    required this.updatedAt
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    priority,
+    label,
+    description,
+    isCompleted,
+    updatedAt
   ];
 }

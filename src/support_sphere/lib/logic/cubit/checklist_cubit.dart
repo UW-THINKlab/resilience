@@ -17,13 +17,17 @@ class ChecklistCubit extends Cubit<ChecklistState> {
   Future<void> fetchUserChecklists(String userId) async {
     try {
       final checklists = await _checklistRepository.getUserChecklists(userId);
-      
+
       emit(state.copyWith(
-        checklists: checklists,
-      ));
+          toBeDoneChecklists: checklists
+              .where((checklist) => checklist.completedAt == null)
+              .toList(),
+          completedChecklists: checklists
+              .where((checklist) => checklist.completedAt != null)
+              .toList()));
     } catch (error) {
       /// TBD: handle errors
+      print(error);
     }
   }
-
 }

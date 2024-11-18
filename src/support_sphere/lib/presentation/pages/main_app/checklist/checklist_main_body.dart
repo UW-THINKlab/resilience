@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:support_sphere/presentation/components/checklist_card.dart';
 import 'package:support_sphere/logic/cubit/checklist_cubit.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 
 class ChecklistBody extends StatelessWidget {
@@ -22,7 +24,7 @@ class ChecklistBody extends StatelessWidget {
         child: Column(
           children: [
             TabBar(
-              tabs: const [
+              tabs: [
                 Tab(text: ChecklistStrings.toBeDone),
                 Tab(text: ChecklistStrings.completed),
               ],
@@ -43,31 +45,27 @@ class ChecklistBody extends StatelessWidget {
 }
 
 class _ToBeDoneTab extends StatelessWidget {
-  const _ToBeDoneTab({super.key});
+  const _ToBeDoneTab();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChecklistCubit, ChecklistState>(
       builder: (context, state) {
-        final incompletedChecklists = state.checklists
-            .where((checklist) => !checklist.isCompleted)
-            .toList();
-
-        if (incompletedChecklists.isEmpty) {
+        if (state.toBeDoneChecklists.isEmpty) {
           return const _AllDoneView();
         }
 
         return ListView.builder(
-          itemCount: incompletedChecklists.length,
+          itemCount: state.toBeDoneChecklists.length,
           itemBuilder: (context, index) {
-            final checklist = incompletedChecklists[index];
+            final checklist = state.toBeDoneChecklists[index];
 
             return ChecklistCard(
               title: checklist.title,
-              stepCount: checklist.stepCount,
-              frequency: checklist.frequency,
+              stepCount: checklist.steps.length,
+              frequency: checklist.frequency?.name,
               description: checklist.description,
-              isInProgress: checklist.lastCompletedVersion > 0,
+              isInProgress: checklist.steps.any((step) => step.isCompleted),
               onButtonClicked: () {
                 // TODO: Navigate to checklist detail page
               },
@@ -80,30 +78,26 @@ class _ToBeDoneTab extends StatelessWidget {
 }
 
 class _CompletedTab extends StatelessWidget {
-  const _CompletedTab({super.key});
+  const _CompletedTab();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChecklistCubit, ChecklistState>(
       builder: (context, state) {
-        final completedChecklists = state.checklists
-            .where((checklist) => checklist.isCompleted)
-            .toList();
-
-        if (completedChecklists.isEmpty) {
+        if (state.completedChecklists.isEmpty) {
           return const Center(
             child: Text(ChecklistStrings.noCompletedChecklist),
           );
         }
 
         return ListView.builder(
-          itemCount: completedChecklists.length,
+          itemCount: state.completedChecklists.length,
           itemBuilder: (context, index) {
-            final checklist = completedChecklists[index];
+            final checklist = state.completedChecklists[index];
             return ChecklistCard(
               title: checklist.title,
-              stepCount: checklist.stepCount,
-              frequency: checklist.frequency,
+              stepCount: checklist.steps.length,
+              frequency: checklist.frequency?.name,
               description: checklist.description,
               completedDate: checklist.completedAt,
               onButtonClicked: () {
@@ -118,34 +112,58 @@ class _CompletedTab extends StatelessWidget {
 }
 
 class _AllDoneView extends StatelessWidget {
-  const _AllDoneView({super.key});
+  const _AllDoneView();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              ChecklistStrings.allDone,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              ChecklistStrings.congratulations(
-                  '2024/11/12'), // Replace it with real data
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              ChecklistStrings.checkCompletedTab,
-              textAlign: TextAlign.center,
-            ),
-          ],
+    return BlocBuilder<ChecklistCubit, ChecklistState>(
+        builder: (context, state) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                ChecklistStrings.allDone,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                ChecklistStrings.congratulations +
+                    ChecklistStrings.nextChecklistDue(
+                        _getClosestDueDate(state.completedChecklists)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                ChecklistStrings.checkCompletedTab,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
+  }
+
+  String _getClosestDueDate(List<Checklist> completedChecklists) {
+    DateTime? closestDate;
+
+    for (var checklist in completedChecklists) {
+      if (checklist.completedAt != null && checklist.frequency != null) {
+        DateTime nextDue = checklist.completedAt!.add(
+          Duration(days: checklist.frequency!.numDays ?? 0),
+        );
+
+        if (closestDate == null || nextDue.isBefore(closestDate)) {
+          closestDate = nextDue;
+        }
+      }
+    }
+
+    return closestDate != null
+        ? DateFormat.yMMMd('en').format(closestDate)
+        : '';
   }
 }

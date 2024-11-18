@@ -3,19 +3,23 @@ part of 'checklist_cubit.dart';
 /// handle checklist main page state
 class ChecklistState extends Equatable {
   const ChecklistState({
-    this.checklists = const [],
+    this.toBeDoneChecklists = const [],
+    this.completedChecklists = const [],
   });
   
-  final List<Checklist> checklists;
+  final List<Checklist> toBeDoneChecklists;
+  final List<Checklist> completedChecklists;
 
   @override
-  List<Object?> get props => [checklists];
+  List<Object?> get props => [toBeDoneChecklists, completedChecklists];
 
   ChecklistState copyWith({
-    List<Checklist>? checklists,
+    List<Checklist>? toBeDoneChecklists,
+    List<Checklist>? completedChecklists,
   }) {
     return ChecklistState(
-      checklists: checklists ?? this.checklists,
+      toBeDoneChecklists: toBeDoneChecklists ?? this.toBeDoneChecklists,
+      completedChecklists: completedChecklists ?? this.completedChecklists,
     );
   }
 }

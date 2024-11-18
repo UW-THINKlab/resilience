@@ -74,8 +74,9 @@ class ChecklistStrings {
   static String stepsCount(int count) => '$count Steps';
   static String completedOnDate(String dateStr) => 'Completed on $dateStr';
   static const String allDone = 'All Done! 🎉';
-  static String congratulations(String dateStr) =>
-      "Congratulations, you\'ve completed all available Preparedness Checklists! Your next checklist is not due until $dateStr.";
+  static const String congratulations = 'Congratulations, you\'ve completed all available Preparedness Checklists!';
+  static String nextChecklistDue(String dateStr) =>
+      " Your next checklist is not due until $dateStr.";
   static const String checkCompletedTab = 'Check the Completed tab to review your completed checklists.';
 }
 
