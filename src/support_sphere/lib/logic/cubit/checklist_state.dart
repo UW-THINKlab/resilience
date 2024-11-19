@@ -6,16 +6,16 @@ class ChecklistState extends Equatable {
     this.toBeDoneChecklists = const [],
     this.completedChecklists = const [],
   });
-  
-  final List<Checklist> toBeDoneChecklists;
-  final List<Checklist> completedChecklists;
+
+  final List<UserChecklist> toBeDoneChecklists;
+  final List<UserChecklist> completedChecklists;
 
   @override
   List<Object?> get props => [toBeDoneChecklists, completedChecklists];
 
   ChecklistState copyWith({
-    List<Checklist>? toBeDoneChecklists,
-    List<Checklist>? completedChecklists,
+    List<UserChecklist>? toBeDoneChecklists,
+    List<UserChecklist>? completedChecklists,
   }) {
     return ChecklistState(
       toBeDoneChecklists: toBeDoneChecklists ?? this.toBeDoneChecklists,

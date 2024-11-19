@@ -147,7 +147,7 @@ class _AllDoneView extends StatelessWidget {
     });
   }
 
-  String _getClosestDueDate(List<Checklist> completedChecklists) {
+  String _getClosestDueDate(List<UserChecklist> completedChecklists) {
     DateTime? closestDate;
 
     for (var checklist in completedChecklists) {

@@ -8,8 +8,8 @@ class ChecklistRepository {
   final ChecklistService _checklistService = ChecklistService();
 
   /// Get user checklists by user id.
-  /// Returns a list of [Checklist] objects.
-  Future<List<Checklist>> getUserChecklists(String userId) async {
+  /// Returns a list of [UserChecklist] objects.
+  Future<List<UserChecklist>> getUserChecklists(String userId) async {
     final data = await _checklistService.getUserChecklists(userId);
 
     return data.map((item) {
@@ -17,7 +17,7 @@ class ChecklistRepository {
       final frequencyInfo = checklistInfo['frequency'];
       final steps = checklistInfo['checklist_steps_orders'] ?? [];
 
-      return Checklist(
+      return UserChecklist(
           id: item['id'],
           title: checklistInfo['title'],
           description: checklistInfo['description'] ?? '',
