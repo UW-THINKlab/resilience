@@ -37,6 +37,7 @@ class ChecklistSteps extends Equatable {
   final int priority;
   final String? label;
   final String? description;
+  final String stepStateId;
   final bool isCompleted;
   final DateTime updatedAt;
 
@@ -45,8 +46,9 @@ class ChecklistSteps extends Equatable {
     required this.priority,
     this.label = '',
     this.description = '',
+    required this.stepStateId,
     required this.isCompleted,
-    required this.updatedAt
+    required this.updatedAt,
   });
 
   @override
@@ -56,6 +58,7 @@ class ChecklistSteps extends Equatable {
     label,
     description,
     isCompleted,
-    updatedAt
+    updatedAt,
+    stepStateId,
   ];
 }

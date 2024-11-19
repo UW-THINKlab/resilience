@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:support_sphere/presentation/components/checklist_card.dart';
+import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_steps_body.dart';
 import 'package:support_sphere/logic/cubit/checklist_cubit.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
@@ -44,11 +45,30 @@ class ChecklistBody extends StatelessWidget {
   }
 }
 
-class _ToBeDoneTab extends StatelessWidget {
+class _ToBeDoneTab extends StatefulWidget {
   const _ToBeDoneTab();
 
   @override
+  State<_ToBeDoneTab> createState() => _ToBeDoneTabState();
+}
+
+class _ToBeDoneTabState extends State<_ToBeDoneTab> {
+  bool _showingSteps = false;
+  UserChecklist? _selectedChecklist;
+
+  @override
   Widget build(BuildContext context) {
+    if (_showingSteps && _selectedChecklist != null) {
+      return ChecklistStepsPage(
+        userChecklistId: _selectedChecklist!.id,
+        isInToBeDoneTab: true,
+        onBack: () => setState(() {
+          _showingSteps = false;
+          _selectedChecklist = null;
+        }),
+      );
+    }
+
     return BlocBuilder<ChecklistCubit, ChecklistState>(
       builder: (context, state) {
         if (state.toBeDoneChecklists.isEmpty) {
@@ -67,7 +87,10 @@ class _ToBeDoneTab extends StatelessWidget {
               description: checklist.description,
               isInProgress: checklist.steps.any((step) => step.isCompleted),
               onButtonClicked: () {
-                // TODO: Navigate to checklist detail page
+                setState(() {
+                  _showingSteps = true;
+                  _selectedChecklist = checklist;
+                });
               },
             );
           },
@@ -77,11 +100,29 @@ class _ToBeDoneTab extends StatelessWidget {
   }
 }
 
-class _CompletedTab extends StatelessWidget {
+class _CompletedTab extends StatefulWidget {
   const _CompletedTab();
 
   @override
+  State<_CompletedTab> createState() => _CompletedTabState();
+}
+
+class _CompletedTabState extends State<_CompletedTab> {
+  bool _showingSteps = false;
+  UserChecklist? _selectedChecklist;
+
+  @override
   Widget build(BuildContext context) {
+    if (_showingSteps && _selectedChecklist != null) {
+      return ChecklistStepsPage(
+        userChecklistId: _selectedChecklist!.id,
+        onBack: () => setState(() {
+          _showingSteps = false;
+          _selectedChecklist = null;
+        }),
+      );
+    }
+
     return BlocBuilder<ChecklistCubit, ChecklistState>(
       builder: (context, state) {
         if (state.completedChecklists.isEmpty) {
@@ -94,6 +135,7 @@ class _CompletedTab extends StatelessWidget {
           itemCount: state.completedChecklists.length,
           itemBuilder: (context, index) {
             final checklist = state.completedChecklists[index];
+
             return ChecklistCard(
               title: checklist.title,
               stepCount: checklist.steps.length,
@@ -101,7 +143,10 @@ class _CompletedTab extends StatelessWidget {
               description: checklist.description,
               completedDate: checklist.completedAt,
               onButtonClicked: () {
-                // TODO: Navigate to completed checklist review
+                setState(() {
+                  _showingSteps = true;
+                  _selectedChecklist = checklist;
+                });
               },
             );
           },
@@ -130,7 +175,7 @@ class _AllDoneView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                ChecklistStrings.congratulations +
+                ChecklistStrings.congratulationsAllDone +
                     ChecklistStrings.nextChecklistDue(
                         _getClosestDueDate(state.completedChecklists)),
                 textAlign: TextAlign.center,
