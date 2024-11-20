@@ -135,7 +135,6 @@ class _CompletedTabState extends State<_CompletedTab> {
           itemCount: state.completedChecklists.length,
           itemBuilder: (context, index) {
             final checklist = state.completedChecklists[index];
-
             return ChecklistCard(
               title: checklist.title,
               stepCount: checklist.steps.length,
