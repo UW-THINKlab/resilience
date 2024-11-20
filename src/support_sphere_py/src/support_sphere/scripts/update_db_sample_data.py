@@ -10,7 +10,7 @@ from pathlib import Path
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
                                           RolePermission, UserRole, UserCaptainCluster, SignupCode,
                                           ResourceType, ResourceCV, Resource, Checklist, ChecklistStep, 
-                                          ChecklistStepsOrder)
+                                          ChecklistStepsOrder, Frequency)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
@@ -129,12 +129,17 @@ def populate_checklists():
             description=ch['purpose']
         )
         BaseRepository.add(checklist)
+
+        # Add frequency for checklist
+        frequency = Frequency(name=ch['frequency']['name'], num_days=ch['frequency']['num_days'])
+        BaseRepository.add(frequency)
+
+        # Add steps for checklist
         for idx, st in enumerate(ch['steps']):
             step = ChecklistStep(label=st['step'], description=st['description'])
             BaseRepository.add(step)
             step_order = ChecklistStepsOrder(checklist_id=checklist.id, checklist_step_id=step.id, priority=idx)
             BaseRepository.add(step_order)
-
 
 @db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():

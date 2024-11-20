@@ -24,7 +24,11 @@
             "step": "Secure Important Documents",
             "description": "Gather and protect important documents, like identification, insurance policies, and medical records, storing them in a waterproof, fireproof container."
           }
-        ]
+        ],
+        "frequency": {
+          "name": "Monthly",
+          "num_days": 30
+        }
       },
       {
         "title": "Workplace Emergency Preparedness",
@@ -50,7 +54,11 @@
             "step": "Train Employees on Emergency Procedures",
             "description": "Provide regular training on the emergency response plan, including how to safely evacuate, assist colleagues, and locate emergency supplies."
           }
-        ]
+        ],
+        "frequency": {
+          "name": "Yearly",
+          "num_days": 365
+        }
       }
     ]
   }
