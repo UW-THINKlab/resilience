@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/frequency.dart';
 
-class Checklist extends Equatable {
-  final String id;
+class UserChecklist extends Equatable {
+  final String id; // it's for user_checklist's id instead of checklist's id
   final String title;
   final String? description;
   final List<ChecklistSteps> steps;
@@ -10,7 +10,7 @@ class Checklist extends Equatable {
   final DateTime? completedAt;
   final DateTime updatedAt;
 
-  const Checklist({
+  const UserChecklist({
     required this.id,
     required this.title,
     this.description = '',
@@ -37,6 +37,7 @@ class ChecklistSteps extends Equatable {
   final int priority;
   final String? label;
   final String? description;
+  final String stepStateId;
   final bool isCompleted;
   final DateTime updatedAt;
 
@@ -45,8 +46,9 @@ class ChecklistSteps extends Equatable {
     required this.priority,
     this.label = '',
     this.description = '',
+    required this.stepStateId,
     required this.isCompleted,
-    required this.updatedAt
+    required this.updatedAt,
   });
 
   @override
@@ -56,6 +58,7 @@ class ChecklistSteps extends Equatable {
     label,
     description,
     isCompleted,
-    updatedAt
+    updatedAt,
+    stepStateId,
   ];
 }

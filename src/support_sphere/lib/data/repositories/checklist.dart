@@ -8,8 +8,8 @@ class ChecklistRepository {
   final ChecklistService _checklistService = ChecklistService();
 
   /// Get user checklists by user id.
-  /// Returns a list of [Checklist] objects.
-  Future<List<Checklist>> getUserChecklists(String userId) async {
+  /// Returns a list of [UserChecklist] objects.
+  Future<List<UserChecklist>> getUserChecklists(String userId) async {
     final data = await _checklistService.getUserChecklists(userId);
 
     return data.map((item) {
@@ -17,7 +17,7 @@ class ChecklistRepository {
       final frequencyInfo = checklistInfo['frequency'];
       final steps = checklistInfo['checklist_steps_orders'] ?? [];
 
-      return Checklist(
+      return UserChecklist(
           id: item['id'],
           title: checklistInfo['title'],
           description: checklistInfo['description'] ?? '',
@@ -27,6 +27,7 @@ class ChecklistRepository {
                   priority: step['priority'],
                   label: step['checklist_steps']['label'],
                   description: step['checklist_steps']['description'],
+                  stepStateId: step['checklist_steps_states'][0]?['id'],
                   isCompleted: step['checklist_steps_states'][0]?['is_completed'],
                   updatedAt:
                       DateTime.parse(step['checklist_steps']['updated_at'])))
@@ -42,5 +43,17 @@ class ChecklistRepository {
               : null,
           updatedAt: DateTime.parse(checklistInfo['updated_at']));
     }).toList();
+  }
+
+  Future<void> updateStepStatus(String stepStateId, bool isCompleted) async {
+    await _checklistService.updateStepStatus(stepStateId, isCompleted);
+  }
+
+  Future<bool> areAllStepsCompleted(String userChecklistId, String userId) async {
+    return await _checklistService.areAllStepsCompleted(userChecklistId, userId);
+  }
+
+  Future<void> updateChecklistCompletedAt(String userChecklistId, DateTime? completedAt) async {
+    await _checklistService.updateChecklistCompletedAt(userChecklistId, completedAt);
   }
 }

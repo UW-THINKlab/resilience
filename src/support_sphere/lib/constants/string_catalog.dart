@@ -74,10 +74,20 @@ class ChecklistStrings {
   static String stepsCount(int count) => '$count Steps';
   static String completedOnDate(String dateStr) => 'Completed on $dateStr';
   static const String allDone = 'All Done! 🎉';
-  static const String congratulations = 'Congratulations, you\'ve completed all available Preparedness Checklists!';
+  static const String done = 'Done! 🎉';
+  static const String congratulationsAllDone =
+      'Congratulations, you\'ve completed all available Preparedness Checklists!';
+  static const String congratulations =
+      'Congratulations, you\'ve completed this Checklist!';
   static String nextChecklistDue(String dateStr) =>
       " Your next checklist is not due until $dateStr.";
-  static const String checkCompletedTab = 'Check the Completed tab to review your completed checklists.';
+  static String nextDue(String dateStr) =>
+      " It should be done again on $dateStr.";
+  static const String checkCompletedTab =
+      'Check the Completed tab to review your completed checklists.';
+  static const String allChecklist = 'All Checklist';
+  static String completeFrequency(String frequencyName) =>
+      'Complete $frequencyName';
 }
 
 /// Error messages

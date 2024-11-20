@@ -26,8 +26,34 @@ class ChecklistCubit extends Cubit<ChecklistState> {
               .where((checklist) => checklist.completedAt != null)
               .toList()));
     } catch (error) {
-      /// TBD: handle errors
+      /// TODO: handle errors
       print(error);
+    }
+  }
+
+  Future<void> updateStepStatus(String stepStateId, bool isCompleted, String userChecklistId) async {
+    if (state.isLoading) return; // TODO: replace it with loading UI
+
+    try {
+      emit(state.copyWith(isLoading: true));
+
+      await _checklistRepository.updateStepStatus(stepStateId, isCompleted);
+      
+      /// TODO: Consider using RPC for better atomicity and performance
+      final allCompleted = await _checklistRepository.areAllStepsCompleted(userChecklistId, authUser.uuid);
+
+      await _checklistRepository.updateChecklistCompletedAt(
+        userChecklistId, 
+        allCompleted ? DateTime.now() : null
+      );
+
+      /// Refresh checklist data
+      await fetchUserChecklists(authUser.uuid);
+    } catch (error) {
+      /// TODO: handle errors
+      print(error);
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 }
