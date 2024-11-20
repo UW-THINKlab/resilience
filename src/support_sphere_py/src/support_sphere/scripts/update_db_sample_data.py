@@ -302,9 +302,6 @@ def test_app_mode_change():
 def run_all():
     logger.info("Starting to populate db with sample entries...")
 
-    # Setup utility resources to be shared during emergency
-    setup_utility_resources()
-
     # Sanity check for user sign-up and sign-in flow via supabase
     authenticate_user_signup_signin_signout_via_supabase()
 
@@ -313,6 +310,9 @@ def run_all():
 
     # Set up the database with dummy users, roles, and permissions
     setup_user_details()
+
+    # Setup utility resources to be shared during emergency
+    setup_utility_resources()
 
     # Sanity check app mode update
     test_app_mode_change()
