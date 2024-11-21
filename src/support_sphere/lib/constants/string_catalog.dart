@@ -90,6 +90,12 @@ class ChecklistStrings {
       'Complete $frequencyName';
 }
 
+/// Resource messages
+class ResourceStrings {
+  static const String searchResources = 'Search for a resource';
+  static const String noResourcesFound = 'No resources found';
+}
+
 /// Error messages
 class ErrorMessageStrings {
   static const String invalidEmail = 'Invalid email';
