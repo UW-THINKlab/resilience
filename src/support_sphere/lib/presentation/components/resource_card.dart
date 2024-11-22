@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
+import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 
 class ResourceCard extends StatelessWidget {
   const ResourceCard({super.key, required this.resource});
@@ -73,14 +75,14 @@ class ResourceCard extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Text(resourceDescription),
         ),
-        const Padding(
+        Padding(
           padding: const EdgeInsets.all(8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               _INeedThisButton(),
               const SizedBox(width: 8),
-              _IHaveThisButton()
+              _IHaveThisButton(resource: resource),
             ],
           ),
         ),
@@ -110,16 +112,20 @@ class _INeedThisButton extends StatelessWidget {
 }
 
 class _IHaveThisButton extends StatelessWidget {
-  const _IHaveThisButton({Key? key}) : super(key: key);
+  const _IHaveThisButton({Key? key, required this.resource}) : super(key: key);
 
   final String _buttonText = 'I have this';
-
-  void _onPressed() {}
+  final Resource resource;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
+        void _onPressed() {
+          context.read<ResourceCubit>().selectedResourceChanged(resource);
+          context.read<ResourceCubit>().currentNavChanged(ResourceNav.addToResourceInventory);
+        }
+
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blueAccent

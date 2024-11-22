@@ -95,9 +95,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
   @override
   Widget build(BuildContext context) {
     // Initialize the form data
-    _formData = _formData.copyWith(
-        resourceType: widget.resourceTypes!.first
-    );
+    _formData = _formData.copyWith(resourceType: widget.resourceTypes!.first);
     return Form(
       key: _formKey,
       child: Column(
@@ -107,6 +105,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
             ResourceStrings.addResource,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           )),
+          // Name of Resource and Resource Type
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,6 +175,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
             ],
           ),
           const SizedBox(height: 10),
+          // Total Number Needed and Number Available
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: TextFormField(
@@ -219,9 +219,11 @@ class _AddResourceFormState extends State<AddResourceForm> {
             ),
           ]),
           const SizedBox(height: 10),
+          // Resource Description (FOR EVERYONE)
           TextFormField(
             key: const Key('AddResourceForm_description_textFormField'),
-            onSaved: (value) => _formData = _formData.copyWith(description: value),
+            onSaved: (value) =>
+                _formData = _formData.copyWith(description: value),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
                 labelText: AddResourceFormStrings.description,
@@ -231,6 +233,8 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 focusedBorder: focusBorder(context)),
           ),
           const SizedBox(height: 10),
+          // Resource Subtype
+          // TODO: Update to become tags for subtypes
           TextFormField(
             key: const Key('AddResourceForm_subtype_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(subtype: value),
@@ -243,6 +247,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 focusedBorder: focusBorder(context)),
           ),
           const SizedBox(height: 10),
+          // Resource Notes (ONLY FOR Neighborhood Manager)
           TextFormField(
             key: const Key('AddResourceForm_notes_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(notes: value),
@@ -258,23 +263,26 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 focusedBorder: focusBorder(context)),
           ),
           const SizedBox(height: 10),
+          // Buttons to Add Item or Cancel
           Row(children: [
-              ElevatedButton(
-                  onPressed: () {
-                    _formKey.currentState!.save();
-                    if (_formKey.currentState!.validate()) {
-                      context.read<ManageResourceCubit>().addNewResource(_formData.toResource());
-                      widget.onCancel!();
-                    }
-                  },
-                  child: const Text('Add Item'),
-                ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                  onPressed: widget.onCancel,
-                  child: const Text('Cancel'),
-                ),
-            ]),
+            ElevatedButton(
+              onPressed: () {
+                _formKey.currentState!.save();
+                if (_formKey.currentState!.validate()) {
+                  context
+                      .read<ManageResourceCubit>()
+                      .addNewResource(_formData.toResource());
+                  widget.onCancel!();
+                }
+              },
+              child: const Text('Add Item'),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: widget.onCancel,
+              child: const Text('Cancel'),
+            ),
+          ]),
         ],
       ),
     );
