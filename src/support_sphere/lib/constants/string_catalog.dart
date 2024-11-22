@@ -98,6 +98,7 @@ class ResourceStrings {
   static const String allResources = 'All Resources';
   static const String addResource = 'Add New Resource or Skill';
   static const String manageResources = 'Manage Resources';
+  static const String resourcesInventory = 'Resources Inventory';
 }
 
 class AddResourceFormStrings {

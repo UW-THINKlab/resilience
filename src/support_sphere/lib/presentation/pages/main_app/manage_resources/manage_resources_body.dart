@@ -7,8 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
-import 'package:support_sphere/presentation/components/resource_card.dart';
+import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
+import 'package:support_sphere/presentation/components/resource_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
 
@@ -64,7 +65,6 @@ class ManageResourceView extends StatelessWidget {
         const Padding(
           padding: const EdgeInsets.all(12),
           child: const Center(
-            // TODO: Add profile picture
             child: Text(ResourceStrings.manageResources,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
@@ -200,7 +200,7 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
                 ElevatedButton(
                     onPressed: widget.addResourceOnPressed,
                     child: Text(ResourceStrings.addResource)),
-                Expanded(child: _SearchBar(onQueryChanged: onQueryChanged)),
+                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: ResourceTypeFilter(
                   resourceTypes: state.resourceTypes,
@@ -219,40 +219,6 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
           ],
         );
       },
-    );
-  }
-}
-
-class _SearchBar extends StatefulWidget {
-  final void Function(String)? onQueryChanged;
-
-  const _SearchBar({Key? key, this.onQueryChanged}) : super(key: key);
-
-  @override
-  _SearchBarState createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<_SearchBar> {
-  String query = '';
-
-  void _defaultOnQueryChanged(String newQuery) {
-    setState(() {
-      query = newQuery;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: TextField(
-        onChanged: widget.onQueryChanged ?? _defaultOnQueryChanged,
-        decoration: InputDecoration(
-          labelText: ResourceStrings.searchResources,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-        ),
-      ),
     );
   }
 }
@@ -277,7 +243,7 @@ class _ResourceViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final resource = searchResults[index];
 
-                      return ResourceCard(resource: resource);
+                      return ManageResourceCard(resource: resource);
                     },
                   )
                 : Center(
