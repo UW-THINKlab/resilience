@@ -104,17 +104,20 @@ class _ResourceCardState extends State<ResourceCard> {
                   ),
                 )
               : SizedBox(),
-          const Padding(
+          Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 // TODO: Implement ElevatedButton for editing
                 // ElevatedButton(
-                //   child: const Text('Edit Item'),
-                //   onPressed: () {/* ... */},
+                //   child: const Text('Edit'),
+                //   onPressed: null,
                 // ),
-                // const SizedBox(width: 8),
+                const SizedBox(width: 8),
+                ElevatedButton(onPressed: () {
+                  context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
+                }, child: Text("Delete"))
               ],
             ),
           ),

@@ -146,6 +146,10 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+      buildWhen: (previous, current) {
+        _searchResults = null;
+        return previous.resources != current.resources;
+      },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {

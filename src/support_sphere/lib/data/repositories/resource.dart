@@ -35,4 +35,9 @@ class ResourceRepository {
       'resource_type_id': resource.resourceType.id,
     });
   }
+
+  Future<void> deleteResource(String id) async {
+    await _resourceService.deleteResource(id);
+    await _resourceService.deleteResourceCV(id);
+  }
 }

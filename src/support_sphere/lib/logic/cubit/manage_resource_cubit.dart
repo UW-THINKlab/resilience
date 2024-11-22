@@ -37,4 +37,9 @@ class ManageResourceCubit extends Cubit<ManageResourceState> {
     await _resourceRepository.addNewResource(resource);
     fetchResources();
   }
+
+  void deleteResource(String id) async {
+    await _resourceRepository.deleteResource(id);
+    fetchResources();
+  }
 }

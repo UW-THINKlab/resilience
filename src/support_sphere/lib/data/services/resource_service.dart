@@ -44,4 +44,12 @@ class ResourceService {
   Future<void> createResource(Map<String, dynamic> data) async {
     await _supabaseClient.from('resources').upsert(data);
   }
+
+  Future<void> deleteResource(String id) async {
+    await _supabaseClient.from('resources').delete().eq('resource_cv_id', id);
+  }
+
+  Future<void> deleteResourceCV(String id) async {
+    await _supabaseClient.from('resources_cv').delete().eq('id', id);
+  }
 }
