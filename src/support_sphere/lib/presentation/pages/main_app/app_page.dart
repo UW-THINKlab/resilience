@@ -122,7 +122,6 @@ class _DeclareEmergencyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<void> showChangeModeAlert(BuildContext parentContext) async {
-      print(parentContext);
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!

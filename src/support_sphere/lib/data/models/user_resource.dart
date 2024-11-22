@@ -47,4 +47,17 @@ class UserResource extends Equatable {
       reviewedDate: reviewedDate ?? this.reviewedDate,
     );
   }
+
+  static UserResource fromJson(Map<String, dynamic> json) {
+    var resources = json['resources'];
+    return UserResource(
+      id: json['id'],
+      name: resources['resources_cv']['name'],
+      resourceType: ResourceTypes.fromJson(resources['resource_types']),
+      qtyAvailable: json['quantity'],
+      notes: json['notes'],
+      addedDate: DateTime.parse(json['created_at']),
+      reviewedDate: DateTime.parse(json['updated_at']),
+    );
+  }
 }

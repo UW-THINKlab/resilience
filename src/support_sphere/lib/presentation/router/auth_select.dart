@@ -17,7 +17,6 @@ class AuthSelect extends StatelessWidget {
       child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (_, state) {
           AuthenticationStatus authStatus = state.status;
-          print("Auth status: $authStatus");
           switch (authStatus) {
             case AuthenticationStatus.authenticated:
               /// If the user is authenticated, display the main app page

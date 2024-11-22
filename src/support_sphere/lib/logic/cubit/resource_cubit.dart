@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
@@ -9,10 +10,13 @@ import 'package:support_sphere/data/repositories/resource.dart';
 part 'resource_state.dart';
 
 class ResourceCubit extends Cubit<ResourceState> {
-  ResourceCubit() : super(const ResourceState()) {
+  ResourceCubit(this.authUser) : super(const ResourceState()) {
     fetchResourceTypes();
     fetchResources();
+    fetchUserResources(authUser.uuid);
   }
+
+  final AuthUser authUser;
 
   final ResourceRepository _resourceRepository = ResourceRepository();
 
@@ -42,8 +46,12 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void fetchResources() async {
-    print("fetching resources");
     List<Resource> resources = await _resourceRepository.getResources();
     resourcesChanged(resources);
+  }
+
+  void fetchUserResources(String userId) async {
+    List<UserResource> userResources = await _resourceRepository.getUserResourcesByUserId(userId);
+    emit(state.copyWith(userResources: userResources));
   }
 }
