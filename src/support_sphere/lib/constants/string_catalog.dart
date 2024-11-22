@@ -93,7 +93,21 @@ class ChecklistStrings {
 /// Resource messages
 class ResourceStrings {
   static const String searchResources = 'Search for a resource';
+  static const String selectResourceType = 'Select a resource type';
   static const String noResourcesFound = 'No resources found';
+  static const String allResources = 'All Resources';
+  static const String addResource = 'Add New Resource or Skill';
+  static const String manageResources = 'Manage Resources';
+}
+
+class AddResourceFormStrings {
+  static const String nameOfResource = 'Name of Resource';
+  static const String typeOfResource = 'Resource Type';
+  static const String totalNumberNeeded = 'Total number needed';
+  static const String numberAvailable = 'Number currently available';
+  static const String description = 'Description (visible to all users)';
+  static const String subtype = 'Subtype, if applicable';
+  static const String notes = 'Notes (visible only to neighborhood steering committee)';
 }
 
 /// Error messages

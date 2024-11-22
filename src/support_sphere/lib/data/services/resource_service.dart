@@ -36,4 +36,12 @@ class ResourceService {
       )
     ''');
   }
+
+  Future<void> createResourceCV(Map<String, dynamic> data) async {
+    await _supabaseClient.from('resources_cv').upsert(data);
+  }
+
+  Future<void> createResource(Map<String, dynamic> data) async {
+    await _supabaseClient.from('resources').upsert(data);
+  }
 }

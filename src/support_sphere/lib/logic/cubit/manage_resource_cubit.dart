@@ -28,7 +28,13 @@ class ManageResourceCubit extends Cubit<ManageResourceState> {
   }
 
   void fetchResources() async {
+    print("fetching resources");
     List<Resource> resources = await _resourceRepository.getResources();
     resourcesChanged(resources);
+  }
+
+  void addNewResource(Resource resource) async {
+    await _resourceRepository.addNewResource(resource);
+    fetchResources();
   }
 }
