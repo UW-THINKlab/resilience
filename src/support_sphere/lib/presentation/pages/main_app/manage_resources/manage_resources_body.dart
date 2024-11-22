@@ -147,7 +147,10 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
   Widget build(BuildContext context) {
     return BlocBuilder<ManageResourceCubit, ManageResourceState>(
       buildWhen: (previous, current) {
-        _searchResults = null;
+        _searchResults = current.resources.where((item) {
+          return item.resourceType.name.contains(_resourceTypeQuery) &&
+              item.name.toLowerCase().contains(_nameQuery);
+        }).toList();
         return previous.resources != current.resources;
       },
       builder: (context, state) {

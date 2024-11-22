@@ -175,6 +175,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
               ),
             ],
           ),
+          const SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: TextFormField(
@@ -217,6 +218,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
               ),
             ),
           ]),
+          const SizedBox(height: 10),
           TextFormField(
             key: const Key('AddResourceForm_description_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(description: value),
@@ -228,6 +230,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 enabledBorder: border(context),
                 focusedBorder: focusBorder(context)),
           ),
+          const SizedBox(height: 10),
           TextFormField(
             key: const Key('AddResourceForm_subtype_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(subtype: value),
@@ -239,6 +242,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 enabledBorder: border(context),
                 focusedBorder: focusBorder(context)),
           ),
+          const SizedBox(height: 10),
           TextFormField(
             key: const Key('AddResourceForm_notes_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(notes: value),
@@ -253,27 +257,24 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 enabledBorder: border(context),
                 focusedBorder: focusBorder(context)),
           ),
+          const SizedBox(height: 10),
           Row(children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  _formKey.currentState!.save();
-                  if (_formKey.currentState!.validate()) {
-                    context.read<ManageResourceCubit>().addNewResource(_formData.toResource());
-                    widget.onCancel!();
-                  }
-                },
-                child: const Text('Add Item'),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: widget.onCancel,
-                child: const Text('Cancel'),
-              ),
-            ),
-          ]),
+              ElevatedButton(
+                  onPressed: () {
+                    _formKey.currentState!.save();
+                    if (_formKey.currentState!.validate()) {
+                      context.read<ManageResourceCubit>().addNewResource(_formData.toResource());
+                      widget.onCancel!();
+                    }
+                  },
+                  child: const Text('Add Item'),
+                ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                  onPressed: widget.onCancel,
+                  child: const Text('Cancel'),
+                ),
+            ]),
         ],
       ),
     );

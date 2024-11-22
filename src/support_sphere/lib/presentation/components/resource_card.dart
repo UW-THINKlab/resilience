@@ -115,9 +115,13 @@ class _ResourceCardState extends State<ResourceCard> {
                 //   onPressed: null,
                 // ),
                 const SizedBox(width: 8),
-                ElevatedButton(onPressed: () {
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
+                  ),
+                  onPressed: () {
                   context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
-                }, child: Text("Delete"))
+                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
               ],
             ),
           ),
