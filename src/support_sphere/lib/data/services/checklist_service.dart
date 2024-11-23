@@ -73,6 +73,41 @@ class ChecklistService {
 
     return results;
   }
+
+  /// Get all checklists (for LEAP users)
+  Future<List<Map<String, dynamic>>> getAllChecklists() async {
+    return await _supabaseClient.from('checklists').select('''
+          id,
+          title,
+          description,
+          notes,
+          priority,
+          updated_at,
+          user_checklists!checklist_id (
+            id,
+            completed_at
+          ),
+          frequency (
+            id,
+            name,
+            num_days
+          ),
+          checklist_steps_orders (
+            id,
+            priority,
+            checklist_steps (
+              id,
+              label,
+              description,
+              updated_at
+            ),
+            checklist_steps_states (
+              id,
+              user_profile_id,
+              is_completed
+            )
+          )
+        ''').order('title', ascending: true);
   }
 
   Future<void> updateStepStatus(String stepStateId, bool isCompleted) async {

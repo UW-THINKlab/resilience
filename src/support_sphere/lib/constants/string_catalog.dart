@@ -88,6 +88,9 @@ class ChecklistStrings {
   static const String allChecklist = 'All Checklist';
   static String completeFrequency(String frequencyName) =>
       'Complete $frequencyName';
+  static const String newChecklist = 'New Checklist';
+  static const String manageChecklists = 'Manage Preparedness Checklists';
+  static const String edit = 'Edit';
 }
 
 /// Error messages

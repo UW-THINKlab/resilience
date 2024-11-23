@@ -56,4 +56,45 @@ class ChecklistRepository {
   Future<void> updateChecklistCompletedAt(String userChecklistId, DateTime? completedAt) async {
     await _checklistService.updateChecklistCompletedAt(userChecklistId, completedAt);
   }
+
+  Future<List<Checklist>> getAllChecklists() async {
+    final data = await _checklistService.getAllChecklists();
+
+    return data.map((item) {
+      final frequencyInfo = item['frequency'];
+      final steps = item['checklist_steps_orders'] ?? [];
+      final completions = (item['user_checklists'] as List<dynamic>?)
+          ?.where((userChecklist) => userChecklist['completed_at'] != null)
+          .length ?? 0;
+
+      return Checklist(
+          id: item['id'],
+          title: item['title'],
+          description: item['description'] ?? '',
+          priority: item['priority'],
+          notes: item['notes'] ?? '',
+          steps: steps
+              ?.map<ChecklistSteps>((step) => ChecklistSteps(
+                  id: step['id'],
+                  priority: step['priority'],
+                  label: step['checklist_steps']['label'],
+                  description: step['checklist_steps']['description'],
+                  stepStateId: step['checklist_steps_states'][0]?['id'],
+                  isCompleted: step['checklist_steps_states'][0]?['is_completed'],
+                  updatedAt:
+                      DateTime.parse(step['checklist_steps']['updated_at'])))
+              .toList(),
+          frequency: frequencyInfo != null
+              ? Frequency(
+                  id: frequencyInfo['id'],
+                  name: frequencyInfo['name'],
+                  numDays: frequencyInfo['num_days'])
+              : null,
+          completions: completions,
+          completedAt: item['completed_at'] != null
+              ? DateTime.parse(item['completed_at'])
+              : null,
+          updatedAt: DateTime.parse(item['updated_at']));
+    }).toList();
+  }
 }

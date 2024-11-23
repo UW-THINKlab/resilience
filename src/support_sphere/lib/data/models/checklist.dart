@@ -1,6 +1,44 @@
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/frequency.dart';
 
+class Checklist extends Equatable {
+  final String id;
+  final String title;
+  final String? description;
+  final String? notes;
+  final List<ChecklistSteps> steps;
+  final int completions;
+  final String priority;
+  final Frequency? frequency;
+  final DateTime? completedAt;
+  final DateTime updatedAt;
+
+  const Checklist({
+    required this.id,
+    required this.title,
+    this.description = '',
+    this.notes = '',
+    this.priority = 'Low',
+    this.steps = const [],
+    this.completions = 0,
+    this.frequency,
+    this.completedAt,
+    required this.updatedAt
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    notes,
+    steps,
+    frequency,
+    completedAt,
+    updatedAt
+  ];
+}
+
 class UserChecklist extends Equatable {
   final String id; // it's for user_checklist's id instead of checklist's id
   final String title;
