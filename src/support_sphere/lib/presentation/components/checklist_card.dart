@@ -10,6 +10,7 @@ class ChecklistCard extends StatelessWidget {
   final bool isInProgress;
   final DateTime? completedDate;
   final VoidCallback onButtonClicked;
+  final Widget? trailing;
 
   const ChecklistCard({
     super.key,
@@ -20,6 +21,7 @@ class ChecklistCard extends StatelessWidget {
     this.onButtonClicked = _defaultButtonClicked,
     this.isInProgress = false,
     this.completedDate,
+    this.trailing,
   });
 
   @override
@@ -36,6 +38,7 @@ class ChecklistCard extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
               overflow: TextOverflow.ellipsis,
             ),
+            trailing: trailing,
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
