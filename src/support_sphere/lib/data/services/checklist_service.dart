@@ -4,8 +4,10 @@ import 'package:support_sphere/utils/supabase.dart';
 class ChecklistService {
   final SupabaseClient _supabaseClient = supabase;
 
-  Future<List<Map<String, dynamic>>> getUserChecklists(String userId) async {
-    return await _supabaseClient
+  /// Get user's checklists (for basic users)
+  Future<List<Map<String, dynamic>>> getUserChecklistsByUserId(
+      String userId) async {
+    final results = await _supabaseClient
         .from('user_checklists')
         .select('''
           id,
@@ -16,6 +18,7 @@ class ChecklistService {
             title,
             description,
             notes,
+            priority,
             updated_at,
             frequency (
               id,
@@ -44,8 +47,32 @@ class ChecklistService {
             userId)
         .order('priority',
             referencedTable: 'checklists.checklist_steps_orders',
-            ascending: true)
-        .order('id', ascending: true);
+            ascending: true);
+
+    results.sort((a, b) {
+      var priorityA =
+          (a['checklists']['priority'] ?? '').toString().toLowerCase();
+      var priorityB =
+          (b['checklists']['priority'] ?? '').toString().toLowerCase();
+
+      int getPriorityValue(String priority) {
+        switch (priority) {
+          case 'high':
+            return 1;
+          case 'medium':
+            return 2;
+          case 'low':
+            return 3;
+          default:
+            return 4;
+        }
+      }
+
+      return getPriorityValue(priorityA).compareTo(getPriorityValue(priorityB));
+    });
+
+    return results;
+  }
   }
 
   Future<void> updateStepStatus(String stepStateId, bool isCompleted) async {

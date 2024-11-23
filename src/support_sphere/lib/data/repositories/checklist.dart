@@ -9,8 +9,8 @@ class ChecklistRepository {
 
   /// Get user checklists by user id.
   /// Returns a list of [UserChecklist] objects.
-  Future<List<UserChecklist>> getUserChecklists(String userId) async {
-    final data = await _checklistService.getUserChecklists(userId);
+  Future<List<UserChecklist>> getUserChecklistsByUserId(String userId) async {
+    final data = await _checklistService.getUserChecklistsByUserId(userId);
 
     return data.map((item) {
       final checklistInfo = item['checklists'];
