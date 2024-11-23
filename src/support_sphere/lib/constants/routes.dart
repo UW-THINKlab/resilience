@@ -4,7 +4,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
-import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
