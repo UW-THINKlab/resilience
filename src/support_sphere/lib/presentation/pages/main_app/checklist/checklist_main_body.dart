@@ -76,6 +76,7 @@ class _ToBeDoneTabState extends State<_ToBeDoneTab> {
         }
 
         return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 8),
           itemCount: state.toBeDoneChecklists.length,
           itemBuilder: (context, index) {
             final checklist = state.toBeDoneChecklists[index];
@@ -132,6 +133,7 @@ class _CompletedTabState extends State<_CompletedTab> {
         }
 
         return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 8),
           itemCount: state.completedChecklists.length,
           itemBuilder: (context, index) {
             final checklist = state.completedChecklists[index];
