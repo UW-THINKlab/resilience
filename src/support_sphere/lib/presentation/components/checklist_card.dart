@@ -29,16 +29,16 @@ class ChecklistCard extends StatelessWidget {
       child: InkWell(
         onTap: onButtonClicked,
         child: Stack(children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+          ListTile(
+            contentPadding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+            title: Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
                 const SizedBox(height: 8),
                 Row(children: [
                   if (stepCount != null && stepCount != 0) ...[
