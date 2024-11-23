@@ -9,7 +9,7 @@ class ChecklistCard extends StatelessWidget {
   final String? description;
   final bool isInProgress;
   final DateTime? completedDate;
-  final VoidCallback onButtonClicked;
+  final VoidCallback? onButtonClicked;
   final Widget? trailing;
 
   const ChecklistCard({
@@ -18,7 +18,7 @@ class ChecklistCard extends StatelessWidget {
     this.stepCount = 0,
     this.frequency = '',
     this.description = '',
-    this.onButtonClicked = _defaultButtonClicked,
+    this.onButtonClicked,
     this.isInProgress = false,
     this.completedDate,
     this.trailing,
@@ -94,6 +94,4 @@ class ChecklistCard extends StatelessWidget {
       ),
     );
   }
-
-  static void _defaultButtonClicked() {}
 }
