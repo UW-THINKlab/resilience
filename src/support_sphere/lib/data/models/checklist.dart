@@ -32,7 +32,9 @@ class Checklist extends Equatable {
     title,
     description,
     notes,
+    priority,
     steps,
+    completions,
     frequency,
     completedAt,
     updatedAt
