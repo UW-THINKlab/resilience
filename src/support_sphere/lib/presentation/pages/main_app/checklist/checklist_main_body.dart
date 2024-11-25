@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:support_sphere/presentation/components/checklist_card.dart';
+import 'package:support_sphere/presentation/components/checklist/checklist_card.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_steps_body.dart';
 import 'package:support_sphere/logic/cubit/checklist_cubit.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
@@ -164,6 +164,8 @@ class _AllDoneView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChecklistCubit, ChecklistState>(
         builder: (context, state) {
+      final closestDueDate = _getClosestDueDate(state.completedChecklists);
+
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -176,9 +178,10 @@ class _AllDoneView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                ChecklistStrings.congratulationsAllDone +
-                    ChecklistStrings.nextChecklistDue(
-                        _getClosestDueDate(state.completedChecklists)),
+                closestDueDate.isNotEmpty
+                    ? ChecklistStrings.congratulationsAllDone +
+                        ChecklistStrings.nextChecklistDue(closestDueDate)
+                    : ChecklistStrings.congratulationsAllDone,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),

@@ -22,13 +22,14 @@ class ChecklistRepository {
           title: checklistInfo['title'],
           description: checklistInfo['description'] ?? '',
           steps: steps
-              ?.map<ChecklistSteps>((step) => ChecklistSteps(
+              ?.map<UserChecklistSteps>((step) => UserChecklistSteps(
                   id: step['id'],
                   priority: step['priority'],
                   label: step['checklist_steps']['label'],
                   description: step['checklist_steps']['description'],
                   stepStateId: step['checklist_steps_states'][0]?['id'],
-                  isCompleted: step['checklist_steps_states'][0]?['is_completed'],
+                  isCompleted: step['checklist_steps_states'][0]
+                      ?['is_completed'],
                   updatedAt:
                       DateTime.parse(step['checklist_steps']['updated_at'])))
               .toList(),
@@ -75,12 +76,11 @@ class ChecklistRepository {
           notes: item['notes'] ?? '',
           steps: steps
               ?.map<ChecklistSteps>((step) => ChecklistSteps(
-                  id: step['id'],
+                  id: step['checklist_steps']['id'],
+                  orderId: step['id'],
                   priority: step['priority'],
                   label: step['checklist_steps']['label'],
                   description: step['checklist_steps']['description'],
-                  stepStateId: step['checklist_steps_states'][0]?['id'],
-                  isCompleted: step['checklist_steps_states'][0]?['is_completed'],
                   updatedAt:
                       DateTime.parse(step['checklist_steps']['updated_at'])))
               .toList(),
@@ -91,9 +91,6 @@ class ChecklistRepository {
                   numDays: frequencyInfo['num_days'])
               : null,
           completions: completions,
-          completedAt: item['completed_at'] != null
-              ? DateTime.parse(item['completed_at'])
-              : null,
           updatedAt: DateTime.parse(item['updated_at']));
     }).toList();
   }

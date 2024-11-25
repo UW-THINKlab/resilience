@@ -83,10 +83,6 @@ class ChecklistService {
           notes,
           priority,
           updated_at,
-          user_checklists!checklist_id (
-            id,
-            completed_at
-          ),
           frequency (
             id,
             name,
@@ -100,11 +96,6 @@ class ChecklistService {
               label,
               description,
               updated_at
-            ),
-            checklist_steps_states (
-              id,
-              user_profile_id,
-              is_completed
             )
           )
         ''').order('title', ascending: true);

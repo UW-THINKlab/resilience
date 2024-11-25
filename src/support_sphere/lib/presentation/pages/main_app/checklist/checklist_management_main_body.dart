@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:support_sphere/presentation/components/checklist_card.dart';
+import 'package:support_sphere/presentation/components/checklist/checklist_card.dart';
 import 'package:support_sphere/logic/cubit/checklist_management_cubit.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
@@ -91,7 +91,6 @@ class ChecklistManagementBody extends StatelessWidget {
                       description: checklist.description,
                       priority: checklist.priority,
                       completions: checklist.completions,
-                      completedDate: checklist.completedAt,
                       notes: checklist.notes,
                       isLEAP: true,
                       trailing: Builder(

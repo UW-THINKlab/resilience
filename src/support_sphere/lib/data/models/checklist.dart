@@ -10,8 +10,7 @@ class Checklist extends Equatable {
   final int completions;
   final String priority;
   final Frequency? frequency;
-  final DateTime? completedAt;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
 
   const Checklist({
     required this.id,
@@ -22,8 +21,7 @@ class Checklist extends Equatable {
     this.steps = const [],
     this.completions = 0,
     this.frequency,
-    this.completedAt,
-    required this.updatedAt
+    this.updatedAt,
   });
 
   @override
@@ -36,7 +34,6 @@ class Checklist extends Equatable {
     steps,
     completions,
     frequency,
-    completedAt,
     updatedAt
   ];
 }
@@ -45,7 +42,7 @@ class UserChecklist extends Equatable {
   final String id; // it's for user_checklist's id instead of checklist's id
   final String title;
   final String? description;
-  final List<ChecklistSteps> steps;
+  final List<UserChecklistSteps> steps;
   final Frequency? frequency;
   final DateTime? completedAt;
   final DateTime updatedAt;
@@ -74,21 +71,49 @@ class UserChecklist extends Equatable {
 
 class ChecklistSteps extends Equatable {
   final String id;
+  final String orderId;
+  final int priority;
+  final String? label;
+  final String? description;
+  final DateTime? updatedAt;
+
+  const ChecklistSteps({
+    required this.id,
+    required this.orderId,
+    required this.priority,
+    this.label = '',
+    this.description = '',
+    this.updatedAt,
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    orderId,
+    priority,
+    label,
+    description,
+    updatedAt,
+  ];
+}
+
+class UserChecklistSteps extends Equatable {
+  final String id;
   final int priority;
   final String? label;
   final String? description;
   final String stepStateId;
   final bool isCompleted;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
 
-  const ChecklistSteps({
+  const UserChecklistSteps({
     required this.id,
     required this.priority,
     this.label = '',
     this.description = '',
     required this.stepStateId,
     required this.isCompleted,
-    required this.updatedAt,
+    this.updatedAt,
   });
 
   @override
