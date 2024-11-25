@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:support_sphere/constants/routes.dart';
 
 class AppBodySelect extends Equatable {
-  const AppBodySelect({required this.role});
+  const AppBodySelect({required this.role, this.screenData});
 
   final String role;
+  final MediaQueryData? screenData;
 
   List<AppRoute> get destinations {
-    return AppNavigation.getDestinations(role);
+    return AppNavigation.getDestinations(role, screenData?.size.width);
   }
 
   @override
