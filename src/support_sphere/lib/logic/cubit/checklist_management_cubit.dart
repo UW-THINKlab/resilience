@@ -25,4 +25,19 @@ class ChecklistManagementCubit extends Cubit<ChecklistManagementState> {
       print(error);
     }
   }
+
+  void showChecklistForm({Checklist? checklist}) {
+    emit(state.copyWith(
+      showForm: true,
+      // if there is no checklist, it means creating new checklist
+      editingChecklist: checklist,
+    ));
+  }
+
+  void hideChecklistForm() {
+    emit(state.copyWith(
+      showForm: false,
+      editingChecklist: null,
+    ));
+  }
 }

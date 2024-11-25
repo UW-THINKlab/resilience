@@ -139,4 +139,36 @@ class ChecklistService {
         .update({'completed_at': completedAt?.toIso8601String()}).eq(
             'id', userChecklistId);
   }
+
+  Future<void> upsertChecklist(Map<String, dynamic> checklistData) async {
+    await _supabaseClient.from('checklists').upsert(checklistData);
+  }
+
+  Future<void> upsertChecklistSteps(
+      List<Map<String, Object?>> stepsData) async {
+    await _supabaseClient.from('checklist_steps').upsert(stepsData);
+  }
+
+  Future<void> upsertChecklistStepsOrders(
+      List<Map<String, Object?>> stepsOrdersData) async {
+    await _supabaseClient
+        .from('checklist_steps_orders')
+        .upsert(stepsOrdersData);
+  }
+
+  Future<List<Map<String, dynamic>>> getFrequencies() async {
+    return await _supabaseClient.from('frequency').select('''
+          id,
+          name,
+          num_days
+        ''').order('num_days', ascending: false);
+  }
+
+  Future<void> deleteChecklistSteps(String checklistId, List<String> stepIds) async {
+    /// The trigger will handle the cascade deletion
+    await _supabaseClient
+        .from('checklist_steps')
+        .delete()
+        .inFilter('id', stepIds);
+  }
 }
