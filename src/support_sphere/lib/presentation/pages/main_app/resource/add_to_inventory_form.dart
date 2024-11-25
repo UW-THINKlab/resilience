@@ -48,7 +48,6 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               key: const Key('AddToInventoryForm_quantity_textFormField'),
               initialValue: '1',
               keyboardType: TextInputType.number,
-              // onSaved: (value) => _formData = _formData.copyWith(subtype: value),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
@@ -62,20 +61,21 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                   enabledBorder: border(context),
                   focusedBorder: focusBorder(context)),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              key:
-                  const Key('AddToInventoryForm_resourceSubtype_textFormField'),
-              // onSaved: (value) => _formData = _formData.copyWith(subtype: value),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: InputDecoration(
-                  labelText:
-                      AddResourceInventoryFormStrings.askSubtype(resource.name),
-                  helperText: '',
-                  border: border(context),
-                  enabledBorder: border(context),
-                  focusedBorder: focusBorder(context)),
-            ),
+            // TODO: Implement Subtype
+            // const SizedBox(height: 16),
+            // TextFormField(
+            //   key:
+            //       const Key('AddToInventoryForm_resourceSubtype_textFormField'),
+            //   // onSaved: (value) => _formData = _formData.copyWith(subtype: value),
+            //   autovalidateMode: AutovalidateMode.onUserInteraction,
+            //   decoration: InputDecoration(
+            //       labelText:
+            //           AddResourceInventoryFormStrings.askSubtype(resource.name),
+            //       helperText: '',
+            //       border: border(context),
+            //       enabledBorder: border(context),
+            //       focusedBorder: focusBorder(context)),
+            // ),
             const SizedBox(height: 16),
             // Resource Notes (Only user and cluster captains can see)
             TextFormField(

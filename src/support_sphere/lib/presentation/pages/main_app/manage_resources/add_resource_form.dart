@@ -20,7 +20,8 @@ class AddResourceFormData extends Equatable {
     this.totalNumberNeeded,
     this.numberAvailable,
     this.description,
-    this.subtype,
+    // TODO: Implement Subtype
+    // this.subtype,
     this.notes,
   });
 
@@ -28,7 +29,7 @@ class AddResourceFormData extends Equatable {
   final int? totalNumberNeeded;
   final int? numberAvailable;
   final String? description;
-  final String? subtype;
+  // final String? subtype;
   final String? notes;
   final ResourceTypes? resourceType;
 
@@ -38,7 +39,7 @@ class AddResourceFormData extends Equatable {
         totalNumberNeeded,
         numberAvailable,
         description,
-        subtype,
+        // subtype,
         notes,
         resourceType
       ];
@@ -48,7 +49,7 @@ class AddResourceFormData extends Equatable {
     int? totalNumberNeeded,
     int? numberAvailable,
     String? description,
-    String? subtype,
+    // String? subtype,
     String? notes,
     ResourceTypes? resourceType,
   }) {
@@ -57,7 +58,7 @@ class AddResourceFormData extends Equatable {
       totalNumberNeeded: totalNumberNeeded ?? this.totalNumberNeeded,
       numberAvailable: numberAvailable ?? this.numberAvailable,
       description: description ?? this.description,
-      subtype: subtype ?? this.subtype,
+      // subtype: subtype ?? this.subtype,
       notes: notes ?? this.notes,
       resourceType: resourceType ?? this.resourceType,
     );
@@ -235,17 +236,17 @@ class _AddResourceFormState extends State<AddResourceForm> {
           const SizedBox(height: 10),
           // Resource Subtype
           // TODO: Update to become tags for subtypes
-          TextFormField(
-            key: const Key('AddResourceForm_subtype_textFormField'),
-            onSaved: (value) => _formData = _formData.copyWith(subtype: value),
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            decoration: InputDecoration(
-                labelText: AddResourceFormStrings.subtype,
-                helperText: '',
-                border: border(context),
-                enabledBorder: border(context),
-                focusedBorder: focusBorder(context)),
-          ),
+          // TextFormField(
+          //   key: const Key('AddResourceForm_subtype_textFormField'),
+          //   onSaved: (value) => _formData = _formData.copyWith(subtype: value),
+          //   autovalidateMode: AutovalidateMode.onUserInteraction,
+          //   decoration: InputDecoration(
+          //       labelText: AddResourceFormStrings.subtype,
+          //       helperText: '',
+          //       border: border(context),
+          //       enabledBorder: border(context),
+          //       focusedBorder: focusBorder(context)),
+          // ),
           const SizedBox(height: 10),
           // Resource Notes (ONLY FOR Neighborhood Manager)
           TextFormField(

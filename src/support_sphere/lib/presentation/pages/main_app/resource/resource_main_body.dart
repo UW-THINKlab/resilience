@@ -340,9 +340,9 @@ class UserResourcesTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text("Quantity: ${userResource.qtyAvailable}"),
-                  const SizedBox(height: 8),
                   // TODO: Implement Subtype
-                  Text("Subtype: None"),
+                  // const SizedBox(height: 8),
+                  // Text("Subtype: None"),
                   const SizedBox(height: 8),
                   Text("Notes: ${userResource.notes}"),
                   const SizedBox(height: 8),
