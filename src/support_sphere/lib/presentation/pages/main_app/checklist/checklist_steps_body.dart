@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/logic/cubit/checklist_cubit.dart';
-import 'package:support_sphere/presentation/components/checklist_step_item.dart';
+import 'package:support_sphere/presentation/components/checklist/checklist_step_item.dart';
 
 class ChecklistStepsPage extends StatelessWidget {
   final String userChecklistId;
@@ -18,7 +18,7 @@ class ChecklistStepsPage extends StatelessWidget {
     this.isInToBeDoneTab = false,
   });
 
-  bool _areAllStepsCompleted(List<ChecklistSteps> steps) {
+  bool _areAllStepsCompleted(List<UserChecklistSteps> steps) {
     return steps.every((step) => step.isCompleted);
   }
 
@@ -111,7 +111,7 @@ class ChecklistStepsPage extends StatelessWidget {
                     /// Steps List UI
                     ...List.generate(
                       currentChecklist.steps.length,
-                      (index) => ChecklistStepItem(
+                      (index) => UserChecklistStepItem(
                           step: currentChecklist.steps[index],
                           totalSteps: currentChecklist.steps.length,
                           onToggle: isInToBeDoneTab
@@ -151,9 +151,11 @@ class ChecklistStepsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        ChecklistStrings.congratulations +
-                            ChecklistStrings.nextDue(
-                                _getNextDueDate(currentChecklist)),
+                        currentChecklist.frequency != null
+                            ? ChecklistStrings.congratulations +
+                                ChecklistStrings.nextDue(
+                                    _getNextDueDate(currentChecklist))
+                            : ChecklistStrings.congratulations,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
