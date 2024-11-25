@@ -17,7 +17,7 @@ class AppRoute extends Equatable {
 }
 
 class AppNavigation {
-  static List<AppRoute> getDestinations(String? role) {
+  static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
     // TODO: Add body for each route
     List<AppRoute> destinations = [
       const AppRoute(
@@ -28,7 +28,7 @@ class AppNavigation {
           icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources),
     ];
-    if (role == AppRoles.communityAdmin) {
+    if (role == AppRoles.communityAdmin && minWidth! > 641) {
       // TODO: Make this display only for certain screen size
       destinations = destinations + [
         const AppRoute(
