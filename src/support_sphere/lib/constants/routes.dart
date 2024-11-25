@@ -28,8 +28,11 @@ class AppNavigation {
           icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources),
     ];
+    // Set the minimum width for managing resources and checklists
+    // to be displayed in the navigation bar
+    // screen size maximum information retrieved from
+    // https://learn.microsoft.com/en-us/windows/apps/design/layout/screen-sizes-and-breakpoints-for-responsive-design
     if (role == AppRoles.communityAdmin && minWidth! > 641) {
-      // TODO: Make this display only for certain screen size
       destinations = destinations + [
         const AppRoute(
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources),
