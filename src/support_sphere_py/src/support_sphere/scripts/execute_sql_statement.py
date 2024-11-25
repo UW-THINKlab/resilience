@@ -142,6 +142,24 @@ BEGIN;
   END;
   $$ LANGUAGE plpgsql;
 
+  CREATE OR REPLACE FUNCTION delete_checklist_step_cascade()
+  RETURNS TRIGGER AS $$
+  BEGIN
+      DELETE FROM checklist_steps_states
+      WHERE checklist_steps_order_id IN (
+          SELECT id 
+          FROM checklist_steps_orders 
+          WHERE checklist_step_id = OLD.id
+      );
+
+      DELETE FROM checklist_steps_orders
+      WHERE checklist_step_id = OLD.id;
+
+      RETURN OLD;
+  END;
+  $$ LANGUAGE plpgsql;
+
+  -- Create triggers
   CREATE OR REPLACE TRIGGER trigger_insert_user_checklists_for_all_users
   AFTER INSERT ON public.checklists
   FOR EACH ROW
@@ -151,6 +169,11 @@ BEGIN;
   AFTER INSERT ON public.checklist_steps_orders
   FOR EACH ROW
   EXECUTE FUNCTION insert_checklist_steps_state_for_all_users();
+
+  CREATE OR REPLACE TRIGGER trigger_delete_checklist_step_cascade
+  BEFORE DELETE ON checklist_steps
+  FOR EACH ROW
+  EXECUTE FUNCTION delete_checklist_step_cascade();
 COMMIT;
 """
 
