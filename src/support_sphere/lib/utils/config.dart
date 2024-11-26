@@ -5,6 +5,6 @@ class Config {
   static initSupabase() async {
     await Supabase.initialize(
         url: EnvironmentConfig.supabaseUrl, anonKey: EnvironmentConfig.supabaseAnonKey,
-        headers: {'Access-Control-Allow-Origin': '*'});
+        headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',});
   }
 }
