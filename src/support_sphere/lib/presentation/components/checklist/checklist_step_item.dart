@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 
-class ChecklistStepItem extends StatelessWidget {
-  final ChecklistSteps step;
+class UserChecklistStepItem extends StatelessWidget {
+  final UserChecklistSteps step;
   final int totalSteps;
   final VoidCallback? onToggle;
 
-  const ChecklistStepItem({
+  const UserChecklistStepItem({
     super.key,
     required this.step,
     required this.totalSteps,

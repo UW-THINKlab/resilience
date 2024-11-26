@@ -5,6 +5,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
 
 class AppRoute extends Equatable {
@@ -19,7 +20,7 @@ class AppRoute extends Equatable {
 }
 
 class AppNavigation {
-  static List<AppRoute> getDestinations(String? role) {
+  static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
     // TODO: Add body for each route
     List<AppRoute> destinations = [
       const AppRoute(
@@ -30,13 +31,16 @@ class AppNavigation {
           icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),
     ];
-    if (role == AppRoles.communityAdmin) {
-      // TODO: Make this display only for certain screen size
+    // Set the minimum width for managing resources and checklists
+    // to be displayed in the navigation bar
+    // screen size maximum information retrieved from
+    // https://learn.microsoft.com/en-us/windows/apps/design/layout/screen-sizes-and-breakpoints-for-responsive-design
+    if (role == AppRoles.communityAdmin && minWidth! > 641) {
       destinations = destinations + [
         const AppRoute(
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
         const AppRoute(
-            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists),
+            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
       ];
     }
     return destinations;

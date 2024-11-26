@@ -48,7 +48,8 @@ class AppPage extends StatelessWidget {
             final AuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
-            AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole);
+            MediaQueryData screenData = MediaQuery.of(context);
+            AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole, screenData: screenData);
             return SafeArea(
               child: Scaffold(
                 appBar: AppBar(

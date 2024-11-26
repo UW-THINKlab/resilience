@@ -88,6 +88,21 @@ class ChecklistStrings {
   static const String allChecklist = 'All Checklist';
   static String completeFrequency(String frequencyName) =>
       'Complete $frequencyName';
+  static const String newChecklist = 'New Checklist';
+  static const String manageChecklists = 'Manage Preparedness Checklists';
+  static const String addNewPreparednessChecklist = 'Add New Preparedness Checklist';
+  static const String editPreparednessChecklist = 'Edit Preparedness Checklist';
+  static const String edit = 'Edit';
+  static const String save = 'Save';
+  static const String addNewStep = 'Add New Step';
+  static const String titleFieldLabel = 'Title*';
+  static const String frequencyFieldLabel = 'Frequency';
+  static const String priorityFieldLabel = 'Priority Level*';
+  static const String descriptionFieldLabel = 'Description* (Visible to all users)';
+  static const String notesFieldLabel = 'Notes (Visible only to LEAP steering committee)';
+  static const String stepLabelFieldLabel = 'Label*';
+  static const String stepDescriptionFieldLabel = 'Step Description';
+  static const String pleaseSelect = '-- Please Select --';
 }
 
 /// Resource messages
