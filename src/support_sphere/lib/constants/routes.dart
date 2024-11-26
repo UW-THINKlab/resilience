@@ -5,6 +5,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
@@ -27,7 +28,7 @@ class AppNavigation {
           icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(
           icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
-      const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources),
+      const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),
     ];
     if (role == AppRoles.communityAdmin) {
       // TODO: Make this display only for certain screen size

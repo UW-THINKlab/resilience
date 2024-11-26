@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
+import 'package:support_sphere/data/models/user_resource.dart';
 import 'package:support_sphere/data/services/resource_service.dart';
 
 class ResourceRepository {
@@ -18,6 +19,11 @@ class ResourceRepository {
   Future<List<Resource>> getResources() async {
     PostgrestList? results = await _resourceService.getResources();
     return results?.map((data) => Resource.fromJson(data)).toList() ?? [];
+  }
+
+  Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
+    PostgrestList? results = await _resourceService.getUserResourcesByUserId(userId);
+    return results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
   }
 
   Future<void> addNewResource(Resource resource) async {

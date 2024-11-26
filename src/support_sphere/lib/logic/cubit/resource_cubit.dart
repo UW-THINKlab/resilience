@@ -1,16 +1,22 @@
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
+import 'package:support_sphere/data/enums/resource_nav.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
+import 'package:support_sphere/data/models/user_resource.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
 
-part 'manage_resource_state.dart';
+part 'resource_state.dart';
 
-class ManageResourceCubit extends Cubit<ManageResourceState> {
-  ManageResourceCubit() : super(const ManageResourceState()) {
+class ResourceCubit extends Cubit<ResourceState> {
+  ResourceCubit(this.authUser) : super(const ResourceState()) {
     fetchResourceTypes();
     fetchResources();
+    fetchUserResources(authUser.uuid);
   }
+
+  final AuthUser authUser;
 
   final ResourceRepository _resourceRepository = ResourceRepository();
 
@@ -20,6 +26,18 @@ class ManageResourceCubit extends Cubit<ManageResourceState> {
 
   void resourcesChanged(List<Resource> resources) {
     emit(state.copyWith(resources: resources));
+  }
+
+  void selectedResourceChanged(Resource? resource) {
+    emit(state.copyWith(selectedResource: resource));
+  }
+
+  void currentNavChanged(ResourceNav nav) {
+    emit(state.copyWith(currentNav: nav));
+  }
+
+  void initialTabIndexChanged(int index) {
+    emit(state.copyWith(initialTabIndex: index));
   }
 
   void fetchResourceTypes() async {
@@ -32,13 +50,8 @@ class ManageResourceCubit extends Cubit<ManageResourceState> {
     resourcesChanged(resources);
   }
 
-  void addNewResource(Resource resource) async {
-    await _resourceRepository.addNewResource(resource);
-    fetchResources();
-  }
-
-  void deleteResource(String id) async {
-    await _resourceRepository.deleteResource(id);
-    fetchResources();
+  void fetchUserResources(String userId) async {
+    List<UserResource> userResources = await _resourceRepository.getUserResourcesByUserId(userId);
+    emit(state.copyWith(userResources: userResources));
   }
 }
