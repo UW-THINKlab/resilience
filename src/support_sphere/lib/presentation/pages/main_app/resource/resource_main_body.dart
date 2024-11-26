@@ -27,7 +27,8 @@ class ResourceBody extends StatelessWidget {
       create: (context) => ResourceCubit(authUser),
       child: BlocBuilder<ResourceCubit, ResourceState>(
         buildWhen: (previous, current) =>
-            previous.currentNav != current.currentNav,
+            previous.currentNav != current.currentNav ||
+            previous.resourceTypes != current.resourceTypes,
         builder: (context, state) {
           switch (state.currentNav) {
             case ResourceNav.showAllResources:
@@ -41,13 +42,14 @@ class ResourceBody extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   // TODO: Implement Search and Filter
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(child: ResourceSearchBar()),
                       Expanded(
                           child: ResourceTypeFilter(
-                        resourceTypes: [],
+                        resourceTypes: state.resourceTypes,
+                        // TODO: Implement onSelected filtering
                         // onSelected: onSelected,
                       )),
                     ],
