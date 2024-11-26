@@ -203,7 +203,7 @@ resource "aws_autoscaling_schedule" "scale_down" {
 
 // ALB and target group
 resource "aws_lb" "this" {
-  name               = "${var.resource_prefix}-lb"
+  name               = "ss-${var.neighborhood}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.this.id]
@@ -229,7 +229,25 @@ resource "aws_lb_listener" "this" {
   }
 }
 
+resource "aws_lb_listener" "htttps-listener" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate.this.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
+  }
+}
+
 resource "aws_autoscaling_attachment" "this" {
   autoscaling_group_name = aws_autoscaling_group.this.name
   lb_target_group_arn    = aws_lb_target_group.this.arn
+}
+
+resource "aws_acm_certificate" "this" {
+  domain_name       = "laurelhurst.supportsphere.nikiofti.me"
+  validation_method = "DNS"
 }

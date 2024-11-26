@@ -3,6 +3,11 @@ variable "resource_prefix" {
   type        = string
 }
 
+variable "neighborhood" {
+  description = "The neighborhood this infrastructure is being deployed to."
+  type        = string
+}
+
 variable "stage" {
   description = "Which stage this infrastructure's being deployed to - dev, beta, prod, etc."
   type        = string
