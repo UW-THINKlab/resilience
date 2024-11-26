@@ -17,19 +17,23 @@ go-sops = ">=3.9.0"
 
 # ==== Data Analysis environment ====
 [feature.data-analysis.dependencies]
-python = ">=3.10"
+python = ">=3.10,<3.13"
 pip = "*"
 jupyterlab = ">=4.2.5,<5"
 pandas = ">=2.2.3,<3"
 geopandas = ">=1.0.1,<2"
 pixi-kernel = ">=0.5.1,<0.6"
+ipykernel = ">=6.29.5,<7"
 
 [feature.data-analysis.tasks]
 start-jupyterlab = { cmd = "jupyter lab", cwd = "notebooks" }
 
+[feature.data-analysis.pypi-dependencies]
+supabase = ">=2.6.0,<2.7"
+
 # ==== Backend Database environment ====
 [feature.db.dependencies]
-python = ">=3.10"
+python = ">=3.10,<3.13"
 pip = "*"
 psycopg2-binary = ">=2.9.9,<3"
 
