@@ -44,4 +44,4 @@ To run this app locally, follow these steps:
 
 Date generated: 11/25/2024
 
-![database diagram](assets/images/pdc_20241125.png)
+![database diagram](../assets/images/pdc_20241125.png)
