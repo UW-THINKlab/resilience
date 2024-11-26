@@ -64,7 +64,7 @@ runcmd:
 
   # populate sample entries
   - echo "Set up DB data"
-  - pixi run setup-db-data-via-k8s-job
+  - pixi run -e backend setup-db-data-via-k8s-job
 
   # cleanup decrypted secrets so the cleartext file won't be available on the host
   - echo "Cleaning up decrypted secrets"
