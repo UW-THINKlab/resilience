@@ -7,35 +7,132 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
-import 'package:support_sphere/presentation/components/resource_card.dart';
+import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
+import 'package:support_sphere/presentation/components/resource_search_bar.dart';
+import 'package:support_sphere/presentation/components/resource_type_filter.dart';
+import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
 
 class ManageResourcesBody extends StatelessWidget {
   const ManageResourcesBody({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return ManageResourceBodyController();
+  }
+}
+
+class ManageResourceBodyController extends StatefulWidget {
+  const ManageResourceBodyController({super.key});
+
+  @override
+  _ManageResourceBodyControllerState createState() =>
+      _ManageResourceBodyControllerState();
+}
+
+class _ManageResourceBodyControllerState
+    extends State<ManageResourceBodyController> {
+  bool _showingAddResource = false;
+
+  @override
+  Widget build(BuildContext context) {
+    void _switchPage() {
+      setState(() {
+        _showingAddResource = !_showingAddResource;
+      });
+    }
+
+    print("Rebuilding ManageResourceBodyController");
+
     return BlocProvider(
       create: (context) => ManageResourceCubit(),
-      child: const Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: const Center(
-              // TODO: Add profile picture
-              child: Text('Manage Resources',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ),
+      child: (_showingAddResource)
+          ? AddResourceView(onPressed: _switchPage)
+          : ManageResourceView(addResourceOnPressed: _switchPage),
+    );
+  }
+}
+
+class ManageResourceView extends StatelessWidget {
+  const ManageResourceView({super.key, this.addResourceOnPressed});
+
+  final VoidCallback? addResourceOnPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Padding(
+          padding: const EdgeInsets.all(12),
+          child: const Center(
+            child: Text(ResourceStrings.manageResources,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
-          _ResourcesBody(),
-        ],
-      ),
+        ),
+        _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
+      ],
+    );
+  }
+}
+
+class AddResourceView extends StatelessWidget {
+  const AddResourceView({super.key, this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            Expanded(
+                child: Container(
+              width: MediaQuery.of(context).size.width,
+              margin: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Back button
+                  TextButton.icon(
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text(
+                      ResourceStrings.manageResources,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onPressed: onPressed,
+                  ),
+
+                  /// Add Resource Form
+                  Expanded(
+                    child: Card(
+                      child: Container(
+                        margin: const EdgeInsets.all(15.0),
+                        child: AddResourceForm(
+                          resourceTypes: state.resourceTypes,
+                          resources: state.resources,
+                          onCancel: onPressed,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )),
+          ],
+        );
+      },
     );
   }
 }
 
 class _ResourcesBody extends StatefulWidget {
-  const _ResourcesBody({super.key});
+  const _ResourcesBody({super.key, this.addResourceOnPressed});
+
+  final VoidCallback? addResourceOnPressed;
 
   @override
   _ResourcesBodyState createState() => _ResourcesBodyState();
@@ -49,6 +146,13 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+      buildWhen: (previous, current) {
+        _searchResults = current.resources.where((item) {
+          return item.resourceType.name.contains(_resourceTypeQuery) &&
+              item.name.toLowerCase().contains(_nameQuery);
+        }).toList();
+        return previous.resources != current.resources;
+      },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {
@@ -94,10 +198,11 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
               children: [
                 const SizedBox(width: 16),
                 ElevatedButton(
-                    onPressed: null, child: Text("Add new resource")),
-                Expanded(child: _SearchBar(onQueryChanged: onQueryChanged)),
+                    onPressed: widget.addResourceOnPressed,
+                    child: Text(ResourceStrings.addResource)),
+                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
-                    child: _ResourceTypeFilter(
+                    child: ResourceTypeFilter(
                   resourceTypes: state.resourceTypes,
                   onSelected: onSelected,
                 )),
@@ -114,82 +219,6 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
           ],
         );
       },
-    );
-  }
-}
-
-class _SearchBar extends StatefulWidget {
-  final void Function(String)? onQueryChanged;
-
-  const _SearchBar({Key? key, this.onQueryChanged}) : super(key: key);
-
-  @override
-  _SearchBarState createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<_SearchBar> {
-  String query = '';
-
-  void _defaultOnQueryChanged(String newQuery) {
-    setState(() {
-      query = newQuery;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: TextField(
-        onChanged: widget.onQueryChanged ?? _defaultOnQueryChanged,
-        decoration: InputDecoration(
-          labelText: ResourceStrings.searchResources,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-        ),
-      ),
-    );
-  }
-}
-
-class _ResourceTypeFilter extends StatefulWidget {
-  const _ResourceTypeFilter(
-      {super.key, required this.resourceTypes, this.onSelected});
-
-  final List<ResourceTypes> resourceTypes;
-  final void Function(String?)? onSelected;
-
-  @override
-  State<_ResourceTypeFilter> createState() => _ResourceTypeFilterState();
-}
-
-class _ResourceTypeFilterState extends State<_ResourceTypeFilter> {
-  String dropdownValue = '';
-
-  void _defaultOnSelected(String? value) {
-    setState(() {
-      // This is called when the user selects an item.
-      setState(() {
-        dropdownValue = value!;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final list = ['All'] + widget.resourceTypes.map((e) => e.name).toList();
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: DropdownMenu<String>(
-        width: 200,
-        label: const Text('Select a resource type'),
-        initialSelection: list.first,
-        onSelected: widget.onSelected ?? _defaultOnSelected,
-        dropdownMenuEntries:
-            list.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
-      ),
     );
   }
 }
@@ -214,7 +243,7 @@ class _ResourceViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final resource = searchResults[index];
 
-                      return ResourceCard(resource: resource);
+                      return ManageResourceCard(resource: resource);
                     },
                   )
                 : Center(

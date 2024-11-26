@@ -12,6 +12,10 @@ class ManageResourceState extends Equatable {
   @override
   List<Object?> get props => [resourceTypes, resources];
 
+  List<String> get resourcesNames {
+    return resources.map((e) => e.name).toList();
+  }
+
   ManageResourceState copyWith({
     List<ResourceTypes>? resourceTypes,
     List<Resource>? resources,

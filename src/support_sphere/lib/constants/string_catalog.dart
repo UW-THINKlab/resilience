@@ -93,7 +93,37 @@ class ChecklistStrings {
 /// Resource messages
 class ResourceStrings {
   static const String searchResources = 'Search for a resource';
+  static const String selectResourceType = 'Select a resource type';
   static const String noResourcesFound = 'No resources found';
+  static const String allResources = 'All Resources';
+  static const String addResource = 'Add New Resource or Skill';
+  static const String manageResources = 'Manage Resources';
+  static const String resourcesInventory = 'Resources Inventory';
+  static const String noUserResources = 'You have not added any resources yet';
+}
+
+class AddResourceInventoryFormStrings {
+  static String addTitle(String resourceName) =>
+      "Add $resourceName to Inventory";
+  static const String howManyAdding = 'How many are you adding?';
+  static String askSubtype(String resourceName) =>
+      "What type of $resourceName is it (if known)?";
+  static const String notes = 'Any notes on this item?';
+  static String notesHelperText =
+      "Notes are always visible to ${AppStrings.appName} admins and your cluster captain, and are visible to a requester if you accept their request.";
+  static String thankYouText(String resourceName) =>
+      "You have successfully added your $resourceName. You are helping our community be more prepared and resilient! Go to My Resources to update this item at any time. During an emergency, you may receive a request to use your item. The requester won't know your identity until you accept their request. Likewise, you'll be able to request items and skills others have added. To keep our inventory up to date, we'll check in with you in six months to see if the item is still available.";
+}
+
+class AddResourceFormStrings {
+  static const String nameOfResource = 'Name of Resource';
+  static const String typeOfResource = 'Resource Type';
+  static const String totalNumberNeeded = 'Total number needed';
+  static const String numberAvailable = 'Number currently available';
+  static const String description = 'Description (visible to all users)';
+  static const String subtype = 'Subtype, if applicable';
+  static const String notes =
+      'Notes (visible only to neighborhood steering committee)';
 }
 
 /// Error messages
@@ -130,5 +160,3 @@ class NavRouteLabels {
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
 }
-
-

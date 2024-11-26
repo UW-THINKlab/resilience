@@ -4,6 +4,29 @@ import 'package:support_sphere/utils/supabase.dart';
 class ResourceService {
   final SupabaseClient _supabaseClient = supabase;
 
+  Future<PostgrestList?> getUserResourcesByUserId(String userId) async {
+    return await _supabaseClient.from('user_resources').select('''
+      id,
+      user_id,
+      resources (
+        resources_cv (
+          id,
+          name,
+          description
+        ),
+        resource_types (
+          id,
+          name,
+          description
+        )
+      ),
+      quantity,
+      notes,
+      created_at,
+      updated_at
+    ''').eq('user_id', userId);
+  }
+
   Future<PostgrestList?> getResourceCVByText(String text) async {
     return await _supabaseClient.from('resources_cv').select('''
       id,
@@ -35,5 +58,21 @@ class ResourceService {
         description
       )
     ''');
+  }
+
+  Future<void> createResourceCV(Map<String, dynamic> data) async {
+    await _supabaseClient.from('resources_cv').upsert(data);
+  }
+
+  Future<void> createResource(Map<String, dynamic> data) async {
+    await _supabaseClient.from('resources').upsert(data);
+  }
+
+  Future<void> deleteResource(String id) async {
+    await _supabaseClient.from('resources').delete().eq('resource_cv_id', id);
+  }
+
+  Future<void> deleteResourceCV(String id) async {
+    await _supabaseClient.from('resources_cv').delete().eq('id', id);
   }
 }
