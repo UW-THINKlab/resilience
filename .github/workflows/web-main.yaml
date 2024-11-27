@@ -1,5 +1,11 @@
 name: web
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 on:
   push:
     branches:
@@ -43,10 +49,3 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
-
-    - name: Upload Complete Build Folder
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-${{ runner.os }}
-        path: src/support_sphere/build/web/
