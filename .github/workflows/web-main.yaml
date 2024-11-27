@@ -1,0 +1,53 @@
+name: web
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    
+
+jobs:
+  call-run-server:
+    uses: uw-ssec/post-disaster-comms/.github/workflows/run-dev-server.yml@main
+  add-preview:
+    runs-on: ubuntu-latest
+    # This workflow accesses secrets and checks out a PR, so only run if labelled
+    # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+    # if: contains(github.event.pull_request.labels.*.name, 'preview')
+    defaults:
+      run:
+        working-directory: ./src/support_sphere
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+    - run: flutter pub get
+    # original values are in deployment/values.cloud.yaml
+    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+
+    - name: Upload Pages HTML
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: src/support_sphere/build/web
+
+    - name: Setup GitHub Pages
+      uses: actions/configure-pages@v5
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Upload Complete Build Folder
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ runner.os }}
+        path: src/support_sphere/build/web/
