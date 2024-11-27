@@ -4,6 +4,11 @@ import 'package:support_sphere/constants/environment.dart';
 class Config {
   static initSupabase() async {
     await Supabase.initialize(
-        url: EnvironmentConfig.supabaseUrl, anonKey: EnvironmentConfig.supabaseAnonKey);
+        url: EnvironmentConfig.supabaseUrl, anonKey: EnvironmentConfig.supabaseAnonKey,
+        headers: {
+          'Access-Control-Allow-Origin': '*', 
+          'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',
+          }
+          );
   }
 }

@@ -85,6 +85,7 @@ resource "aws_iam_role" "deploy" {
     "arn:aws:iam::aws:policy/IAMFullAccess",
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
     "arn:aws:iam::aws:policy/ResourceGroupsandTagEditorFullAccess",
+    "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
   ]
 }
 

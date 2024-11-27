@@ -89,6 +89,7 @@ module "server" {
   volume_size      = var.volume_size
   kms_key_arn_west = module.keys.kms_key_arn_west
   kms_key_arn_east = module.keys.kms_key_arn_east
+  neighborhood     = lower(var.neighborhood)
 }
 
 module "ops-roles" {
