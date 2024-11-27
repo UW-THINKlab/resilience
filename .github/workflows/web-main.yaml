@@ -4,14 +4,13 @@ on:
   push:
     branches:
       - main
-  pull_request:
   workflow_dispatch:
     
 
 jobs:
   call-run-server:
     uses: uw-ssec/post-disaster-comms/.github/workflows/run-dev-server.yml@main
-  add-preview:
+  build-and-publish:
     runs-on: ubuntu-latest
     # This workflow accesses secrets and checks out a PR, so only run if labelled
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
