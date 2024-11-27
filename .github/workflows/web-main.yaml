@@ -36,7 +36,13 @@ jobs:
         channel: stable
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
-    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+    - run: |
+        flutter build web \
+        --release \
+        --base-href "/post-disaster-comms/" \
+        --web-renderer html \
+        --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
+        --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
 
     - name: Upload Pages HTML
       uses: actions/upload-pages-artifact@v3
