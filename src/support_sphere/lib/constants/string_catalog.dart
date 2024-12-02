@@ -85,7 +85,7 @@ class ChecklistStrings {
       " It should be done again on $dateStr.";
   static const String checkCompletedTab =
       'Check the Completed tab to review your completed checklists.';
-  static const String allChecklist = 'All Checklist';
+  static const String allChecklist = 'All Checklists';
   static String completeFrequency(String frequencyName) =>
       'Complete $frequencyName';
   static const String newChecklist = 'New Checklist';
