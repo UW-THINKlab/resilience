@@ -48,6 +48,18 @@ class Household extends Equatable {
       cluster_id: cluster_id ?? this.cluster_id,
     );
   }
+
+  factory Household.fromJson(Map<String, dynamic> json) {
+    return Household(
+      id: json['id'],
+      name: json['name'],
+      address: json['address'],
+      notes: json['notes'],
+      pets: json['pets'],
+      accessibility_needs: json['accessibility_needs'],
+      cluster_id: json['cluster_id'],
+    );
+  }
 }
 
 class HouseHoldMembers extends Equatable {

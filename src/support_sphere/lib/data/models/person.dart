@@ -40,6 +40,18 @@ class Person extends Equatable {
   /// The current user's help status.
   final bool needsHelp;
 
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person(
+      id: json['id'],
+      // userProfileId: json['user_profile_id'],
+      givenName: json['given_name'],
+      familyName: json['family_name'],
+      nickname: json['nickname'],
+      isSafe: json['is_safe'],
+      needsHelp: json['needs_help'],
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

@@ -32,6 +32,13 @@ class Cluster extends Equatable {
       captains: captains ?? this.captains,
     );
   }
+
+  factory Cluster.fromJson(Map<String, dynamic> json) {
+    return Cluster(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
 }
 
 class Captains extends Equatable {

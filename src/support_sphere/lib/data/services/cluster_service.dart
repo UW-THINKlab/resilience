@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
-import 'package:uuid/v4.dart';
 
 class ClusterService {
   final SupabaseClient _supabaseClient = supabase;
