@@ -1,6 +1,6 @@
 /// Strings used in the app
 class AppStrings {
-  static const String appName = 'Support Sphere';
+  static const String appName = 'Resilience - Laurelhurst';
   static const String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
   static const String testEmergencyBannerText = "This is a test emergency.";
