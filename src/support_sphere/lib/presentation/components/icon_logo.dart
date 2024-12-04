@@ -1,6 +1,7 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 class IconLogo extends StatelessWidget {
 const IconLogo({ Key? key }) : super(key: key);
@@ -25,7 +26,7 @@ const IconLogo({ Key? key }) : super(key: key);
               ),
             ),
             Text(
-              'Support Sphere',
+              AppStrings.appName,
               style: TextStyle(
                 fontSize: 22.0,
                 fontWeight: FontWeight.w900,
