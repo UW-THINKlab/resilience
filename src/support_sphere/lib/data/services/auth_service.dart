@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
