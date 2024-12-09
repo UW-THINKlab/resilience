@@ -144,13 +144,16 @@ class UserRepository {
     required supabase_flutter.User user,
     required String givenName,
     required String familyName,
+    required Map<String, dynamic> data,
   }) async {
     String userId = user.id;
     await _userService.createUserProfile(
       userId: userId,
     );
     await _userService.createPerson(
-        userId: userId, givenName: givenName, familyName: familyName);
+        userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
+
+    await _authService.invalidateSignupCode(data["code"]);
   }
 
   Future<void> updateUserName({

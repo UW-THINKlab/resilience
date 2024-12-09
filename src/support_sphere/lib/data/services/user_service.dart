@@ -71,9 +71,11 @@ class UserService {
     required String userId,
     required String givenName,
     required String familyName,
+    required String householdId,
   }) async {
+    final personId = const UuidV4().generate();
     await _supabaseClient.from('people').insert({
-      'id': const UuidV4().generate(),
+      'id': personId,
       'user_profile_id': userId,
       'given_name': givenName,
       'family_name': familyName,
@@ -81,6 +83,7 @@ class UserService {
       'is_safe': true,
       'needs_help': false,
     });
+    await linkPersonToHousehold(personId: personId, householdId: householdId);
   }
 
   /// Updates a person's details in the people table.
@@ -125,5 +128,17 @@ class UserService {
         .from('households')
         .update(payload)
         .eq('id', id);
+  }
+
+  /// Link a person to a household.
+  /// This will create a new row in the people_groups table.
+  Future<void> linkPersonToHousehold({
+    required String personId,
+    required String householdId,
+  }) async {
+    await _supabaseClient.from('people_groups').insert({
+      'people_id': personId,
+      'household_id': householdId,
+    });
   }
 }
