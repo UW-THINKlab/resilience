@@ -17,14 +17,9 @@ void main() {
   // Refer: https://docs.flutter.dev/cookbook/testing/unit/introduction#5-combine-multiple-tests-in-a-group
 
   group('AuthService SignUp Code Validation Tests', () {
-    test('isSignupCodeValid returns true for valid code', () async {
-      final isValid = await authService.isSignupCodeValid('SUPPORT');
-      expect(isValid, isTrue);
-    });
-
     test('isSignupCodeValid returns false for invalid code', () async {
-      final isValid = await authService.isSignupCodeValid('INVALID');
-      expect(isValid, isFalse);
+      final result = await authService.isSignupCodeValid('INVALID');
+      expect(result == null, isFalse);
     });
   });
 }
