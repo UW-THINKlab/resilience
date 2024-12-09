@@ -147,12 +147,16 @@ class UserRepository {
     required Map<String, dynamic> data,
   }) async {
     String userId = user.id;
+    // Create a user profile with the given user id
     await _userService.createUserProfile(
       userId: userId,
     );
+
+    // Create a person with the given user id, given name, family name, and household id
     await _userService.createPerson(
         userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
 
+    // Invalidate the signup code used to create the user
     await _authService.invalidateSignupCode(data["code"]);
   }
 
