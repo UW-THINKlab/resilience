@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
@@ -196,6 +197,12 @@ class _PersonalInformation extends StatelessWidget {
 class _HouseholdInformation extends StatelessWidget {
   const _HouseholdInformation({super.key});
 
+  String _getFullName(Person? person) {
+    String givenName = person?.givenName ?? '';
+    String familyName = person?.familyName ?? '';
+    return '$givenName $familyName';
+  }
+
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormBuilderState>();
@@ -220,66 +227,6 @@ class _HouseholdInformation extends StatelessWidget {
         return ProfileSection(
           title: UserProfileStrings.householdInformation,
           state: state,
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.householdMembers),
-              ],
-            ),
-            Container(
-              height: 50.0,
-              child: ListView(shrinkWrap: true, children: [
-                for (var member in members)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(member),
-                    ],
-                  ),
-              ]),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.address),
-                Text(address),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.pets),
-                Text(pets),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.accessibilityNeeds),
-                Text(accessibilityNeeds.isEmpty
-                    ? UserProfileStrings.accessibilityNeedsDefaultText
-                    : accessibilityNeeds),
-              ],
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.notesWithNote),
-              ],
-            ),
-            Container(
-              height: 50,
-              child: TextField(
-                controller: TextEditingController()..text = notes,
-                expands: true,
-                maxLines: null,
-                readOnly: true,
-                decoration:
-                    InputDecoration(filled: true, fillColor: Colors.grey[200]),
-              ),
-            )
-          ],
           modalBody: FormBuilder(
             key: formKey,
             child: Column(
@@ -341,6 +288,67 @@ class _HouseholdInformation extends StatelessWidget {
               ],
             ),
           ),
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.householdMembers),
+              ],
+            ),
+            Container(
+              height: 50.0,
+              child: ListView(shrinkWrap: true, children: [
+                for (var member in householdMembers)
+                  Row(
+                    children: [
+                      Text(_getFullName(member)),
+                      const SizedBox(width: 5),
+                      member!.profile != null ? const FaIcon(FontAwesomeIcons.user, size: 10) : const SizedBox.shrink(),
+                    ],
+                  ),
+              ]),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.address),
+                Text(address),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.pets),
+                Text(pets),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.accessibilityNeeds),
+                Text(accessibilityNeeds.isEmpty
+                    ? UserProfileStrings.accessibilityNeedsDefaultText
+                    : accessibilityNeeds),
+              ],
+            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.notesWithNote),
+              ],
+            ),
+            Container(
+              height: 50,
+              child: TextField(
+                controller: TextEditingController()..text = notes,
+                expands: true,
+                maxLines: null,
+                readOnly: true,
+                decoration:
+                    InputDecoration(filled: true, fillColor: Colors.grey[200]),
+              ),
+            )
+          ],
         );
       },
     );
