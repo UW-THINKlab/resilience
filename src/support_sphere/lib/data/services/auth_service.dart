@@ -4,21 +4,19 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 // TODO: ADD API Handling in here for exceptions
 
-List<String> _validSignupCodes = const [
-  'SUPPORT',
-  'SPPHERE',
-  'ISIGNUP',
-];
-
 class AuthService extends Equatable{
   static final GoTrueClient _supabaseAuth = supabase.auth;
+  final SupabaseClient _supabaseClient = supabase;
 
   User? getSignedInUser() => _supabaseAuth.currentUser;
   Session? getUserSession() => _supabaseAuth.currentSession;
 
-  Future<bool> isSignupCodeValid(String code) async {
-    // TODO: Replace with API call to check if code is valid
-    return Future.delayed(const Duration(milliseconds: 300), () => _validSignupCodes.contains(code));
+  Future<Map<String, dynamic>?> isSignupCodeValid(String code) async {
+    return await _supabaseClient.from('signup_codes').select().eq('code', code).maybeSingle();
+  }
+
+  Future<void> invalidateSignupCode(String code) async {
+    await _supabaseClient.rpc('invalidate_signup_code', params: {'input_code': code});
   }
 
   Future<AuthResponse> signUpWithEmailAndPassword(String email, String password) async {

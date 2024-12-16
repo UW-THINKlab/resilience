@@ -35,16 +35,20 @@ class AuthenticationRepository {
 
   Future<void> logOut() async => await _authService.signOut();
 
-  Future<supabase_flutter.AuthResponse> signUp({
+  Future<Map<String, dynamic>> signUp({
     required String email,
     required String password,
     required String signupCode,
   }) async {
-    bool isCodeValid = await _authService.isSignupCodeValid(signupCode);
+    Map<String, dynamic>? codeResult = await _authService.isSignupCodeValid(signupCode);
+    bool isCodeValid = codeResult != null;
     if (!isCodeValid) {
       throw Exception(ErrorMessageStrings.invalidSignUpCode);
     } else {
-      return _authService.signUpWithEmailAndPassword(email, password);
+      return {
+        'data': codeResult,
+        'response': await _authService.signUpWithEmailAndPassword(email, password),
+      };
     }
   }
 

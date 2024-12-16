@@ -54,11 +54,12 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       // TODO: Add coupon code check for signup
-      final response = await _authenticationRepository.signUp(
+      final signUpResponse = await _authenticationRepository.signUp(
         email: state.email,
         password: state.password,
         signupCode: state.signupCode,
       );
+      AuthResponse response = signUpResponse['response'];
       User? user = response.user;
       if (user == null) {
         // If for some reason the user is null, we should set form status to failure
@@ -71,6 +72,7 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
         user: user,
         givenName: state.givenName,
         familyName: state.familyName,
+        data: signUpResponse['data'],
       );
 
       emit(state.copyWith(status: FormzSubmissionStatus.success));

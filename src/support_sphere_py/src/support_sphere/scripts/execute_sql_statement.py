@@ -177,6 +177,27 @@ BEGIN;
 COMMIT;
 """
 
+# SQL for updating signup code after user signup
+invalidate_signup_code_sql = """
+CREATE OR REPLACE FUNCTION invalidate_signup_code(input_code TEXT)
+RETURNS TEXT AS $$
+DECLARE
+    new_code TEXT;
+BEGIN
+    -- Generate new code using first 7 characters of UUID hex, capitalized
+    new_code := UPPER(LEFT(REPLACE(gen_random_uuid()::TEXT, '-', ''), 7));
+
+    -- Update signup_codes table with the new code
+    UPDATE signup_codes 
+    SET code = new_code 
+    WHERE code = input_code;
+
+    -- Return the newly generated code
+    RETURN new_code;
+END;
+$$ LANGUAGE plpgsql;
+"""
+
 
 # Execute the SQL commands
 def run_custom_sql_statement(
@@ -209,6 +230,9 @@ def run_all():
 
     logger.info("Setting up checklist triggers...")
     run_custom_sql_statement(checklist_triggers_sql)
+
+    logger.info("Updating signup code after user signup...")
+    run_custom_sql_statement(invalidate_signup_code_sql)
 
 
 if __name__ == '__main__':
