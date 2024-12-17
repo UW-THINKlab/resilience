@@ -8,12 +8,14 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
+import 'package:support_sphere/data/services/auth_service.dart';
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
+  final AuthService _authService = AuthService();
   final ClusterService _clusterService = ClusterService();
 
   /// Get the household members by household id.
