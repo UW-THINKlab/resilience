@@ -37,6 +37,8 @@ class Cluster extends Equatable {
     return Cluster(
       id: json['id'],
       name: json['name'],
+      meetingPlace: json['meeting_place'],
+      captains: json['captains'] != null ? Captains.fromJson(json['captains']) : null,
     );
   }
 }
@@ -50,4 +52,10 @@ class Captains extends Equatable {
 
   @override
   List<Object?> get props => [people];
+
+  factory Captains.fromJson(Map<String, dynamic> json) {
+    return Captains(
+      people: json['people'] != null ? json['people'].map((person) => Person.fromJson(person)).toList() : [],
+    );
+  }
 }

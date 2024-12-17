@@ -5,10 +5,11 @@ class CaptainMarker extends Equatable {
   final String id;
   final String familyName;
   final String givenName;
+
+  /// We store the polygon geometry in the database,
+  /// however, we only need the centroid of the polygon to display the marker on the map
+  /// so we use "Geodesy" to calculate it and store the centroid of the polygon as `householdGeom` here
   final LatLng? householdGeom;
-  // We store the polygon geometry in the database,
-  // however, we only need the centroid of the polygon to display the marker on the map
-  // so we use "Geodesy" to calculate it and store the centroid of the polygon as `householdGeom` here
 
   const CaptainMarker({
     required this.id,
@@ -17,16 +18,15 @@ class CaptainMarker extends Equatable {
     this.householdGeom,
   });
 
-
   @override
   List<Object?> get props => [id, familyName, givenName, householdGeom];
 
   copyWith({
     required String id,
-    required String familyName, 
+    required String familyName,
     required String givenName,
     LatLng? householdGeom,
-  }) {  
+  }) {
     return CaptainMarker(
       id: id,
       familyName: familyName,
