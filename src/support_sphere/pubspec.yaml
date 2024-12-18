@@ -60,9 +60,6 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   geodesy: ^0.10.2
-
-  # TODO: Before iOS deployment, add required permissions in Info.plist:
-  # See permission under "Usage" section: https://pub.dev/packages/geolocator#usage
   geolocator: ^10.0.0
 
 dev_dependencies:
