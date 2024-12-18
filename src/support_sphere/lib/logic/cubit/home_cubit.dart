@@ -48,30 +48,15 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> getCurrentLocation() async {
-    late bool isDenied = false;
-
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
+      final position = await Geolocator.getCurrentPosition();
 
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.unableToDetermine) {
-        permission = await Geolocator.requestPermission();
-
-        if (permission == LocationPermission.denied ||
-            permission == LocationPermission.deniedForever ||
-            permission == LocationPermission.unableToDetermine) isDenied = true;
-      }
-
-      if (!isDenied) {
-        final position = await Geolocator.getCurrentPosition();
-
-        emit(state.copyWith(
-          userLocation: LatLng(position.latitude, position.longitude),
-          initMapCentroid: LatLng(position.latitude, position.longitude),
-          // TODO: adjust zoom level based on user location and cluster size
-          initZoomLevel: 17.5,
-        ));
-      }
+      emit(state.copyWith(
+        userLocation: LatLng(position.latitude, position.longitude),
+        initMapCentroid: LatLng(position.latitude, position.longitude),
+        // TODO: adjust zoom level based on user location and cluster size
+        initZoomLevel: 17.5,
+      ));
     } catch (error) {
       if (error is! PermissionDeniedException) {
         throw Exception(error);
