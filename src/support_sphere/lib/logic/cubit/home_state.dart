@@ -9,7 +9,7 @@ enum HomeStatus { initial, loading, success, failure }
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
 // so the user who doesn't provide permission can still see captains' locations (even though there is no marker for current user's location)
-const defaultInitMapCentroid = LatLng(47.6062, -122.3321);
+const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
 
 class HomeState extends Equatable {
   const HomeState({

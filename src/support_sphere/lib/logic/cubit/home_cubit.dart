@@ -53,10 +53,13 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       LocationPermission permission = await Geolocator.checkPermission();
 
-      if (permission == LocationPermission.denied) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.unableToDetermine) {
         permission = await Geolocator.requestPermission();
 
-        if (permission == LocationPermission.denied) isDenied = true;
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever ||
+            permission == LocationPermission.unableToDetermine) isDenied = true;
       }
 
       if (!isDenied) {
