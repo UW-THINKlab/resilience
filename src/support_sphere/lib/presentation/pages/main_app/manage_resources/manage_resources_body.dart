@@ -42,8 +42,6 @@ class _ManageResourceBodyControllerState
       });
     }
 
-    print("Rebuilding ManageResourceBodyController");
-
     return BlocProvider(
       create: (context) => ManageResourceCubit(),
       child: (_showingAddResource)

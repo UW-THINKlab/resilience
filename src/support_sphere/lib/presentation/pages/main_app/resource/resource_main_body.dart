@@ -26,9 +26,10 @@ class ResourceBody extends StatelessWidget {
     return BlocProvider(
       create: (context) => ResourceCubit(authUser),
       child: BlocBuilder<ResourceCubit, ResourceState>(
-        buildWhen: (previous, current) =>
-            previous.currentNav != current.currentNav ||
-            previous.resourceTypes != current.resourceTypes,
+        // buildWhen: (previous, current) =>
+        //     previous.currentNav != current.currentNav ||
+        //     previous.resourceTypes != current.resourceTypes ||
+        //     previous.resources != current.resources,
         builder: (context, state) {
           switch (state.currentNav) {
             case ResourceNav.showAllResources:
@@ -148,6 +149,8 @@ class AllResourcesTab extends StatelessWidget {
             child: Text("No resources found"),
           );
         }
+        // TODO: Figure out how this can be updated as user add and delete resources
+        // need to somehow fetch the resources and update the state when we tab around
         return ListView.builder(
           itemCount: state.resources.length,
           itemBuilder: (context, index) {
@@ -356,14 +359,18 @@ class UserResourcesTab extends StatelessWidget {
                               WidgetStateProperty.all(Colors.greenAccent)),
                       icon: const FaIcon(FontAwesomeIcons.circleCheck),
                       iconAlignment: IconAlignment.end,
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<ResourceCubit>().markUpToDateNow(userResource.id);
+                      },
                       label: Text("Mark as up to date")),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
                       style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(Colors.redAccent)),
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<ResourceCubit>().deleteUserResource(userResource.id);
+                      },
                       label: const Text(
                         "Delete Item",
                         style: TextStyle(color: Colors.white),

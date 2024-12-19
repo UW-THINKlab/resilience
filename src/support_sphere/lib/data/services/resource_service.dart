@@ -60,6 +60,41 @@ class ResourceService {
     ''');
   }
 
+  Future<PostgrestList?> getAllResources() async {
+    return await _supabaseClient.from('resources').select('''
+      notes,
+      qty_needed,
+      qty_available,
+      resources_cv (
+        id,
+        name,
+        description
+      ),
+      resource_types (
+        id,
+        name,
+        description
+      ),
+      user_resources (
+        quantity
+      )
+    ''');
+  }
+
+  Future<void> addUserResource(Map<String, dynamic> data) async {
+    await _supabaseClient.from('user_resources').upsert(data);
+  }
+
+  Future<void> deleteUserResource(String id) async {
+    await _supabaseClient.from('user_resources').delete().eq('id', id);
+  }
+
+  Future<void> markUpToDate(String id, DateTime updated_at) async {
+    await _supabaseClient
+        .from('user_resources')
+        .update({'updated_at': updated_at.toIso8601String()}).eq('id', id);
+  }
+
   Future<void> createResourceCV(Map<String, dynamic> data) async {
     await _supabaseClient.from('resources_cv').upsert(data);
   }

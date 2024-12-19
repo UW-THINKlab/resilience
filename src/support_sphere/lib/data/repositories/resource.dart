@@ -17,7 +17,7 @@ class ResourceRepository {
   }
 
   Future<List<Resource>> getResources() async {
-    PostgrestList? results = await _resourceService.getResources();
+    PostgrestList? results = await _resourceService.getAllResources();
     return results?.map((data) => Resource.fromJson(data)).toList() ?? [];
   }
 
@@ -45,5 +45,17 @@ class ResourceRepository {
   Future<void> deleteResource(String id) async {
     await _resourceService.deleteResource(id);
     await _resourceService.deleteResourceCV(id);
+  }
+
+  Future<void> addToUserInventory(Map<String, dynamic> data) async {
+    await _resourceService.addUserResource(data);
+  }
+
+  Future<void> deleteUserResource(String id) async {
+    await _resourceService.deleteUserResource(id);
+  }
+
+  Future<void> markUpToDate(String id, DateTime updated_at) async {
+    await _resourceService.markUpToDate(id, updated_at);
   }
 }
