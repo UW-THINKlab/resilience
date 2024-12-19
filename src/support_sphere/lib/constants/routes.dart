@@ -7,6 +7,7 @@ import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/home/home_body.dart';
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
@@ -24,7 +25,7 @@ class AppNavigation {
     // TODO: Add body for each route
     List<AppRoute> destinations = [
       const AppRoute(
-          icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home),
+          icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
       const AppRoute(
           icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(
