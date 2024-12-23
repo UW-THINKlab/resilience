@@ -50,8 +50,8 @@ runcmd:
   # clone repo
   - echo "Cloning the repository"
   - cd /opt
-  - git clone https://github.com/uw-ssec/post-disaster-comms.git
-  - cd post-disaster-comms
+  - git clone https://github.com/${github_organization}/${github_repo}.git
+  - cd ${github_repo}
 
   # install backend tools
   - echo "Setting up backend infra"
