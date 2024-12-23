@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 /// Strings used in the app
 class AppStrings {
   static const String appName = 'Resilience - Laurelhurst';
@@ -115,9 +117,14 @@ class ResourceStrings {
   static const String manageResources = 'Manage Resources';
   static const String resourcesInventory = 'Resources Inventory';
   static const String noUserResources = 'You have not added any resources yet';
+  static String addedOnDate(DateTime date) => "Added on ${DateFormat.yMMMd('en').format(date)}";
+  static const String markUpToDate = 'Mark as up to date';
+  static const String delete = 'Delete item';
 }
 
 class AddResourceInventoryFormStrings {
+  static String thankYou = "Thank you";
+  static String done = "Done";
   static String addTitle(String resourceName) =>
       "Add $resourceName to Inventory";
   static const String howManyAdding = 'How many are you adding?';
