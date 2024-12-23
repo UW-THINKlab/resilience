@@ -26,10 +26,6 @@ class ResourceBody extends StatelessWidget {
     return BlocProvider(
       create: (context) => ResourceCubit(authUser),
       child: BlocBuilder<ResourceCubit, ResourceState>(
-        // buildWhen: (previous, current) =>
-        //     previous.currentNav != current.currentNav ||
-        //     previous.resourceTypes != current.resourceTypes ||
-        //     previous.resources != current.resources,
         builder: (context, state) {
           switch (state.currentNav) {
             case ResourceNav.showAllResources:
@@ -43,18 +39,18 @@ class ResourceBody extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   // TODO: Implement Search and Filter
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: ResourceSearchBar()),
-                      Expanded(
-                          child: ResourceTypeFilter(
-                        resourceTypes: state.resourceTypes,
-                        // TODO: Implement onSelected filtering
-                        // onSelected: onSelected,
-                      )),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Expanded(child: ResourceSearchBar()),
+                  //     Expanded(
+                  //         child: ResourceTypeFilter(
+                  //       resourceTypes: state.resourceTypes,
+                  //       // TODO: Implement onSelected filtering
+                  //       // onSelected: onSelected,
+                  //     )),
+                  //   ],
+                  // ),
                   Expanded(
                       child: ResourceTabBar(
                           initialTabIndex: state.initialTabIndex)),
@@ -149,8 +145,6 @@ class AllResourcesTab extends StatelessWidget {
             child: Text("No resources found"),
           );
         }
-        // TODO: Figure out how this can be updated as user add and delete resources
-        // need to somehow fetch the resources and update the state when we tab around
         return ListView.builder(
           itemCount: state.resources.length,
           itemBuilder: (context, index) {
