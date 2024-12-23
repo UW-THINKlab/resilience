@@ -40,7 +40,7 @@ jobs:
     - run: |
         flutter build web \
         --release \
-        --base-href "/post-disaster-comms/" \
+        --base-href "/resilience/" \
         --web-renderer html \
         --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
         --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
