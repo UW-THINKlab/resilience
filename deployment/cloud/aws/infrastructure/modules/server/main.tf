@@ -155,7 +155,8 @@ resource "aws_launch_template" "this" {
   }
 
   user_data = base64encode(templatefile("${path.module}/userdata", {
-
+    github_organization = var.github_organization,
+    github_repo         = var.github_repo
   }))
 
   update_default_version = true

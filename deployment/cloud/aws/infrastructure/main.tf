@@ -83,13 +83,15 @@ module "keys" {
 module "server" {
   source = "./modules/server"
 
-  resource_prefix  = local.resource_prefix
-  instance_type    = var.instance_type
-  stage            = var.stage
-  volume_size      = var.volume_size
-  kms_key_arn_west = module.keys.kms_key_arn_west
-  kms_key_arn_east = module.keys.kms_key_arn_east
-  neighborhood     = lower(var.neighborhood)
+  resource_prefix     = local.resource_prefix
+  instance_type       = var.instance_type
+  stage               = var.stage
+  volume_size         = var.volume_size
+  kms_key_arn_west    = module.keys.kms_key_arn_west
+  kms_key_arn_east    = module.keys.kms_key_arn_east
+  neighborhood        = lower(var.neighborhood)
+  github_organization = var.github_organization
+  github_repo         = var.github_repo
 }
 
 module "ops-roles" {

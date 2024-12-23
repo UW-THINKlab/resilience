@@ -38,3 +38,13 @@ variable "kms_key_arn_east" {
   description = "The ARN of the KMS key to use for encryption in the east region"
   type        = string
 }
+
+variable "github_organization" {
+  description = "Organization that the GitHub repo belongs to"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repo name that this project lives in"
+  type        = string
+}
