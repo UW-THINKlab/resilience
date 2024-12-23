@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-run-server:
-    uses: uw-ssec/post-disaster-comms/.github/workflows/run-dev-server.yml@main
+    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@main
   build-and-publish:
     runs-on: ubuntu-latest
     # This workflow accesses secrets and checks out a PR, so only run if labelled
