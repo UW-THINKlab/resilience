@@ -21,8 +21,8 @@ db:
   - name: regcred
   enabled: true
   image:
-    repository: ghcr.io/uw-ssec/supabase-db
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-db
+    tag: 2024.12.23
   livenessProbe:
     exec:
       command:
@@ -44,8 +44,8 @@ studio:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-studio
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-studio
+    tag: 2024.12.23
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
@@ -61,8 +61,8 @@ auth:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-auth
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-auth
+    tag: 2024.12.23
   environment:
     API_EXTERNAL_URL: http://localhost
     GOTRUE_SITE_URL: http://localhost
@@ -80,8 +80,8 @@ rest:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-rest
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-rest
+    tag: 2024.12.23
 
 realtime:
   # Override the fullname of the realtime deployment
@@ -91,8 +91,8 @@ realtime:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-realtime
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-realtime
+    tag: 2024.12.23
   livenessProbe:
     httpGet:
       path: /
@@ -103,15 +103,15 @@ meta:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-meta
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-meta
+    tag: 2024.12.23
 
 storage:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-storage
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-storage
+    tag: 2024.12.23
   livenessProbe:
     httpGet:
       path: /status
@@ -124,8 +124,8 @@ imgproxy:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-imgproxy
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-imgproxy
+    tag: 2024.12.23
   environment:
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
   livenessProbe:
@@ -141,8 +141,8 @@ kong:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-kong
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-kong
+    tag: 2024.12.23
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info
@@ -165,8 +165,8 @@ analytics:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-analytics
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-analytics
+    tag: 2024.12.23
   livenessProbe:
     httpGet:
       path: /health
@@ -177,8 +177,8 @@ vector:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-vector
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-vector
+    tag: 2024.12.23
   livenessProbe:
     httpGet:
       path: /health
@@ -199,5 +199,5 @@ functions:
   imagePullSecrets:
   - name: regcred
   image:
-    repository: ghcr.io/uw-ssec/supabase-functions
-    tag: 2024.09.13
+    repository: ghcr.io/uw-thinklab/supabase-functions
+    tag: 2024.12.23
