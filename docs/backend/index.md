@@ -33,12 +33,6 @@ To run this app locally, follow these steps:
     ```console
     pixi run -e backend setup-db-data-via-k8s-job
     ```
-5. Optional: Run the API server locally by running the following command in a new terminal session.  
-    Note: the argument `fast-api-server-dev` in the command below runs the server in editable mode, where each change in  the source file triggers the restart of the fastapi local server.  
-    For production: replace `fast-api-server-dev` with `fast-api-server-run`.
-    ```console
-    pixi run -e backend fast-api-server-dev
-    ```
 
 ## Database diagram
 
