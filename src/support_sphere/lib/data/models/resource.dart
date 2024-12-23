@@ -10,6 +10,7 @@ class Resource extends Equatable {
     this.description = '',
     this.qtyNeeded = 0,
     this.qtyAvailable = 0,
+    this.userQuantity = 0,
   });
 
   final String id;
@@ -18,6 +19,7 @@ class Resource extends Equatable {
   final String? notes;
   final int qtyNeeded;
   final int qtyAvailable;
+  final int userQuantity;
   final ResourceTypes resourceType;
 
   @override
@@ -26,6 +28,11 @@ class Resource extends Equatable {
   static Resource fromJson(Map<String, dynamic> json) {
     var resourceTypesJson = json['resource_types'];
     var resourcesCvJson = json['resources_cv'];
+    var userQuantity = 0;
+    if (json['user_resources'].length > 0) {
+      userQuantity = json['user_resources'].map((userResource) => userResource['quantity']).reduce((a, b) => a + b);
+    }
+    var neededQuantity = json['qty_needed'] - userQuantity;
     return Resource(
       id: resourcesCvJson['id'],
       name: resourcesCvJson['name'],
@@ -36,8 +43,8 @@ class Resource extends Equatable {
         description: resourceTypesJson['description']
       ),
       notes: json['notes'],
-      qtyNeeded: json['qty_needed'],
-      qtyAvailable: json['qty_available'],
+      qtyNeeded: neededQuantity < 0 ? 0 : neededQuantity,
+      qtyAvailable: json['qty_available'] + userQuantity,
     );
   }
 
@@ -48,6 +55,7 @@ class Resource extends Equatable {
     String? notes,
     int? qtyNeeded,
     int? qtyAvailable,
+    int? userQuantity,
     ResourceTypes? resourceType,
   }) {
     return Resource(
@@ -56,6 +64,7 @@ class Resource extends Equatable {
       description: description ?? this.description,
       resourceType: resourceType ?? this.resourceType,
       notes: notes ?? this.notes,
+      userQuantity: userQuantity ?? this.userQuantity,
       qtyNeeded: qtyNeeded ?? this.qtyNeeded,
       qtyAvailable: qtyAvailable ?? this.qtyAvailable,
     );

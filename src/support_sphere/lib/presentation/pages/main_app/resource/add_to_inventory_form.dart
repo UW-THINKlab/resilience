@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +8,56 @@ import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:uuid/v4.dart';
+
+class AddToInventoryFormData extends Equatable {
+  const AddToInventoryFormData({
+    this.resourceId,
+    this.quantity,
+    // TODO: Implement Subtype
+    // this.subtype,
+    this.notes,
+  });
+  final String? resourceId;
+  final int? quantity;
+  // final String? subtype;
+  final String? notes;
+
+  @override
+  List<Object?> get props => [
+        resourceId,
+        quantity,
+        // subtype,
+        notes,
+      ];
+
+  copyWith({
+    String? resourceId,
+    int? quantity,
+    // String? subtype,
+    String? notes,
+  }) {
+    return AddToInventoryFormData(
+      resourceId: resourceId ?? this.resourceId,
+      quantity: quantity ?? this.quantity,
+      // subtype: subtype ?? this.subtype,
+      notes: notes ?? this.notes
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    String now = DateTime.now().toIso8601String();
+    return {
+      'id': const UuidV4().generate(),
+      'resource_id': resourceId,
+      'quantity': quantity,
+      // 'subtype': subtype,
+      'notes': notes,
+      'created_at': now,
+      'updated_at': now,
+    };
+  }
+}
 
 class AddToInventoryForm extends StatefulWidget {
   const AddToInventoryForm({super.key, required this.resource});
@@ -19,6 +70,7 @@ class AddToInventoryForm extends StatefulWidget {
 
 class _AddToInventoryFormState extends State<AddToInventoryForm> {
   final _formKey = GlobalKey<FormState>();
+  AddToInventoryFormData _formData = AddToInventoryFormData();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +101,8 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               initialValue: '1',
               keyboardType: TextInputType.number,
               autovalidateMode: AutovalidateMode.onUserInteraction,
+              onSaved: (value) => _formData = _formData.copyWith(
+                    quantity: int.tryParse(value ?? '0')),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.numeric(),
@@ -80,7 +134,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
             // Resource Notes (Only user and cluster captains can see)
             TextFormField(
               key: const Key('AddToInventoryForm_notes_textFormField'),
-              // onSaved: (value) => _formData = _formData.copyWith(notes: value),
+              onSaved: (value) => _formData = _formData.copyWith(notes: value),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               keyboardType: TextInputType.multiline,
               minLines: 1,
@@ -101,6 +155,10 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                 ElevatedButton(onPressed: () {
                   _formKey.currentState!.save();
                   if (_formKey.currentState!.validate()) {
+                    _formData = _formData.copyWith(resourceId: resource.id);
+                    context
+                        .read<ResourceCubit>()
+                        .addToUserInventory(_formData.toJson());
                     context
                         .read<ResourceCubit>()
                         .currentNavChanged(ResourceNav.savedResourceInventory);

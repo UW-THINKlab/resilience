@@ -54,4 +54,27 @@ class ResourceCubit extends Cubit<ResourceState> {
     List<UserResource> userResources = await _resourceRepository.getUserResourcesByUserId(userId);
     emit(state.copyWith(userResources: userResources));
   }
+
+  void addToUserInventory(Map<String, dynamic> data) async {
+    final userId = authUser.uuid;
+    final payload = {...data, 'user_id': userId};
+    await _resourceRepository.addToUserInventory(payload);
+    // Empty the resources list to force a refresh
+    emit(state.copyWith(resources: []));
+    fetchUserResources(authUser.uuid);
+    fetchResources();
+  }
+
+  void deleteUserResource(String id) async {
+    await _resourceRepository.deleteUserResource(id);
+    // Empty the resources list to force a refresh
+    emit(state.copyWith(resources: []));
+    fetchUserResources(authUser.uuid);
+    fetchResources();
+  }
+
+  void markUpToDateNow(String id) async {
+    await _resourceRepository.markUpToDate(id, DateTime.now());
+    fetchUserResources(authUser.uuid);
+  }
 }

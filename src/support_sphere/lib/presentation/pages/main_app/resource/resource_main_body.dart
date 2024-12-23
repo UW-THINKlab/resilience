@@ -26,9 +26,6 @@ class ResourceBody extends StatelessWidget {
     return BlocProvider(
       create: (context) => ResourceCubit(authUser),
       child: BlocBuilder<ResourceCubit, ResourceState>(
-        buildWhen: (previous, current) =>
-            previous.currentNav != current.currentNav ||
-            previous.resourceTypes != current.resourceTypes,
         builder: (context, state) {
           switch (state.currentNav) {
             case ResourceNav.showAllResources:
@@ -42,18 +39,18 @@ class ResourceBody extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   // TODO: Implement Search and Filter
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: ResourceSearchBar()),
-                      Expanded(
-                          child: ResourceTypeFilter(
-                        resourceTypes: state.resourceTypes,
-                        // TODO: Implement onSelected filtering
-                        // onSelected: onSelected,
-                      )),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Expanded(child: ResourceSearchBar()),
+                  //     Expanded(
+                  //         child: ResourceTypeFilter(
+                  //       resourceTypes: state.resourceTypes,
+                  //       // TODO: Implement onSelected filtering
+                  //       // onSelected: onSelected,
+                  //     )),
+                  //   ],
+                  // ),
                   Expanded(
                       child: ResourceTabBar(
                           initialTabIndex: state.initialTabIndex)),
@@ -145,7 +142,7 @@ class AllResourcesTab extends StatelessWidget {
       builder: (context, state) {
         if (state.resources.isEmpty) {
           return const Center(
-            child: Text("No resources found"),
+            child: Text(ResourceStrings.noResourcesFound),
           );
         }
         return ListView.builder(
@@ -230,10 +227,10 @@ class AddToResourceThankYou extends StatelessWidget {
                   child: ContainerCard(
                     child: Column(
                       children: [
-                        const Center(
+                        Center(
                           child: Text(
-                            "Thank You",
-                            style: TextStyle(
+                            AddResourceInventoryFormStrings.thankYou,
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -250,7 +247,7 @@ class AddToResourceThankYou extends StatelessWidget {
                               context.read<ResourceCubit>().currentNavChanged(
                                   (ResourceNav.showAllResources));
                             },
-                            child: Text("Done"))
+                            child: Text(AddResourceInventoryFormStrings.done))
                       ],
                     ),
                   ),
@@ -335,7 +332,7 @@ class UserResourcesTab extends StatelessWidget {
                           FaIcon(FontAwesomeIcons.calendar, size: 15),
                           const SizedBox(width: 4),
                           Text(
-                              "Added on ${DateFormat.yMMMd('en').format(userResource.addedDate!)}"),
+                              ResourceStrings.addedOnDate(userResource.addedDate!),),
                         ],
                       ),
                     ],
@@ -356,16 +353,20 @@ class UserResourcesTab extends StatelessWidget {
                               WidgetStateProperty.all(Colors.greenAccent)),
                       icon: const FaIcon(FontAwesomeIcons.circleCheck),
                       iconAlignment: IconAlignment.end,
-                      onPressed: () {},
-                      label: Text("Mark as up to date")),
+                      onPressed: () {
+                        context.read<ResourceCubit>().markUpToDateNow(userResource.id);
+                      },
+                      label: const Text(ResourceStrings.markUpToDate)),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
                       style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(Colors.redAccent)),
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<ResourceCubit>().deleteUserResource(userResource.id);
+                      },
                       label: const Text(
-                        "Delete Item",
+                        ResourceStrings.delete,
                         style: TextStyle(color: Colors.white),
                       ))
                 ],
