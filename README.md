@@ -29,7 +29,7 @@ Thanks to our contributors so far!
 We thank funding support from the National Science Foundation, and software engineering support from the University of Washington Scientific Software Engineering Center (SSEC), as part of the Schmidt Sciences Virtual Institute for Scientific Software (VISS) in 2024.
 
 <div>
-  <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1849930&HistoricalAwards=false">
+  <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2311405&HistoricalAwards=false">
     <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/NSF_logo.png" alt="NSF_logo" width="120">
   </a>
 
