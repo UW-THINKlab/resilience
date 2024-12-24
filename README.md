@@ -16,9 +16,7 @@ Learn more about the resilience app in the official documentation at https://res
 
 ## Contributing
 
-You can contribute to this project by creating issues or forking this repository and opening a pull request.
-
-Please review our [Code of Conduct](./CODE_OF_CONDUCT.md) before contributing.
+Refer to our [Contributing Guide](./CONTRIBUTING.md) on how to contribute to this project.
 
 Thanks to our contributors so far!
 
