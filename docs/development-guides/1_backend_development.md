@@ -1,4 +1,4 @@
-## Backend Components
+# Backend Components
 
 For the backend infrastructure, the storage and API interfaces,
 we utilize Supabase, an open source Firebase alternative. It is made up of many services on top of a Postgres database.
@@ -12,7 +12,7 @@ This ensures that the cloud deployment is exactly the same as the local deployme
 
 See [Official Supabase Documentation](https://supabase.com/docs) for more information about using supabase.
 
-### Pixi
+## Pixi
 
 We use a tool called [Pixi](https://pixi.sh/latest/) to manage virtual environments and run tasks.
 You can find the various task and environment definitions within the [`pixi.toml`](https://github.com/UW-THINKlab/resilience/blob/main/pixi.toml) file within the root directory of the repository.
@@ -30,7 +30,7 @@ in the `backend` feature.
 
 For more detailed information, we recommend reading the [Pixi Documentation](https://pixi.sh/latest/).
 
-### Docker Images
+## Docker Images
 
 The images used for each of the services are as follows:
 
@@ -58,7 +58,7 @@ and pushing the images can be found in
 [`.github/workflows/images.yaml`](https://github.com/UW-THINKlab/resilience/blob/main/.github/workflows/images.yaml)
 and the images can be found in the [Resilience Container Registry](https://github.com/orgs/UW-THINKlab/packages?repo_name=resilience).
 
-### Helm Chart
+## Helm Chart
 
 A Helm chart is a collection of files that define and package resources for a Kubernetes cluster as an application.
 As mentioned earlier, we utilize the community supabase kubernetes helm chart for deployment of Supabase.
@@ -71,7 +71,7 @@ pixi run -e backend fetch-supabase-chart
 
 Once you've fetched the submodule, you should now be able to see the full `supabase-kubernetes` repository in the `vendors` directory.
 
-#### Helm Chart Values
+### Helm Chart Values
 
 The deployment values for the helm chart can be found in
 the yaml files found in the `deployment` directory.
@@ -110,7 +110,7 @@ It contains encrypted secrets and can be used in production.
     export GPG_TTY=$(tty)
     ```
 
-### Python package
+## Python package
 
 Since the underlying database for Supabase is Postgres,
 we are able to utilize Object Relational Mapping (ORM) to define the database schema.
