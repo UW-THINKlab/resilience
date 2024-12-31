@@ -126,7 +126,9 @@ To run this app locally, follow these steps:
    pixi run -e frontend setup-infra
    ```
 
-5. Run Flutter. This will open the Android app in a new Chrome window
+5. Run Flutter. This will open the Android app in a new Chrome window.
+You will need the supabase backend to be running in order to use the app.
+See [Backend Components](./1_backend_development.md) for more information.
    
    To ensure the app connects to Supabase, set the `SUPABASE_URL` and `SUPABASE_ANON_KEY` with:
 
