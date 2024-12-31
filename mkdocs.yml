@@ -1,9 +1,9 @@
 # Project Information
-site_name: Post-disaster Communications
+site_name: Resilience App Documentation
 
 # Repository
-repo_name: uw-ssec/post-disaster-comms
-repo_url: https://github.com/uw-ssec/post-disaster-comms
+repo_name: UW-THINKlab/resilience
+repo_url: https://github.com/UW-THINKlab/resilience
 
 # Configuration
 theme:
@@ -45,9 +45,9 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/chrome
-      link: https://escience.washington.edu/software-engineering/ssec/
+      link: https://uw-thinklab.github.io/think-lab/
     - icon: fontawesome/brands/github
-      link: https://github.com/uw-ssec/
+      link: https://github.com/UW-THINKlab/
 
 # Extensions
 markdown_extensions:
