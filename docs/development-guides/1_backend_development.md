@@ -155,7 +155,7 @@ The package is structured as follows:
 
 To run this app locally, follow these steps:
 
-0. Install Pixi: https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation
+0. Install [Pixi](https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation)
 1. In the package's directory, run the following to install `backend` tools
 
     ```console
