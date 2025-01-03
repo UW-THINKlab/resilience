@@ -77,15 +77,14 @@ The deployment values for the helm chart can be found in
 the yaml files found in the `deployment` directory.
 
 The values are separated into two files:
-- `values.dev.yaml`: This is the values file for the development environment.
+* `values.dev.yaml`: This is the values file for the development environment.
 You can use this file to deploy the backend services to a local kubernetes cluster.
 It does contains unencrypted secrets and should not be used in production.
-- `values.cloud.yaml`: This is the values file for the production environment.
+* `values.cloud.yaml`: This is the values file for the production environment.
 You can use this file to deploy the backend services to a production kubernetes cluster,
 whether it be on the cloud or on-premises.
 It contains encrypted secrets and can be used in production. 
     
-    ---
     
     **Editing values.cloud.yaml (Optional)**
 
