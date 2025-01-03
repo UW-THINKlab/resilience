@@ -151,4 +151,32 @@ The package is structured as follows:
 
 **`tests`**: This directory contains any tests for the package.
 
+## **Running locally**
+
+To run this app locally, follow these steps:
+
+0. Install [Pixi](https://github.com/prefix-dev/pixi?tab=readme-ov-file#installation)
+1. In the package's directory, run the following to install `backend` tools
+
+    ```console
+    # install backend tools
+    pixi run -e backend install-tools
+    ```
+2. Run the Docker daemon
+3. Set up the infrastructure. You should have a Supabase instance running at http://localhost
+    ```console
+    pixi run -e backend setup-infra
+    ```
+    After the setup, when prompted to log in, enter your Supabase project credentials (Username and Password) for successful authentication. The credentials can be found in `deployment/values.dev.yaml`.
+4. Optional: If you want to add sample entries in your local Supabase Instance. 
+    Run the following command in a new terminal session.
+    ```console
+    pixi run -e backend setup-db-data-via-k8s-job
+    ```
+
+## Database diagram
+
+Date generated: 11/25/2024
+
+![database diagram](../assets/images/pdc_20241125.png)
 
