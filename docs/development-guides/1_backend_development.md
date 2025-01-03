@@ -77,37 +77,39 @@ The deployment values for the helm chart can be found in
 the yaml files found in the `deployment` directory.
 
 The values are separated into two files:
-* `values.dev.yaml`: This is the values file for the development environment.
+
+#### `values.dev.yaml`: This is the values file for the development environment.
 You can use this file to deploy the backend services to a local kubernetes cluster.
 It does contains unencrypted secrets and should not be used in production.
-* `values.cloud.yaml`: This is the values file for the production environment.
+
+#### `values.cloud.yaml`: This is the values file for the production environment.
 You can use this file to deploy the backend services to a production kubernetes cluster,
 whether it be on the cloud or on-premises.
 It contains encrypted secrets and can be used in production. 
     
     
-    **Editing values.cloud.yaml (Optional)**
+##### Editing values.cloud.yaml (Optional)
 
-    The `values.cloud.yaml` has been encrypted using a tool called [SOPS: Secrets OPerationS](https://github.com/getsops/sops).
-    This allows us to fully encrypt the secrets in the file and only decrypt them when we need to edit or use them.
+The `values.cloud.yaml` has been encrypted using a tool called [SOPS: Secrets OPerationS](https://github.com/getsops/sops).
+This allows us to fully encrypt the secrets in the file and only decrypt them when we need to edit or use them.
 
-    To open the file with VSCode, run the following first
+To open the file with VSCode, run the following first
 
-    ```
-    export EDITOR="code --wait"
-    ```
+```
+export EDITOR="code --wait"
+```
 
-    Then run the following. Save and close the file when you're done editing for all of your new values to be re-encrypted.
+Then run the following. Save and close the file when you're done editing for all of your new values to be re-encrypted.
 
-    ```
-    pixi run edit-cloud-values
-    ```
+```
+pixi run edit-cloud-values
+```
 
-    If you run into an issue like `gpg: decryption failed: Inappropriate ioctl for device`, run the following command and retry
+If you run into an issue like `gpg: decryption failed: Inappropriate ioctl for device`, run the following command and retry
 
-    ```
-    export GPG_TTY=$(tty)
-    ```
+```
+export GPG_TTY=$(tty)
+```
 
 ## Python package
 
