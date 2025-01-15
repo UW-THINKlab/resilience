@@ -20,7 +20,7 @@ To deploy the supabase backend to a local minikube cluster, run the following co
     ```bash
     minikube addons enable ingress
     ```
-3. Deploy the application with helm
+3. Go into the top level of the GitHub repo. Deploy the application with helm
     ```bash
     helm install supabase -f values.dev.yaml ../vendors/supabase-kubernetes/charts/supabase
     ```
