@@ -181,3 +181,5 @@ cython_debug/
 # Encryption-related files
 *.decrypted.yaml
 keys.asc
+
+.cxx/
