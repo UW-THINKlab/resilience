@@ -31,7 +31,7 @@ class _ResourceTypeFilterState extends State<ResourceTypeFilter> {
     final resourceTypesStrings = widget.resourceTypes.map((e) => e.name).toList();
     final list = (widget.includeAll) ? ['All', ...resourceTypesStrings] : resourceTypesStrings;
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: DropdownMenu<String>(
         width: 200,
         label: const Text(ResourceStrings.selectResourceType),

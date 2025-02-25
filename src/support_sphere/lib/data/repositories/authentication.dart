@@ -68,7 +68,7 @@ class AuthenticationRepository {
       String token = session.accessToken;
       Map<String, dynamic> decodedToken = Jwtdecode(token);
       String userRole = decodedToken['user_role'] ?? defaultReturn;
-      print("User role: ${userRole}");
+      print("User role: $userRole");
       return userRole;
     }
     return defaultReturn;

@@ -8,7 +8,7 @@ import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 class ManageResourceCard extends StatefulWidget {
   final Resource resource;
 
-  const ManageResourceCard({Key? key, required this.resource}) : super(key: key);
+  const ManageResourceCard({super.key, required this.resource});
 
   @override
   _ResourceCardState createState() => _ResourceCardState();
@@ -43,11 +43,11 @@ class _ResourceCardState extends State<ManageResourceCard> {
                   //   value: _isSelected,
                   //   onChanged: (value) => _toggleSelection(value),
                   // ),
-                  Container(
+                  SizedBox(
                     width: 200,
                     child: Text(
                       resourceName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -103,7 +103,7 @@ class _ResourceCardState extends State<ManageResourceCard> {
                     linkColor: Colors.blue,
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -121,7 +121,7 @@ class _ResourceCardState extends State<ManageResourceCard> {
                   ),
                   onPressed: () {
                   context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
-                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
+                }, child: const Text("Delete", style: TextStyle(color: Colors.white)))
               ],
             ),
           ),

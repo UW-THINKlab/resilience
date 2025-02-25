@@ -1,4 +1,3 @@
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,11 +30,11 @@ class ResourceCard extends StatelessWidget {
                 //   value: _isSelected,
                 //   onChanged: (value) => _toggleSelection(value),
                 // ),
-                Container(
+                SizedBox(
                   width: 200,
                   child: Text(
                     resourceName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -80,7 +79,7 @@ class ResourceCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              _INeedThisButton(),
+              const _INeedThisButton(),
               const SizedBox(width: 8),
               _IHaveThisButton(resource: resource),
             ],
@@ -92,7 +91,7 @@ class ResourceCard extends StatelessWidget {
 }
 
 class _INeedThisButton extends StatelessWidget {
-  const _INeedThisButton({Key? key}) : super(key: key);
+  const _INeedThisButton();
 
   final String _buttonText = 'I need this';
 
@@ -112,7 +111,7 @@ class _INeedThisButton extends StatelessWidget {
 }
 
 class _IHaveThisButton extends StatelessWidget {
-  const _IHaveThisButton({Key? key, required this.resource}) : super(key: key);
+  const _IHaveThisButton({required this.resource});
 
   final String _buttonText = 'I have this';
   final Resource resource;
@@ -121,7 +120,7 @@ class _IHaveThisButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
-        void _onPressed() {
+        void onPressed() {
           context.read<ResourceCubit>().selectedResourceChanged(resource);
           context.read<ResourceCubit>().currentNavChanged(ResourceNav.addToResourceInventory);
         }
@@ -130,7 +129,7 @@ class _IHaveThisButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blueAccent
           ),
-          onPressed: (state.mode == AppModes.normal) ? _onPressed : null,
+          onPressed: (state.mode == AppModes.normal) ? onPressed : null,
           child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
         );
       },

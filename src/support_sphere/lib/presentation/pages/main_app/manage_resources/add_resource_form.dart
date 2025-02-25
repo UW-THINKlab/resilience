@@ -78,7 +78,7 @@ class AddResourceFormData extends Equatable {
 }
 
 class AddResourceForm extends StatefulWidget {
-  AddResourceForm(
+  const AddResourceForm(
       {super.key, this.resourceTypes, this.resources, this.onCancel});
 
   final List<ResourceTypes>? resourceTypes;
@@ -91,7 +91,7 @@ class AddResourceForm extends StatefulWidget {
 
 class _AddResourceFormState extends State<AddResourceForm> {
   final _formKey = GlobalKey<FormState>();
-  AddResourceFormData _formData = AddResourceFormData();
+  AddResourceFormData _formData = const AddResourceFormData();
 
   @override
   Widget build(BuildContext context) {

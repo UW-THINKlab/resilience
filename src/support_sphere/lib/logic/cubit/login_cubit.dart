@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
 import 'package:formz/formz.dart';
-import 'package:support_sphere/utils/form_validation.dart';
 
 part 'login_state.dart';
 
@@ -21,7 +20,9 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
+  @override
   void setValid() => emit(state.copyWith(isValid: true));
+  @override
   void setInvalid() => emit(state.copyWith(isValid: false));
 
   bool isLoginButtonEnabled() {

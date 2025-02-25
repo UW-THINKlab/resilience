@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
@@ -9,10 +8,7 @@ import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/presentation/components/container_card.dart';
-import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/presentation/components/resource_card.dart';
-import 'package:support_sphere/presentation/components/resource_search_bar.dart';
-import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/add_to_inventory_form.dart';
 
 class ResourceBody extends StatelessWidget {
@@ -57,9 +53,9 @@ class ResourceBody extends StatelessWidget {
                 ],
               );
             case ResourceNav.addToResourceInventory:
-              return AddToResourceView();
+              return const AddToResourceView();
             case ResourceNav.savedResourceInventory:
-              return AddToResourceThankYou();
+              return const AddToResourceThankYou();
             case ResourceNav.requestResource:
               // TODO: Handle this case.
               return const SizedBox();
@@ -174,7 +170,7 @@ class AddToResourceView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Back button
-                AllResourcesButton(),
+                const AllResourcesButton(),
 
                 /// Form card
                 Expanded(
@@ -329,7 +325,7 @@ class UserResourcesTab extends StatelessWidget {
                       const SizedBox(width: 8),
                       Row(
                         children: [
-                          FaIcon(FontAwesomeIcons.calendar, size: 15),
+                          const FaIcon(FontAwesomeIcons.calendar, size: 15),
                           const SizedBox(width: 4),
                           Text(
                               ResourceStrings.addedOnDate(userResource.addedDate!),),

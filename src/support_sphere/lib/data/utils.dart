@@ -27,6 +27,6 @@ Map<String, dynamic> Jwtdecode(String token) {
     // Return the decoded payload
     return decodedPayload;
   } catch (error) {
-    throw FormatException('Invalid payload');
+    throw const FormatException('Invalid payload');
   }
 }

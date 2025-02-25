@@ -70,7 +70,7 @@ class AddToInventoryForm extends StatefulWidget {
 
 class _AddToInventoryFormState extends State<AddToInventoryForm> {
   final _formKey = GlobalKey<FormState>();
-  AddToInventoryFormData _formData = AddToInventoryFormData();
+  AddToInventoryFormData _formData = const AddToInventoryFormData();
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +163,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                         .read<ResourceCubit>()
                         .currentNavChanged(ResourceNav.savedResourceInventory);
                   }
-                }, child: Text("Save Item")),
+                }, child: const Text("Save Item")),
                 const SizedBox(width: 4),
                 ElevatedButton(
                     onPressed: () {
@@ -171,7 +171,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                           .read<ResourceCubit>()
                           .currentNavChanged((ResourceNav.showAllResources));
                     },
-                    child: Text("Cancel")),
+                    child: const Text("Cancel")),
               ],
             ),
           ],

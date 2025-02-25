@@ -11,7 +11,7 @@ class Household extends Equatable {
     this.notes = '',
     this.pets = '',
     this.accessibility_needs = '',
-    this.houseHoldMembers = null,
+    this.houseHoldMembers,
   });
 
   /// The current user's id, which matches the auth user id

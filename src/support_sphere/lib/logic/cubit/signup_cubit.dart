@@ -5,7 +5,6 @@ import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:formz/formz.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/logic/cubit/utils.dart';
-import 'package:support_sphere/utils/form_validation.dart';
 
 part 'signup_state.dart';
 
@@ -24,7 +23,7 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   }
 
   void emailChanged(String value) {
-    emit(state.copyWith(email: value));    
+    emit(state.copyWith(email: value));
   }
 
   void passwordChanged(String value) {
@@ -40,7 +39,9 @@ class SignupCubit extends Cubit<SignupState> implements ValidatableCubit {
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
+  @override
   void setValid() => emit(state.copyWith(isValid: true));
+  @override
   void setInvalid() => emit(state.copyWith(isValid: false));
 
   bool isSignupButtonEnabled() {
