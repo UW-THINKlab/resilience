@@ -25,9 +25,9 @@ class AuthSelect extends StatelessWidget {
             case AuthenticationStatus.unauthenticated:
               /// If the user is not authenticated, display the onboarding flow
               return const OnboardingFlow();
-            default:
+            //default:
               /// If the user's authentication status is unknown, display the onboarding flow
-              return const OnboardingFlow();
+            //  return const OnboardingFlow();
           }
         },
       ),

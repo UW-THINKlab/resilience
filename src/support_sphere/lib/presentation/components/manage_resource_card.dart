@@ -15,13 +15,13 @@ class ManageResourceCard extends StatefulWidget {
 }
 
 class _ResourceCardState extends State<ManageResourceCard> {
-  bool? _isSelected = false;
-
-  void _toggleSelection(value) {
-    setState(() {
-      _isSelected = value;
-    });
-  }
+  // UNUSED
+  // bool? _isSelected = false;
+  // void _toggleSelection(value) {
+  //   setState(() {
+  //     _isSelected = value;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

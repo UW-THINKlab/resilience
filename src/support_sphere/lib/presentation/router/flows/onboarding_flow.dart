@@ -18,8 +18,8 @@ List<Page> onGeneratePages(OnboardingSteps step, List<Page<dynamic>> pages) {
         return [Landing.page(), Signup.page(), Login.page()];
       case OnboardingSteps.signup:
         return [Login.page(), Signup.page()];
-      default:
-        return [Landing.page()];
+      //default:
+      //  return [Landing.page()];
     }
 }
 

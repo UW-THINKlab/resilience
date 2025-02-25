@@ -217,7 +217,7 @@ class _HouseholdInformation extends StatelessWidget {
         String accessibilityNeeds = household?.accessibility_needs ?? '';
         List<Person?> householdMembers =
             household?.houseHoldMembers?.members ?? [];
-        List<String> members = householdMembers.map((person) {
+        householdMembers.map((person) {
           String givenName = person?.givenName ?? '';
           String familyName = person?.familyName ?? '';
           String fullName = '$givenName $familyName';

@@ -1,3 +1,5 @@
+@Skip('TODO: Ignore test.. need to have supabase instance running')
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 
@@ -17,10 +19,9 @@ void main() {
   // Refer: https://docs.flutter.dev/cookbook/testing/unit/introduction#5-combine-multiple-tests-in-a-group
 
   group('AuthService SignUp Code Validation Tests', () {
-    // TODO: Ignore test.. need to have supabase instance running
-    // test('isSignupCodeValid returns false for invalid code', () async {
-    //   final result = await authService.isSignupCodeValid('INVALID');
-    //   expect(result == null, isFalse);
-    // });
+    test('isSignupCodeValid returns false for invalid code', () async {
+      final result = await authService.isSignupCodeValid('INVALID');
+      expect(result == null, isFalse);
+    });
   });
 }
