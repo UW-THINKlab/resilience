@@ -141,10 +141,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: "28a712df2576b63c6c005c465989a348604960c0958d28be5303ba9baa841ac2"
+      sha256: "8b158ab94ec6913e480dc3f752418348b5ae099eb75868b5f4775f0572999c61"
       url: "https://pub.dev"
     source: hosted
-    version: "8.9.3"
+    version: "8.9.4"
   characters:
     dependency: transitive
     description:
@@ -298,10 +298,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_form_builder
-      sha256: "375da52998c72f80dec9187bd93afa7ab202b89d5d066699368ff96d39fd4876"
+      sha256: "60237a24a4da373218eb77b0ef1a3c64ca17ff6c42250e149987755735cbd67c"
       url: "https://pub.dev"
     source: hosted
-    version: "9.7.0"
+    version: "10.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -319,10 +319,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_map
-      sha256: "82786b8e1ffbff079487eeeed59a34e8a0b09896dd7713d8e1dc193d673496b5"
+      sha256: bbf145e8220531f2f727608c431871c7457f3b134e513543913afd00fdc1cd47
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.0"
+    version: "8.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -369,10 +369,10 @@ packages:
     dependency: transitive
     description:
       name: functions_client
-      sha256: "61597ed93be197b1be6387855e4b760e6aac2355fcfc4df6d20d2b4579982158"
+      sha256: a49876ebae32a50eb62483c5c5ac80ed0d8da34f98ccc23986b03a8d28cee07c
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   geodesy:
     dependency: "direct main"
     description:
@@ -817,10 +817,10 @@ packages:
     dependency: transitive
     description:
       name: realtime_client
-      sha256: "1bfcb7455fdcf15953bf18ac2817634ea5b8f7f350c7e8c9873141a3ee2c3e9c"
+      sha256: e3089dac2121917cc0c72d42ab056fea0abbaf3c2229048fc50e64bafc731adf
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.2"
   retry:
     dependency: transitive
     description:
@@ -958,10 +958,10 @@ packages:
     dependency: transitive
     description:
       name: storage_client
-      sha256: d80d34f0aa60e5199646bc301f5750767ee37310c2ecfe8d4bbdd29351e09ab0
+      sha256: "9f9ed283943313b23a1b27139bb18986e9b152a6d34530232c702c468d98e91a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.1"
   stream_channel:
     dependency: transitive
     description:
@@ -990,18 +990,18 @@ packages:
     dependency: transitive
     description:
       name: supabase
-      sha256: "270f63cd87a16578fee87e40cbf61062e8cdbce68d5e723e665f4651d70ddd8c"
+      sha256: c3ebddba69ddcf16d8b78e8c44c4538b0193d1cf944fde3b72eb5b279892a370
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.2"
+    version: "2.6.3"
   supabase_flutter:
     dependency: "direct main"
     description:
       name: supabase_flutter
-      sha256: ca8dfe3d4b109e7338cdf7778f3ec2c660a0178006876bfac343eb39b0f3d1e3
+      sha256: "3b5b5b492e342f63f301605d0c66f6528add285b5744f53c9fd9abd5ffdbce5b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.3"
+    version: "2.8.4"
   term_glyph:
     dependency: transitive
     description:
@@ -1196,4 +1196,4 @@ packages:
     version: "2.0.3"
 sdks:
   dart: ">=3.7.0 <4.0.0"
-  flutter: ">=3.27.0"
+  flutter: ">=3.29.0"
