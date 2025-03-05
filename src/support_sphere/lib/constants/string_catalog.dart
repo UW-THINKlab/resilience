@@ -177,6 +177,7 @@ class AppRoles {
 class NavRouteLabels {
   static const String home = 'Home';
   static const String profile = 'Me';
+  static const String chat = 'Chat';
   static const String prepare = 'Prepare';
   static const String resources = 'Resources';
   static const String manageResources = 'Manage Resources';
