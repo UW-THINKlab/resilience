@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/presentation/pages/chat/chat_body.dart';
+import 'package:support_sphere/presentation/pages/chat/pages/rooms.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
@@ -30,7 +30,7 @@ class AppNavigation {
       const AppRoute(
           icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(
-        icon: Icon(Ionicons.chatbox), label: NavRouteLabels.chat, body: ChatBody()),
+        icon: Icon(Ionicons.chatbox), label: NavRouteLabels.chat, body: RoomsPage()),
       const AppRoute(
           icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),
