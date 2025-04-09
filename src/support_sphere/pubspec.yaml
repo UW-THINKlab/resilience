@@ -61,7 +61,15 @@ dependencies:
   latlong2: ^0.9.0
   geodesy: ^0.10.2
   geolocator: ^13.0.2
-
+  flutter_supabase_chat_core: ^1.5.0
+  flutter_chat_types: ^3.6.2
+  flutter_chat_ui: ^1.6.15
+  file_picker: ^8.3.1
+  file_saver: ^0.2.14
+  image_picker: ^1.1.2
+  infinite_scroll_pagination: ^4.1.0
+  open_filex: ^4.6.0
+  timeago: ^3.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
