@@ -60,7 +60,7 @@ dependencies:
   flutter_map: ^8.1.1
   latlong2: ^0.9.0
   geodesy: ^0.10.2
-  geolocator: ^13.0.4
+  geolocator: ^14.0.0
 
 dev_dependencies:
   flutter_test:
