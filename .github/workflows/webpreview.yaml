@@ -26,10 +26,10 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: '3.24.5'
+        flutter-version: '3.29.2'
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
-    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+    - run: flutter build web --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
 
     - name: Deploy Website Preview
       if: always()
@@ -47,4 +47,4 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      timeout-minutes: 1
+      timeout-minutes: 3
