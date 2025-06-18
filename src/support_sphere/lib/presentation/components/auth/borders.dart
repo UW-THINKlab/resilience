@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-border(BuildContext context) {
+OutlineInputBorder border(BuildContext context) {
   return const OutlineInputBorder(
     borderRadius: BorderRadius.all(
       Radius.circular(30.0),
@@ -12,7 +12,7 @@ border(BuildContext context) {
   );
 }
 
-focusBorder(BuildContext context) {
+OutlineInputBorder focusBorder(BuildContext context) {
   return OutlineInputBorder(
     borderRadius: const BorderRadius.all(
       Radius.circular(30.0),

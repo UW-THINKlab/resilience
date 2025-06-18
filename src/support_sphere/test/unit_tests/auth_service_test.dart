@@ -1,14 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:support_sphere/data/services/auth_service.dart';
 
 
 void main() {
 
-  late AuthService authService;
 
   // This is the parent level setUp() function that runs before each test defined in this class.
   setUp(() {
-    authService = AuthService();
   });
 
   // A group is used to scope together tests having similar description, and

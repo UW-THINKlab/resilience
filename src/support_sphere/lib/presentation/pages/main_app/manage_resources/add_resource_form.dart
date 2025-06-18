@@ -44,7 +44,7 @@ class AddResourceFormData extends Equatable {
         resourceType
       ];
 
-  copyWith({
+  AddResourceFormData copyWith({
     String? nameOfResource,
     int? totalNumberNeeded,
     int? numberAvailable,
@@ -78,7 +78,7 @@ class AddResourceFormData extends Equatable {
 }
 
 class AddResourceForm extends StatefulWidget {
-  AddResourceForm(
+  const AddResourceForm(
       {super.key, this.resourceTypes, this.resources, this.onCancel});
 
   final List<ResourceTypes>? resourceTypes;

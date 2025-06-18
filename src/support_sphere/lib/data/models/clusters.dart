@@ -19,7 +19,7 @@ class Cluster extends Equatable {
   @override
   List<Object?> get props => [id, name, meetingPlace, captains];
 
-  copyWith({
+  Cluster copyWith({
     String? id,
     String? name,
     String? meetingPlace,

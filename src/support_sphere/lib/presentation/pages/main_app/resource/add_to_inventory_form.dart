@@ -31,7 +31,7 @@ class AddToInventoryFormData extends Equatable {
         notes,
       ];
 
-  copyWith({
+  AddToInventoryFormData copyWith({
     String? resourceId,
     int? quantity,
     // String? subtype,

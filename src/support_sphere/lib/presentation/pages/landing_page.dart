@@ -33,7 +33,7 @@ const LandingView({ super.key });
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Login button
-              Container(
+              SizedBox(
                 height: 45.0,
                 width: 130.0,
                 child: ElevatedButton(

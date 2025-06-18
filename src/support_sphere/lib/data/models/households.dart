@@ -11,7 +11,7 @@ class Household extends Equatable {
     this.notes = '',
     this.pets = '',
     this.accessibility_needs = '',
-    this.houseHoldMembers = null,
+    this.houseHoldMembers,
   });
 
   /// The current user's id, which matches the auth user id
@@ -27,7 +27,7 @@ class Household extends Equatable {
   @override
   List<Object?> get props => [id, name, address, notes, pets, accessibility_needs, houseHoldMembers, cluster_id];
 
-  copyWith({
+  Household copyWith({
     String? id,
     String? name,
     String? address,

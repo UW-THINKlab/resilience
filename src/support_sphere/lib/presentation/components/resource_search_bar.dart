@@ -5,7 +5,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 class ResourceSearchBar extends StatefulWidget {
   final void Function(String)? onQueryChanged;
 
-  const ResourceSearchBar({Key? key, this.onQueryChanged}) : super(key: key);
+  const ResourceSearchBar({super.key, this.onQueryChanged});
 
   @override
   _SearchBarState createState() => _SearchBarState();

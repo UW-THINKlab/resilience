@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -21,7 +23,9 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
   }
 
   void toggleShowPassword() => changeShowPassword(emit, state);
+  @override
   void setValid() => emit(state.copyWith(isValid: true));
+  @override
   void setInvalid() => emit(state.copyWith(isValid: false));
 
   bool isLoginButtonEnabled() {
