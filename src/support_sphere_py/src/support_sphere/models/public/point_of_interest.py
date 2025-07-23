@@ -1,7 +1,30 @@
 import uuid
-from support_sphere.models.base import BasePublicSchemaModel
-from sqlmodel import Field
+
+from sqlmodel import Field, Relationship
 from geoalchemy2 import Geometry
+
+from support_sphere.models.base import BasePublicSchemaModel
+
+
+class PointOfInterestType(BasePublicSchemaModel, table=True):
+    """
+    Represents a point-of-interest type entity in the 'public' schema under the 'point_of_interest_types' table.
+    This model stores types of resources, and each resource type can have associated tags.
+
+    Attributes
+    ----------
+    id : uuid
+        The unique identifier for the resource type.
+    name : str
+        The name of the point-of-interest type. It is a required field, meaning it cannot be nullable.
+    icon : str
+        The icon associated with the point-of-interest type. It is a required field, meaning it cannot be nullable.
+    """
+    __tablename__ = "point_of_interest_types"
+
+    id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str|None = Field(nullable=False)
+    icon: str|None = Field(nullable=False)
 
 
 class PointOfInterest(BasePublicSchemaModel, table=True):
@@ -26,3 +49,4 @@ class PointOfInterest(BasePublicSchemaModel, table=True):
     name: str | None = Field(nullable=False)
     address: str | None = Field(nullable=False)
     geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
+    point_type: "PointOfInterestType" = Relationship(back_populates="resources", cascade_delete=False)

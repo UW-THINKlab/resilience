@@ -99,6 +99,7 @@ cmd = [
   "vendors/supabase-kubernetes/charts/supabase",
   "--install",
   "--wait",
+  "--debug",
   "--cleanup-on-fail",
   "--values",
   "deployment/values.dev.yaml",
@@ -175,9 +176,9 @@ ruby = ">=3.3.3,<3.4"
 
 # Flutter tasks
 [feature.frontend.tasks.flutter-run]
-cmd = "flutter run"
+cmd = "flutter run --dart-define-from-file=../../.env -d chrome"
 cwd = "src/support_sphere"
-depends-on = ["flutter-devices", "flutter-get"]
+#depends-on = ["flutter-devices", "flutter-get"]
 
 [feature.frontend.tasks.flutter-get]
 cmd = "flutter pub get"
