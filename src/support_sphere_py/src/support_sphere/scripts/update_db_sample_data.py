@@ -2,6 +2,7 @@ import csv
 import datetime
 import uuid
 import time
+from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
 import typer
 import json
 
@@ -9,7 +10,7 @@ from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
                                           RolePermission, UserRole, UserCaptainCluster, SignupCode,
-                                          ResourceType, ResourceCV, Resource, Checklist, ChecklistStep, 
+                                          ResourceType, ResourceCV, Resource, Checklist, ChecklistStep,
                                           ChecklistStepsOrder, Frequency)
 from support_sphere.models.auth import User
 from support_sphere.repositories.auth import UserRepository
@@ -140,6 +141,7 @@ def populate_checklists():
             BaseRepository.add(step)
             step_order = ChecklistStepsOrder(checklist_id=checklist.id, checklist_step_id=step.id, priority=idx)
             BaseRepository.add(step_order)
+
 
 @db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():
@@ -296,6 +298,30 @@ def setup_user_details():
     update_user_permissions_roles_by_cluster()
 
 
+@db_init_app.command(help="Setup the datebase with points of interest and supporting types")
+def setup_points_of_interest():
+    populate_point_of_interest_types()
+    populate_points_of_interest()
+
+
+def populate_point_of_interest_types():
+    file_path = DATA_DIRECTORY / 'point_types.csv'
+    with file_path.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            point = PointOfInterestType(name=row['name'], geom=row['geom'], point_type=['point_type'])
+            BaseRepository.add(point)
+
+
+def populate_points_of_interest():
+    file_path = DATA_DIRECTORY / 'point_of_interests.csv'
+    with file_path.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            point_type = PointOfInterestType(name=row['name'], icon=row['icon'])
+            BaseRepository.add(point_type)
+
+
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")
 def test_app_mode_change():
     test_app_mode_status_update()
@@ -318,6 +344,9 @@ def run_all():
 
     # Setup utility resources to be shared during emergency
     setup_utility_resources()
+
+    # Setup points-of-interest and types
+    setup_points_of_interest()
 
     # Sanity check app mode update
     test_app_mode_change()
