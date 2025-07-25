@@ -7,7 +7,7 @@ from support_sphere.models.public.household import Household
 from support_sphere.models.public.operational_event import OperationalEvent
 from support_sphere.models.public.people import People
 from support_sphere.models.public.people_group import PeopleGroup
-from support_sphere.models.public.point_of_interest import PointOfInterest
+from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
 from support_sphere.models.public.resource import Resource
 from support_sphere.models.public.resource_subtype_tag import ResourceSubtypeTag
 from support_sphere.models.public.resource_tag import ResourceTag
@@ -37,6 +37,7 @@ __all__ = [
     "People",
     "PeopleGroup",
     "PointOfInterest",
+    #"PointOfInterestType",
     "Resource",
     "ResourceSubtypeTag",
     "ResourceTag",

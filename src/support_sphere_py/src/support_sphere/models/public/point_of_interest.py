@@ -48,5 +48,5 @@ class PointOfInterest(BasePublicSchemaModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str | None = Field(nullable=False)
     address: str | None = Field(nullable=False)
-    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
-    point_type: "PointOfInterestType" = Relationship(back_populates="resources", cascade_delete=False)
+    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POINT"), nullable=True)
+    # FIXME point_type: "PointOfInterestType" = Relationship(back_populates="resources", cascade_delete=False)

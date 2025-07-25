@@ -13,7 +13,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "support-sphere-py"
-version = "0.0.12"
+version = "0.0.20"
 description = "Package for support sphere api service"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -29,13 +29,14 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "sqlmodel>=0.0.21,<0.1",
-    "supabase>=2.6.0,<2.7",
-    "psycopg2-binary>=2.9.9,<3",
-    "fastapi[standard]>=0.111.0",
-    "uvicorn>=0.30.6",
-    "geoalchemy2>=0.15.2",
+    "sqlmodel",
+    "supabase",
+    "psycopg2-binary",
+    "fastapi[standard]",
+    "uvicorn",
+    "geoalchemy2",
     "typer",
+    "shapely>=2.1.1",
 ]
 
 [project.license]
@@ -49,4 +50,3 @@ packages = ["src/support_sphere"]
 
 [project.scripts]
 support_sphere = "support_sphere.scripts.cli_app:app"
-

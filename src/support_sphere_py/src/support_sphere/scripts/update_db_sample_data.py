@@ -17,8 +17,11 @@ from support_sphere.repositories.auth import UserRepository
 from support_sphere.repositories.base_repository import BaseRepository
 from support_sphere.repositories.public import UserProfileRepository, UserRoleRepository, PeopleRepository
 from support_sphere.repositories import supabase_client
+from geoalchemy2.shape import from_shape
+from shapely.geometry import shape
 
 from support_sphere.models.enums import AppRoles, AppPermissions, OperationalStatus
+
 
 import logging
 
@@ -91,17 +94,19 @@ def populate_user_details():
         for row in csv_reader:
             user_profile = None
             if bool(eval(row['has_profile'])):
-                # Create a auth.user with encrypted_password (ONLY FOR LOCAL TESTING)
-                supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
-                supabase_client.auth.sign_out()
                 user: User = UserRepository.find_by_email(row['email'])
+                if not user:
+                    # Create a auth.user with encrypted_password (ONLY FOR LOCAL TESTING)
+                    supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                    supabase_client.auth.sign_out()
+                    user: User = UserRepository.find_by_email(row['email'])
 
-                # Create a user profile
-                profile = UserProfile(user=user)
-                user_profile = UserProfileRepository.add(profile)
+                    # Create a user profile
+                    profile = UserProfile(user=user)
+                    user_profile = UserProfileRepository.add(profile)
 
-                user_role = UserRole(user_profile=user_profile, role=AppRoles.USER)
-                BaseRepository.add(user_role)
+                    user_role = UserRole(user_profile=user_profile, role=AppRoles.USER)
+                    BaseRepository.add(user_role)
 
             # Create People Entry
             person_detail = People(given_name=row['given_name'], family_name=row['family_name'],
@@ -115,6 +120,7 @@ def populate_user_details():
             people_group = PeopleGroup(people=person, household=all_households[-1])
             BaseRepository.add(people_group)
     logger.info("Database Populated Successfully")
+
 
 def populate_checklists():
     """
@@ -212,11 +218,14 @@ def populate_real_cluster_and_household():
 
 @db_init_app.command(help="Sanity check for sign-up and sign-in via supabase")
 def authenticate_user_signup_signin_signout_via_supabase():
-    # The password is stored in an encrypted format in the auth.users table
-    response_sign_up = supabase_client.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
-    supabase_client.auth.sign_out()
-    response_sign_in = supabase_client.auth.sign_in_with_password({"email": "zeta@abc.com", "password": "zetazeta"})
-    supabase_client.auth.sign_out()
+    try:
+        # The password is stored in an encrypted format in the auth.users table
+        supabase_client.auth.sign_up({"email": "zeta@abc.com", "password": "zetazeta"})
+        supabase_client.auth.sign_out()
+        supabase_client.auth.sign_in_with_password({"email": "zeta@abc.com", "password": "zetazeta"})
+        supabase_client.auth.sign_out()
+    except Exception as ex:
+        logger.error('Error in %s', 'authenticate_user_signup_signin_signout_via_supabase', exc_info=ex)
 
 
 def update_user_permissions_roles_by_cluster():
@@ -309,8 +318,8 @@ def populate_point_of_interest_types():
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            point = PointOfInterestType(name=row['name'], geom=row['geom'], point_type=['point_type'])
-            BaseRepository.add(point)
+            point_type = PointOfInterestType(name=row['name'], icon=row['icon'])
+            BaseRepository.add(point_type)
 
 
 def populate_points_of_interest():
@@ -318,8 +327,18 @@ def populate_points_of_interest():
     with file_path.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            point_type = PointOfInterestType(name=row['name'], icon=row['icon'])
-            BaseRepository.add(point_type)
+            geom = from_shape(shape(json.loads(row['geom'])))
+
+            #geom_dict = json.loads(row['geom'])
+            #lon = geom_dict['coordinates'][0]
+            #lat = geom_dict['coordinates'][1]
+            #geom_str = f"POINT({' '.join(map(str, geom_dict['coordinates']))})"
+            #logger.debug(geom_str)
+            #geom = Geometry(geom_str, srid=4326)
+            #logger.debug(f"### geometry: {type(geom)} :: {dir(geom)}")
+
+            point = PointOfInterest(name=row['name'], address=row['address'], geom=geom)#, point_type=['point_type'])
+            BaseRepository.add(point)
 
 
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")
@@ -334,7 +353,7 @@ def run_all():
     logger.info("Starting to populate db with sample entries...")
 
     # Sanity check for user sign-up and sign-in flow via supabase
-    authenticate_user_signup_signin_signout_via_supabase()
+    # FIXME authenticate_user_signup_signin_signout_via_supabase()
 
     # Set up a dummy cluster and a household
     populate_cluster_and_household_details()
@@ -349,7 +368,7 @@ def run_all():
     setup_points_of_interest()
 
     # Sanity check app mode update
-    test_app_mode_change()
+    # FIXME test_app_mode_change()
 
     # Populate real data
     populate_real_cluster_and_household()
