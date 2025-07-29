@@ -1,7 +1,7 @@
 import uuid
 from support_sphere.models.base import BasePublicSchemaModel
 from sqlmodel import Field
-from geoalchemy2 import Geometry
+from geoalchemy2 import WKBElement, Geometry
 
 
 class PointOfInterest(BasePublicSchemaModel, table=True):
@@ -25,4 +25,4 @@ class PointOfInterest(BasePublicSchemaModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str | None = Field(nullable=False)
     address: str | None = Field(nullable=False)
-    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
+    geom: WKBElement|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
