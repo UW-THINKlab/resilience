@@ -1,7 +1,7 @@
 import uuid
 
 from sqlmodel import Field, Relationship
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, WKBElement
 
 from support_sphere.models.base import BasePublicSchemaModel
 
@@ -22,9 +22,9 @@ class PointOfInterestType(BasePublicSchemaModel, table=True):
     """
     __tablename__ = "point_of_interest_types"
 
-    id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
-    name: str|None = Field(nullable=False)
-    icon: str|None = Field(nullable=False)
+    #id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(nullable=False, primary_key=True)
+    icon: str = Field(nullable=False)
 
 
 class PointOfInterest(BasePublicSchemaModel, table=True):
@@ -48,5 +48,6 @@ class PointOfInterest(BasePublicSchemaModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str | None = Field(nullable=False)
     address: str | None = Field(nullable=False)
-    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POINT"), nullable=True)
-    # FIXME point_type: "PointOfInterestType" = Relationship(back_populates="resources", cascade_delete=False)
+    geom: WKBElement|None = Field(sa_type=Geometry(geometry_type="POINT"), nullable=True)
+    point_type_name: str = Field(foreign_key="public.point_of_interest_types.name", nullable=False)
+    point_type: PointOfInterestType = Relationship(cascade_delete=False)

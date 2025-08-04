@@ -328,16 +328,11 @@ def populate_points_of_interest():
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             geom = from_shape(shape(json.loads(row['geom'])))
-
-            #geom_dict = json.loads(row['geom'])
-            #lon = geom_dict['coordinates'][0]
-            #lat = geom_dict['coordinates'][1]
-            #geom_str = f"POINT({' '.join(map(str, geom_dict['coordinates']))})"
-            #logger.debug(geom_str)
-            #geom = Geometry(geom_str, srid=4326)
-            #logger.debug(f"### geometry: {type(geom)} :: {dir(geom)}")
-
-            point = PointOfInterest(name=row['name'], address=row['address'], geom=geom)#, point_type=['point_type'])
+            point = PointOfInterest(
+                name=row['name'],
+                address=row['address'],
+                geom=geom,
+                point_type_name=row['type'])
             BaseRepository.add(point)
 
 
