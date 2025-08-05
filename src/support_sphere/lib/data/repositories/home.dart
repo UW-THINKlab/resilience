@@ -2,15 +2,20 @@ import 'package:geodesy/geodesy.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
+import 'package:support_sphere/data/services/poi_service.dart';
+import 'package:support_sphere/data/models/point_of_interest.dart';
+
 
 class HomeRepository {
   final ClusterService _clusterService = ClusterService();
+  final PointOfInterestService _poiService = PointOfInterestService();
 
   // get all required data for displaying map on home page
   Future<
       ({
         List<CaptainMarker>? captainMarkers,
         Cluster? cluster,
+        List<PointOfInterest>? pointsOfInterest,
       })?> getHomeData(String userProfileId) async {
     final clusterData =
         await _clusterService.getClusterIdByUserProfileId(userProfileId);
@@ -24,6 +29,8 @@ class HomeRepository {
         await _clusterService.getCaptainsByClusterId(clusterId);
     final captains =
         captainsData?.map((row) => row['captain']['user_profile']['person']);
+
+    final pointsOfInterest = await _poiService.getPointsOfInterest();
 
     return (
       captainMarkers: captains
@@ -40,6 +47,7 @@ class HomeRepository {
               ))
           .toList(),
       cluster: userCluster != null ? Cluster.fromJson(userCluster) : null,
+      pointsOfInterest: pointsOfInterest,
     );
   }
 }

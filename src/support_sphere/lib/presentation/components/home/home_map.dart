@@ -3,6 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
+import 'package:support_sphere/data/models/point_of_interest.dart';
+
+import 'dart:developer' as dev;
 
 class HomeMap extends StatelessWidget {
   final MapController mapController;
@@ -10,6 +13,7 @@ class HomeMap extends StatelessWidget {
   final LatLng initMapCentroid;
   final double initZoomLevel;
   final List<CaptainMarker>? captainMarkers;
+  final List<PointOfInterest>? pointsOfInterest;
   final VoidCallback? onMapReady;
 
   const HomeMap({
@@ -19,6 +23,7 @@ class HomeMap extends StatelessWidget {
     required this.initMapCentroid,
     required this.initZoomLevel,
     this.captainMarkers,
+    this.pointsOfInterest,
     this.onMapReady,
   });
 
@@ -44,6 +49,7 @@ class HomeMap extends StatelessWidget {
                       context,
                       marker,
                     )),
+            ..._buildPointsOfInterest(),
           ],
         ),
       ],
@@ -63,8 +69,7 @@ class HomeMap extends StatelessWidget {
     );
   }
 
-  Marker _buildCaptainMarker(
-      BuildContext context, CaptainMarker captainMarker) {
+  Marker _buildCaptainMarker(BuildContext context, CaptainMarker captainMarker) {
     return Marker(
       point: captainMarker.householdGeom!,
       width: 40,
@@ -82,5 +87,17 @@ class HomeMap extends StatelessWidget {
 
   void _showCaptainDetails(BuildContext context, CaptainMarker captain) {
     // TODO: implement showing a dialog with captain details
+  }
+
+  List<Marker> _buildPointsOfInterest() {
+    if (pointsOfInterest == null) {
+      return [];
+    }
+    else {
+      var value = [for (var p in pointsOfInterest!) p.marker()];
+      dev.log(value.toString());
+      print(value);
+      return value;
+    }
   }
 }

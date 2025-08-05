@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/point_of_interest.dart';
 
 enum HomeStatus { initial, loading, success, failure }
 
@@ -19,6 +20,7 @@ class HomeState extends Equatable {
     this.initZoomLevel = 17.5,
     this.captainMarkers,
     this.cluster,
+    this.pointsOfInterest,
   });
 
   final HomeStatus status;
@@ -27,6 +29,7 @@ class HomeState extends Equatable {
   final double initZoomLevel;
   final List<CaptainMarker>? captainMarkers;
   final Cluster? cluster;
+  final List<PointOfInterest>? pointsOfInterest;
 
   @override
   List<Object?> get props => [
@@ -36,6 +39,7 @@ class HomeState extends Equatable {
         initZoomLevel,
         captainMarkers,
         cluster,
+        pointsOfInterest,
       ];
 
   HomeState copyWith({
@@ -45,6 +49,7 @@ class HomeState extends Equatable {
     double? initZoomLevel,
     List<CaptainMarker>? captainMarkers,
     Cluster? cluster,
+    List<PointOfInterest>? pointsOfInterest,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -53,6 +58,7 @@ class HomeState extends Equatable {
       initZoomLevel: initZoomLevel ?? this.initZoomLevel,
       captainMarkers: captainMarkers ?? this.captainMarkers,
       cluster: cluster ?? this.cluster,
+      pointsOfInterest: this.pointsOfInterest,
     );
   }
 }

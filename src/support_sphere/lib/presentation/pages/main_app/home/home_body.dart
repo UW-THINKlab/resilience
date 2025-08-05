@@ -58,6 +58,7 @@ class _HomeBodyState extends State<HomeBody> {
                       initMapCentroid: state.initMapCentroid,
                       initZoomLevel: state.initZoomLevel,
                       captainMarkers: state.captainMarkers,
+                      pointsOfInterest: state.pointsOfInterest,
                       onMapReady: () {
                         setState(() => _isMapReady = true);
                       },

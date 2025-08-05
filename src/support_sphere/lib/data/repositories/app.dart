@@ -14,7 +14,7 @@ class AppRepository {
       'id': const UuidV4().generate(),
       'created_by': _supabaseClient.auth.currentUser!.id,
       'created_at': DateTime.now().toIso8601String(),
-      'status': operationalStatus,
+      // FIXME removed during debugging 'status': operationalStatus,
     });
   }
 
@@ -25,6 +25,7 @@ class AppRepository {
         .order('created_at', ascending: false)
         .limit(1)
         .map((data) {
+          // FIXME zero index on empty data
           Map<String, dynamic> record = data[0];
           // Parse the data into a OperationalEvent object
           OperationalEvent event = OperationalEvent(

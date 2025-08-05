@@ -63,7 +63,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       }
 
       /// Get the cluster and its captains information
-      Cluster? cluster = household == null 
+      // ignore: unnecessary_null_comparison
+      Cluster? cluster = household == null
         ? null
         : await _userRepository.getClusterById(clusterId: household.cluster_id);
 

@@ -21,9 +21,7 @@ class HomeCubit extends Cubit<HomeState> {
       await loadHomeData();
       await getCurrentLocation();
 
-      emit(state.copyWith(
-        status: HomeStatus.success,
-      ));
+      emit(state.copyWith(status: HomeStatus.success));
     } catch (error) {
       /// TODO: Handle error when getting current location
       emit(state.copyWith(
@@ -41,6 +39,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
         cluster: homeData.cluster,
+        pointsOfInterest: homeData.pointsOfInterest,
       ));
     } catch (error) {
       throw Exception(error);
