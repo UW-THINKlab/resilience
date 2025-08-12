@@ -89,7 +89,7 @@ class AppView extends StatelessWidget {
     );
   }
 
-  ThemeData _buildTheme(brightness) {
+  ThemeData _buildTheme(Brightness brightness) {
     var baseTheme = ThemeData(
       brightness: brightness,
       colorScheme: ColorScheme.fromSeed(

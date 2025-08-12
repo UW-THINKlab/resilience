@@ -8,6 +8,10 @@ import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/components/home/home_header.dart';
 import 'package:support_sphere/presentation/components/home/home_map.dart';
+import 'package:geodesy/geodesy.dart';
+import 'map_location_picker.dart';
+import 'location_picker_view.dart';
+
 
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
@@ -67,6 +71,51 @@ class _HomeBodyState extends State<HomeBody> {
                 ],
               ),
               Positioned(
+                // start edit-mode button
+                left: 16,
+                bottom: 16,
+                child: FloatingActionButton(
+                  // onPressed: () async {
+                  //   final cubit = context.read<HomeCubit>();
+                  //   await cubit.getCurrentLocation();
+
+                  //   if (!mounted) return;
+                  //   _recenterMap(cubit.state);
+                  // },
+                  onPressed: () {
+                    //final cubit = context.read<HomeCubit>();
+                    //await cubit.getCurrentLocation();
+                    // FIXME - get location from map center
+                    const defMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                            builder: (context) =>  LocationPickerPage(
+                              initialLatLong: defMapCentroid,
+                              title: "Mark the meeting place"
+                            )
+                        ))
+                        .then((result) {
+                      if (result != null) {
+                        final locationResult = result as LocationResult;
+                        //location = locationResult.completeAddress;
+                        var latitude = locationResult.latitude;
+                        var longitude = locationResult.longitude;
+                        print("lat=$latitude, long=$longitude");
+                        setState(() {});
+                      }
+                    });
+                  },
+
+                  backgroundColor: Colors.white,
+                  elevation: 2,
+                  child: const Icon(
+                    Ionicons.flag,
+                    color: Colors.black,
+                  ),
+                ),
+              ), // end edit-mode button
+              Positioned(
                 right: 16,
                 bottom: 16,
                 child: FloatingActionButton(
@@ -95,6 +144,7 @@ class _HomeBodyState extends State<HomeBody> {
   void _recenterMap(HomeState state) {
     if (!_isMapReady) return;
 
-    _mapController.move(state.userLocation ?? state.initMapCentroid, state.initZoomLevel);
+    _mapController.move(
+        state.userLocation ?? state.initMapCentroid, state.initZoomLevel);
   }
 }

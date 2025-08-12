@@ -58,7 +58,7 @@ class HomeState extends Equatable {
       initZoomLevel: initZoomLevel ?? this.initZoomLevel,
       captainMarkers: captainMarkers ?? this.captainMarkers,
       cluster: cluster ?? this.cluster,
-      pointsOfInterest: this.pointsOfInterest,
+      pointsOfInterest: pointsOfInterest ?? this.pointsOfInterest,
     );
   }
 }

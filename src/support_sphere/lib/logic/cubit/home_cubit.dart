@@ -36,10 +36,13 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final homeData = await _homeRepository.getHomeData(authUser.uuid);
 
+      var points = homeData?.pointsOfInterest;
+      //print(points);
+
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
         cluster: homeData.cluster,
-        pointsOfInterest: homeData.pointsOfInterest,
+        pointsOfInterest: points,
       ));
     } catch (error) {
       throw Exception(error);
