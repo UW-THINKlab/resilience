@@ -4,8 +4,12 @@ import 'package:latlong2/latlong.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
+import 'package:logging/logging.dart';
 
 import 'dart:developer' as dev;
+
+final log = Logger('HomeMap');
+
 
 class HomeMap extends StatelessWidget {
   final MapController mapController;
@@ -96,7 +100,8 @@ class HomeMap extends StatelessWidget {
     else {
       var value = [for (var p in pointsOfInterest!) p.marker()];
       dev.log(value.toString());
-      print(value);
+      //print(value);
+      log.fine(value.toString());
       return value;
     }
   }

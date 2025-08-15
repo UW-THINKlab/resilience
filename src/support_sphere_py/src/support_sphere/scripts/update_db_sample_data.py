@@ -6,6 +6,7 @@ from support_sphere.models.public.point_of_interest import PointOfInterest, Poin
 import typer
 import json
 
+
 from pathlib import Path
 
 from support_sphere.models.public import (UserProfile, People, Cluster, PeopleGroup, Household,
@@ -152,9 +153,17 @@ def populate_checklists():
 @db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():
     # Creating entries in 'Cluster' and 'Household' table.
+    # load a file of Clusters
+    # name: str|None = Field(nullable=True) < !!!
+    # meeting_place: str|None = Field(nullable=True)
+    # notes: str | None = Field(nullable=True)
+    # geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True) < !!!
+
     cluster = Cluster(name="Cluster1")
     BaseRepository.add(cluster)
+
     all_clusters = BaseRepository.select_all(Cluster)
+
 
     household = Household(cluster=all_clusters[-1], name="Household1")
     BaseRepository.add(household)

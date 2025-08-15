@@ -1,8 +1,7 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geocoding/geocoding.dart';
+//import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 
 /// Change the Map Tiles for OSM
@@ -15,10 +14,10 @@ enum MapType { normal, satelite }
 /// * [placemark] as [Placemark]
 class LocationResult {
   /// the latitude of the picked location
-  double? latitude;
+  LatLng? latLng;
 
   /// the longitude of the picked location
-  double? longitude;
+  //double? longitude;
 
   /// the complete address of the picked location
   String? completeAddress;
@@ -27,22 +26,23 @@ class LocationResult {
   String? locationName;
 
   /// the placemark infomation of the picked location
-  Placemark? placemark;
+  //Placemark? placemark;
 
   LocationResult(
-      {required this.latitude,
-      required this.longitude,
+      {required this.latLng,
+      //required this.longitude,
       required this.completeAddress,
-      required this.placemark,
+      //required this.placemark,
       required this.locationName});
 }
 
 class MapLocationPicker extends StatefulWidget {
-  /// The initial longitude
-  final double? initialLongitude;
+  /// The initial location
+  final LatLng? initialLatLong;
+  //final double? initialLongitude;
 
   /// The initial latitude
-  final double? initialLatitude;
+  //final double? initialLatitude;
 
   /// callback when location is picked
   final Function(LocationResult onPicked) onPicked;
@@ -86,8 +86,8 @@ class MapLocationPicker extends StatefulWidget {
   /// [initialLongitude] the longitude of the initial location
   const MapLocationPicker(
       {super.key,
-      required this.initialLatitude,
-      required this.initialLongitude,
+      required this.initialLatLong,
+      //required this.initialLongitude,
       required this.onPicked,
       this.backgroundColor,
       this.indicatorColor,
@@ -99,18 +99,19 @@ class MapLocationPicker extends StatefulWidget {
       this.leadingIcon,
       this.searchBarDecoration,
       this.myLocationButtonEnabled = true,
-      this.searchBarEnabled = true,
+      this.searchBarEnabled = false,
       this.sideWidget,
       this.customButton,
       this.customFooter,
       this.buttonTextStyle,
-      this.zoomButtonEnabled = true,
+      this.zoomButtonEnabled = false,
       this.initialZoom,
-      this.switchMapTypeEnabled = true,
+      this.switchMapTypeEnabled = false,
       this.mapType,
       this.sideButtonsColor,
       this.sideButtonsIconColor,
-      this.locationNameTextStyle, this.locale});
+      this.locationNameTextStyle,
+      this.locale});
 
   @override
   State<MapLocationPicker> createState() => _MapLocationPickerState();
@@ -121,43 +122,41 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   bool _move = false;
   Timer? _timer;
   final MapController _controller = MapController();
-  final List<Location> _locationList = [];
+  //final List<Location> _locationList = [];
   MapType _mapType = MapType.normal;
 
   LocationResult? _locationResult;
 
-  double _latitude = -6.984072660841485;
-  double _longitude = 110.40950678599624;
+  LatLng latLng = LatLng(47.661322762238285, -122.2772993912835);
 
   @override
   void initState() {
     super.initState();
-    _latitude = widget.initialLatitude ?? -6.984072660841485;
-    _longitude = widget.initialLongitude ?? 110.40950678599624;
+    latLng = widget.initialLatLong ?? latLng;
+    //_latitude = widget.initialLatitude ?? _latitude;
+    //_longitude = widget.initialLongitude ?? _longitude;
 
     if (widget.mapType != null) {
       _mapType = widget.mapType!;
     }
     _setupInitalLocation();
-
   }
 
-  _setupInitalLocation() async{
-    if(widget.locale != null){
-      await setLocaleIdentifier(widget.locale!);
-
+  Future<void> _setupInitalLocation() async {
+    if (widget.locale != null) {
+      //await setLocaleIdentifier(widget.locale!);
     }
     _locationResult = LocationResult(
-        latitude: _latitude,
-        longitude: _longitude,
+        latLng: latLng,
+        //longitude: _longitude,
         completeAddress: null,
-        locationName: null,
-        placemark: null);
+        locationName: null);
+    //placemark: null);
     _getLocationResult();
   }
 
-  _getLocationResult() async {
-    _locationResult = await getLocationResult(latitude: _latitude, longitude: _longitude);
+  Future<void> _getLocationResult() async {
+    _locationResult = await getLocationResult(latLng);
     setState(() {});
   }
 
@@ -171,27 +170,26 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   style: widget.searchTextStyle,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (value) async {
-                    if(value.isNotEmpty){
+                    if (value.isNotEmpty) {
                       _error = false;
                       setState(() {});
-                      try {
-                        _locationList.clear();
-                        _locationList.addAll(await locationFromAddress(value));
+                      //try {
+                      //_locationList.clear();
+                      //_locationList.addAll(await locationFromAddress(value));
 
-                        if (_locationList.isNotEmpty) {
-                        } else {
-                          _error = true;
-                        }
-                      } catch (e) {
-                        _error = true;
-                      }
+                      //if (_locationList.isNotEmpty) {
+                      //} else {
+                      //  _error = true;
+                      //}
+                      //} catch (e) {
+                      //  _error = true;
+                      //}
                       setState(() {});
-                    } else{
-                      _locationList.clear();
+                    } else {
+                      //_locationList.clear();
                       _error = false;
                       setState(() {});
                     }
-
                   },
                   decoration: widget.searchBarDecoration ??
                       InputDecoration(
@@ -203,33 +201,31 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         filled: true,
                       ),
                 ),
-                _locationList.isNotEmpty
-                    ? ListView.builder(
-                        itemBuilder: (context, index) {
-                          return LocationItem(
-                            data: _locationList[index],
-                            backgroundColor: widget.backgroundColor,
-                            locationNameTextStyle:
-                                widget.locationNameTextStyle,
-                            addressTextStyle: widget.addressTextStyle, onResultClicked: (LocationResult result) {
-                            _move = true;
-                            _latitude = result.latitude ?? 0;
-                            _longitude = result.longitude ?? 0;
-                            _controller.move(
-                                LatLng(result.latitude ?? 0,
-                                    result.longitude ?? 0),
-                                16);
-                            _locationResult = result;
-                            _locationList.clear();
-                            setState(() {});
-                          },
-                          );
-                        },
-                        itemCount: _locationList.length,
-                        shrinkWrap: true,
-                  physics: AlwaysScrollableScrollPhysics(),
-                      )
-                    : Container(),
+                // _locationList.isNotEmpty
+                //     ? ListView.builder(
+                //         itemBuilder: (context, index) {
+                //           return LocationItem(
+                //             data: _locationList[index],
+                //             backgroundColor: widget.backgroundColor,
+                //             locationNameTextStyle: widget.locationNameTextStyle,
+                //             addressTextStyle: widget.addressTextStyle,
+                //             onResultClicked: (LocationResult result) {
+                //               _move = true;
+                //               latLng = result.latLng!;
+                //               //_latitude = result.latitude ?? 0;
+                //               //_longitude = result.longitude ?? 0;
+                //               _controller.move(result.latLng!, 16);
+                //               _locationResult = result;
+                //               _locationList.clear();
+                //               setState(() {});
+                //             },
+                //           );
+                //         },
+                //         itemCount: _locationList.length,
+                //         shrinkWrap: true,
+                //         physics: AlwaysScrollableScrollPhysics(),
+                //       )
+                //     : Container(),
                 _error
                     ? Container(
                         width: double.infinity,
@@ -248,7 +244,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
     Widget viewLocationName() {
       return widget.customFooter != null
-          ? widget.customFooter!(_locationResult ?? LocationResult(latitude: _latitude, longitude: _longitude, completeAddress: null, placemark: null,locationName: null), _controller)
+          ? widget.customFooter!(
+              _locationResult ??
+                  LocationResult(
+                      latLng: latLng,
+                      completeAddress: null,
+                      //placemark: null,
+                      locationName: null),
+              _controller)
           : Container(
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
@@ -274,8 +277,11 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                             _locationResult?.locationName ??
-                                "Location not found",
+                            //"(" + _locationResult?.latitude!.toString() + ", " +  _locationResult?.longitude!.toString() + ")";
+                            //_locationResult?.locationName ??
+
+                            "(${_locationResult?.latLng?.latitude}, ${_locationResult?.latLng?.longitude})",
+
                             style: widget.locationNameTextStyle ??
                                 Theme.of(context).textTheme.titleMedium,
                           ),
@@ -292,10 +298,20 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     height: 20,
                   ),
                   widget.customButton != null
-                      ? widget.customButton!(_locationResult ?? LocationResult(latitude: _latitude, longitude: _longitude, completeAddress: null, placemark: null,locationName: null))
+                      ? widget.customButton!(_locationResult ??
+                          LocationResult(
+                              latLng: latLng,
+                              completeAddress: null,
+                              //placemark: null,
+                              locationName: null))
                       : ElevatedButton(
                           onPressed: () {
-                            widget.onPicked(_locationResult ?? LocationResult(latitude: _latitude, longitude: _longitude, completeAddress: null, placemark: null,locationName: null));
+                            widget.onPicked(_locationResult ??
+                                LocationResult(
+                                    latLng: latLng,
+                                    completeAddress: null,
+                                    //placemark: null,
+                                    locationName: null));
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: widget.buttonColor),
@@ -342,8 +358,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               child: TextButton(
                 onPressed: () {
                   if (_controller.camera.zoom < 17) {
-                    _controller.move(LatLng(_latitude, _longitude),
-                        _controller.camera.zoom + 1);
+                    _controller.move(latLng, _controller.camera.zoom + 1);
                   }
                 },
                 style: TextButton.styleFrom(
@@ -363,8 +378,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               child: TextButton(
                 onPressed: () {
                   if (_controller.camera.zoom > 0) {
-                    _controller.move(LatLng(_latitude, _longitude),
-                        _controller.camera.zoom - 1);
+                    _controller.move(latLng, _controller.camera.zoom - 1);
                   }
                 },
                 style: TextButton.styleFrom(
@@ -384,10 +398,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               child: TextButton(
                 onPressed: () {
                   _move = true;
-                  _latitude = widget.initialLatitude ?? -6.970136294118362;
-                  _longitude = widget.initialLongitude ?? 110.40326425161746;
+                  latLng = widget.initialLatLong ?? latLng;
                   setState(() {});
-                  _controller.move(LatLng(_latitude, _longitude), 16);
+                  _controller.move(latLng, 16);
                   _timer?.cancel();
                   _getLocationResult();
                 },
@@ -402,7 +415,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             ),
           ),
           widget.sideWidget != null
-              ? widget.sideWidget!(_locationResult ?? LocationResult(latitude: _latitude, longitude: _longitude, completeAddress: null, placemark: null,locationName: null), _controller)
+              ? widget.sideWidget!(
+                  _locationResult ??
+                      LocationResult(
+                          latLng: latLng,
+                          completeAddress: null,
+                          //placemark: null,
+                          locationName: null),
+                  _controller)
               : Container(),
         ],
       );
@@ -411,16 +431,16 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     return FlutterMap(
       mapController: _controller,
       options: MapOptions(
-        initialCenter: LatLng(_latitude, _longitude),
-        initialZoom: 16,
-        maxZoom: 18,
+        initialCenter: latLng,
+        initialZoom: 17.5,
+        maxZoom: 20,
+        onPositionChanged: (_, __) => updatePoint(context),
         onMapReady: () {
           _controller.mapEventStream.listen((evt) async {
             _timer?.cancel();
             if (!_move) {
               _timer = Timer(const Duration(milliseconds: 200), () {
-                _latitude = evt.camera.center.latitude;
-                _longitude = evt.camera.center.longitude;
+                latLng = evt.camera.center;
                 _getLocationResult();
               });
             } else {
@@ -441,15 +461,27 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         Stack(
           children: [
             Center(
-                child: widget.centerWidget != null
-                    ? widget.centerWidget!
-                    : Icon(
-                  Icons.location_on_rounded,
-                  size: 60,
-                  color: widget.indicatorColor != null
-                      ? widget.indicatorColor!
-                      : Theme.of(context).colorScheme.primary,
-                )),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.center_focus_strong_outlined,
+                    size: 60,
+                    color: widget.indicatorColor != null
+                        ? widget.indicatorColor!
+                        : Theme.of(context).colorScheme.primary,
+                  ),
+                  Text(
+                    '(${latLng.latitude.toStringAsFixed(3)}, ${latLng.longitude.toStringAsFixed(3)})',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Positioned(top: 10, left: 10, right: 10, child: searchBar()),
             Positioned(
                 bottom: 0,
@@ -475,6 +507,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       ],
     );
   }
+
+  void updatePoint(BuildContext context) =>
+      setState(() => latLng = _controller.camera.center);
+  //.screenOffsetToLatLng(Offset(_getPointX(context), _getPointY(context))));
 }
 
 /// Widget for showing the picked location address
@@ -492,7 +528,7 @@ class LocationItem extends StatefulWidget {
   final TextStyle? locationNameTextStyle;
 
   /// The location data for the picked location
-  final Location data;
+  final LatLng data;
 
   final Function(LocationResult locationResult) onResultClicked;
 
@@ -502,151 +538,170 @@ class LocationItem extends StatefulWidget {
       this.backgroundColor,
       this.addressTextStyle,
       this.indicatorColor,
-      this.locationNameTextStyle, required this.onResultClicked});
+      this.locationNameTextStyle,
+      required this.onResultClicked});
 
   @override
   State<LocationItem> createState() => _LocationItemState();
 }
 
 class _LocationItemState extends State<LocationItem> {
-  List<Placemark> _placemarks = [];
+  //List<Placemark> _placemarks = [];
 
-  _getLocationResult() async {
-    _placemarks = await placemarkFromCoordinates(widget.data.latitude, widget.data.longitude);
+  Future<void> _getLocationResult() async {
+    //_placemarks = await placemarkFromCoordinates(widget.data);
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _getLocationResult ();
+    _getLocationResult();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if(_placemarks.isEmpty){
-      return Container(
-        color: widget.backgroundColor ?? Colors.white,
-        padding: const EdgeInsets.all(10),
-        child: Center(child: SizedBox(width: 20,height: 20,child: CircularProgressIndicator(),)),
-      );
-    }
-    return ListView.builder(itemBuilder: (context,index){
-      return GestureDetector(
-        onTap: (){
-          widget.onResultClicked(LocationResult(latitude: widget.data.latitude, longitude: widget.data.longitude, completeAddress:  getCompleteAdress(placemark: _placemarks[index]), placemark: _placemarks[index], locationName: getLocationName(placemark: _placemarks[index])));
-        },
-        child: Container(
-          color: widget.backgroundColor ?? Colors.white,
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Icon(
-                Icons.location_on_rounded,
-                color: widget.indicatorColor,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        getLocationName(placemark: _placemarks[index]),
-                        style: widget.locationNameTextStyle ??
-                            Theme.of(context).textTheme.titleMedium,
-                      ),              Text(
-                        getCompleteAdress(placemark: _placemarks[index]),
-                        style: widget.addressTextStyle ??
-                            Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ))
-            ],
-          ),
-        ),
-      );
-    },itemCount: _placemarks.length > 3 ? 3 : _placemarks.length, shrinkWrap: true,physics: NeverScrollableScrollPhysics(),);
+    //if (_placemarks.isEmpty) {
+    return Container(
+      color: widget.backgroundColor ?? Colors.white,
+      padding: const EdgeInsets.all(10),
+      child: Center(
+          child: SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(),
+      )),
+    );
+    //}
+    // return ListView.builder(
+    //   itemBuilder: (context, index) {
+    //     return GestureDetector(
+    //       onTap: () {
+    //         widget.onResultClicked(LocationResult(
+    //             latLng: LatLng(widget.data.latitude, widget.data.longitude),
+    //             completeAddress:
+    //                 getCompleteAdress(placemark: _placemarks[index]),
+    //             placemark: _placemarks[index],
+    //             locationName: getLocationName(placemark: _placemarks[index])));
+    //       },
+    //       child: Container(
+    //         color: widget.backgroundColor ?? Colors.white,
+    //         padding: const EdgeInsets.all(10),
+    //         child: Row(
+    //           children: [
+    //             Icon(
+    //               Icons.location_on_rounded,
+    //               color: widget.indicatorColor,
+    //             ),
+    //             const SizedBox(
+    //               width: 10,
+    //             ),
+    //             Expanded(
+    //                 child: Column(
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 Text(
+    //                   getLocationName(placemark: _placemarks[index]),
+    //                   style: widget.locationNameTextStyle ??
+    //                       Theme.of(context).textTheme.titleMedium,
+    //                 ),
+    //                 Text(
+    //                   getCompleteAdress(placemark: _placemarks[index]),
+    //                   style: widget.addressTextStyle ??
+    //                       Theme.of(context).textTheme.bodySmall,
+    //                 ),
+    //               ],
+    //             ))
+    //           ],
+    //         ),
+    //       ),
+    //     );
+    //   },
+    //   itemCount: _placemarks.length > 3 ? 3 : _placemarks.length,
+    //   shrinkWrap: true,
+    //   physics: NeverScrollableScrollPhysics(),
+    // );
   }
 }
 
-
-Future<LocationResult> getLocationResult({required double latitude, required double longitude}) async {
+Future<LocationResult> getLocationResult(LatLng latLng) async {
   try {
-    List<Placemark> placemarks =
-    await placemarkFromCoordinates(latitude, longitude);
-    if (placemarks.isNotEmpty) {
-      return LocationResult(
-          latitude: latitude,
-          longitude: longitude,
-          locationName: getLocationName(placemark: placemarks.first),
-          completeAddress: getCompleteAdress(placemark: placemarks.first),
-          placemark: placemarks.first);
-    } else {
-      return LocationResult(
-          latitude: latitude,
-          longitude: longitude,
-          completeAddress: null,
-          placemark: null,locationName: null);
-    }
+    //List<Placemark> placemarks =
+    //    await placemarkFromCoordinates(latLng);
+    //if (placemarks.isNotEmpty) {
+    //  return LocationResult(
+    //      latLng: latLng,
+    //      locationName: getLocationName(placemark: placemarks.first),
+    //      completeAddress: getCompleteAdress(placemark: placemarks.first),
+    //      placemark: placemarks.first);
+    //} else {
+    return LocationResult(
+        latLng: latLng,
+        completeAddress: null,
+        //placemark: null,
+        locationName: null);
+    //}
   } catch (e) {
     return LocationResult(
-        latitude: latitude,
-        longitude: longitude,
+        latLng: latLng,
         completeAddress: null,
-        placemark: null, locationName: null);
+        //placemark: null,
+        locationName: null);
   }
 }
 
-String getLocationName({required Placemark placemark}){
-  /// Returns throughfare or subLocality if name is an unreadable street code
-  if(isStreetCode(placemark.name ?? "")){
-    if((placemark.thoroughfare ?? "").isEmpty){
-      return placemark.subLocality ?? "-";
-    } else{
-      return placemark.thoroughfare ?? "=";
-    }
-  }
+// String getLocationName({required Placemark placemark}) {
+//   /// Returns throughfare or subLocality if name is an unreadable street code
+//   if (isStreetCode(placemark.name ?? "")) {
+//     if ((placemark.thoroughfare ?? "").isEmpty) {
+//       return placemark.subLocality ?? "-";
+//     } else {
+//       return placemark.thoroughfare ?? "=";
+//     }
+//   }
 
-  /// Returns name if it is same with street
-  else if(placemark.name == placemark.street){
-    return placemark.name ?? "-";
-  }
+//   /// Returns name if it is same with street
+//   else if (placemark.name == placemark.street) {
+//     return placemark.name ?? "-";
+//   }
 
-  /// Returns street if name is part of name (like house number)
-  else if(placemark.street?.toLowerCase().contains(placemark.name?.toLowerCase() ?? "") == true){
-    return placemark.street ?? "-";
-  }
-  return placemark.name ?? "-";
+//   /// Returns street if name is part of name (like house number)
+//   else if (placemark.street
+//           ?.toLowerCase()
+//           .contains(placemark.name?.toLowerCase() ?? "") ==
+//       true) {
+//     return placemark.street ?? "-";
+//   }
+//   return placemark.name ?? "-";
+// }
 
-}
+// String getCompleteAdress({required Placemark placemark}) {
+//   /// Returns throughfare or subLocality if name is an unreadable street code
+//   if (isStreetCode(placemark.name ?? "")) {
+//     if ((placemark.thoroughfare ?? "").isEmpty) {
+//       return "${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+//     } else {
+//       return "${placemark.thoroughfare}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+//     }
+//   }
 
-String getCompleteAdress({required Placemark placemark}){
-  /// Returns throughfare or subLocality if name is an unreadable street code
-  if(isStreetCode(placemark.name ?? "")){
-    if((placemark.thoroughfare ?? "").isEmpty){
-      return "${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-    } else{
-      return "${placemark.thoroughfare}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-    }
-  }
+//   /// Returns name if it is same with street
+//   else if (placemark.name == placemark.street) {
+//     return "${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+//   }
 
-  /// Returns name if it is same with street
-  else if(placemark.name == placemark.street){
-    return "${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-  }
-
-  /// Returns street if name is part of name (like house number)
-  else if(placemark.street?.toLowerCase().contains(placemark.name?.toLowerCase() ?? "") == true){
-    return "${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-  }
-  return "${placemark.name}, ${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-
-}
+//   /// Returns street if name is part of name (like house number)
+//   else if (placemark.street
+//           ?.toLowerCase()
+//           .contains(placemark.name?.toLowerCase() ?? "") ==
+//       true) {
+//     return "${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+//   }
+//   return "${placemark.name}, ${placemark.street}, ${placemark.subLocality},${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+// }
 
 bool isStreetCode(String text) {
-  final streetCodeRegex = RegExp(r"^[A-Z0-9\-+]+$"); // Matches all uppercase letters, digits, hyphens, and plus signs
+  final streetCodeRegex = RegExp(
+      r"^[A-Z0-9\-+]+$"); // Matches all uppercase letters, digits, hyphens, and plus signs
   return streetCodeRegex.hasMatch(text);
 }

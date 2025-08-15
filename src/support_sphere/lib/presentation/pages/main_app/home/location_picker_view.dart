@@ -21,8 +21,7 @@ class LocationPickerPage extends StatelessWidget {
         onPicked: (result) {
           Navigator.pop(context, result);
         },
-        initialLatitude: initialLatLong.latitude,
-        initialLongitude: initialLatLong.longitude,
+        initialLatLong: initialLatLong,
       ),
     );
   }

@@ -8,6 +8,8 @@ import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_m
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/home/home_body.dart';
+import 'package:support_sphere/pages/location_picker.dart';
+
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
@@ -26,6 +28,8 @@ class AppNavigation {
     List<AppRoute> destinations = [
       const AppRoute(
           icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.business_outline), label: "Test", body: ScreenPointToLatLngPage()),
       const AppRoute(
           icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(

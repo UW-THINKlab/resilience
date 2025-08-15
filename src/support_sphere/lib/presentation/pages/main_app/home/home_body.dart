@@ -99,9 +99,9 @@ class _HomeBodyState extends State<HomeBody> {
                       if (result != null) {
                         final locationResult = result as LocationResult;
                         //location = locationResult.completeAddress;
-                        var latitude = locationResult.latitude;
-                        var longitude = locationResult.longitude;
-                        print("lat=$latitude, long=$longitude");
+                        //var latitude = locationResult.latitude;
+                        //var longitude = locationResult.longitude;
+                        print("lat=${locationResult.latLng?.latitude}, long=${locationResult.latLng?.longitude}");
                         setState(() {});
                       }
                     });
