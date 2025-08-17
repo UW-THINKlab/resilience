@@ -295,13 +295,14 @@ gnupg = ">=2.4.5"
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --pinentry-mode loopback --output - keys.asc | gpg --import"
 
+[tasks.execute_sql]
+cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
+cwd = "src/support_sphere_py"
+
 [tasks.db-init]
-# THIS IS TERRIBLE
-# BUT I CAN'T FIND ANY
-# WAY TO LOAD ENV FROM EXT SRCS
-env = { SUPABASE_KONG_HOST = "localhost", SUPABASE_KONG_PORT = "8000", JWT_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE"}
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "db_init", "run-all"]
 cwd = "src/support_sphere_py"
+depends-on = ["execute_sql"]
 
 [tasks.clean]
 cmd = ["docker", "system", "prune", "-af"]

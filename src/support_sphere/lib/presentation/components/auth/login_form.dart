@@ -16,7 +16,7 @@ class LoginForm extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<LoginCubit, LoginState>(
-          listenWhen: (previous, current) => 
+          listenWhen: (previous, current) =>
               previous.email != current.email ||
               previous.password != current.password,
           listener: (context, state) {
@@ -30,8 +30,8 @@ class LoginForm extends StatelessWidget {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  const SnackBar(
-                    content: Text('Authentication Failure'),
+                  SnackBar(
+                    content: Text(state.errorMessage ?? "Authentication failure"),
                   ),
                 );
             }

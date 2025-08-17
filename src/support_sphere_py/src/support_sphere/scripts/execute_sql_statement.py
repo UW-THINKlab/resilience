@@ -147,8 +147,8 @@ BEGIN;
   BEGIN
       DELETE FROM checklist_steps_states
       WHERE checklist_steps_order_id IN (
-          SELECT id 
-          FROM checklist_steps_orders 
+          SELECT id
+          FROM checklist_steps_orders
           WHERE checklist_step_id = OLD.id
       );
 
@@ -188,14 +188,21 @@ BEGIN
     new_code := UPPER(LEFT(REPLACE(gen_random_uuid()::TEXT, '-', ''), 7));
 
     -- Update signup_codes table with the new code
-    UPDATE signup_codes 
-    SET code = new_code 
+    UPDATE signup_codes
+    SET code = new_code
     WHERE code = input_code;
 
     -- Return the newly generated code
     RETURN new_code;
 END;
 $$ LANGUAGE plpgsql;
+"""
+
+install_gis_sql = """
+BEGIN;
+  -- Create postgis extension
+  CREATE EXTENSION IF NOT EXISTS postgis SCHEMA extensions;
+COMMIT;
 """
 
 
@@ -233,6 +240,9 @@ def run_all():
 
     logger.info("Updating signup code after user signup...")
     run_custom_sql_statement(invalidate_signup_code_sql)
+
+    logger.info("Setting up PostGIS")
+    run_custom_sql_statement(install_gis_sql)
 
 
 if __name__ == '__main__':

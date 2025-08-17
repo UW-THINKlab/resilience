@@ -10036,7 +10036,7 @@ packages:
 - pypi: ./src/support_sphere_py
   name: support-sphere-py
   version: 0.0.20
-  sha256: 45433d9c91dd2877001a9791330c359e5b79b13709a76fdcd90862e10a72c01b
+  sha256: a19328cb742b8172a27cbc758765885f4f1e920a02f675a8b73ccfab6b509b9e
   requires_dist:
   - sqlmodel
   - supabase
@@ -10046,6 +10046,7 @@ packages:
   - geoalchemy2
   - typer
   - shapely>=2.1.1
+  - python-dotenv>=1.1.1
   requires_python: '>=3.12'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/noarch/terminado-0.18.1-pyh0d859eb_0.conda

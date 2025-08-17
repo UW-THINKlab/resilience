@@ -1,10 +1,13 @@
 import uuid
+import logging
 
 from sqlmodel import Field, Relationship
 from geoalchemy2 import Geometry, WKBElement
 
 from support_sphere.models.base import BasePublicSchemaModel
+#from support_sphere.repositories.base_repository import BaseRepository
 
+log = logging.getLogger(__name__)
 
 class PointOfInterestType(BasePublicSchemaModel, table=True):
     """
@@ -13,8 +16,6 @@ class PointOfInterestType(BasePublicSchemaModel, table=True):
 
     Attributes
     ----------
-    id : uuid
-        The unique identifier for the resource type.
     name : str
         The name of the point-of-interest type. It is a required field, meaning it cannot be nullable.
     icon : str
@@ -22,7 +23,6 @@ class PointOfInterestType(BasePublicSchemaModel, table=True):
     """
     __tablename__ = "point_of_interest_types"
 
-    #id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(nullable=False, primary_key=True)
     icon: str = Field(nullable=False)
 

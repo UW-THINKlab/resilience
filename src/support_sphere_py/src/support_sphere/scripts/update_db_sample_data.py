@@ -23,12 +23,11 @@ from shapely.geometry import shape
 
 from support_sphere.models.enums import AppRoles, AppPermissions, OperationalStatus
 
-
 import logging
 
 DATA_DIRECTORY = Path(__file__).parent / 'resources' / 'data'
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 db_init_app = typer.Typer()
 
@@ -120,7 +119,7 @@ def populate_user_details():
             # Create a PeopleGroup Entry
             people_group = PeopleGroup(people=person, household=all_households[-1])
             BaseRepository.add(people_group)
-    logger.info("Database Populated Successfully")
+    log.info("Database Populated Successfully")
 
 
 def populate_checklists():
@@ -185,7 +184,7 @@ def generate_signup_codes(household_id: uuid.UUID):
             # Add signup code to the database
             BaseRepository.add(signup_code)
         except Exception as e:
-            logger.error(f"Error: {e}... trying again")
+            log.error(f"Error: {e}... trying again")
             time.sleep(2)
             continue
         break
@@ -234,7 +233,7 @@ def authenticate_user_signup_signin_signout_via_supabase():
         supabase_client.auth.sign_in_with_password({"email": "zeta@abc.com", "password": "zetazeta"})
         supabase_client.auth.sign_out()
     except Exception as ex:
-        logger.error('Error in %s', 'authenticate_user_signup_signin_signout_via_supabase', exc_info=ex)
+        log.error('Error in %s', 'authenticate_user_signup_signin_signout_via_supabase', exc_info=ex)
 
 
 def update_user_permissions_roles_by_cluster():
@@ -266,7 +265,7 @@ def update_user_permissions_roles_by_cluster():
 
 
 def test_app_mode_status_update():
-    response_sign_in = supabase_client.auth.sign_in_with_password(
+    supabase_client.auth.sign_in_with_password(
         {"email": "beth.bodmas@example.com", "password": "bethbodmas"})
 
     user = UserRepository.find_by_email('beth.bodmas@example.com')
@@ -289,7 +288,7 @@ def test_app_mode_status_update():
 
 def test_unauthorized_app_mode_update():
     try:
-        response_sign_in = supabase_client.auth.sign_in_with_password(
+        supabase_client.auth.sign_in_with_password(
             {"email": "adam.abacus@example.com", "password": "adamabacus"})
         user = UserRepository.find_by_email('adam.abacus@example.com')
         supabase_client.table("operational_events").insert({"id": str(uuid.uuid4()),
@@ -297,8 +296,8 @@ def test_unauthorized_app_mode_update():
                                                             "created_at": datetime.datetime.now().isoformat(),
                                                             "status": OperationalStatus.EMERGENCY.name}).execute()
     except Exception as ex:
-        logger.info(ex)
-        logger.info("[CORRECT BEHAVIOUR]: User Denied Access for missing AUTHz.")
+        log.info(ex)
+        log.info("[CORRECT BEHAVIOUR]: User Denied Access for missing AUTHz.")
     finally:
         supabase_client.auth.sign_out()
 
@@ -318,17 +317,22 @@ def setup_user_details():
 
 @db_init_app.command(help="Setup the datebase with points of interest and supporting types")
 def setup_points_of_interest():
-    populate_point_of_interest_types()
+    populate_point_of_interest_types(DATA_DIRECTORY / 'point_types.csv')
     populate_points_of_interest()
 
 
-def populate_point_of_interest_types():
-    file_path = DATA_DIRECTORY / 'point_types.csv'
-    with file_path.open(mode='r', newline='') as file:
+def populate_point_of_interest_types(csv_file: str) -> None: # could return a list of items
+    # load types from file
+    with csv_file.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            point_type = PointOfInterestType(name=row['name'], icon=row['icon'])
-            BaseRepository.add(point_type)
+            name = row['name']
+            icon = row['icon']
+            point_type = PointOfInterestType(name=name, icon=icon)
+            try:
+                BaseRepository.add(point_type)
+            except Exception as ex:
+                log.error(f"Error adding {name}: {ex}")
 
 
 def populate_points_of_interest():
@@ -354,10 +358,11 @@ def test_app_mode_change():
 @db_init_app.command(help="Command to setup the database with "
                           "dummy users, roles, permissions, households, clusters, and app mode with sanity check")
 def run_all():
-    logger.info("Starting to populate db with sample entries...")
+    log.info("Starting to populate db with sample entries...")
 
     # Sanity check for user sign-up and sign-in flow via supabase
-    # FIXME authenticate_user_signup_signin_signout_via_supabase()
+    # FIXME
+    authenticate_user_signup_signin_signout_via_supabase()
 
     # Set up a dummy cluster and a household
     populate_cluster_and_household_details()
@@ -372,11 +377,12 @@ def run_all():
     setup_points_of_interest()
 
     # Sanity check app mode update
-    # FIXME test_app_mode_change()
+    # FIXME
+    test_app_mode_change()
 
     # Populate real data
     populate_real_cluster_and_household()
-    logger.info("Completed Successfully!")
+    log.info("Completed Successfully!")
 
 
 if __name__ == '__main__':
