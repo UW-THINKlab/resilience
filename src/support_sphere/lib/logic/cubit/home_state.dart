@@ -4,12 +4,14 @@ import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
-enum HomeStatus { initial, loading, success, failure }
+enum HomeStatus { initial, loading, success, edit, failure }
 
-// TODO: Replace the default init map centroid
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
 // so the user who doesn't provide permission can still see captains' locations (even though there is no marker for current user's location)
+// map default: if cluster meetingpoint, use cluster meetinpoint
+// if cluster, center cluster rect on cluster geom
+// if no cluster or geom, default to:
 const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
 
 class HomeState extends Equatable {
@@ -30,6 +32,8 @@ class HomeState extends Equatable {
   final List<CaptainMarker>? captainMarkers;
   final Cluster? cluster;
   final List<PointOfInterest>? pointsOfInterest;
+
+
 
   @override
   List<Object?> get props => [

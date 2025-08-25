@@ -15,14 +15,14 @@ void initializeLogging(Level level) {
   Logger.root.level = level;
   Logger.root.onRecord.listen((record) {
     // ignore: avoid_print - This is a standard logger
-    print('${record.level.name}: ${record.time}: ${record.message}');
+    print('${record.time}: ${record.message}');
   });
 }
 
 final log = Logger('MyApp');
 
 void main() async {
-  initializeLogging(Level.ALL);
+  initializeLogging(Level.FINE);
   try {
     await Config.initSupabase();
   } catch (e, stackTrace) {

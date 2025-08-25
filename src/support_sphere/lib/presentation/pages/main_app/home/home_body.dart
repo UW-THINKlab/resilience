@@ -43,6 +43,9 @@ class _HomeBodyState extends State<HomeBody> {
           if (state.status == HomeStatus.success) {
             _recenterMap(state);
           }
+          else if (state.status == HomeStatus.edit) {
+            _editMode(state);
+          }
         },
         builder: (context, state) {
           if (state.status == HomeStatus.loading) {
@@ -146,5 +149,10 @@ class _HomeBodyState extends State<HomeBody> {
 
     _mapController.move(
         state.userLocation ?? state.initMapCentroid, state.initZoomLevel);
+  }
+
+  void _editMode(HomeState state) {
+    // change icon
+
   }
 }

@@ -183,8 +183,14 @@ rich = ">=13.7.1,<13.8"
 ruby = ">=3.3.3,<3.4"
 
 # Flutter tasks
-[feature.frontend.tasks.flutter-run]
+[feature.frontend.tasks.run-web]
 cmd = "flutter run --dart-define-from-file=../../.env -d chrome"
+cwd = "src/support_sphere"
+#depends-on = ["flutter-devices", "flutter-get"]
+
+# Flutter tasks
+[feature.frontend.tasks.run]
+cmd = "flutter run --dart-define-from-file=../../.env"
 cwd = "src/support_sphere"
 #depends-on = ["flutter-devices", "flutter-get"]
 
