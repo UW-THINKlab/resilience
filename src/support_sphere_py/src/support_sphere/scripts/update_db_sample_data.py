@@ -5,6 +5,7 @@ import time
 from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
 import typer
 import json
+from shapely.wkt import loads
 
 
 from pathlib import Path
@@ -158,14 +159,17 @@ def populate_cluster_and_household_details():
     # notes: str | None = Field(nullable=True)
     # geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True) < !!!
 
-    cluster = Cluster(name="Cluster1")
-    BaseRepository.add(cluster)
+    for cluster in load_clusters():
+        try:
+            BaseRepository.add(cluster)
+        except Exception as ex:
+            log.error(f"Error adding {cluster}: {ex}")
 
-    all_clusters = BaseRepository.select_all(Cluster)
-
-
-    household = Household(cluster=all_clusters[-1], name="Household1")
-    BaseRepository.add(household)
+    for cluster in BaseRepository.select_all(Cluster):
+        if cluster.name == "c_1":
+            household = Household(cluster=cluster, name="Household1")
+            BaseRepository.add(household)
+            log.info(f"added household {household}")
 
 
 def generate_signup_codes(household_id: uuid.UUID):
@@ -347,6 +351,24 @@ def populate_points_of_interest():
                 geom=geom,
                 point_type_name=row['type'])
             BaseRepository.add(point)
+
+
+def load_clusters(csv_file: Path = DATA_DIRECTORY/'cluster_map.csv') -> list[Cluster]:
+    clusters = []
+    with csv_file.open(mode='r', newline='') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            geom = from_shape(loads(row['geom']))
+            cluster = Cluster(
+                name=row['name'],
+                meeting_place=row['name'] + " meeting place",
+                meeting_point = None, # FIXME!
+                notes = row.get("notes", ""),
+                geom = geom,
+            )
+            clusters.append(cluster)
+    log.info(f"Loaded {len(clusters)} clusters")
+    return clusters
 
 
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")

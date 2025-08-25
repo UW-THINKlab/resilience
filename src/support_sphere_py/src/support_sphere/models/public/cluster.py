@@ -1,7 +1,7 @@
 import uuid
 from support_sphere.models.base import BasePublicSchemaModel
 from sqlmodel import Field, Relationship
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, WKBElement
 
 
 class Cluster(BasePublicSchemaModel, table=True):
@@ -44,8 +44,9 @@ class Cluster(BasePublicSchemaModel, table=True):
     id: uuid.UUID|None = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str|None = Field(nullable=True)
     meeting_place: str|None = Field(nullable=True)
+    meeting_point: WKBElement|None = Field(sa_type=Geometry(geometry_type="POINT"), nullable=True)
     notes: str | None = Field(nullable=True)
-    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
+    geom: WKBElement|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
 
     households: list["Household"] = Relationship(back_populates="cluster", cascade_delete=False)
     user_captains: list["UserCaptainCluster"] = Relationship(back_populates="cluster", cascade_delete=False)

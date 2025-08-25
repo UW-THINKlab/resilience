@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:geodesy/geodesy.dart';
 import 'package:support_sphere/data/models/person.dart';
 
 class Cluster extends Equatable {
@@ -7,6 +8,7 @@ class Cluster extends Equatable {
     required this.id,
     this.name = '',
     this.meetingPlace = '',
+    this.meetingPoint,
     this.captains,
   });
 
@@ -14,6 +16,7 @@ class Cluster extends Equatable {
   final String id;
   final String? name;
   final String? meetingPlace;
+  final LatLng? meetingPoint;
   final Captains? captains;
 
   @override
@@ -23,12 +26,14 @@ class Cluster extends Equatable {
     String? id,
     String? name,
     String? meetingPlace,
+    LatLng? meetingPoint,
     Captains? captains,
   }) {
     return Cluster(
       id: id ?? this.id,
       name: name ?? this.name,
       meetingPlace: meetingPlace ?? this.meetingPlace,
+      meetingPoint: meetingPoint ?? this.meetingPoint,
       captains: captains ?? this.captains,
     );
   }
@@ -38,6 +43,7 @@ class Cluster extends Equatable {
       id: json['id'],
       name: json['name'],
       meetingPlace: json['meeting_place'],
+      meetingPoint: json['meetingPoint'] != null ? LatLng.fromJson(json['meetingPoint']) : null,
       captains: json['captains'] != null ? Captains.fromJson(json['captains']) : null,
     );
   }
