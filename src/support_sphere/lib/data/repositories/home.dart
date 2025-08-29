@@ -30,6 +30,8 @@ class HomeRepository {
     final captains =
         captainsData?.map((row) => row['captain']['user_profile']['person']);
 
+    final cluster = userCluster != null ? Cluster.fromJson(userCluster) : null;
+
     final pointsOfInterest = await _poiService.getPointsOfInterest();
 
     return (
@@ -46,7 +48,7 @@ class HomeRepository {
                     : null,
               ))
           .toList(),
-      cluster: userCluster != null ? Cluster.fromJson(userCluster) : null,
+      cluster: cluster,
       pointsOfInterest: pointsOfInterest,
     );
   }

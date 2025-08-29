@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 import 'package:logging/logging.dart';
 
@@ -19,6 +20,7 @@ class HomeMap extends StatelessWidget {
   final List<CaptainMarker>? captainMarkers;
   final List<PointOfInterest>? pointsOfInterest;
   final VoidCallback? onMapReady;
+  final Cluster? cluster;
 
   const HomeMap({
     super.key,
@@ -28,6 +30,7 @@ class HomeMap extends StatelessWidget {
     required this.initZoomLevel,
     this.captainMarkers,
     this.pointsOfInterest,
+    this.cluster,
     this.onMapReady,
   });
 
@@ -56,6 +59,7 @@ class HomeMap extends StatelessWidget {
             ..._buildPointsOfInterest(),
           ],
         ),
+        PolygonLayer(polygons: _generatePolygons(cluster))
       ],
     );
   }
@@ -104,5 +108,21 @@ class HomeMap extends StatelessWidget {
       log.fine(value.toString());
       return value;
     }
+  }
+
+  //late var _polygonsRaw = generatePolygons();
+  List<Polygon> _generatePolygons(Cluster? cluster) {
+    // TODO check display toggle
+    List<Polygon> polygons = [];
+    if (cluster != null && cluster.geom != null) {
+      polygons.add(
+        Polygon(
+            label: cluster.name,
+            points: cluster.geom!,
+            color: Colors.blue, // TODO Generate color
+          )
+      );
+    }
+    return polygons;
   }
 }

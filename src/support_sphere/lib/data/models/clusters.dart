@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:logging/logging.dart';
+
+final log = Logger('Cluster');
 
 class Cluster extends Equatable {
 
@@ -8,6 +11,8 @@ class Cluster extends Equatable {
     required this.id,
     this.name = '',
     this.meetingPlace = '',
+    this.notes = '',
+    this.geom,
     this.meetingPoint,
     this.captains,
   });
@@ -16,16 +21,20 @@ class Cluster extends Equatable {
   final String id;
   final String? name;
   final String? meetingPlace;
+  final String? notes;
+  final List<LatLng>? geom;
   final LatLng? meetingPoint;
   final Captains? captains;
 
   @override
-  List<Object?> get props => [id, name, meetingPlace, captains];
+  List<Object?> get props => [id, name, meetingPlace, notes, geom, meetingPoint, captains];
 
   Cluster copyWith({
     String? id,
     String? name,
     String? meetingPlace,
+    String? notes,
+    List<LatLng>? geom,
     LatLng? meetingPoint,
     Captains? captains,
   }) {
@@ -33,20 +42,34 @@ class Cluster extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       meetingPlace: meetingPlace ?? this.meetingPlace,
+      notes: notes ?? this.notes,
+      geom: geom ?? this.geom,
       meetingPoint: meetingPoint ?? this.meetingPoint,
       captains: captains ?? this.captains,
     );
   }
 
   factory Cluster.fromJson(Map<String, dynamic> json) {
+    final geom = json['geom'];
+    final List<dynamic> coords = geom['coordinates'][0];
+    List<LatLng> points = [];
+    for (var point in coords) {
+      points.add(LatLng(point[0], point[1]));
+    }
+    final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;
+    final captains = json['captains'] != null ? Captains.fromJson(json['captains']) : null;
+
     return Cluster(
       id: json['id'],
       name: json['name'],
       meetingPlace: json['meeting_place'],
-      meetingPoint: json['meetingPoint'] != null ? LatLng.fromJson(json['meetingPoint']) : null,
-      captains: json['captains'] != null ? Captains.fromJson(json['captains']) : null,
+      notes: json['notes'],
+      geom:  points,
+      meetingPoint: meetingPoint,
+      captains: captains,
     );
   }
+
 }
 
 class Captains extends Equatable {

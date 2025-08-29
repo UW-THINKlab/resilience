@@ -10,11 +10,7 @@ class ClusterService {
   /// Returns null if the cluster does not exist.
   Future<PostgrestMap?> getClusterById(String clusterId) async {
     /// This query will perform a join on the user_profiles and people tables
-    return await _supabaseClient.from('clusters').select('''
-      id,
-      name,
-      meeting_place
-    ''').eq('id', clusterId).maybeSingle();
+    return await _supabaseClient.from('clusters').select('*').eq('id', clusterId).maybeSingle();
   }
 
   Future<PostgrestMap?> getClusterIdByUserProfileId(String userProfileId) async {
