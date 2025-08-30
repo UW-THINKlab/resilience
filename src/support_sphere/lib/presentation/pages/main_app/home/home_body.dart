@@ -62,7 +62,7 @@ class _HomeBodyState extends State<HomeBody> {
                     child: HomeMap(
                       mapController: _mapController,
                       userLocation: state.userLocation,
-                      initMapCentroid: state.initMapCentroid,
+                      initMapCentroid: _initMapCentroid(state),
                       initZoomLevel: state.initZoomLevel,
                       captainMarkers: state.captainMarkers,
                       pointsOfInterest: state.pointsOfInterest,
@@ -90,7 +90,13 @@ class _HomeBodyState extends State<HomeBody> {
                     //final cubit = context.read<HomeCubit>();
                     //await cubit.getCurrentLocation();
                     // FIXME - get location from map center
-                    const defMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+                    LatLng defMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+                    if (state.cluster != null) {
+                      LatLng? centroid = state.cluster!.centroid();
+                      if (centroid != null) {
+                        defMapCentroid = centroid;
+                      }
+                    }
 
                     Navigator.of(context)
                         .push(MaterialPageRoute(
@@ -155,5 +161,19 @@ class _HomeBodyState extends State<HomeBody> {
   void _editMode(HomeState state) {
     // change icon
 
+  }
+
+  LatLng _initMapCentroid(HomeState state) {
+    // first, check user location
+    if (state.userLocation != null) {
+      return state.userLocation!;
+    }
+    if (state.cluster != null) {
+      LatLng? centroid = state.cluster!.centroid();
+      if (centroid != null) {
+        return centroid;
+      }
+    }
+    return LatLng(47.661322762238285, -122.2772993912835);
   }
 }

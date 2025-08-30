@@ -34,7 +34,6 @@ class HomeState extends Equatable {
   final List<PointOfInterest>? pointsOfInterest;
 
 
-
   @override
   List<Object?> get props => [
         status,

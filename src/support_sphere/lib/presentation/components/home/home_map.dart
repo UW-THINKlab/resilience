@@ -6,6 +6,7 @@ import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 import 'package:logging/logging.dart';
+import 'dart:math';
 
 import 'dart:developer' as dev;
 
@@ -115,14 +116,18 @@ class HomeMap extends StatelessWidget {
     // TODO check display toggle
     List<Polygon> polygons = [];
     if (cluster != null && cluster.geom != null) {
+      final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
       polygons.add(
         Polygon(
             label: cluster.name,
             points: cluster.geom!,
-            color: Colors.blue, // TODO Generate color
+            color: color.withAlpha(64),
+            borderColor: color,
+            borderStrokeWidth: 4,
           )
       );
     }
+    //print("#### ${polygons[0]}");
     return polygons;
   }
 }

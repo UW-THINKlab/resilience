@@ -70,6 +70,9 @@ class Cluster extends Equatable {
     );
   }
 
+  LatLng? centroid() {
+    return geom != null ? PolygonCentroid.findPolygonCentroid(geom!): null;
+  }
 }
 
 class Captains extends Equatable {
