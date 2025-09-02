@@ -13,6 +13,10 @@ class ClusterService {
     return await _supabaseClient.from('clusters').select('*').eq('id', clusterId).maybeSingle();
   }
 
+  Future<PostgrestList?> getAllClusters() async {
+    return await _supabaseClient.from('clusters').select('*');
+  }
+
   Future<PostgrestMap?> getClusterIdByUserProfileId(String userProfileId) async {
     return await _supabaseClient.from('user_profiles').select('''
       id,

@@ -67,6 +67,7 @@ class _HomeBodyState extends State<HomeBody> {
                       captainMarkers: state.captainMarkers,
                       pointsOfInterest: state.pointsOfInterest,
                       cluster: state.cluster,
+                      allClusters: state.allClusters,
                       onMapReady: () {
                         setState(() => _isMapReady = true);
                       },
@@ -127,7 +128,7 @@ class _HomeBodyState extends State<HomeBody> {
               ), // end edit-mode button
               Positioned(
                 right: 16,
-                bottom: 16,
+                bottom: 86,
                 child: FloatingActionButton(
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
@@ -140,6 +141,25 @@ class _HomeBodyState extends State<HomeBody> {
                   elevation: 2,
                   child: const Icon(
                     Ionicons.locate,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    final cubit = context.read<HomeCubit>();
+                    await cubit.updateClusterDisplay();
+
+                    if (!mounted) return;
+                    _recenterMap(cubit.state);
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 2,
+                  child: const Icon(
+                    Ionicons.square_outline,
                     color: Colors.black,
                   ),
                 ),

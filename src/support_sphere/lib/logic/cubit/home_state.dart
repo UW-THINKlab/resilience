@@ -23,6 +23,7 @@ class HomeState extends Equatable {
     this.captainMarkers,
     this.cluster,
     this.pointsOfInterest,
+    this.allClusters,
   });
 
   final HomeStatus status;
@@ -32,6 +33,7 @@ class HomeState extends Equatable {
   final List<CaptainMarker>? captainMarkers;
   final Cluster? cluster;
   final List<PointOfInterest>? pointsOfInterest;
+  final List<Cluster>? allClusters;
 
 
   @override
@@ -43,6 +45,7 @@ class HomeState extends Equatable {
         captainMarkers,
         cluster,
         pointsOfInterest,
+        allClusters,
       ];
 
   HomeState copyWith({
@@ -53,6 +56,7 @@ class HomeState extends Equatable {
     List<CaptainMarker>? captainMarkers,
     Cluster? cluster,
     List<PointOfInterest>? pointsOfInterest,
+    List<Cluster>? allClusters,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -62,6 +66,7 @@ class HomeState extends Equatable {
       captainMarkers: captainMarkers ?? this.captainMarkers,
       cluster: cluster ?? this.cluster,
       pointsOfInterest: pointsOfInterest ?? this.pointsOfInterest,
+      allClusters: allClusters ?? this.allClusters,
     );
   }
 }

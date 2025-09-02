@@ -36,13 +36,13 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final homeData = await _homeRepository.getHomeData(authUser.uuid);
 
-      var points = homeData?.pointsOfInterest;
+      //var points = homeData?.pointsOfInterest;
       //print(points);
 
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
         cluster: homeData.cluster,
-        pointsOfInterest: points,
+        //pointsOfInterest: points,
       ));
     } catch (error) {
       throw Exception(error);
@@ -64,5 +64,12 @@ class HomeCubit extends Cubit<HomeState> {
         throw Exception(error);
       }
     }
+  }
+
+  // emit a new state with all clusters
+  Future<void> updateClusterDisplay() async {
+    emit(state.copyWith(
+      allClusters: await _homeRepository.getAllClusters(),
+    ));
   }
 }

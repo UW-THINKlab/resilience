@@ -50,11 +50,14 @@ class Cluster extends Equatable {
   }
 
   factory Cluster.fromJson(Map<String, dynamic> json) {
-    final geom = json['geom'];
-    final List<dynamic> coords = geom['coordinates'][0];
-    List<LatLng> points = [];
-    for (var point in coords) {
-      points.add(LatLng(point[0], point[1]));
+    List<LatLng>? points = null;
+    if (json['geom'] != null && json['geom']['coordinates'] != null) {
+      points = [];
+      final geom = json['geom'];
+      final List<dynamic> coords = geom['coordinates'][0];
+      for (var point in coords) {
+        points.add(LatLng(point[0], point[1]));
+      }
     }
     final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;
     final captains = json['captains'] != null ? Captains.fromJson(json['captains']) : null;
@@ -64,7 +67,7 @@ class Cluster extends Equatable {
       name: json['name'],
       meetingPlace: json['meeting_place'],
       notes: json['notes'],
-      geom:  points,
+      geom:  points ,
       meetingPoint: meetingPoint,
       captains: captains,
     );

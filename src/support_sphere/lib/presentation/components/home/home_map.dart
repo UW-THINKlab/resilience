@@ -22,6 +22,7 @@ class HomeMap extends StatelessWidget {
   final List<PointOfInterest>? pointsOfInterest;
   final VoidCallback? onMapReady;
   final Cluster? cluster;
+  final List<Cluster>? allClusters;
 
   const HomeMap({
     super.key,
@@ -33,6 +34,7 @@ class HomeMap extends StatelessWidget {
     this.pointsOfInterest,
     this.cluster,
     this.onMapReady,
+    this.allClusters,
   });
 
   @override
@@ -60,7 +62,9 @@ class HomeMap extends StatelessWidget {
             ..._buildPointsOfInterest(),
           ],
         ),
-        PolygonLayer(polygons: _generatePolygons(cluster))
+        PolygonLayer(
+          polygons: (allClusters != null) ? _generatePolygons(allClusters) : _generatePolygons([cluster!]),
+        )
       ],
     );
   }
@@ -112,20 +116,24 @@ class HomeMap extends StatelessWidget {
   }
 
   //late var _polygonsRaw = generatePolygons();
-  List<Polygon> _generatePolygons(Cluster? cluster) {
+  List<Polygon> _generatePolygons(List<Cluster>? clusters) {
     // TODO check display toggle
     List<Polygon> polygons = [];
-    if (cluster != null && cluster.geom != null) {
-      final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
-      polygons.add(
-        Polygon(
-            label: cluster.name,
-            points: cluster.geom!,
-            color: color.withAlpha(64),
-            borderColor: color,
-            borderStrokeWidth: 4,
-          )
-      );
+    if (clusters == null || clusters.isEmpty) return [];
+
+    for (var cluster in clusters) {
+      if (cluster.geom != null) {
+        final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+        polygons.add(
+          Polygon(
+              label: cluster.name,
+              points: cluster.geom!,
+              color: color.withAlpha(64),
+              borderColor: color,
+              borderStrokeWidth: 4,
+            )
+        );
+      }
     }
     //print("#### ${polygons[0]}");
     return polygons;

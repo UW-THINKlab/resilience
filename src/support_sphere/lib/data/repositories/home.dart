@@ -52,4 +52,30 @@ class HomeRepository {
       pointsOfInterest: pointsOfInterest,
     );
   }
+
+  Future<List<Cluster>> getAllClusters() async {
+      final clusterList = await _clusterService.getAllClusters();
+      if (clusterList == null || clusterList.isEmpty) {
+        return [];
+      }
+
+      final List<Cluster> yoyo = [];
+
+      for (var clusterData in clusterList) {
+        print(">>> $clusterData");
+        var cluster = Cluster.fromJson(clusterData);
+        print("$cluster");
+        yoyo.add(cluster);
+        print("Added ${yoyo.length}");
+      }
+
+      print("TEST");
+
+      print("LENGHT: ${yoyo.length}");
+
+      print("CLUSTERS ^^^");
+      //return clusters != null ? clusters.toList() : [];
+
+      return yoyo;
+    }
 }
