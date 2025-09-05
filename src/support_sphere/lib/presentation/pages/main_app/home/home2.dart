@@ -34,7 +34,7 @@ class _HomePageState extends State<Home2Page> {
     this.status = HomePageStatus.initial,
     this.userLocation,
     this.initMapCentroid = defaultInitMapCentroid,
-    this.initZoomLevel = 17.5,
+    //this.initZoomLevel = 17.5,
     //this.captainMarkers,
     //this.cluster,
     //this.pointsOfInterest,

@@ -19,7 +19,7 @@ class ProfileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthUser authUser = context.select(
+    final MyAuthUser authUser = context.select(
       (AuthenticationBloc bloc) => bloc.state.user,
     );
 
@@ -101,7 +101,7 @@ class _PersonalInformation extends StatelessWidget {
           previous.authUser != current.authUser,
       builder: (context, state) {
         Person? userProfile = state.userProfile;
-        AuthUser? authUser = state.authUser;
+        MyAuthUser? authUser = state.authUser;
         String givenName = userProfile?.givenName ?? '';
         String familyName = userProfile?.familyName ?? '';
         String fullName = '$givenName $familyName';

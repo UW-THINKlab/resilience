@@ -45,7 +45,7 @@ class AppPage extends StatelessWidget {
                   current.selectedBottomNavIndex ||
               previous.mode != current.mode,
           builder: (context, state) {
-            final AuthUser authUser = context.select(
+            final MyAuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
             MediaQueryData screenData = MediaQuery.of(context);

@@ -179,6 +179,7 @@ class NavRouteLabels {
   static const String profile = 'Me';
   static const String prepare = 'Prepare';
   static const String resources = 'Resources';
+  static const String messages = 'Messages';
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
 }

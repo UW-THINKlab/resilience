@@ -10,6 +10,8 @@ import 'dart:math';
 
 import 'dart:developer' as dev;
 
+const appUserAgent = "edu.uw.thinklab.resilience";
+
 final log = Logger('HomeMap');
 
 
@@ -49,6 +51,7 @@ class HomeMap extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: appUserAgent,
         ),
         MarkerLayer(
           markers: [
@@ -130,7 +133,8 @@ class HomeMap extends StatelessWidget {
               points: cluster.geom!,
               color: color.withAlpha(64),
               borderColor: color,
-              borderStrokeWidth: 4,
+              borderStrokeWidth: 3,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
             )
         );
       }

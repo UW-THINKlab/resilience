@@ -32,7 +32,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthUser authUser = context.select(
+    final MyAuthUser authUser = context.select(
       (AuthenticationBloc bloc) => bloc.state.user,
     );
 
@@ -80,42 +80,13 @@ class _HomeBodyState extends State<HomeBody> {
                 left: 16,
                 bottom: 16,
                 child: FloatingActionButton(
-                  // onPressed: () async {
-                  //   final cubit = context.read<HomeCubit>();
-                  //   await cubit.getCurrentLocation();
-
-                  //   if (!mounted) return;
-                  //   _recenterMap(cubit.state);
-                  // },
                   onPressed: () {
                     //final cubit = context.read<HomeCubit>();
-                    //await cubit.getCurrentLocation();
-                    // FIXME - get location from map center
-                    LatLng defMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
-                    if (state.cluster != null) {
-                      LatLng? centroid = state.cluster!.centroid();
-                      if (centroid != null) {
-                        defMapCentroid = centroid;
-                      }
+                    //cubit.focusCluster();
+                    if (state.cluster != null && state.cluster!.geom != null ) {
+                      LatLngBounds? bounds = LatLngBounds.fromPoints(state.cluster!.geom!);
+                      _mapController.fitCamera(CameraFit.bounds(bounds: bounds));
                     }
-
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) =>  LocationPickerPage(
-                              initialLatLong: defMapCentroid,
-                              title: "Mark the meeting place"
-                            )
-                        ))
-                        .then((result) {
-                      if (result != null) {
-                        final locationResult = result as LocationResult;
-                        //location = locationResult.completeAddress;
-                        //var latitude = locationResult.latitude;
-                        //var longitude = locationResult.longitude;
-                        print("lat=${locationResult.latLng?.latitude}, long=${locationResult.latLng?.longitude}");
-                        setState(() {});
-                      }
-                    });
                   },
 
                   backgroundColor: Colors.white,
@@ -151,10 +122,7 @@ class _HomeBodyState extends State<HomeBody> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
-                    await cubit.updateClusterDisplay();
-
-                    if (!mounted) return;
-                    _recenterMap(cubit.state);
+                    await cubit.updateClusterDisplay(state.allClusters == null || state.allClusters!.isEmpty);
                   },
                   backgroundColor: Colors.white,
                   elevation: 2,

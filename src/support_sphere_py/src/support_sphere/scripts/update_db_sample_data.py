@@ -3,6 +3,7 @@ import datetime
 import uuid
 import time
 from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
+from support_sphere.models.public.message import Message
 import typer
 import json
 from shapely.wkt import loads
@@ -355,20 +356,51 @@ def populate_points_of_interest():
 
 def load_clusters(csv_file: Path = DATA_DIRECTORY/'cluster_map.csv') -> list[Cluster]:
     clusters = []
-    with csv_file.open(mode='r', newline='') as file:
-        csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            geom = from_shape(loads(row['geom']))
-            cluster = Cluster(
-                name=row['name'],
-                meeting_place=row['name'] + " meeting place",
-                meeting_point = None, # FIXME!
-                notes = row.get("notes", ""),
-                geom = geom,
-            )
-            clusters.append(cluster)
-    log.info(f"Loaded {len(clusters)} clusters")
+    try:
+        with csv_file.open(mode='r', newline='') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                geom = from_shape(loads(row['geom']))
+                cluster = Cluster(
+                    name=row['name'],
+                    meeting_place=row['name'] + " meeting place",
+                    meeting_point = None, # FIXME!
+                    notes = row.get("notes", ""),
+                    geom = geom,
+                )
+                clusters.append(cluster)
+        log.info(f"Loaded {len(clusters)} clusters")
+    except Exception as e:
+        log.error(f"Error loading {csv_file}: {e}")
     return clusters
+
+
+def load_test_messages(csv_file: Path = DATA_DIRECTORY/'messages.csv') -> list[Message]:
+    messages = []
+    try:
+        with csv_file.open(mode='r', newline='') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                from_user: User = UserRepository.find_by_email(row['from_id'])
+                if from_user:
+                    row['from_id'] = from_user.id
+                to_user: User = UserRepository.find_by_email(row['to_id'])
+                if to_user:
+                    row['to_id'] = to_user.id
+                msg = Message.fromDict(row)
+                messages.append(msg)
+        log.info(f"Loaded {len(messages)} messages")
+    except Exception as e:
+        log.error(f"Error loading {csv_file}: {e}")
+    return messages
+
+
+def populate_messages():
+    for message in load_test_messages():
+        try:
+            BaseRepository.add(message)
+        except Exception as ex:
+            log.error(f"Error adding {message}: {ex}")
 
 
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")
@@ -404,6 +436,10 @@ def run_all():
 
     # Populate real data
     populate_real_cluster_and_household()
+
+    # Populate test messages
+    populate_messages()
+
     log.info("Completed Successfully!")
 
 

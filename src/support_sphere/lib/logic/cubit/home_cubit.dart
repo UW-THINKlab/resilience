@@ -1,9 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geodesy/geodesy.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
+import 'dart:math';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
@@ -13,7 +17,7 @@ class HomeCubit extends Cubit<HomeState> {
     _init();
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
   final HomeRepository _homeRepository;
 
   Future<void> _init() async {
@@ -57,7 +61,7 @@ class HomeCubit extends Cubit<HomeState> {
         userLocation: LatLng(position.latitude, position.longitude),
         initMapCentroid: LatLng(position.latitude, position.longitude),
         // TODO: adjust zoom level based on user location and cluster size
-        initZoomLevel: 17.5,
+        //initZoomLevel: 17.5,
       ));
     } catch (error) {
       if (error is! PermissionDeniedException) {
@@ -67,9 +71,71 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   // emit a new state with all clusters
-  Future<void> updateClusterDisplay() async {
+  Future<void> updateClusterDisplay(bool showAll) async {
+    if (showAll) {
+      emit(state.copyWith(
+        allClusters: await _homeRepository.getAllClusters(),
+      ));
+    }
+    else {
+      emit(state.copyWith(
+        allClusters: [],
+      ));
+    }
+  }
+
+  Future<void> placeMeetingPlace() async {
     emit(state.copyWith(
-      allClusters: await _homeRepository.getAllClusters(),
+      status: HomeStatus.edit,
+      allClusters: [],
     ));
+  }
+
+  Future<void> saveMeetingPlace() async {
+    if (state.pickedLocation != null) {
+      final Cluster cluster = await _homeRepository.updateClusterMeetingPoint(state.cluster!, state.pickedLocation);
+      emit(state.copyWith(
+        status: HomeStatus.success,
+        cluster: cluster,
+      ));
+    }
+  }
+
+  Future<void> cancelMeetingPlace() async {
+    emit(state.copyWith(
+      status: HomeStatus.success,
+    ));
+  }
+
+  Future<void> focusCluster() async {
+    if (state.cluster != null) {
+      // set bounding box vfrom cluster
+
+      emit(state.copyWith(
+        status: HomeStatus.success,
+      ));
+    }
+  }
+
+  // Iterator thru all the cluster geometry
+  // to build a bounds for all clusters.
+  LatLngBounds allClusterBounds(List<Cluster> clusters) {
+    double maxLat = 0;
+    double maxLng = 0;
+    double minLat = 100;
+    double minLng = 100;
+    for (var cluster in clusters) {
+      if (cluster.geom != null) {
+        for (var point in cluster.geom!) {
+          maxLat = max(maxLat, point.latitude);
+          minLat = min(minLat, point.latitude);
+          maxLng = max(maxLng, point.longitude);
+          minLng = min(minLng, point.longitude);
+        }
+      }
+    }
+    LatLng maxPoint = LatLng(maxLat, maxLng);
+    LatLng minPoint = LatLng(minLat, minLng);
+    return LatLngBounds(minPoint, maxPoint);
   }
 }

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/home/home_body.dart';
-import 'package:support_sphere/presentation/pages/main_app/home/home2.dart';
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
@@ -23,11 +23,9 @@ class AppRoute extends Equatable {
 
 class AppNavigation {
   static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
-    // TODO: Add body for each route
     List<AppRoute> destinations = [
       const AppRoute(icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
-      const AppRoute(icon: Icon(Ionicons.home_outline), label: NavRouteLabels.home, body: Home2Page()),
-      // MESSAGES const AppRoute(icon: Icon(Ionicons.business_outline), label: "Test", body: ScreenPointToLatLngPage()),
+      const AppRoute(icon: Icon(Ionicons.mail), label: NavRouteLabels.messages, body: MessagesPage()),
       const AppRoute(icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
       const AppRoute(icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
       const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),

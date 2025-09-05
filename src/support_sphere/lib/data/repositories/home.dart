@@ -59,23 +59,20 @@ class HomeRepository {
         return [];
       }
 
-      final List<Cluster> yoyo = [];
-
+      final List<Cluster> clusters = [];
       for (var clusterData in clusterList) {
-        print(">>> $clusterData");
         var cluster = Cluster.fromJson(clusterData);
-        print("$cluster");
-        yoyo.add(cluster);
-        print("Added ${yoyo.length}");
+        clusters.add(cluster);
       }
+      return clusters;
+    }
 
-      print("TEST");
-
-      print("LENGHT: ${yoyo.length}");
-
-      print("CLUSTERS ^^^");
-      //return clusters != null ? clusters.toList() : [];
-
-      return yoyo;
+    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint) async {
+      if (meetingPoint == null) {
+        return cluster;
+      }
+      // update db
+      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint);
+      return Cluster.fromJson(data!);
     }
 }

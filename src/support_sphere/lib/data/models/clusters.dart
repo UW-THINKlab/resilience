@@ -50,7 +50,7 @@ class Cluster extends Equatable {
   }
 
   factory Cluster.fromJson(Map<String, dynamic> json) {
-    List<LatLng>? points = null;
+    List<LatLng>? points;
     if (json['geom'] != null && json['geom']['coordinates'] != null) {
       points = [];
       final geom = json['geom'];

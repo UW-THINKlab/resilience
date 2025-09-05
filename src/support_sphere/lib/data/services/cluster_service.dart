@@ -1,3 +1,4 @@
+import 'package:geodesy/geodesy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -28,6 +29,13 @@ class ClusterService {
         )
       )
     ''').eq('id', userProfileId).maybeSingle();
+  }
+
+  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location) async {
+    // update
+    await _supabaseClient.from('clusters').update({'meeting_point': location}).eq('id', clusterId);
+    // new version
+    return getClusterById(clusterId);
   }
 
   Future<PostgrestList?> getCaptainsByClusterId(String clusterId) async {

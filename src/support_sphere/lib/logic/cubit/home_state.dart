@@ -12,18 +12,20 @@ enum HomeStatus { initial, loading, success, edit, failure }
 // map default: if cluster meetingpoint, use cluster meetinpoint
 // if cluster, center cluster rect on cluster geom
 // if no cluster or geom, default to:
-const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+//const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+const defaultInitMapCentroid = LatLng(47.658, -122.2772993912835);
 
 class HomeState extends Equatable {
   const HomeState({
     this.status = HomeStatus.initial,
     this.userLocation,
     this.initMapCentroid = defaultInitMapCentroid,
-    this.initZoomLevel = 17.5,
+    this.initZoomLevel = 15.6,
     this.captainMarkers,
     this.cluster,
     this.pointsOfInterest,
     this.allClusters,
+    this.pickedLocation,
   });
 
   final HomeStatus status;
@@ -34,6 +36,7 @@ class HomeState extends Equatable {
   final Cluster? cluster;
   final List<PointOfInterest>? pointsOfInterest;
   final List<Cluster>? allClusters;
+  final LatLng? pickedLocation;
 
 
   @override
@@ -46,6 +49,7 @@ class HomeState extends Equatable {
         cluster,
         pointsOfInterest,
         allClusters,
+        pickedLocation,
       ];
 
   HomeState copyWith({
@@ -57,6 +61,7 @@ class HomeState extends Equatable {
     Cluster? cluster,
     List<PointOfInterest>? pointsOfInterest,
     List<Cluster>? allClusters,
+    LatLng? pickedLocation,
   }) {
     return HomeState(
       status: status ?? this.status,
