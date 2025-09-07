@@ -28,7 +28,7 @@ class Message {
         fromId = json['from_id'],
         toId = json['to_id'],
         content = json['content'],
-        createdAt = DateTime.parse(json['created_at']);
+        createdAt = DateTime.parse(json['sent_on']);
 
   static List<Message> fromList(List<dynamic> stuff) {
     List<Message> messages = [];

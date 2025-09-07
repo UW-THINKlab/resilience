@@ -42,19 +42,19 @@ class MessagesState extends State<MessagesPage> {
   void initState() {
     final supabase = Supabase.instance.client;
 
-    //final myUserId = supabase.auth.currentUser!.id;
-    // _messagesStream = supabase
-    //     .from('messages')
-    //     .stream(primaryKey: ['id'])
-    //     .order('created_at')
-    //     .map((maps) => maps
-    //         .map((map) => Message.fromJson(json: map))
-    //         .toList());
+    final myUserId = supabase.auth.currentUser!.id;
+    _messagesStream = supabase
+        .from('messages')
+        .stream(primaryKey: ['id'])
+        .order('sent_on')
+        .map((maps) => maps
+            .map((map) => Message.fromJson(json: map))
+            .toList());
 
     //_profileStream = _userRepo.personForAuthUser(user: supabase.auth.currentUser!);
-    final user = supabase.auth.currentUser;
+    //final user = supabase.auth.currentUser;
 
-    _messagesStream = _messageRepo.getMessages(user!);
+    //_messagesStream = _messageRepo.getMessages(user!);
     super.initState();
   }
 
