@@ -24,7 +24,8 @@ class MessagesRepository {
         fromId: "20",
         toId: "25",
         content: "test message 1",
-        createdAt: DateTime.now(),
+        urgency: MessageUrgency.normal,
+        sentOn: DateTime.now(),
       ),
     ];
   }

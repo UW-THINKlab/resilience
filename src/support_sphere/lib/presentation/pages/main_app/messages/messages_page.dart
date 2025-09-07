@@ -11,7 +11,7 @@ import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-const preloader = Center(child: CircularProgressIndicator(color: Colors.orange));
+const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
 /// Page to chat with someone.
 ///
@@ -89,7 +89,7 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                const _MessageBar(),
+                //const _MessageBar(),
               ],
             );
           } else {
@@ -130,84 +130,84 @@ class MessagesState extends State<MessagesPage> {
 // }
 
 /// Set of widget that contains TextField and Button to submit message
-class _MessageBar extends StatefulWidget {
-  const _MessageBar({
-    Key? key,
-  }) : super(key: key);
+// class _MessageBar extends StatefulWidget {
+//   const _MessageBar({
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  State<_MessageBar> createState() => _MessageBarState();
-}
+//   @override
+//   State<_MessageBar> createState() => _MessageBarState();
+// }
 
-class _MessageBarState extends State<_MessageBar> {
-  late final TextEditingController _textController;
+// class _MessageBarState extends State<_MessageBar> {
+//   late final TextEditingController _textController;
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.grey[200],
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  maxLines: null,
-                  autofocus: true,
-                  controller: _textController,
-                  decoration: const InputDecoration(
-                    hintText: 'Type a message',
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.all(8),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => _submitMessage(),
-                child: const Text('Send'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Material(
+//       color: Colors.grey[200],
+//       child: SafeArea(
+//         child: Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Row(
+//             children: [
+//               Expanded(
+//                 child: TextFormField(
+//                   keyboardType: TextInputType.text,
+//                   maxLines: null,
+//                   autofocus: true,
+//                   controller: _textController,
+//                   decoration: const InputDecoration(
+//                     hintText: 'Type a message',
+//                     border: InputBorder.none,
+//                     focusedBorder: InputBorder.none,
+//                     contentPadding: EdgeInsets.all(8),
+//                   ),
+//                 ),
+//               ),
+//               TextButton(
+//                 onPressed: () => _submitMessage(),
+//                 child: const Text('Send'),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  @override
-  void initState() {
-    _textController = TextEditingController();
-    super.initState();
-  }
+//   @override
+//   void initState() {
+//     _textController = TextEditingController();
+//     super.initState();
+//   }
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     _textController.dispose();
+//     super.dispose();
+//   }
 
-  void _submitMessage() async {
-    final text = _textController.text;
-    //final myUserId = supabase.auth.currentUser!.id;
-    if (text.isEmpty) {
-      return;
-    }
-    _textController.clear();
-    //
-    // try {
-    //   //await supabase.from('messages').insert({
-    //   //  'profile_id': myUserId,
-    //   //  'content': text,
-    //   //});
-    // } on PostgrestException catch (error) {
-    //   //context.showErrorSnackBar(message: error.message);
-    // } catch (_) {
-    //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
-    // }
-  }
-}
+//   void _submitMessage() async {
+//     final text = _textController.text;
+//     //final myUserId = supabase.auth.currentUser!.id;
+//     if (text.isEmpty) {
+//       return;
+//     }
+//     _textController.clear();
+//     //
+//     // try {
+//     //   //await supabase.from('messages').insert({
+//     //   //  'profile_id': myUserId,
+//     //   //  'content': text,
+//     //   //});
+//     // } on PostgrestException catch (error) {
+//     //   //context.showErrorSnackBar(message: error.message);
+//     // } catch (_) {
+//     //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
+//     // }
+//   }
+// }
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
@@ -222,12 +222,11 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> chatContents = [
-      // if (!message.isMine)
-      //   CircleAvatar(
-      //     child: profile == null
-      //         ? preloader
-      //         : Text(profile!.username.substring(0, 2)),
-      //   ),
+      CircleAvatar(
+        child: Center(child: Icon(
+          URGENCY_ICONS[message.urgency],
+          color:  URGENCY_COLOR[message.urgency],
+        ))),
       const SizedBox(width: 12),
       Flexible(
         child: Container(
@@ -236,14 +235,14 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: Colors.purple,
+            color: URGENCY_COLOR[message.urgency],
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(message.content, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         ),
       ),
       const SizedBox(width: 12),
-      Text(timeago.format(message.createdAt, locale: 'en_short')),
+      Text(timeago.format(message.sentOn, locale: 'en_short')),
       const SizedBox(width: 60),
     ];
     //if (message.isMine) {
@@ -257,4 +256,20 @@ class _MessageBubble extends StatelessWidget {
       ),
     );
   }
+
+  static const URGENCY_COLOR = {
+    MessageUrgency.emergency:  Colors.red,
+    MessageUrgency.urgent: Colors.orange,
+    MessageUrgency.important:Colors.yellow,
+    MessageUrgency.normal: Colors.blue,
+    "default": Colors.grey,
+  };
+
+  static const URGENCY_ICONS = {
+    MessageUrgency.emergency: Icons.emergency,
+    MessageUrgency.urgent: Icons.explicit_sharp,
+    MessageUrgency.important: Icons.label_important,
+    MessageUrgency.normal: Icons.mail_rounded,
+  };
+
 }

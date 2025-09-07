@@ -1,10 +1,20 @@
+
+
+class MessageUrgency {
+  static const String normal = "normal";
+  static const String important = "important";
+  static const String urgent = "urgent";
+  static const String emergency = "emergency";
+}
+
 class Message {
   Message({
     required this.id,
     required this.fromId,
     required this.toId,
     required this.content,
-    required this.createdAt,
+    required this.urgency,
+    required this.sentOn,
   });
 
   /// ID of the message
@@ -20,7 +30,9 @@ class Message {
   final String content;
 
   /// Date and time when the message was created
-  final DateTime createdAt;
+  final DateTime sentOn;
+
+  final String urgency;
 
   Message.fromJson({
     required Map<String, dynamic> json,
@@ -28,7 +40,8 @@ class Message {
         fromId = json['from_id'],
         toId = json['to_id'],
         content = json['content'],
-        createdAt = DateTime.parse(json['sent_on']);
+        urgency = json['urgency'],
+        sentOn = DateTime.parse(json['sent_on']);
 
   static List<Message> fromList(List<dynamic> stuff) {
     List<Message> messages = [];
