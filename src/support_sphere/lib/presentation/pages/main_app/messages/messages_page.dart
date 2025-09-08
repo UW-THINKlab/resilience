@@ -30,7 +30,7 @@ class MessagesPage extends StatefulWidget {
 }
 
 class MessagesState extends State<MessagesPage> {
-  final UserRepository _userRepo = UserRepository();
+  //final UserRepository _userRepo = UserRepository();
   final MessagesRepository _messageRepo = MessagesRepository();
   //late final List<Message> _messages;
 
@@ -41,15 +41,8 @@ class MessagesState extends State<MessagesPage> {
   @override
   void initState() {
     final supabase = Supabase.instance.client;
-
     final myUserId = supabase.auth.currentUser!.id;
-    _messagesStream = supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .order('sent_on')
-        .map((maps) => maps
-            .map((map) => Message.fromJson(json: map))
-            .toList());
+    _messagesStream = _messageRepo.messagesTo(supabase.auth.currentUser!);
 
     //_profileStream = _userRepo.personForAuthUser(user: supabase.auth.currentUser!);
     //final user = supabase.auth.currentUser;
@@ -84,6 +77,7 @@ class MessagesState extends State<MessagesPage> {
                           itemBuilder: (context, index) {
                             return _MessageBubble(
                               message: messages[index],
+                              // FIXME add profile info
                               //profile: _profileCache[message.profileId],
                             );
                           },
@@ -259,8 +253,8 @@ class _MessageBubble extends StatelessWidget {
 
   static const URGENCY_COLOR = {
     MessageUrgency.emergency:  Colors.red,
-    MessageUrgency.urgent: Colors.orange,
-    MessageUrgency.important:Colors.yellow,
+    MessageUrgency.urgent: Colors.purpleAccent,
+    MessageUrgency.important:Colors.orange,
     MessageUrgency.normal: Colors.blue,
     "default": Colors.grey,
   };

@@ -60,7 +60,7 @@ dependencies:
   latlong2: ^0.9.0
   geodesy: ^0.10.2
   geolocator: ^14.0.1
-  firebase_messaging: ^15.2.7
+  firebase_messaging: ^16.0.1
   flutter_map: ^8.1.1
   #flutter_map_location_picker: ^0.0.4
   geocoding: ^4.0.0

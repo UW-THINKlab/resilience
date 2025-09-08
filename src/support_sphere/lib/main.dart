@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart' as fonts;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -127,7 +127,7 @@ class AppView extends StatelessWidget {
     );
 
     return baseTheme.copyWith(
-      textTheme: GoogleFonts.latoTextTheme(baseTheme.textTheme),
+      textTheme: fonts.GoogleFonts.latoTextTheme(baseTheme.textTheme),
     );
   }
 }
