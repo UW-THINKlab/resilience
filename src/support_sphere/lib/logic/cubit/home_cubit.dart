@@ -71,22 +71,27 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   // emit a new state with all clusters
-  Future<void> updateClusterDisplay(bool showAll) async {
+  Future<void> showAllClusters(bool showAll) async {
+    log.fine("starting showAllClusters: $showAll");
     if (showAll) {
+      final allClusters = await _homeRepository.getAllClusters();
+      log.finer("allClusters: $allClusters");
       emit(state.copyWith(
-        allClusters: await _homeRepository.getAllClusters(),
+        status: HomeStatus.allClusters,
+        allClusters: allClusters,
       ));
     }
     else {
       emit(state.copyWith(
+        status: HomeStatus.success,
         allClusters: [],
       ));
     }
   }
 
-  Future<void> placeMeetingPlace() async {
+  Future<void> editMeetingPlace() async {
     emit(state.copyWith(
-      status: HomeStatus.edit,
+      status: HomeStatus.editMeetingPlace,
       allClusters: [],
     ));
   }

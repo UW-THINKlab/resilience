@@ -10,6 +10,8 @@ import 'dart:math';
 
 import 'dart:developer' as dev;
 
+import 'package:support_sphere/logic/cubit/home_state.dart';
+
 const appUserAgent = "edu.uw.thinklab.resilience";
 
 final log = Logger('HomeMap');
@@ -17,36 +19,34 @@ final log = Logger('HomeMap');
 
 class HomeMap extends StatelessWidget {
   final MapController mapController;
-  final LatLng? userLocation;
-  final LatLng initMapCentroid;
-  final double initZoomLevel;
-  final List<CaptainMarker>? captainMarkers;
-  final List<PointOfInterest>? pointsOfInterest;
   final VoidCallback? onMapReady;
-  final Cluster? cluster;
-  final List<Cluster>? allClusters;
+  final HomeState state;
 
   const HomeMap({
     super.key,
     required this.mapController,
-    this.userLocation,
-    required this.initMapCentroid,
-    required this.initZoomLevel,
-    this.captainMarkers,
-    this.pointsOfInterest,
-    this.cluster,
-    this.onMapReady,
-    this.allClusters,
+    required this.onMapReady,
+    required this.state,
   });
+
+  // from edit mode
+  //LatLng? tappedCoords;
+  //Offset? tappedPoint;
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
-        initialCenter: initMapCentroid,
-        initialZoom: initZoomLevel,
+        // FIXME on fresh map
+        initialCenter: state.initMapCentroid,
+        initialZoom: state.initZoomLevel,
         onMapReady: onMapReady,
+        // onTap: (_, latLng) {
+        //     final point = mapController.camera.latLngToScreenOffset(tappedCoords = latLng);
+        //     //setState(() => tappedPoint = Offset(point.dx, point.dy));
+        //     tappedPoint = Offset(point.dx, point.dy);
+        // },
       ),
       children: [
         TileLayer(
@@ -55,21 +55,33 @@ class HomeMap extends StatelessWidget {
         ),
         MarkerLayer(
           markers: [
-            if (userLocation != null) _buildUserMarker(userLocation!),
-            ...captainMarkers!
-                .where((marker) => marker.householdGeom != null)
-                .map((marker) => _buildCaptainMarker(
-                      context,
-                      marker,
-                    )),
+            if (state.userLocation != null) _buildUserMarker(state.userLocation!),
+            // ...state.captainMarkers!
+            //     .where((marker) => marker.householdGeom != null)
+            //     .map((marker) => _buildCaptainMarker(
+            //           context,
+            //           marker,
+            //         )),
             ..._buildPointsOfInterest(),
           ],
         ),
         PolygonLayer(
-          polygons: (allClusters != null) ? _generatePolygons(allClusters) : _generatePolygons([cluster!]),
+          polygons: _generatePolygons(),
         )
       ],
     );
+    // if (tappedPoint != null)
+    //         Positioned(
+    //           left: tappedPoint!.dx - 60 / 2,
+    //           top: tappedPoint!.dy - 60 / 2,
+    //           child: const IgnorePointer(
+    //             child: Icon(
+    //               Icons.center_focus_strong_outlined,
+    //               color: Colors.black,
+    //               size: 60,
+    //             ),
+    //           ),
+    //         )
   }
 
   Marker _buildUserMarker(LatLng location) {
@@ -105,12 +117,19 @@ class HomeMap extends StatelessWidget {
     // TODO: implement showing a dialog with captain details
   }
 
+  // void _editMode(HomeState state) {
+  //   if (state.cluster != null && state.cluster!.geom != null ) {
+  //     LatLngBounds? bounds = LatLngBounds.fromPoints(state.cluster!.geom!);
+  //     mapController.fitCamera(CameraFit.bounds(bounds: bounds));
+  //   }
+  // }
+
   List<Marker> _buildPointsOfInterest() {
-    if (pointsOfInterest == null) {
+    if (state.pointsOfInterest == null) {
       return [];
     }
     else {
-      var value = [for (var p in pointsOfInterest!) p.marker()];
+      var value = [for (var p in state.pointsOfInterest!) p.marker()];
       dev.log(value.toString());
       //print(value);
       log.fine(value.toString());
@@ -118,28 +137,54 @@ class HomeMap extends StatelessWidget {
     }
   }
 
-  //late var _polygonsRaw = generatePolygons();
-  List<Polygon> _generatePolygons(List<Cluster>? clusters) {
-    // TODO check display toggle
-    List<Polygon> polygons = [];
-    if (clusters == null || clusters.isEmpty) return [];
+  Polygon? clusterPolygon(Cluster cluster) {
+    if (cluster.geom == null) return null;
 
-    for (var cluster in clusters) {
-      if (cluster.geom != null) {
-        final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
-        polygons.add(
-          Polygon(
-              label: cluster.name,
-              points: cluster.geom!,
-              color: color.withAlpha(64),
-              borderColor: color,
-              borderStrokeWidth: 3,
-              labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
-            )
-        );
-      }
+    // random color
+    // could be based on hash of cluster name
+    // or cluster geometry
+    final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    return Polygon(
+        label: cluster.name,
+        points: cluster.geom!,
+        color: color.withAlpha(64),
+        borderColor: color,
+        borderStrokeWidth: 3,
+        labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
+    );
+  }
+
+  //late var _polygonsRaw = generatePolygons();
+  List<Polygon> _generatePolygons() {
+    List<Polygon> polygons = [];
+
+    switch (state.status) {
+      case HomeStatus.allClusters:
+        if (state.allClusters == null || state.allClusters!.isEmpty) {
+          log.warning("Expected clusters, got nothing. Unable to render ${state.status}");
+        }
+        for (var cluster in state.allClusters!) {
+          final poly = clusterPolygon(cluster);
+          if (poly != null) {
+            polygons.add(poly);
+          }
+        }
+        break;
+      case HomeStatus.editMeetingPlace:
+        if (state.cluster == null) {
+          log.warning("Expected home cluster. Unable to render ${state.status}");
+        }
+        if (state.cluster != null && state.cluster!.geom != null) {
+          polygons.add(clusterPolygon(state.cluster!)!);
+        }
+        break;
+      case HomeStatus.initial:
+      case HomeStatus.loading:
+      case HomeStatus.success:
+      case HomeStatus.failure:
+        // nothing to do
     }
-    //print("#### ${polygons[0]}");
+
     return polygons;
   }
 }

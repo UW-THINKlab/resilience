@@ -171,6 +171,7 @@ def populate_cluster_and_household_details():
             household = Household(cluster=cluster, name="Household1")
             BaseRepository.add(household)
             log.info(f"added household {household}")
+            break
 
 
 def generate_signup_codes(household_id: uuid.UUID):
@@ -206,18 +207,16 @@ def populate_real_cluster_and_household():
         csv_reader = csv.DictReader(file)
 
         cluster_uids = {}
+        for cluster in BaseRepository.select_all(Cluster):
+            cluster_uids[cluster.name] = cluster.id
+
         for row in csv_reader:
             # Get and set cluster
             cluster_name = row["CLUSTER"]
-            if cluster_name not in cluster_uids:
-                cluster = Cluster(name=cluster_name)
-                cluster_id = cluster.id
-                cluster_uids[cluster_name] = cluster.id
-
-                # Add cluster to the database
-                BaseRepository.add(cluster)
-            else:
+            if cluster_name in cluster_uids:
                 cluster_id = cluster_uids[cluster_name]
+            else:
+                log.error(f"Unknown cluster name: {cluster_name}")
 
             # Setup household
             household_address = row['ADDRESS']

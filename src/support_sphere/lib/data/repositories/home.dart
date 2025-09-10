@@ -54,6 +54,8 @@ class HomeRepository {
   }
 
   Future<List<Cluster>> getAllClusters() async {
+      log.fine("getAllClusters");
+
       final clusterList = await _clusterService.getAllClusters();
       if (clusterList == null || clusterList.isEmpty) {
         return [];
@@ -64,6 +66,8 @@ class HomeRepository {
         var cluster = Cluster.fromJson(clusterData);
         clusters.add(cluster);
       }
+      log.fine("getAllClusters found ${clusters.length} clusters");
+
       return clusters;
     }
 

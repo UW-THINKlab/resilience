@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemMouseCursor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:ionicons/ionicons.dart';
@@ -9,18 +10,16 @@ import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/components/home/home_header.dart';
 import 'package:support_sphere/presentation/components/home/home_map.dart';
 import 'package:geodesy/geodesy.dart';
-import 'map_location_picker.dart';
-import 'location_picker_view.dart';
 
 
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
 
   @override
-  State<HomeBody> createState() => _HomeBodyState();
+  State<HomeBody> createState() => HomeBodyState();
 }
 
-class _HomeBodyState extends State<HomeBody> {
+class HomeBodyState extends State<HomeBody> {
   late final MapController _mapController;
   bool _isMapReady = false;
 
@@ -43,7 +42,7 @@ class _HomeBodyState extends State<HomeBody> {
           if (state.status == HomeStatus.success) {
             _recenterMap(state);
           }
-          else if (state.status == HomeStatus.edit) {
+          else if (state.status == HomeStatus.editMeetingPlace) {
             _editMode(state);
           }
         },
@@ -59,18 +58,15 @@ class _HomeBodyState extends State<HomeBody> {
                   if (state.cluster != null)
                     HomeHeader(cluster: state.cluster!),
                   Expanded(
-                    child: HomeMap(
-                      mapController: _mapController,
-                      userLocation: state.userLocation,
-                      initMapCentroid: _initMapCentroid(state),
-                      initZoomLevel: state.initZoomLevel,
-                      captainMarkers: state.captainMarkers,
-                      pointsOfInterest: state.pointsOfInterest,
-                      cluster: state.cluster,
-                      allClusters: state.allClusters,
-                      onMapReady: () {
-                        setState(() => _isMapReady = true);
-                      },
+                    child: MouseRegion(
+                      cursor: _cursorFor(state.status),
+                      child: HomeMap(
+                        mapController: _mapController,
+                        state: state,
+                        onMapReady: () {
+                          setState(() => _isMapReady = true);
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -81,12 +77,8 @@ class _HomeBodyState extends State<HomeBody> {
                 bottom: 16,
                 child: FloatingActionButton(
                   onPressed: () {
-                    //final cubit = context.read<HomeCubit>();
-                    //cubit.focusCluster();
-                    if (state.cluster != null && state.cluster!.geom != null ) {
-                      LatLngBounds? bounds = LatLngBounds.fromPoints(state.cluster!.geom!);
-                      _mapController.fitCamera(CameraFit.bounds(bounds: bounds));
-                    }
+                    final cubit = context.read<HomeCubit>();
+                    cubit.editMeetingPlace();
                   },
 
                   backgroundColor: Colors.white,
@@ -116,13 +108,16 @@ class _HomeBodyState extends State<HomeBody> {
                   ),
                 ),
               ),
+              //
               Positioned(
                 right: 16,
                 bottom: 16,
                 child: FloatingActionButton(
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
-                    await cubit.updateClusterDisplay(state.allClusters == null || state.allClusters!.isEmpty);
+                    // could flip icon! custom icon? mouse pointer?
+                    // assume toggle on/off
+                    await cubit.showAllClusters(state.status != HomeStatus.allClusters);
                   },
                   backgroundColor: Colors.white,
                   elevation: 2,
@@ -148,7 +143,10 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _editMode(HomeState state) {
     // change icon
-
+    if (state.cluster != null && state.cluster!.geom != null ) {
+      LatLngBounds? bounds = LatLngBounds.fromPoints(state.cluster!.geom!);
+      _mapController.fitCamera(CameraFit.bounds(bounds: bounds));
+    }
   }
 
   LatLng _initMapCentroid(HomeState state) {
@@ -163,5 +161,23 @@ class _HomeBodyState extends State<HomeBody> {
       }
     }
     return LatLng(47.661322762238285, -122.2772993912835);
+  }
+}
+
+// Noting to self, and for posteriety:
+// These state-to-visual mappings could be stored
+// in a DB or simple lookup table.
+SystemMouseCursor _cursorFor(HomeStatus status) {
+  switch (status) {
+    case HomeStatus.initial:
+    case HomeStatus.loading:
+      return SystemMouseCursors.wait;
+    case HomeStatus.editMeetingPlace:
+      return SystemMouseCursors.grabbing;
+    case HomeStatus.success:
+    case HomeStatus.allClusters:
+      return SystemMouseCursors.basic;
+    case HomeStatus.failure:
+      return SystemMouseCursors.forbidden;
   }
 }

@@ -4,7 +4,7 @@ import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
-enum HomeStatus { initial, loading, success, edit, failure }
+enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, failure }
 
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
@@ -12,7 +12,6 @@ enum HomeStatus { initial, loading, success, edit, failure }
 // map default: if cluster meetingpoint, use cluster meetinpoint
 // if cluster, center cluster rect on cluster geom
 // if no cluster or geom, default to:
-//const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
 const defaultInitMapCentroid = LatLng(47.658, -122.2772993912835);
 
 class HomeState extends Equatable {
