@@ -1,24 +1,33 @@
+import 'dart:ui' show Offset;
+
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/point_of_interest.dart';
 
-enum HomeStatus { initial, loading, success, failure }
+enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, failure }
 
-// TODO: Replace the default init map centroid
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
 // so the user who doesn't provide permission can still see captains' locations (even though there is no marker for current user's location)
-const defaultInitMapCentroid = LatLng(47.661322762238285, -122.2772993912835);
+// map default: if cluster meetingpoint, use cluster meetinpoint
+// if cluster, center cluster rect on cluster geom
+// if no cluster or geom, default to:
+const defaultInitMapCentroid = LatLng(47.658, -122.2772993912835);
 
 class HomeState extends Equatable {
   const HomeState({
     this.status = HomeStatus.initial,
     this.userLocation,
     this.initMapCentroid = defaultInitMapCentroid,
-    this.initZoomLevel = 17.5,
+    this.initZoomLevel = 15.6,
     this.captainMarkers,
     this.cluster,
+    this.pointsOfInterest,
+    this.allClusters,
+    this.pickedLocation,
+    this.pickedOffset,
   });
 
   final HomeStatus status;
@@ -27,6 +36,11 @@ class HomeState extends Equatable {
   final double initZoomLevel;
   final List<CaptainMarker>? captainMarkers;
   final Cluster? cluster;
+  final List<PointOfInterest>? pointsOfInterest;
+  final List<Cluster>? allClusters;
+
+  final LatLng? pickedLocation;
+  final Offset? pickedOffset;
 
   @override
   List<Object?> get props => [
@@ -36,6 +50,10 @@ class HomeState extends Equatable {
         initZoomLevel,
         captainMarkers,
         cluster,
+        pointsOfInterest,
+        allClusters,
+        pickedLocation,
+        pickedOffset,
       ];
 
   HomeState copyWith({
@@ -45,6 +63,10 @@ class HomeState extends Equatable {
     double? initZoomLevel,
     List<CaptainMarker>? captainMarkers,
     Cluster? cluster,
+    List<PointOfInterest>? pointsOfInterest,
+    List<Cluster>? allClusters,
+    LatLng? pickedLocation,
+    Offset? pickedOffset,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -53,6 +75,10 @@ class HomeState extends Equatable {
       initZoomLevel: initZoomLevel ?? this.initZoomLevel,
       captainMarkers: captainMarkers ?? this.captainMarkers,
       cluster: cluster ?? this.cluster,
+      pointsOfInterest: pointsOfInterest ?? this.pointsOfInterest,
+      allClusters: allClusters ?? this.allClusters,
+      pickedLocation: pickedLocation ?? this.pickedLocation,
+      pickedOffset: pickedOffset ?? this.pickedOffset,
     );
   }
 }

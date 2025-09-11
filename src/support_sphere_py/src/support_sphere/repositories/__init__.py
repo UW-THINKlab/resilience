@@ -8,17 +8,22 @@ from sqlmodel import SQLModel, create_engine
 from support_sphere.models.auth import *
 from support_sphere.models.public import *
 
+from dotenv import load_dotenv
+
+
 logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 username = os.environ.get('DB_USERNAME', 'postgres')
 db_host = os.environ.get('DB_HOST', 'localhost')
 password = os.environ.get('DB_PASSWORD', 'example123456')
 db_port = os.environ.get('DB_PORT', 5432)
 database = os.environ.get('DB_NAME', 'postgres')
+postgres_url = os.environ.get('DB_URL',
+                              f"postgresql://{username}:{password}@{db_host}:{db_port}/{database}")
 
-postgres_url = f"postgresql://{username}:{password}@{db_host}:{db_port}/{database}"
-
-logger.info(f"POSTGRES URL: {postgres_url}")
+logger.info(f"DB_URL URL: {postgres_url}")
 
 # change echo to True to see the SQL queries executed by psycopg2 as logs
 engine = create_engine(postgres_url, echo=False)

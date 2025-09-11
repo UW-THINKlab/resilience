@@ -19,7 +19,7 @@ class ProfileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthUser authUser = context.select(
+    final MyAuthUser authUser = context.select(
       (AuthenticationBloc bloc) => bloc.state.user,
     );
 
@@ -28,7 +28,7 @@ class ProfileBody extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraint) {
         return Column(
           children: [
-            Container(
+            SizedBox(
               height: 50,
               child: const Center(
                 // TODO: Add profile picture
@@ -68,7 +68,7 @@ class ProfileBody extends StatelessWidget {
 }
 
 class _LogOutButton extends StatelessWidget {
-  const _LogOutButton({super.key});
+  const _LogOutButton();
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class _LogOutButton extends StatelessWidget {
 }
 
 class _PersonalInformation extends StatelessWidget {
-  const _PersonalInformation({super.key});
+  const _PersonalInformation();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class _PersonalInformation extends StatelessWidget {
           previous.authUser != current.authUser,
       builder: (context, state) {
         Person? userProfile = state.userProfile;
-        AuthUser? authUser = state.authUser;
+        MyAuthUser? authUser = state.authUser;
         String givenName = userProfile?.givenName ?? '';
         String familyName = userProfile?.familyName ?? '';
         String fullName = '$givenName $familyName';
@@ -111,29 +111,6 @@ class _PersonalInformation extends StatelessWidget {
         return ProfileSection(
           title: UserProfileStrings.personalInformation,
           state: state,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.fullName),
-                Text(fullName),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.phone),
-                Text(phoneNumber),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.email),
-                Text(email),
-              ],
-            ),
-          ],
           modalBody: FormBuilder(
             key: formKey,
             child: Column(
@@ -188,6 +165,29 @@ class _PersonalInformation extends StatelessWidget {
               ],
             ),
           ),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.fullName),
+                Text(fullName),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.phone),
+                Text(phoneNumber),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(UserProfileStrings.email),
+                Text(email),
+              ],
+            ),
+          ],
         );
       },
     );
@@ -195,7 +195,7 @@ class _PersonalInformation extends StatelessWidget {
 }
 
 class _HouseholdInformation extends StatelessWidget {
-  const _HouseholdInformation({super.key});
+  const _HouseholdInformation();
 
   String _getFullName(Person? person) {
     String givenName = person?.givenName ?? '';
@@ -217,7 +217,7 @@ class _HouseholdInformation extends StatelessWidget {
         String accessibilityNeeds = household?.accessibility_needs ?? '';
         List<Person?> householdMembers =
             household?.houseHoldMembers?.members ?? [];
-        List<String> members = householdMembers.map((person) {
+        householdMembers.map((person) {
           String givenName = person?.givenName ?? '';
           String familyName = person?.familyName ?? '';
           String fullName = '$givenName $familyName';
@@ -292,10 +292,10 @@ class _HouseholdInformation extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(UserProfileStrings.householdMembers),
+                Text(UserProfileStrings.householdMembers),
               ],
             ),
-            Container(
+            SizedBox(
               height: 50.0,
               child: ListView(shrinkWrap: true, children: [
                 for (var member in householdMembers)
@@ -334,10 +334,10 @@ class _HouseholdInformation extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(UserProfileStrings.notesWithNote),
+                Text(UserProfileStrings.notesWithNote),
               ],
             ),
-            Container(
+            SizedBox(
               height: 50,
               child: TextField(
                 controller: TextEditingController()..text = notes,
@@ -358,7 +358,7 @@ class _HouseholdInformation extends StatelessWidget {
 /// Cluster Information
 class _ClusterInformation extends StatelessWidget {
   /// TODO: Add cluster information from database
-  const _ClusterInformation({super.key});
+  const _ClusterInformation();
 
   @override
   Widget build(BuildContext context) {
@@ -396,10 +396,10 @@ class _ClusterInformation extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(UserProfileStrings.captains),
+                Text(UserProfileStrings.captains),
               ],
             ),
-            Container(
+            SizedBox(
               height: 50.0,
               child: ListView(
                 shrinkWrap: true,

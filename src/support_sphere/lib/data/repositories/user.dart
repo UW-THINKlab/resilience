@@ -71,7 +71,7 @@ class UserRepository {
     return null;
   }
 
-  /// Get the user profile and person by user id retrieved from [AuthUser].
+  /// Get the user profile and person by user id retrieved from [MyAuthUser].
   /// Returns a [Person] object if the user profile and person exist.
   Future<Person?> getPersonProfileByUserId({
     required String userId,
@@ -92,6 +92,10 @@ class UserRepository {
       );
     }
     return null;
+  }
+
+  Stream<Person?> personForAuthUser({required MyAuthUser user}) async* {
+    yield await getPersonProfileByUserId(userId: user.uuid);
   }
 
   /// Get the cluster by cluster id retrieved from [Household].

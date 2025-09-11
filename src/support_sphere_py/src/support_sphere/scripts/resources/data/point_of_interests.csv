@@ -1,0 +1,8 @@
+name,address,geom,type
+Seattle Children's Hospital,4800 Sand Point Way NE,"{""type"":""Point"",""coordinates"":[47.66239057806563,-122.28148076640483]}",hospital
+Laurelhurst Elementary School,4530 46th Ave NE,"{""type"":""Point"",""coordinates"":[47.66219768482213,-122.2778479172512]}",school
+Laurelhurst Community Center,4554 NE 41st St,"{""type"":""Point"",""coordinates"":[47.6591528763917,-122.27787227416428]}",community center
+Villa Academy,5001 NE 50th St,"{""type"":""Point"",""coordinates"":[47.66387239684277,-122.27305910300021]}",school
+St. Stephen's Episcopal Church,4805 NE 45th St,"{""type"":""Point"",""coordinates"":[47.66111345339741,-122.27593407231134]}",church
+Seattle Community Church,4501 46th Ave NE,"{""type"":""Point"",""coordinates"":[47.66145572315599,-122.27860173183646]}",church
+St. Bridget Catholic Church,4900 NE 50th St,"{""type"":""Point"",""coordinates"":[47.665275071199346,-122.27458284532786]}",church

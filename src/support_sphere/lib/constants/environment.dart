@@ -2,7 +2,7 @@
 abstract class EnvironmentConfig {
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'http://localhost',
+    defaultValue: 'http://localhost:8000',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(

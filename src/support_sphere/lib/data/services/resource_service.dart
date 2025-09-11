@@ -89,10 +89,10 @@ class ResourceService {
     await _supabaseClient.from('user_resources').delete().eq('id', id);
   }
 
-  Future<void> markUpToDate(String id, DateTime updated_at) async {
+  Future<void> markUpToDate(String id, DateTime updatedAt) async {
     await _supabaseClient
         .from('user_resources')
-        .update({'updated_at': updated_at.toIso8601String()}).eq('id', id);
+        .update({'updated_at': updatedAt.toIso8601String()}).eq('id', id);
   }
 
   Future<void> createResourceCV(Map<String, dynamic> data) async {

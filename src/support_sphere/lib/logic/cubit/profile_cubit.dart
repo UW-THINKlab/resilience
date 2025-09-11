@@ -15,7 +15,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     fetchProfile();
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
   final AuthenticationRepository _authRepository = AuthenticationRepository();
   final UserRepository _userRepository = UserRepository();
 
@@ -23,7 +23,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(userProfile: userProfile));
   }
 
-  void authUserChanged(AuthUser? authUser) {
+  void authUserChanged(MyAuthUser? authUser) {
     emit(state.copyWith(authUser: authUser));
   }
 
@@ -63,7 +63,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       }
 
       /// Get the cluster and its captains information
-      Cluster? cluster = household == null 
+      // ignore: unnecessary_null_comparison
+      Cluster? cluster = household == null
         ? null
         : await _userRepository.getClusterById(clusterId: household.cluster_id);
 
@@ -98,7 +99,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         givenName: givenName,
         familyName: familyName,
       );
-      AuthUser updatedAuthUser = await _authRepository.updateUserPhoneNumber(
+      MyAuthUser updatedAuthUser = await _authRepository.updateUserPhoneNumber(
         phone: phone,
       );
       authUserChanged(updatedAuthUser);

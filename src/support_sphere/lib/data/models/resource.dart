@@ -48,7 +48,7 @@ class Resource extends Equatable {
     );
   }
 
-  copyWith({
+  Resource copyWith({
     String? id,
     String? name,
     String? description,

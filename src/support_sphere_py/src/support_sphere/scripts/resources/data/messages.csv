@@ -1,0 +1,4 @@
+from_id,to_id,urgency,content
+"adam.abacus@example.com","beth.bodmas@example.com",normal,"Weekly status update: No news is good news."
+"beth.bodmas@example.com","adam.abacus@example.com",important,"A new cluster meeting location has been set."
+"beth.bodmas@example.com","adam.abacus@example.com",emergency,"Test. This is a test of the emergency notification system. Repeat: This is only a test."

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+//import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:searchfield/searchfield.dart';
+//import 'package:searchfield/searchfield.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
@@ -44,7 +44,7 @@ class AddResourceFormData extends Equatable {
         resourceType
       ];
 
-  copyWith({
+  AddResourceFormData copyWith({
     String? nameOfResource,
     int? totalNumberNeeded,
     int? numberAvailable,
@@ -78,7 +78,7 @@ class AddResourceFormData extends Equatable {
 }
 
 class AddResourceForm extends StatefulWidget {
-  AddResourceForm(
+  const AddResourceForm(
       {super.key, this.resourceTypes, this.resources, this.onCancel});
 
   final List<ResourceTypes>? resourceTypes;
@@ -111,57 +111,58 @@ class _AddResourceFormState extends State<AddResourceForm> {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: SearchField<Resource>(
-                  key: const Key('AddResourceForm_nameOfResource_searchField'),
-                  onSaved: (value) {
-                    _formData = _formData.copyWith(nameOfResource: value);
-                  },
-                  autovalidateMode: AutovalidateMode.always,
-                  searchInputDecoration: SearchInputDecoration(
-                      labelText: AddResourceFormStrings.nameOfResource,
-                      helperText: '',
-                      border: border(context),
-                      enabledBorder: border(context),
-                      focusedBorder: focusBorder(context)),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                    FormBuilderValidators.singleLine(),
-                    (value) {
-                      if (value != null) {
-                        bool resourceExists = widget.resources!.any((element) =>
-                            element.name.toLowerCase().trim() ==
-                            value.toLowerCase().trim());
-                        return resourceExists
-                            ? 'Resource already exists'
-                            : null;
-                      }
+              // FIXME broken search form
+              // Expanded(
+              //   child: SearchField<Resource>(
+              //     key: const Key('AddResourceForm_nameOfResource_searchField'),
+              //     onSaved: (value) {
+              //       _formData = _formData.copyWith(nameOfResource: value);
+              //     },
+              //     autovalidateMode: AutovalidateMode.always,
+              //     searchInputDecoration: SearchInputDecoration(
+              //         labelText: AddResourceFormStrings.nameOfResource,
+              //         helperText: '',
+              //         border: border(context),
+              //         enabledBorder: border(context),
+              //         focusedBorder: focusBorder(context)),
+              //     validator: FormBuilderValidators.compose([
+              //       FormBuilderValidators.required(),
+              //       FormBuilderValidators.singleLine(),
+              //       (value) {
+              //         if (value != null) {
+              //           bool resourceExists = widget.resources!.any((element) =>
+              //               element.name.toLowerCase().trim() ==
+              //               value.toLowerCase().trim());
+              //           return resourceExists
+              //               ? 'Resource already exists'
+              //               : null;
+              //         }
 
-                      return null;
-                    }
-                  ]),
-                  suggestions: widget.resources!
-                      .map(
-                        (e) => SearchFieldListItem<Resource>(
-                          e.name,
-                          item: e,
-                          // Use child to show Custom Widgets in the suggestions
-                          // defaults to Text widget
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                FaIcon(e.resourceType.icon),
-                                const SizedBox(width: 10),
-                                Text(e.name),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
+              //         return null;
+              //       }
+              //     ]),
+              //     suggestions: widget.resources!
+              //         .map(
+              //           (e) => SearchFieldListItem<Resource>(
+              //             e.name,
+              //             item: e,
+              //             // Use child to show Custom Widgets in the suggestions
+              //             // defaults to Text widget
+              //             child: Padding(
+              //               padding: const EdgeInsets.all(8.0),
+              //               child: Row(
+              //                 children: [
+              //                   FaIcon(e.resourceType.icon),
+              //                   const SizedBox(width: 10),
+              //                   Text(e.name),
+              //                 ],
+              //               ),
+              //             ),
+              //           ),
+              //         )
+              //         .toList(),
+              //   ),
+              // ),
               Expanded(
                 child: ResourceTypeFilter(
                     key: const Key('AddResourceForm_resourceTypeFilter'),

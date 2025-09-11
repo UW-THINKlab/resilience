@@ -16,7 +16,7 @@ class ChecklistFormCubit extends Cubit<ChecklistFormState> {
     fetchAllFrequencies();
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
   final Checklist? initialChecklist;
   final ChecklistRepository _checklistRepository = ChecklistRepository();
 

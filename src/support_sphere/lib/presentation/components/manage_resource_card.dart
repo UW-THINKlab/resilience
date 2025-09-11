@@ -8,20 +8,14 @@ import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 class ManageResourceCard extends StatefulWidget {
   final Resource resource;
 
-  const ManageResourceCard({Key? key, required this.resource}) : super(key: key);
+  const ManageResourceCard({super.key, required this.resource});
 
   @override
   _ResourceCardState createState() => _ResourceCardState();
 }
 
 class _ResourceCardState extends State<ManageResourceCard> {
-  bool? _isSelected = false;
 
-  void _toggleSelection(value) {
-    setState(() {
-      _isSelected = value;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +37,7 @@ class _ResourceCardState extends State<ManageResourceCard> {
                   //   value: _isSelected,
                   //   onChanged: (value) => _toggleSelection(value),
                   // ),
-                  Container(
+                  SizedBox(
                     width: 200,
                     child: Text(
                       resourceName,

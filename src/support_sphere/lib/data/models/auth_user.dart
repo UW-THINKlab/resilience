@@ -4,12 +4,12 @@ import 'package:uuid/v4.dart';
 /// {@template user}
 /// AuthUser model
 ///
-/// [AuthUser.empty] represents an unauthenticated user.
-/// [AuthUser.sample] represents an unauthenticated user with a given email and id
+/// [MyAuthUser.empty] represents an unauthenticated user.
+/// [MyAuthUser.sample] represents an unauthenticated user with a given email and id
 /// {@endtemplate}
-class AuthUser extends Equatable {
+class MyAuthUser extends Equatable {
   /// {@macro user}
-  const AuthUser({
+  const MyAuthUser({
     required this.uuid,
     required this.userRole,
     this.email,
@@ -29,12 +29,12 @@ class AuthUser extends Equatable {
   final String userRole;
 
   /// Empty user which represents an unauthenticated user.
-  static const empty = AuthUser(uuid: '', userRole: '');
+  static const empty = MyAuthUser(uuid: '', userRole: '');
 
   /// Sample user which represents a user with a given email and id
   /// for testing purposes.
   /// This user is not authenticated.
-  static final sample = AuthUser(
+  static final sample = MyAuthUser(
     uuid: const UuidV4().generate(),
     phone: '+15552345678',
     email: 'johndoe@example.com',
@@ -42,10 +42,10 @@ class AuthUser extends Equatable {
   );
 
   /// Convenience getter to determine whether the current user is empty.
-  bool get isEmpty => this == AuthUser.empty;
+  bool get isEmpty => this == MyAuthUser.empty;
 
   /// Convenience getter to determine whether the current user is not empty.
-  bool get isNotEmpty => this != AuthUser.empty;
+  bool get isNotEmpty => this != MyAuthUser.empty;
 
   @override
   List<Object?> get props => [email, uuid, phone, userRole];

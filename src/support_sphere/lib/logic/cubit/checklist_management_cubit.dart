@@ -12,7 +12,7 @@ class ChecklistManagementCubit extends Cubit<ChecklistManagementState> {
     fetchAllChecklists();
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
   final ChecklistRepository _checklistRepository = ChecklistRepository();
 
   Future<void> fetchAllChecklists() async {

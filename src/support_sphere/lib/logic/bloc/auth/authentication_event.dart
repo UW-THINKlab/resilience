@@ -6,7 +6,7 @@ sealed class AuthenticationEvent {}
 class AuthOnCurrentUserChanged extends AuthenticationEvent {
   AuthOnCurrentUserChanged(this.user);
 
-  final AuthUser user;
+  final MyAuthUser user;
 }
 
 class AuthOnLogoutRequested extends AuthenticationEvent {}

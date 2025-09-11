@@ -55,7 +55,7 @@ class ResourceRepository {
     await _resourceService.deleteUserResource(id);
   }
 
-  Future<void> markUpToDate(String id, DateTime updated_at) async {
-    await _resourceService.markUpToDate(id, updated_at);
+  Future<void> markUpToDate(String id, DateTime updatedAt) async {
+    await _resourceService.markUpToDate(id, updatedAt);
   }
 }
