@@ -1,9 +1,12 @@
 import 'package:geodesy/geodesy.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/poi_service.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
+
+final log = Logger('HomeRepository');
 
 
 class HomeRepository {
@@ -54,7 +57,7 @@ class HomeRepository {
   }
 
   Future<List<Cluster>> getAllClusters() async {
-      log.fine("getAllClusters");
+      //log.fine("getAllClusters");
 
       final clusterList = await _clusterService.getAllClusters();
       if (clusterList == null || clusterList.isEmpty) {

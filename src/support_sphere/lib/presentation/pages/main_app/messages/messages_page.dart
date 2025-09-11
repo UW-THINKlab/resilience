@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/messages.dart';
@@ -10,8 +11,12 @@ import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:support_sphere/utils/supabase.dart';
 
 const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+
+final log = Logger('MessagesPage');
+
 
 /// Page to chat with someone.
 ///
@@ -83,7 +88,7 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                //const _MessageBar(),
+                const _MessageBar(),
               ],
             );
           } else {
@@ -95,113 +100,88 @@ class MessagesState extends State<MessagesPage> {
   }
 }
 
-// class MessagesCubit extends Cubit<MessagesState> {
-//   MessagesState(this.authUser) : super(const MessagesState()) {
-//     fetchMessages(authUser.uuid);
-//   }
-
-//   final AuthUser authUser;
-//   final ChecklistRepository _checklistRepository = ChecklistRepository();
-
-//   Future<void> fetchUserChecklists(String userId) async {
-//     try {
-//       final checklists =
-//           await _checklistRepository.getUserChecklistsByUserId(userId);
-
-//       emit(state.copyWith(
-//           toBeDoneChecklists: checklists
-//               .where((checklist) => checklist.completedAt == null)
-//               .toList(),
-//           completedChecklists: checklists
-//               .where((checklist) => checklist.completedAt != null)
-//               .toList()));
-//     } catch (error) {
-//       /// TODO: handle errors
-//       print(error);
-//     }
-//   }
-//   // ...
-// }
 
 /// Set of widget that contains TextField and Button to submit message
-// class _MessageBar extends StatefulWidget {
-//   const _MessageBar({
-//     Key? key,
-//   }) : super(key: key);
+class _MessageBar extends StatefulWidget {
+  const _MessageBar({
+    Key? key,
+  }) : super(key: key);
 
-//   @override
-//   State<_MessageBar> createState() => _MessageBarState();
-// }
+  @override
+  State<_MessageBar> createState() => _MessageBarState();
+}
 
-// class _MessageBarState extends State<_MessageBar> {
-//   late final TextEditingController _textController;
+class _MessageBarState extends State<_MessageBar> {
+  late final TextEditingController _textController;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Material(
-//       color: Colors.grey[200],
-//       child: SafeArea(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Row(
-//             children: [
-//               Expanded(
-//                 child: TextFormField(
-//                   keyboardType: TextInputType.text,
-//                   maxLines: null,
-//                   autofocus: true,
-//                   controller: _textController,
-//                   decoration: const InputDecoration(
-//                     hintText: 'Type a message',
-//                     border: InputBorder.none,
-//                     focusedBorder: InputBorder.none,
-//                     contentPadding: EdgeInsets.all(8),
-//                   ),
-//                 ),
-//               ),
-//               TextButton(
-//                 onPressed: () => _submitMessage(),
-//                 child: const Text('Send'),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.grey[200],
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  maxLines: null,
+                  autofocus: true,
+                  controller: _textController,
+                  decoration: const InputDecoration(
+                    hintText: 'Type a message',
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.all(8),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => _submitMessage(context),
+                child: const Text('Send'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-//   @override
-//   void initState() {
-//     _textController = TextEditingController();
-//     super.initState();
-//   }
+  @override
+  void initState() {
+    _textController = TextEditingController();
+    super.initState();
+  }
 
-//   @override
-//   void dispose() {
-//     _textController.dispose();
-//     super.dispose();
-//   }
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
 
-//   void _submitMessage() async {
-//     final text = _textController.text;
-//     //final myUserId = supabase.auth.currentUser!.id;
-//     if (text.isEmpty) {
-//       return;
-//     }
-//     _textController.clear();
-//     //
-//     // try {
-//     //   //await supabase.from('messages').insert({
-//     //   //  'profile_id': myUserId,
-//     //   //  'content': text,
-//     //   //});
-//     // } on PostgrestException catch (error) {
-//     //   //context.showErrorSnackBar(message: error.message);
-//     // } catch (_) {
-//     //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
-//     // }
-//   }
-// }
+  void _submitMessage(BuildContext context) async {
+    final text = _textController.text;
+    final myUserId = supabase.auth.currentUser!.id;
+    if (text.isEmpty) {
+      return;
+    }
+    _textController.clear();
+
+    try {
+      await supabase.from('messages').insert({
+       'profile_id': myUserId,
+       'content': text,
+      });
+    } on PostgrestException catch (error) {
+      log.warning("ERROR: ${error.message}");
+      //context.showErrorSnackBar(message: error.message);
+    } catch (_) {
+      //context.showErrorSnackBar(message: unexpectedErrorMessage);
+      log.warning("Unknown error in _submitMessage");
+    }
+  }
+}
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({

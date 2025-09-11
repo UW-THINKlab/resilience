@@ -63,6 +63,7 @@ class HomeBodyState extends State<HomeBody> {
                       child: HomeMap(
                         mapController: _mapController,
                         state: state,
+                        cubit: context.read<HomeCubit>(),
                         onMapReady: () {
                           setState(() => _isMapReady = true);
                         },

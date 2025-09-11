@@ -1,3 +1,5 @@
+import 'dart:ui' show Offset;
+
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
@@ -25,6 +27,7 @@ class HomeState extends Equatable {
     this.pointsOfInterest,
     this.allClusters,
     this.pickedLocation,
+    this.pickedOffset,
   });
 
   final HomeStatus status;
@@ -35,8 +38,9 @@ class HomeState extends Equatable {
   final Cluster? cluster;
   final List<PointOfInterest>? pointsOfInterest;
   final List<Cluster>? allClusters;
-  final LatLng? pickedLocation;
 
+  final LatLng? pickedLocation;
+  final Offset? pickedOffset;
 
   @override
   List<Object?> get props => [
@@ -49,6 +53,7 @@ class HomeState extends Equatable {
         pointsOfInterest,
         allClusters,
         pickedLocation,
+        pickedOffset,
       ];
 
   HomeState copyWith({
@@ -61,6 +66,7 @@ class HomeState extends Equatable {
     List<PointOfInterest>? pointsOfInterest,
     List<Cluster>? allClusters,
     LatLng? pickedLocation,
+    Offset? pickedOffset,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -71,6 +77,8 @@ class HomeState extends Equatable {
       cluster: cluster ?? this.cluster,
       pointsOfInterest: pointsOfInterest ?? this.pointsOfInterest,
       allClusters: allClusters ?? this.allClusters,
+      pickedLocation: pickedLocation ?? this.pickedLocation,
+      pickedOffset: pickedOffset ?? this.pickedOffset,
     );
   }
 }

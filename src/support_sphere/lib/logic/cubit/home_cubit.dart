@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
@@ -39,14 +41,14 @@ class HomeCubit extends Cubit<HomeState> {
 
     try {
       final homeData = await _homeRepository.getHomeData(authUser.uuid);
-
-      //var points = homeData?.pointsOfInterest;
-      //print(points);
+      final points = homeData?.pointsOfInterest;
+      final allClusters = await _homeRepository.getAllClusters();
 
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
         cluster: homeData.cluster,
-        //pointsOfInterest: points,
+        pointsOfInterest: points,
+        allClusters: allClusters,
       ));
     } catch (error) {
       throw Exception(error);
@@ -72,10 +74,10 @@ class HomeCubit extends Cubit<HomeState> {
 
   // emit a new state with all clusters
   Future<void> showAllClusters(bool showAll) async {
-    log.fine("starting showAllClusters: $showAll");
+    //log.fine("starting showAllClusters: $showAll");
     if (showAll) {
       final allClusters = await _homeRepository.getAllClusters();
-      log.finer("allClusters: $allClusters");
+      //log.finer("allClusters: $allClusters");
       emit(state.copyWith(
         status: HomeStatus.allClusters,
         allClusters: allClusters,
@@ -89,6 +91,20 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  // state flow: set location, -> description/cancel -> notify/cancel -> (end)
+
+  Future<void> setMeetingPlace(LatLng point, Offset offset) async {
+    emit(state.copyWith(
+      //status: HomeStatus.editMeetingPlace, NEXT state?
+      pickedLocation: point,
+      pickedOffset: offset,
+    ));
+  }
+
+    //final point = mapController.camera.latLngToScreenOffset(state.pickedLocation = latLng);
+            //setState(() => tappedPoint = Offset(point.dx, point.dy));
+            //state.pickedLocation = Offset(point.dx, point.dy);
+
   Future<void> editMeetingPlace() async {
     emit(state.copyWith(
       status: HomeStatus.editMeetingPlace,
@@ -100,7 +116,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (state.pickedLocation != null) {
       final Cluster cluster = await _homeRepository.updateClusterMeetingPoint(state.cluster!, state.pickedLocation);
       emit(state.copyWith(
-        status: HomeStatus.success,
+        //status: HomeStatus.success,
         cluster: cluster,
       ));
     }
@@ -108,7 +124,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> cancelMeetingPlace() async {
     emit(state.copyWith(
-      status: HomeStatus.success,
+      //status: HomeStatus.success,
     ));
   }
 
@@ -117,7 +133,7 @@ class HomeCubit extends Cubit<HomeState> {
       // set bounding box vfrom cluster
 
       emit(state.copyWith(
-        status: HomeStatus.success,
+        //status: HomeStatus.success,
       ));
     }
   }

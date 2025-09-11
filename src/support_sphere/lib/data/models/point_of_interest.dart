@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:ionicons/ionicons.dart';
-//import 'package:font_awesome_flutter/name_icon_mapping.dart';
+import 'package:logging/logging.dart' show Logger;
+
+final log = Logger('MessagesPage');
+
 
 // Need a lookup map for icon colors
 const Map<String, Color> colorStringToColor = {
@@ -61,6 +64,21 @@ const Map<String, Color> colorStringToColor = {
     'yellowAccent': Colors.yellowAccent,
 };
 
+const Map<String, (IconData, Color)> _icons = {
+  "building-shield": (FontAwesomeIcons.buildingShield, Colors.blueGrey),
+  "school": (FontAwesomeIcons.school, Colors.blue),
+  "building-columns": (FontAwesomeIcons.buildingColumns, Colors.lightGreen),
+  "hospital": (FontAwesomeIcons.hospital, Colors.red),
+  "place-of-worship": (FontAwesomeIcons.placeOfWorship, Colors.orange),
+  "building-flag": (FontAwesomeIcons.buildingFlag, Colors.green),
+  "circle-user": (FontAwesomeIcons.circleUser, Colors.purple),
+  "user": (FontAwesomeIcons.buildingShield, Colors.blueGrey),
+  // NOTE: hacky work around until I put the "type" forien ke in place
+  "community center": (FontAwesomeIcons.buildingFlag, Colors.green),
+  "church": (FontAwesomeIcons.placeOfWorship, Colors.orange),
+};
+
+
 class PointOfInterest extends Equatable {
   final String id;
   final String name;
@@ -68,6 +86,7 @@ class PointOfInterest extends Equatable {
   final String description;
   final LatLng geom;
   final String type;
+  final double size = 60;
 
   const PointOfInterest({
     required this.id,
@@ -100,15 +119,27 @@ class PointOfInterest extends Equatable {
   }
 
   Marker marker() {
+    FaIcon icon;
+    Color color;
+    if (_icons[type] != null) {
+      final (ico,colo) = _icons[type]!;
+      icon = FaIcon(ico, size: size-12, color: Colors.white);
+      color = colo;
+    }
+    else {
+      log.warning("Unknown icon type: $name");
+      icon = FaIcon(FontAwesomeIcons.atom, color: Colors.white);
+      color = Colors.purple;
+    }
+
     return Marker(
       point: geom,
-      width: 40,
-      height: 40,
-      // child: FaIcon(faIconNameMapping[type]);
-      child: const Icon(
-        Ionicons.terminal,
-        color: Colors.deepPurple,
-        size: 40,
-      ));
+      width: size,
+      height: size,
+      child: CircleAvatar(
+        backgroundColor: color,
+        child: Center(child: icon),
+      )
+    );
   }
 }
