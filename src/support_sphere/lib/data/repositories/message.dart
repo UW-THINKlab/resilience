@@ -1,14 +1,11 @@
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/utils/supabase.dart';
 
+final log = Logger('MessagesRepository');
+
 class MessagesRepository {
-  //final SupabaseClient _supabaseClient = supabase;
-
-  // Future<PostgrestList?> _queryMessages(String toId) async {
-  //   return await _supabaseClient.from('messages').select().order('name', ascending: true);
-  // }
-
   Stream<List<Message>> messagesTo(User user) {
     return supabase.from('messages')
       .stream(primaryKey: [user.id])
@@ -17,19 +14,30 @@ class MessagesRepository {
       .toList());
   }
 
-  // Stream<List<Message>> getMessages(User user) async* {
-  //   print(user);
-  //   //final MyAuthUser authUser = context.select((AuthenticationBloc bloc) => bloc.state.user);
+  Stream<List<Message>> messagesFor(User user, String groupId) {
+    return supabase.from('messages')
+      .stream(primaryKey: [user.id])
+      .eq('to_id', groupId)
+      .order('sent_on')
+      .map((maps) => maps.map((map) => Message.fromJson(json: map))
+      .toList());
+  }
 
-  //   yield [
-  //     Message(
-  //       id: "5432",
-  //       fromId: "20",
-  //       toId: "25",
-  //       content: "test message 1",
-  //       urgency: MessageUrgency.normal,
-  //       sentOn: DateTime.now(),
-  //     ),
-  //   ];
-  // }
+  Future<void> sendMessage(String userId, String toId, String text) async {
+    try {
+      await supabase.from('messages').insert({
+       'from_id': userId,
+       'to_id': toId,
+       'content': text,
+       'sent_on': DateTime.now(),
+       'urgency': "normal",
+      });
+    } on PostgrestException catch (error) {
+      log.warning("ERROR: ${error.message}");
+      //context.showErrorSnackBar(message: error.message);
+    } catch (_) {
+      //context.showErrorSnackBar(message: unexpectedErrorMessage);
+      log.warning("Unknown error in _submitMessage");
+    }
+  }
 }

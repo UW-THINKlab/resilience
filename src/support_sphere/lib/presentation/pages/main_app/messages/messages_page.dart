@@ -1,15 +1,13 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart' show Logger;
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/messages.dart';
+import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
-import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:support_sphere/utils/supabase.dart';
 
@@ -17,10 +15,14 @@ const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey
 
 final log = Logger('MessagesPage');
 
+// ASIDE: "Groups" include households, clusters
 
-/// Page to chat with someone.
-///
-/// Displays chat bubbles as a ListView and TextField to enter new chat.
+// from github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
+
+
+/// Initial page for cluster messaging.
+/// Cluster captains get special display,
+/// and ability to send "urgent" messages
 class MessagesPage extends StatefulWidget {
   const MessagesPage({Key? key}) : super(key: key);
 
@@ -35,25 +37,47 @@ class MessagesPage extends StatefulWidget {
 }
 
 class MessagesState extends State<MessagesPage> {
-  //final UserRepository _userRepo = UserRepository();
-  final MessagesRepository _messageRepo = MessagesRepository();
-  //late final List<Message> _messages;
+  final UserRepository userRepo = UserRepository();
+  final MessagesRepository messageRepo = MessagesRepository();
+  final ClusterRepository clusterRepo = ClusterRepository();
 
-  late final Stream<List<Message>> _messagesStream;
-  //late final Stream<Person> _profileStream;
-  //final Map<String, Profile> _profileCache = {};
+  late final Stream<List<Message>> messagesStream;
+  late final Stream<Person?> profileStream;
+  late final Cluster? cluster;
+  late final String clusterId;
+  final Map<String,Person> profileCache = {};
+  late final String myUserId;
+  late final Person? myUser;
 
   @override
   void initState() {
-    final supabase = Supabase.instance.client;
-    final myUserId = supabase.auth.currentUser!.id;
-    _messagesStream = _messageRepo.messagesTo(supabase.auth.currentUser!);
-
-    //_profileStream = _userRepo.personForAuthUser(user: supabase.auth.currentUser!);
-    //final user = supabase.auth.currentUser;
-
-    //_messagesStream = _messageRepo.getMessages(user!);
+    myUserId = supabase.auth.currentUser!.id;
+    messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
+    profileStream = userRepo.personForId(userId: myUserId);
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  Future<void> _loadInitialData() async {
+    //setState(() => _isLoading = true);
+
+    myUser = await userRepo.getPersonProfileByUserId(userId: myUserId);
+    log.fine("MY USER ID: $myUserId, profile: ${myUser!.profile!.id}");
+    cluster = await clusterRepo.getClusterByUser(myUserId);
+
+    final members = await userRepo.getAllMembers();
+    for (var member in members) {
+      profileCache[member!.id] = member;
+    }
+
+    // if (!mounted) return; // avoid calling setState after dispose
+    // setState(() {
+    //   _data = result;
+    //   _isLoading = false;
+    // });
   }
 
   @override
@@ -61,11 +85,11 @@ class MessagesState extends State<MessagesPage> {
     // ignore: deprecated_member_use
     //final MyAuthUser authUser = context.select((AuthenticationBloc bloc) => bloc.state.user);
     //final profileStream = _userRepo.personForAuthUser(user: authUser);
-
+    final title = cluster != null && cluster!.name != null ? cluster!.name : 'Messages';
     return Scaffold(
-      appBar: AppBar(title: const Text('Messages')), // FIXME title of message group
+      appBar: AppBar(title: Text(title!)),
       body: StreamBuilder<List<Message>>(
-        stream: _messagesStream,
+        stream: messagesStream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -82,8 +106,8 @@ class MessagesState extends State<MessagesPage> {
                           itemBuilder: (context, index) {
                             return _MessageBubble(
                               message: messages[index],
-                              // FIXME add profile info
-                              //profile: _profileCache[message.profileId],
+                              profile: profileCache[messages[index].fromId],
+                              myUserId: myUserId,
                             );
                           },
                         ),
@@ -168,18 +192,22 @@ class _MessageBarState extends State<_MessageBar> {
     }
     _textController.clear();
 
-    try {
-      await supabase.from('messages').insert({
-       'profile_id': myUserId,
-       'content': text,
-      });
-    } on PostgrestException catch (error) {
-      log.warning("ERROR: ${error.message}");
-      //context.showErrorSnackBar(message: error.message);
-    } catch (_) {
-      //context.showErrorSnackBar(message: unexpectedErrorMessage);
-      log.warning("Unknown error in _submitMessage");
-    }
+    final MessagesRepository _messageRepo = MessagesRepository();
+    _messageRepo.sendMessage(myUserId, "_clusterId", text);
+
+
+    // try {
+    //   await supabase.from('messages').insert({
+    //    'profile_id': myUserId,
+    //    'content': text,
+    //   });
+    // } on PostgrestException catch (error) {
+    //   log.warning("ERROR: ${error.message}");
+    //   //context.showErrorSnackBar(message: error.message);
+    // } catch (_) {
+    //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
+    //   log.warning("Unknown error in _submitMessage");
+    // }
   }
 }
 
@@ -187,11 +215,13 @@ class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
     Key? key,
     required this.message,
-    //required this.profile,
+    required this.profile,
+    required this.myUserId,
   }) : super(key: key);
 
   final Message message;
-  //final Profile? profile;
+  final Person? profile;
+  final String? myUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -216,12 +246,12 @@ class _MessageBubble extends StatelessWidget {
         ),
       ),
       const SizedBox(width: 12),
-      Text(timeago.format(message.sentOn, locale: 'en_short')),
+      Text("${profile?.givenName} ${profile?.familyName} on ${message.sentOn.toString()}"),
       const SizedBox(width: 60),
     ];
-    //if (message.isMine) {
-    //  chatContents = chatContents.reversed.toList();
-    //}
+    if (message.fromId == myUserId) {
+      chatContents = chatContents.reversed.toList();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
       child: Row(

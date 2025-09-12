@@ -5,6 +5,11 @@ import 'package:uuid/v4.dart';
 class UserService {
   final SupabaseClient _supabaseClient = supabase;
 
+  /// Retrieves the household members by household id.
+  Future<PostgrestList?> getAllPeople() async {
+    return await supabase.from('people').select('*');
+  }
+
   /// Retrieves the person household by person id.
   Future<PostgrestMap?> getPersonHouseholdByPersonId(String personId) async {
     return await _supabaseClient.from('people_groups').select('''
@@ -36,6 +41,20 @@ class UserService {
         needs_help
       )
     ''').eq('household_id', householdId);
+  }
+
+  Future<PostgrestList?> getPeopleByCluster(String clusterId) async {
+    return await _supabaseClient.from('people_groups').select('''
+      people(
+        id,
+        user_profile_id,
+        given_name,
+        family_name,
+        nickname,
+        is_safe,
+        needs_help
+      )
+    ''').eq('households.cluster_id', clusterId);
   }
 
   /// Retrieves the user profile and person by user id.

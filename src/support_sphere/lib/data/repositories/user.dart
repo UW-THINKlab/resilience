@@ -5,6 +5,7 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
@@ -15,6 +16,21 @@ class UserRepository {
   final UserService _userService = UserService();
   final AuthService _authService = AuthService();
   final ClusterService _clusterService = ClusterService();
+  final ClusterRepository _clusters = ClusterRepository();
+
+  Future<List<Person?>> getAllMembers() async {
+    final data = await _userService.getAllPeople();
+
+    List<Person> members = [];
+
+    if (data != null) {
+      for (var member in data) {
+        Map<String, dynamic> personData = member["people"];
+        members.add(Person.fromJson(personData));
+      }
+    }
+    return members;
+  }
 
   /// Get the household members by household id.
   /// Returns a [HouseHoldMembers] object if the household members exist.
@@ -50,6 +66,38 @@ class UserRepository {
     }
     return null;
   }
+
+
+  Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
+    final cluster = await _clusters.getCluster(clusterId);
+
+    List<Person> people = [];
+    final data = await _userService.getPeopleByCluster(clusterId);
+    if (data != null) {
+
+      for (var member in data) {
+        Map<String, dynamic> personData = member["people"];
+        Profile? profile;
+        String? userProfileId = personData["user_profile_id"];
+
+        if (userProfileId != null) {
+          profile = Profile(id: userProfileId);
+        }
+
+        people.add(Person(
+          id: personData["id"],
+          profile: profile,
+          givenName: personData["given_name"],
+          familyName: personData["family_name"],
+          nickname: personData["nickname"],
+          isSafe: personData["is_safe"],
+          needsHelp: personData["needs_help"],
+        ));
+      }
+    }
+    return (cluster,people);
+  }
+
 
   /// Get the household by person id.
   Future<Household?> getHouseholdByPersonId(String personId) async {
@@ -94,8 +142,8 @@ class UserRepository {
     return null;
   }
 
-  Stream<Person?> personForAuthUser({required MyAuthUser user}) async* {
-    yield await getPersonProfileByUserId(userId: user.uuid);
+  Stream<Person?> personForId({required String userId}) async* {
+    yield await getPersonProfileByUserId(userId: userId);
   }
 
   /// Get the cluster by cluster id retrieved from [Household].
