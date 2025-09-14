@@ -8,7 +8,6 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:support_sphere/utils/supabase.dart';
 
 const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
@@ -49,6 +48,9 @@ class MessagesState extends State<MessagesPage> {
   late final String myUserId;
   late final Person? myUser;
 
+  String title = "Messages";
+  bool _isLoading = true;
+
   @override
   void initState() {
     myUserId = supabase.auth.currentUser!.id;
@@ -62,22 +64,34 @@ class MessagesState extends State<MessagesPage> {
   }
 
   Future<void> _loadInitialData() async {
-    //setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-    myUser = await userRepo.getPersonProfileByUserId(userId: myUserId);
-    log.fine("MY USER ID: $myUserId, profile: ${myUser!.profile!.id}");
+    final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
+    log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
+
     cluster = await clusterRepo.getClusterByUser(myUserId);
+    title = "${cluster!.name} Messages";
+    log.fine("CLUSTER: $cluster");
 
-    final members = await userRepo.getAllMembers();
-    for (var member in members) {
-      profileCache[member!.id] = member;
-    }
+    final allUsers = await userRepo.getAllMembers();
+    profileCache.addAll(allUsers);
+    log.fine(">>> $profileCache");
 
-    // if (!mounted) return; // avoid calling setState after dispose
+    if (!mounted) return; // avoid calling setState after dispose
+
     // setState(() {
-    //   _data = result;
+    //   myUser = user;
+    //   cluster = cluster;
+    //   title = title;
     //   _isLoading = false;
     // });
+    setState(() => _isLoading = false);
+  }
+
+  Person? getProfile(String userId) {
+    final person = profileCache[userId];
+    log.fine("===== Found profile for $userId: $person");
+    return person;
   }
 
   @override
@@ -85,9 +99,8 @@ class MessagesState extends State<MessagesPage> {
     // ignore: deprecated_member_use
     //final MyAuthUser authUser = context.select((AuthenticationBloc bloc) => bloc.state.user);
     //final profileStream = _userRepo.personForAuthUser(user: authUser);
-    final title = cluster != null && cluster!.name != null ? cluster!.name : 'Messages';
     return Scaffold(
-      appBar: AppBar(title: Text(title!)),
+      appBar: AppBar(title: Text(title)),
       body: StreamBuilder<List<Message>>(
         stream: messagesStream,
         builder: (context, snapshot) {
@@ -106,7 +119,7 @@ class MessagesState extends State<MessagesPage> {
                           itemBuilder: (context, index) {
                             return _MessageBubble(
                               message: messages[index],
-                              profile: profileCache[messages[index].fromId],
+                              profile: getProfile(messages[index].fromId),
                               myUserId: myUserId,
                             );
                           },

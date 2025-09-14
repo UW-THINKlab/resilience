@@ -86,7 +86,7 @@ class PointOfInterest extends Equatable {
   final String description;
   final LatLng geom;
   final String type;
-  final double size = 60;
+  final double size = 40;
 
   const PointOfInterest({
     required this.id,
@@ -123,7 +123,7 @@ class PointOfInterest extends Equatable {
     Color color;
     if (_icons[type] != null) {
       final (ico,colo) = _icons[type]!;
-      icon = FaIcon(ico, size: size-12, color: Colors.white);
+      icon = FaIcon(ico, size: size/1.75, color: Colors.white);
       color = colo;
     }
     else {

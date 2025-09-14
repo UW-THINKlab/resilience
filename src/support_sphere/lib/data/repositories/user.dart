@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
@@ -10,6 +11,9 @@ import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 
+final log = Logger('UserRepository');
+
+
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
@@ -18,15 +22,21 @@ class UserRepository {
   final ClusterService _clusterService = ClusterService();
   final ClusterRepository _clusters = ClusterRepository();
 
-  Future<List<Person?>> getAllMembers() async {
+  Future<Map<String,Person>> getAllMembers() async {
     final data = await _userService.getAllPeople();
 
-    List<Person> members = [];
+    log.fine("people data: $data");
+
+    Map<String,Person> members = {};
 
     if (data != null) {
       for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        members.add(Person.fromJson(personData));
+        //log.fine(">>> $member");
+        //Map<String, dynamic> personData = member["people"];
+        final person = Person.fromJson(member);
+        if (person.profile != null) {
+          members[person.profile!.id] = person;
+        }
       }
     }
     return members;
