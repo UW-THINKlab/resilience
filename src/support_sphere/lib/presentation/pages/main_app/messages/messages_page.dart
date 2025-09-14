@@ -71,34 +71,25 @@ class MessagesState extends State<MessagesPage> {
 
     cluster = await clusterRepo.getClusterByUser(myUserId);
     title = "${cluster!.name} Messages";
-    log.fine("CLUSTER: $cluster");
+    //log.fine("CLUSTER: $cluster");
 
     final allUsers = await userRepo.getAllMembers();
     profileCache.addAll(allUsers);
-    log.fine(">>> $profileCache");
+    //log.fine(">>> $profileCache");
 
     if (!mounted) return; // avoid calling setState after dispose
 
-    // setState(() {
-    //   myUser = user;
-    //   cluster = cluster;
-    //   title = title;
-    //   _isLoading = false;
-    // });
     setState(() => _isLoading = false);
   }
 
   Person? getProfile(String userId) {
     final person = profileCache[userId];
-    log.fine("===== Found profile for $userId: $person");
+    //log.fine("===== Found profile for $userId: $person");
     return person;
   }
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    //final MyAuthUser authUser = context.select((AuthenticationBloc bloc) => bloc.state.user);
-    //final profileStream = _userRepo.personForAuthUser(user: authUser);
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: StreamBuilder<List<Message>>(
@@ -125,7 +116,7 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                const _MessageBar(),
+                MessageBar(cluster: cluster!),
               ],
             );
           } else {
@@ -135,21 +126,26 @@ class MessagesState extends State<MessagesPage> {
       ),
     );
   }
-}
-
+} // -- end of state
 
 /// Set of widget that contains TextField and Button to submit message
-class _MessageBar extends StatefulWidget {
-  const _MessageBar({
-    Key? key,
-  }) : super(key: key);
+class MessageBar extends StatefulWidget {
+  MessageBar({Key? key, required this.cluster}) : super(key: key);
+
+  final Cluster cluster;
 
   @override
-  State<_MessageBar> createState() => _MessageBarState();
+  State<MessageBar> createState() => _MessageBarState();
 }
 
-class _MessageBarState extends State<_MessageBar> {
+class _MessageBarState extends State<MessageBar> {
   late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    _textController = TextEditingController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,8 +171,8 @@ class _MessageBarState extends State<_MessageBar> {
                 ),
               ),
               TextButton(
-                onPressed: () => _submitMessage(context),
-                child: const Text('Send'),
+                onPressed: () => _submitMessage(context, widget.cluster.id),
+                child: const Text('Send Message'), // FIXME formatting, text
               ),
             ],
           ),
@@ -186,18 +182,12 @@ class _MessageBarState extends State<_MessageBar> {
   }
 
   @override
-  void initState() {
-    _textController = TextEditingController();
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
   }
 
-  void _submitMessage(BuildContext context) async {
+  void _submitMessage(BuildContext context, String toId) async {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
     if (text.isEmpty) {
@@ -205,22 +195,11 @@ class _MessageBarState extends State<_MessageBar> {
     }
     _textController.clear();
 
-    final MessagesRepository _messageRepo = MessagesRepository();
-    _messageRepo.sendMessage(myUserId, "_clusterId", text);
+    //log.fine("Sent message from:$myUserId, to:$toId: $text");
+    MessagesRepository().sendMessage(myUserId, toId, text);
+    setState(() {
 
-
-    // try {
-    //   await supabase.from('messages').insert({
-    //    'profile_id': myUserId,
-    //    'content': text,
-    //   });
-    // } on PostgrestException catch (error) {
-    //   log.warning("ERROR: ${error.message}");
-    //   //context.showErrorSnackBar(message: error.message);
-    // } catch (_) {
-    //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
-    //   log.warning("Unknown error in _submitMessage");
-    // }
+    });
   }
 }
 

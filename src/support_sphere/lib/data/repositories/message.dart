@@ -2,6 +2,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:uuid/v4.dart' show UuidV4;
 
 final log = Logger('MessagesRepository');
 
@@ -24,20 +25,24 @@ class MessagesRepository {
   }
 
   Future<void> sendMessage(String userId, String toId, String text) async {
+    log.fine("Sending message from:$userId, to:$toId: $text");
+
     try {
+      final dateSent = DateTime.now();
       await supabase.from('messages').insert({
-       'from_id': userId,
-       'to_id': toId,
-       'content': text,
-       'sent_on': DateTime.now(),
-       'urgency': "normal",
+        'id': const UuidV4().generate(), // autogen by table def?
+        'from_id': userId,
+        'to_id': toId,
+        'content': text,
+        'sent_on': dateSent.toIso8601String(),
+        'urgency': "normal",
       });
-    } on PostgrestException catch (error) {
-      log.warning("ERROR: ${error.message}");
-      //context.showErrorSnackBar(message: error.message);
-    } catch (_) {
+    } on Exception catch (error) {
+      log.warning("ERROR: $error");
+      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
+    } catch (e) {
       //context.showErrorSnackBar(message: unexpectedErrorMessage);
-      log.warning("Unknown error in _submitMessage");
+      log.warning("Unknown error in _submitMessage: $e");
     }
   }
 }

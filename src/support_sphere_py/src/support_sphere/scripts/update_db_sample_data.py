@@ -153,25 +153,18 @@ def populate_checklists():
 
 @db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():
-    # Creating entries in 'Cluster' and 'Household' table.
-    # load a file of Clusters
-    # name: str|None = Field(nullable=True) < !!!
-    # meeting_place: str|None = Field(nullable=True)
-    # notes: str | None = Field(nullable=True)
-    # geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True) < !!!
-
     for cluster in load_clusters():
         try:
             BaseRepository.add(cluster)
         except Exception as ex:
             log.error(f"Error adding {cluster}: {ex}")
 
-    for cluster in BaseRepository.select_all(Cluster):
-        if cluster.name == "c_1":
-            household = Household(cluster=cluster, name="Household1")
-            BaseRepository.add(household)
-            log.info(f"added household {household}")
-            break
+    # Use "c_1" cluster to add test household
+    test_cluster = BaseRepository.get_one(Cluster, "name", "c_1")
+    if test_cluster:
+        household = Household(cluster=test_cluster, name="Household1")
+        BaseRepository.add(household)
+        log.info(f"added household {household}")
 
 
 def generate_signup_codes(household_id: uuid.UUID):
@@ -377,15 +370,18 @@ def load_clusters(csv_file: Path = DATA_DIRECTORY/'cluster_map.csv') -> list[Clu
 def load_test_messages(csv_file: Path = DATA_DIRECTORY/'messages.csv') -> list[Message]:
     messages = []
     try:
+        # user cluser id for to addr.
+        cluster = BaseRepository.get_one(Cluster, "name", "c_1")
+
         with csv_file.open(mode='r', newline='') as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
                 from_user: User = UserRepository.find_by_email(row['from_id'])
                 if from_user:
                     row['from_id'] = from_user.id
-                to_user: User = UserRepository.find_by_email(row['to_id'])
-                if to_user:
-                    row['to_id'] = to_user.id
+                #to_user: User = UserRepository.find_by_email(row['to_id'])
+                if cluster:
+                    row['to_id'] = cluster.id
                 msg = Message.fromDict(row)
                 messages.append(msg)
         log.info(f"Loaded {len(messages)} messages")

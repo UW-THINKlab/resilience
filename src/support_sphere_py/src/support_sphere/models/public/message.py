@@ -41,7 +41,7 @@ class Message(BasePublicSchemaModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     from_id: uuid.UUID = Field(foreign_key="public.user_profiles.id", nullable=True)
-    to_id: uuid.UUID = Field(foreign_key="public.user_profiles.id", nullable=True)
+    to_id: uuid.UUID = Field(foreign_key="public.clusters.id", nullable=True)
     urgency: MessageUrgency | None = Field(sa_column=Column(Enum(MessageUrgency)))
     content: str | None = Field(nullable=False)
     sent_on: datetime.datetime | None = Field(nullable=False)

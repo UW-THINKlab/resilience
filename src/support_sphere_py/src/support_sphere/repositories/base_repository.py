@@ -1,6 +1,10 @@
 from typing import Type, TypeVar, Any
 from sqlmodel import Session, SQLModel, select
 from support_sphere.repositories import engine
+import logging
+
+log = logging.getLogger(__name__)
+
 
 T = TypeVar("T", bound=SQLModel)
 
@@ -36,3 +40,14 @@ class BaseRepository:
             results = session.exec(statement)
             result_obj = results.first()
             return result_obj is not None
+
+    @classmethod
+    def get_one(cls, from_table: Type[T], col: str, value: Any) -> T:
+        with Session(BaseRepository.repository_engine) as session:
+            statement = select(from_table).where(getattr(from_table, col) == value)
+            results = session.exec(statement)
+            if results:
+                log.debug(f">>> RESULTS: {results}")
+                return results.first()
+            else:
+                log.warning(f"Couldn't find matching {T.__name__}.{col} == {value}")
