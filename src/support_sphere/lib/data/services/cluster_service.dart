@@ -34,7 +34,7 @@ class ClusterService {
 
   // FIXME - couldn't find an existing lib
   String pointGisStr(LatLng location) {
-    return "POINT(${location.latitude} ${location.longitude})";
+    return "POINT(${location.longitude} ${location.latitude})";
   }
 
   Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location, String? description) async {
@@ -46,7 +46,10 @@ class ClusterService {
     }).eq('id', clusterId);
 
     // new version
-    return getClusterById(clusterId);
+    final updatedCluster = await getClusterById(clusterId);
+    final point = updatedCluster?["meeting_point"];
+    log.fine(">>> updated meeting point: $point");
+    return updatedCluster;
   }
 
   Future<PostgrestList?> getCaptainsByClusterId(String clusterId) async {

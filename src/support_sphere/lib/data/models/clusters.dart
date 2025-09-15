@@ -60,6 +60,7 @@ class Cluster extends Equatable {
       }
     }
     final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;
+    log.fine("#### $meetingPoint -- ${json['meeting_point']}");
     final captains = json['captains'] != null ? Captains.fromJson(json['captains']) : null;
 
     return Cluster(

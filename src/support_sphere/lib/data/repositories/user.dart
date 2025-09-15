@@ -158,20 +158,20 @@ class UserRepository {
 
   /// Get the cluster by cluster id retrieved from [Household].
   /// Returns a [Cluster] object
-  Future<Cluster?> getClusterById({
-    required String clusterId,
-  }) async {
-    final data = await _clusterService.getClusterById(clusterId);
+  // Future<Cluster?> getClusterById({
+  //   required String clusterId,
+  // }) async {
+  //   final data = await _clusterService.getClusterById(clusterId);
 
-    if (data != null) {
-      return Cluster(
-        id: data["id"],
-        name: data["name"],
-        meetingPlace: data["meeting_place"],
-      );
-    }
-    return null;
-  }
+  //   if (data != null) {
+  //     return Cluster(
+  //       id: data["id"],
+  //       name: data["name"],
+  //       meetingPlace: data["meeting_place"],
+  //     );
+  //   }
+  //   return null;
+  // }
 
   Future<Captains?> getCaptainsByClusterId({
     required String clusterId,

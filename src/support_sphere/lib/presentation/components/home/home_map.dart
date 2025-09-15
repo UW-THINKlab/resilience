@@ -160,19 +160,25 @@ class HomeMap extends StatelessWidget {
   }
 
   Marker buildMeetingMarker(String? meetingPlace, LatLng? meetingPoint) {
+    log.fine("Building meeting marker: $meetingPlace, $meetingPoint");
     const iconSize = 40.0; // FIXME - move to general constant
     return Marker(
       point: meetingPoint!,
       width: iconSize,
       height: iconSize,
-      child: GestureDetector(
-        //onTap: () => _showCaptainDetails(context, captainMarker),
-        child: const Icon(
-          Ionicons.person,
-          color: Colors.green,
-          size: iconSize,
-        ),
+      child: const Icon(
+        Ionicons.people_circle_outline,
+        color: Colors.green,
+        size: iconSize,
       ),
+      // child: GestureDetector(
+      //   //onTap: () => _showCaptainDetails(context, captainMarker),
+      //   child: const Icon(
+      //     Ionicons.person,
+      //     color: Colors.green,
+      //     size: iconSize,
+      //   ),
+      // ),
     );
   }
 }

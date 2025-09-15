@@ -5,6 +5,7 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
+import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 
 part 'profile_state.dart';
@@ -18,6 +19,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final MyAuthUser authUser;
   final AuthenticationRepository _authRepository = AuthenticationRepository();
   final UserRepository _userRepository = UserRepository();
+  final ClusterRepository clusterRepo = ClusterRepository();
 
   void profileChanged(Person? userProfile) {
     emit(state.copyWith(userProfile: userProfile));
@@ -66,7 +68,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       // ignore: unnecessary_null_comparison
       Cluster? cluster = household == null
         ? null
-        : await _userRepository.getClusterById(clusterId: household.cluster_id);
+        : await clusterRepo.getCluster(household.cluster_id);
 
       if (cluster != null) {
         /// Get the captains of the cluster

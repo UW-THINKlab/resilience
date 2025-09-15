@@ -52,6 +52,9 @@ class ClusterRepository {
       }
       // update db
       final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint, description);
-      return Cluster.fromJson(data!);
+      log.fine("<<< data: $data");
+      final updated = Cluster.fromJson(data!);
+      log.fine("<<< Updated cluster meeting point: ${updated.meetingPoint}");
+      return updated;
     }
 }

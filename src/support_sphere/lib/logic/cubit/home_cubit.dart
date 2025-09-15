@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
-import 'dart:math';
+
+final log = Logger('HomeCubit');
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
@@ -114,9 +115,13 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> saveMeetingPlace() async {
     if (state.pickedLocation != null) {
       final Cluster cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, state.meetingPlace);
+      log.fine("Updated cluster: ${cluster.meetingPoint}");
+
       emit(state.copyWith(
         status: HomeStatus.success,
         cluster: cluster,
+        pickedLocation: null,
+        pickedOffset: null,
       ));
     }
   }
