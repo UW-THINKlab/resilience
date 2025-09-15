@@ -28,6 +28,7 @@ class HomeState extends Equatable {
     this.allClusters,
     this.pickedLocation,
     this.pickedOffset,
+    this.meetingPlace,
   });
 
   final HomeStatus status;
@@ -41,6 +42,8 @@ class HomeState extends Equatable {
 
   final LatLng? pickedLocation;
   final Offset? pickedOffset;
+  final String? meetingPlace; // description of the pick meeting point
+
 
   @override
   List<Object?> get props => [
@@ -54,6 +57,7 @@ class HomeState extends Equatable {
         allClusters,
         pickedLocation,
         pickedOffset,
+        meetingPlace,
       ];
 
   HomeState copyWith({
@@ -67,6 +71,7 @@ class HomeState extends Equatable {
     List<Cluster>? allClusters,
     LatLng? pickedLocation,
     Offset? pickedOffset,
+    String? meetingPlace,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -79,6 +84,7 @@ class HomeState extends Equatable {
       allClusters: allClusters ?? this.allClusters,
       pickedLocation: pickedLocation ?? this.pickedLocation,
       pickedOffset: pickedOffset ?? this.pickedOffset,
+      meetingPlace: meetingPlace ?? this.meetingPlace,
     );
   }
 }

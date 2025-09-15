@@ -142,8 +142,8 @@ class HomeBodyState extends State<HomeBody> {
         state.userLocation ?? state.initMapCentroid, state.initZoomLevel);
   }
 
+  // FIXME - move to map?
   void _editMode(HomeState state) {
-    // change icon
     if (state.cluster != null && state.cluster!.geom != null ) {
       LatLngBounds? bounds = LatLngBounds.fromPoints(state.cluster!.geom!);
       _mapController.fitCamera(CameraFit.bounds(bounds: bounds));
@@ -152,6 +152,7 @@ class HomeBodyState extends State<HomeBody> {
 
   LatLng _initMapCentroid(HomeState state) {
     // first, check user location
+    // FIXME picked location
     if (state.userLocation != null) {
       return state.userLocation!;
     }

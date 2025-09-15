@@ -55,31 +55,4 @@ class HomeRepository {
       pointsOfInterest: pointsOfInterest,
     );
   }
-
-  Future<List<Cluster>> getAllClusters() async {
-      //log.fine("getAllClusters");
-
-      final clusterList = await _clusterService.getAllClusters();
-      if (clusterList == null || clusterList.isEmpty) {
-        return [];
-      }
-
-      final List<Cluster> clusters = [];
-      for (var clusterData in clusterList) {
-        var cluster = Cluster.fromJson(clusterData);
-        clusters.add(cluster);
-      }
-      log.fine("getAllClusters found ${clusters.length} clusters");
-
-      return clusters;
-    }
-
-    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint) async {
-      if (meetingPoint == null) {
-        return cluster;
-      }
-      // update db
-      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint);
-      return Cluster.fromJson(data!);
-    }
 }

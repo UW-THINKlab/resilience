@@ -1,7 +1,10 @@
 import 'package:geodesy/geodesy.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+
+final log = Logger('ClusterService');
 
 class ClusterService {
   /// Retrieves the cluster by cluster id.
@@ -29,9 +32,19 @@ class ClusterService {
     ''').eq('id', userProfileId).maybeSingle();
   }
 
-  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location) async {
+  // FIXME - couldn't find an existing lib
+  String pointGisStr(LatLng location) {
+    return "POINT(${location.latitude} ${location.longitude})";
+  }
+
+  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location, String? description) async {
     // update
-    await supabase.from('clusters').update({'meeting_point': location}).eq('id', clusterId);
+    log.fine("updateClusterMeetingPoint: $clusterId $location");
+    await supabase.from('clusters').update({
+      'meeting_point': pointGisStr(location),
+      'meeting_place': description,
+    }).eq('id', clusterId);
+
     // new version
     return getClusterById(clusterId);
   }

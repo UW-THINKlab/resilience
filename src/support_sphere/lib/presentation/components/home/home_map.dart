@@ -39,9 +39,13 @@ class HomeMap extends StatelessWidget {
         initialZoom: state.initZoomLevel,
         onMapReady: onMapReady,
         onTap: (_, latLng) {
+            if (state.status == HomeStatus.editMeetingPlace) {
             final point = mapController.camera.latLngToScreenOffset(latLng);
             final offset = Offset(point.dx, point.dy);
             cubit.setMeetingPlace(latLng, offset);
+            // FIXME - popup dialog for description
+            cubit.saveMeetingPlace(); // TODO move to dialog popup
+          }
         },
       ),
       children: [
@@ -55,6 +59,7 @@ class HomeMap extends StatelessWidget {
         MarkerLayer(
           markers: [
             if (state.userLocation != null) _buildUserMarker(state.userLocation!),
+            if (state.cluster?.meetingPoint != null) buildMeetingMarker(state.cluster?.meetingPlace, state.cluster?.meetingPoint),
             // ...state.captainMarkers!
             //     .where((marker) => marker.householdGeom != null)
             //     .map((marker) => _buildCaptainMarker(
@@ -152,5 +157,22 @@ class HomeMap extends StatelessWidget {
     }
 
     return polygons;
+  }
+
+  Marker buildMeetingMarker(String? meetingPlace, LatLng? meetingPoint) {
+    const iconSize = 40.0; // FIXME - move to general constant
+    return Marker(
+      point: meetingPoint!,
+      width: iconSize,
+      height: iconSize,
+      child: GestureDetector(
+        //onTap: () => _showCaptainDetails(context, captainMarker),
+        child: const Icon(
+          Ionicons.person,
+          color: Colors.green,
+          size: iconSize,
+        ),
+      ),
+    );
   }
 }

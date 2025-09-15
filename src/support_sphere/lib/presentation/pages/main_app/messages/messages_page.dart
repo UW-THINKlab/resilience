@@ -197,9 +197,10 @@ class _MessageBarState extends State<MessageBar> {
 
     //log.fine("Sent message from:$myUserId, to:$toId: $text");
     MessagesRepository().sendMessage(myUserId, toId, text);
-    setState(() {
 
-    });
+    // FIXME - need some way to refresh the messages
+    // what does the demo do?
+    setState(() {});
   }
 }
 

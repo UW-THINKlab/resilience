@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'dart:math';
@@ -14,13 +15,16 @@ import 'dart:math';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.authUser,
-  })  : _homeRepository = HomeRepository(),
+  })  :
+        _homeRepository = HomeRepository(),
+        clusterRepo = ClusterRepository(),
         super(const HomeState()) {
     _init();
   }
 
   final MyAuthUser authUser;
   final HomeRepository _homeRepository;
+  final ClusterRepository clusterRepo;
 
   Future<void> _init() async {
     try {
@@ -42,7 +46,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final homeData = await _homeRepository.getHomeData(authUser.uuid);
       final points = homeData?.pointsOfInterest;
-      final allClusters = await _homeRepository.getAllClusters();
+      final allClusters = await clusterRepo.getAllClusters();
 
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
@@ -76,7 +80,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> showAllClusters(bool showAll) async {
     //log.fine("starting showAllClusters: $showAll");
     if (showAll) {
-      final allClusters = await _homeRepository.getAllClusters();
+      final allClusters = await clusterRepo.getAllClusters();
       //log.finer("allClusters: $allClusters");
       emit(state.copyWith(
         status: HomeStatus.allClusters,
@@ -101,22 +105,17 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
-    //final point = mapController.camera.latLngToScreenOffset(state.pickedLocation = latLng);
-            //setState(() => tappedPoint = Offset(point.dx, point.dy));
-            //state.pickedLocation = Offset(point.dx, point.dy);
-
   Future<void> editMeetingPlace() async {
     emit(state.copyWith(
       status: HomeStatus.editMeetingPlace,
-      allClusters: [],
     ));
   }
 
   Future<void> saveMeetingPlace() async {
     if (state.pickedLocation != null) {
-      final Cluster cluster = await _homeRepository.updateClusterMeetingPoint(state.cluster!, state.pickedLocation);
+      final Cluster cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, state.meetingPlace);
       emit(state.copyWith(
-        //status: HomeStatus.success,
+        status: HomeStatus.success,
         cluster: cluster,
       ));
     }
@@ -124,7 +123,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> cancelMeetingPlace() async {
     emit(state.copyWith(
-      //status: HomeStatus.success,
+      status: HomeStatus.success,
     ));
   }
 

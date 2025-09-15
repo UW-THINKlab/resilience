@@ -46,12 +46,12 @@ class ClusterRepository {
       return clusters;
     }
 
-    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint) async {
+    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint, String? description) async {
       if (meetingPoint == null) {
         return cluster;
       }
       // update db
-      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint);
+      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint, description);
       return Cluster.fromJson(data!);
     }
 }
