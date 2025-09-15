@@ -7,6 +7,9 @@ import 'package:logging/logging.dart' show Logger;
 
 final log = Logger('MessagesPage');
 
+const double default_icon_size = 40;
+
+
 
 // Need a lookup map for icon colors
 const Map<String, Color> colorStringToColor = {
@@ -76,6 +79,7 @@ const Map<String, (IconData, Color)> _icons = {
   // NOTE: hacky work around until I put the "type" forien ke in place
   "community center": (FontAwesomeIcons.buildingFlag, Colors.green),
   "church": (FontAwesomeIcons.placeOfWorship, Colors.orange),
+  "meeting-place": (FontAwesomeIcons.personRays, Colors.green)
 };
 
 
@@ -86,7 +90,7 @@ class PointOfInterest extends Equatable {
   final String description;
   final LatLng geom;
   final String type;
-  final double size = 40;
+  final double size = default_icon_size;
 
   const PointOfInterest({
     required this.id,
@@ -141,5 +145,32 @@ class PointOfInterest extends Equatable {
         child: Center(child: icon),
       )
     );
+  }
+
+  static Marker markerFor(LatLng geom, name, String color) {
+    FaIcon icon;
+    Color color;
+    const size = default_icon_size;
+    if (_icons[name] != null) {
+      final (ico,colo) = _icons[name]!;
+      icon = FaIcon(ico, size: size/1.75, color: Colors.white);
+      color = colo;
+    }
+    else {
+      log.warning("Unknown icon type: $name");
+      icon = FaIcon(FontAwesomeIcons.atom, color: Colors.white);
+      color = Colors.purple;
+    }
+
+    return Marker(
+      point: geom,
+      width: size,
+      height: size,
+      child: CircleAvatar(
+        backgroundColor: color,
+        child: Center(child: icon),
+      )
+    );
+
   }
 }
