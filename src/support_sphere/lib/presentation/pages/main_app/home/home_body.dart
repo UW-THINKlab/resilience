@@ -58,16 +58,13 @@ class HomeBodyState extends State<HomeBody> {
                   if (state.cluster != null)
                     HomeHeader(cluster: state.cluster!),
                   Expanded(
-                    child: MouseRegion(
-                      cursor: _cursorFor(state.status),
-                      child: HomeMap(
-                        mapController: _mapController,
-                        state: state,
-                        cubit: context.read<HomeCubit>(),
-                        onMapReady: () {
-                          setState(() => _isMapReady = true);
-                        },
-                      ),
+                    child: HomeMap(
+                      mapController: _mapController,
+                      state: state,
+                      cubit: context.read<HomeCubit>(),
+                      onMapReady: () {
+                        setState(() => _isMapReady = true);
+                      },
                     ),
                   ),
                 ],

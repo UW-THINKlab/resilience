@@ -45,7 +45,8 @@ class HomeMap extends StatelessWidget {
             final offset = Offset(point.dx, point.dy);
             cubit.setMeetingPlace(latLng, offset);
             // FIXME - popup dialog for description
-            cubit.saveMeetingPlace(); // TODO move to dialog popup
+            //cubit.saveMeetingPlace(); // TODO move to dialog popup
+            _popupDescriptionDialog(context, cubit);
           }
         },
       ),
@@ -182,5 +183,50 @@ class HomeMap extends StatelessWidget {
     //   //   ),
     //   // ),
     // );
+  }
+
+  Future<void> _popupDescriptionDialog(BuildContext context, HomeCubit cubit) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        scrollable: true,
+        title: Text('Save meeting point location?'),
+        content: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text('Enter description for '),
+                const SizedBox(height: 15),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    //icon: Icon(Icons.message ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+              child: Text("Save"),
+              onPressed: () {
+                // FIXME: get description from form!
+                final description = "";
+                cubit.saveMeetingPlace(description);
+                Navigator.pop(context);
+              }),
+          ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                cubit.cancelMeetingPlace();
+                Navigator.pop(context);
+              }),
+        ],
+      )
+    );
   }
 }

@@ -100,7 +100,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> setMeetingPlace(LatLng point, Offset offset) async {
     emit(state.copyWith(
-      //status: HomeStatus.editMeetingPlace, NEXT state?
       pickedLocation: point,
       pickedOffset: offset,
     ));
@@ -112,14 +111,15 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
-  Future<void> saveMeetingPlace() async {
+  Future<void> saveMeetingPlace(String? description) async {
     if (state.pickedLocation != null) {
-      final Cluster cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, state.meetingPlace);
+      final Cluster cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, description);
       log.fine("Updated cluster: ${cluster.meetingPoint}");
 
       emit(state.copyWith(
         status: HomeStatus.success,
         cluster: cluster,
+        meetingPlace: description,
         pickedLocation: null,
         pickedOffset: null,
       ));
@@ -129,8 +129,11 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> cancelMeetingPlace() async {
     emit(state.copyWith(
       status: HomeStatus.success,
+      pickedLocation: null,
+      pickedOffset: null,
     ));
   }
+
 
   Future<void> focusCluster() async {
     if (state.cluster != null) {
