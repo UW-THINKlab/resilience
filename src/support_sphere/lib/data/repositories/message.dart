@@ -27,22 +27,14 @@ class MessagesRepository {
   Future<void> sendMessage(String userId, String toId, String text) async {
     log.fine("Sending message from:$userId, to:$toId: $text");
 
-    try {
-      final dateSent = DateTime.now();
-      await supabase.from('messages').insert({
-        'id': const UuidV4().generate(), // autogen by table def?
-        'from_id': userId,
-        'to_id': toId,
-        'content': text,
-        'sent_on': dateSent.toIso8601String(),
-        'urgency': "normal",
-      });
-    } on Exception catch (error) {
-      log.warning("ERROR: $error");
-      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
-    } catch (e) {
-      //context.showErrorSnackBar(message: unexpectedErrorMessage);
-      log.warning("Unknown error in _submitMessage: $e");
-    }
+    final dateSent = DateTime.now();
+    await supabase.from('messages').insert({
+      'id': const UuidV4().generate(), // autogen by table def?
+      'from_id': userId,
+      'to_id': toId,
+      'content': text,
+      'sent_on': dateSent.toIso8601String(),
+      'urgency': "normal",
+    });
   }
 }

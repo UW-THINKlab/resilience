@@ -9,6 +9,7 @@ import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:timeago/timeago.dart';
 
 const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
@@ -16,7 +17,7 @@ final log = Logger('MessagesPage');
 
 // ASIDE: "Groups" include households, clusters
 
-// from github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
+// based on github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
 
 
 /// Initial page for cluster messaging.
@@ -126,12 +127,27 @@ class MessagesState extends State<MessagesPage> {
       ),
     );
   }
+
+  void _sendMessage(String text) {
+    try {
+      MessagesRepository().sendMessage(myUserId, clusterId, text);
+    } on Exception catch (error) {
+      log.warning("ERROR: $error");
+      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
+    }
+
+  }
 } // -- end of state
 
 /// Set of widget that contains TextField and Button to submit message
 class MessageBar extends StatefulWidget {
-  MessageBar({Key? key, required this.cluster}) : super(key: key);
+  const MessageBar({
+    Key? key,
+    //required this.sendFunc,
+    required this.cluster,
+  }) : super(key: key);
 
+  //final sendFunc;
   final Cluster cluster;
 
   @override
@@ -150,7 +166,7 @@ class _MessageBarState extends State<MessageBar> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.grey[200],
+      //color: Colors.grey[200],
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -168,9 +184,15 @@ class _MessageBarState extends State<MessageBar> {
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
+                  onFieldSubmitted: (value) {
+                    //sendFunc(value);
+                    setState(() {
+                        // FIXME
+                    });
+                  },
                 ),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () => _submitMessage(context, widget.cluster.id),
                 child: const Text('Send Message'), // FIXME formatting, text
               ),
@@ -196,10 +218,12 @@ class _MessageBarState extends State<MessageBar> {
     _textController.clear();
 
     //log.fine("Sent message from:$myUserId, to:$toId: $text");
-    MessagesRepository().sendMessage(myUserId, toId, text);
-
-    // FIXME - need some way to refresh the messages
-    // what does the demo do?
+    try {
+      MessagesRepository().sendMessage(myUserId, toId, text);
+    } on Exception catch (error) {
+      log.warning("ERROR: $error");
+      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
+    }
     setState(() {});
   }
 }
@@ -218,14 +242,20 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String metaStr = message.fromId != myUserId ?
+      "${profile?.givenName} ${profile?.familyName} ${format(message.sentOn)}" :
+      format(message.sentOn);
+
     List<Widget> chatContents = [
-      CircleAvatar(
-        child: Center(child: Icon(
-          URGENCY_ICONS[message.urgency],
-          color:  URGENCY_COLOR[message.urgency],
-        ))),
+      if (message.fromId != myUserId)
+        CircleAvatar(
+          child: Center(child: Icon(
+            URGENCY_ICONS[message.urgency],
+            color:  URGENCY_COLOR[message.urgency],
+          ))
+        ),
       const SizedBox(width: 12),
-      Flexible(
+      Expanded(
         child: Container(
           padding: const EdgeInsets.symmetric(
             vertical: 8,
@@ -235,11 +265,11 @@ class _MessageBubble extends StatelessWidget {
             color: URGENCY_COLOR[message.urgency],
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(message.content, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          child: Text(message.content, style: TextStyle(color: Colors.white)),
         ),
       ),
       const SizedBox(width: 12),
-      Text("${profile?.givenName} ${profile?.familyName} on ${message.sentOn.toString()}"),
+      Text(metaStr),
       const SizedBox(width: 60),
     ];
     if (message.fromId == myUserId) {
@@ -249,6 +279,7 @@ class _MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
+
         children: chatContents,
       ),
     );

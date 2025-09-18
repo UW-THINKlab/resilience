@@ -1,8 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 // TODO: ADD API Handling in here for exceptions
+
+final _log = Logger('AuthService');
 
 class AuthService extends Equatable{
   static final GoTrueClient _supabaseAuth = supabase.auth;
@@ -26,7 +29,9 @@ class AuthService extends Equatable{
   }
 
   Future<AuthResponse> signInWithEmailAndPassword(String email, String password) async {
+    _log.fine("login: $email, $_supabaseAuth");
     final response = await _supabaseAuth.signInWithPassword(email: email, password: password);
+    _log.fine("login response: $response");
     return response;
   }
 
@@ -40,10 +45,10 @@ class AuthService extends Equatable{
     }
 
     if (phone == null || phone.isEmpty) {
-      // Currently, there is a bug in Supabase (see: https://github.com/supabase/supabase-js/issues/1008) 
-      // where updateUser() does not clear the phone field correctly when the “new” phone value is empty. 
-      // As a workaround, we can use Supabase RPC (see: https://www.restack.io/docs/supabase-knowledge-supabase-rpc-guide) 
-      // or develop a separate API to implement this functionality. 
+      // Currently, there is a bug in Supabase (see: https://github.com/supabase/supabase-js/issues/1008)
+      // where updateUser() does not clear the phone field correctly when the “new” phone value is empty.
+      // As a workaround, we can use Supabase RPC (see: https://www.restack.io/docs/supabase-knowledge-supabase-rpc-guide)
+      // or develop a separate API to implement this functionality.
       // For now, I will ignore this issue, leaving the problem unresolved when a user has a phone number and wants to clear it.
 
       // RPC Workaround:
