@@ -72,13 +72,13 @@ const Map<String, (IconData, Color)> _icons = {
   "school": (FontAwesomeIcons.school, Colors.blue),
   "building-columns": (FontAwesomeIcons.buildingColumns, Colors.lightGreen),
   "hospital": (FontAwesomeIcons.hospital, Colors.red),
-  "place-of-worship": (FontAwesomeIcons.placeOfWorship, Colors.orange),
+  "place-of-worship": (FontAwesomeIcons.placeOfWorship, Colors.purple),
   "building-flag": (FontAwesomeIcons.buildingFlag, Colors.green),
   "circle-user": (FontAwesomeIcons.circleUser, Colors.purple),
   "user": (FontAwesomeIcons.buildingShield, Colors.blueGrey),
   // NOTE: hacky work around until I put the "type" forien ke in place
   "community center": (FontAwesomeIcons.buildingFlag, Colors.green),
-  "church": (FontAwesomeIcons.placeOfWorship, Colors.orange),
+  "church": (FontAwesomeIcons.placeOfWorship, Colors.purple),
   "meeting-place": (FontAwesomeIcons.personRays, Colors.green)
 };
 
