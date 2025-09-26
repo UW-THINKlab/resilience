@@ -7,10 +7,14 @@ This directory contains the configurations for deploying the application to a Ku
 - [minikube](https://minikube.sigs.k8s.io/docs/start/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [helm](https://helm.sh/docs/intro/install/)
+- Clone the GitHub [repo](https://github.com/UW-THINKlab/resilience/) using the following command:
+```bash
+git clone --recurse-submodules https://github.com/UW-THINKlab/resilience
+```
 
 ## **Development**
 
-To deploy the supabase backend to a local minikube cluster, run the following commands:
+To deploy the supabase backend to a local minikube cluster, run the following commands from within the `deployment` directory inside the cloned Github repo:
 
 1. Start minikube cluster
     ```bash
