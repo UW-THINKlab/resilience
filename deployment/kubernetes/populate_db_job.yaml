@@ -46,7 +46,7 @@ spec:
               configMapKeyRef:
                 name: config-dev
                 key: SUPABASE_KONG_PORT
-          - name: JWT_ANON_KEY
+          - name: ANON_KEY
             valueFrom:
               secretKeyRef:
                 name: supabase-jwt
