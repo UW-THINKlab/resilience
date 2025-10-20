@@ -19,13 +19,11 @@ key = os.environ.get("ANON_KEY")
 
 supabase_host = os.environ.get("API_HOST", "localhost")
 supabase_port = os.environ.get("API_PORT", "8000")
-supabase_url = os.environ.get('API_URL', f"http://{supabase_host}:{supabase_port}/")
-
-logger.info(f"SUPABASE_URL: {supabase_url}")
+supabase_url = os.environ.get('API_URL', f"http://{supabase_host}:{supabase_port}")
 
 # Setting up the supabase client for python
 supabase_client = create_client(supabase_url, key)
-logger.info(f"Created supabase client: {supabase_client}")
+logger.info(f"SUPABASE CLIENT: {supabase_client}, url={supabase_url}")
 
 db_host = os.environ.get('DB_HOST', supabase_host)
 username = os.environ.get('DB_USERNAME', 'postgres')

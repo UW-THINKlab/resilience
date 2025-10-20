@@ -301,14 +301,19 @@ gnupg = ">=2.4.5"
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --pinentry-mode loopback --output - keys.asc | gpg --import"
 
+[tasks.supabase]
+cmd = ["supabase", "start"]
+
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
 cwd = "src/support_sphere_py"
+depends-on = ["supabase"]
 
 [tasks.db-init]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "db_init", "run-all"]
 cwd = "src/support_sphere_py"
 depends-on = ["execute-sql"]
+
 
 [tasks.clean]
 cmd = ["docker", "system", "prune", "-af"]

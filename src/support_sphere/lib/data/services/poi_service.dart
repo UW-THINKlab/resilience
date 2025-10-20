@@ -1,47 +1,51 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:support_sphere/utils/supabase.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
 class PointOfInterestService {
-  final SupabaseClient _supabaseClient = supabase;
+  //final SupabaseClient _supabaseClient = supabase;
+  static const String collection = 'point_of_interests';
 
-  Future<PostgrestList?> queryPointsOfInterest() async {
-    return await _supabaseClient.from('point_of_interests').select().order('name', ascending: true);
+  // Future<PostgrestList?> queryPointsOfInterest() async {
+  //   return await supabase.from(collection).select().order('name', ascending: true);
+  // }
+
+  Future<void> insert(PointOfInterest poi) async {
+    await supabase.from(collection).insert(poi.toMap());
   }
 
-  LatLng geometryFromMap(Map geomMap) {
-    // "geom" -> Map (2 items)
-    //     "type" -> "Point"
-    //     "coordinates" -> List (2 items)
-    //       47.6591528763917
-    //       -122.27787227416428
-    // geom:{"type:x", "coordinates":[lat,long]}
-    return LatLng(geomMap["coordinates"][0], geomMap["coordinates"][1]);
-  }
+  // LatLng geometryFromMap(Map geomMap) {
+  //   // "geom" -> Map (2 items)
+  //   //     "type" -> "Point"
+  //   //     "coordinates" -> List (2 items)
+  //   //       47.6591528763917
+  //   //       -122.27787227416428
+  //   // geom:{"type:x", "coordinates":[lat,long]}
+  //   return LatLng(geomMap["coordinates"][0], geomMap["coordinates"][1]);
+  // }
 
-  PointOfInterest fromMap(Map poiMap) {
-    var geomMap = poiMap['geom'];
-    var geom = geometryFromMap(geomMap);
-    return PointOfInterest(
-      id:poiMap['id'],
-      name:poiMap['name'],
-      address:poiMap['address'],
-      geom: geom,
-      type:poiMap['point_type_name']);
-  }
+  // PointOfInterest fromMap(Map poiMap) {
+  //   var geomMap = poiMap['geom'];
+  //   var geom = geometryFromMap(geomMap);
+  //   return PointOfInterest(
+  //     id:poiMap['id'],
+  //     name:poiMap['name'],
+  //     address:poiMap['address'],
+  //     geom: geom,
+  //     type:poiMap['point_type_name']);
+  // }
 
   Future<List<PointOfInterest>> getPointsOfInterest() async {
-    var points = await queryPointsOfInterest();
-    if (points == null) {
-      return [];
-    }
-    else {
-      return [for (var p in points) fromMap(p)];
-    }
+    final points = await supabase.from(collection).select().order('name', ascending: true);
+    return [for (var p in points) PointOfInterest.fromMap(p)];
   }
 
   // FIXME: Add query based on user location
+  Future<List<PointOfInterest>> near(double distanceInMeters) async {
+    // TODO: Add distance based query !!!
+    var points = await supabase.from(collection).select().order('name', ascending: true);
+    return [for (var p in points) PointOfInterest.fromMap(p)];
+    }
 
 	// select id,
   // name,

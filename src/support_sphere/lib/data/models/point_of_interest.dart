@@ -122,6 +122,39 @@ class PointOfInterest extends Equatable {
     );
   }
 
+  static LatLng geometryFromMap(Map geomMap) {
+    // "geom" -> Map (2 items)
+    //     "type" -> "Point"
+    //     "coordinates" -> List (2 items)
+    //       47.6591528763917
+    //       -122.27787227416428
+    // geom:{"type:x", "coordinates":[lat,long]}
+    return LatLng(geomMap["coordinates"][0], geomMap["coordinates"][1]);
+  }
+
+  static PointOfInterest fromMap(Map poiMap) {
+    var geomMap = poiMap['geom'];
+    var geom = geometryFromMap(geomMap);
+    return PointOfInterest(
+      id:poiMap['id'],
+      name:poiMap['name'],
+      address:poiMap['address'],
+      geom: geom,
+      type:poiMap['point_type_name']);
+  }
+
+  Map toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'address': address,
+      'description': description,
+      'geom': geom,
+      'type': type,
+      'size': size,
+    };
+  }
+
   Marker marker() {
     FaIcon icon;
     Color color;

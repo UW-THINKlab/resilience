@@ -99,7 +99,8 @@ def populate_user_details():
                 user: User = UserRepository.find_by_email(row['email'])
                 if not user:
                     # Create a auth.user with encrypted_password (ONLY FOR LOCAL TESTING)
-                    supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                    result = supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                    log.warning(f"CREATED USER {row['email']}, {result}")
                     supabase_client.auth.sign_out()
                     user: User = UserRepository.find_by_email(row['email'])
 
@@ -402,7 +403,7 @@ def populate_messages():
 def test_app_mode_change():
     # FIXME - Disabling for now: failing in docker compose version, don't know why.
     # CODE: 42501
-    # test_app_mode_status_update()
+    test_app_mode_status_update()
     test_unauthorized_app_mode_update()
 
 
@@ -412,7 +413,6 @@ def run_all():
     log.info("Starting to populate db with sample entries...")
 
     # Sanity check for user sign-up and sign-in flow via supabase
-    # FIXME
     authenticate_user_signup_signin_signout_via_supabase()
 
     # Set up a dummy cluster and a household
@@ -428,7 +428,6 @@ def run_all():
     setup_points_of_interest()
 
     # Sanity check app mode update
-    # FIXME
     test_app_mode_change()
 
     # Populate real data
