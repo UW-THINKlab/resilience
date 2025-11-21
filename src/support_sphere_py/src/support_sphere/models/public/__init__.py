@@ -22,7 +22,8 @@ from support_sphere.models.public.user_role import UserRole
 from support_sphere.models.public.signup_code import SignupCode
 from support_sphere.models.public.frequency import Frequency
 from support_sphere.models.public.user_checklist import UserChecklists
-
+from support_sphere.models.public.group import Group
+from support_sphere.models.public.group_member import GroupMember
 
 
 # New models created should be exposed by adding to __all__. This is used by SQLModel.metadata
@@ -38,6 +39,8 @@ __all__ = [
     "People",
     "PeopleGroup",
     "PointOfInterest",
+    "Group",
+    "GroupMember",
     "Message",
     #"PointOfInterestType",
     "Resource",

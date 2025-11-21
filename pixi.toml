@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "post-disaster-comms"
 version = "0.1.0"
 description = "post-disaster communications project"

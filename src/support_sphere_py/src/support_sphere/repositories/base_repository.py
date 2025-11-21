@@ -44,10 +44,14 @@ class BaseRepository:
     @classmethod
     def get_one(cls, from_table: Type[T], col: str, value: Any) -> T:
         with Session(BaseRepository.repository_engine) as session:
-            statement = select(from_table).where(getattr(from_table, col) == value)
-            results = session.exec(statement)
-            if results:
-                log.debug(f">>> RESULTS: {results}")
-                return results.first()
-            else:
-                log.warning(f"Couldn't find matching {T.__name__}.{col} == {value}")
+            try:
+                statement = select(from_table).where(getattr(from_table, col) == value)
+                results = session.exec(statement)
+                if results:
+                    rtn = results.first()
+                    log.debug(f">>> RESULTS: {rtn}")
+                    return rtn
+                else:
+                    log.warning(f"Couldn't find matching {T.__name__}.{col} == {value}")
+            except Exception as ex:
+                log.error(f"Error getting table: {from_table}, column: {col}, value: {value} - {ex}", exc_info=ex)

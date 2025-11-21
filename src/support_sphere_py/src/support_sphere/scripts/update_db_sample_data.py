@@ -2,11 +2,14 @@ import csv
 import datetime
 import uuid
 import time
+from support_sphere.models.public.group import Group
+from support_sphere.models.public.group_member import GroupMember
 from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
 from support_sphere.models.public.message import Message
 import typer
 import json
 from shapely.wkt import loads
+import psycopg2
 
 
 from pathlib import Path
@@ -118,6 +121,8 @@ def populate_user_details():
                                    user_profile=user_profile)
 
             person = PeopleRepository.add(person_detail)
+
+            log.debug(f"created person: {person.id}")
 
             # Create a PeopleGroup Entry
             people_group = PeopleGroup(people=person, household=all_households[-1])
@@ -372,23 +377,95 @@ def load_test_messages(csv_file: Path = DATA_DIRECTORY/'messages.csv') -> list[M
     messages = []
     try:
         # user cluser id for to addr.
-        cluster = BaseRepository.get_one(Cluster, "name", "c_1")
+        #cluster = BaseRepository.get_one(Cluster, "name", "c_1")
 
         with csv_file.open(mode='r', newline='') as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
-                from_user: User = UserRepository.find_by_email(row['from_id'])
+                log.info(f"reading row: {row}")
+                # replace
+                from_user: User = UserRepository.find_by_email(row['from_id'], fetch_user_profile=True)
                 if from_user:
-                    row['from_id'] = from_user.id
-                #to_user: User = UserRepository.find_by_email(row['to_id'])
-                if cluster:
-                    row['to_id'] = cluster.id
+                    log.info(f"found from: {from_user}, {from_user.user_profile}")
+                    row['from_id'] = from_user.user_profile.id
+
+                group_name = row['to_id']
+                # check for uuid
+                to_group = ensure_group(group_name, from_user)
+                if to_group:
+                    log.info(f"found to: {to_group}")
+                    row['to_id'] = to_group.id
+
                 msg = Message.fromDict(row)
                 messages.append(msg)
         log.info(f"Loaded {len(messages)} messages")
     except Exception as e:
         log.error(f"Error loading {csv_file}: {e}")
     return messages
+
+
+def create_group_with_user(name: str, from_user: User) -> Group:
+
+    log.info(f"create_group_with_user: {name}, {from_user}")
+
+    # first, check if group exists
+    group = BaseRepository.get_one(Group, "name", name)
+    if group is None:
+        # if not, create
+        group = Group(id=uuid.uuid4(), name=name, created_by_id=from_user.user_profile.id)
+        BaseRepository.add(group)
+
+    add_user_to_group(group, from_user)
+
+    return group
+
+
+def add_user_to_group(group: Group, user: User) -> None:
+    try:
+        member_instance = GroupMember(group_id=group.id, people_id=user.id)
+        BaseRepository.add(member_instance)
+        log.info(f"added member {member_instance} to {group}")
+    except psycopg2.errors.UniqueViolation:
+        log.debug(f"Duplicate key: {user.email} already a member of: {group.name}")
+    except Exception as ex:
+        log.error(f"Error adding user: {ex}")
+
+
+
+def ensure_group(name: str, from_user: User) -> Group:
+    # given a "name", see if it is a
+    # 1. user, by email
+    # 2. household, by name
+    # 3. cluster, but name
+    # or null
+
+    # check for the group first
+    group = BaseRepository.get_one(Group, "name", name)
+    if group is not None:
+        return group
+
+    # check for the email
+    user = UserRepository.find_by_email(name, fetch_user_profile=True)
+    if user is not None:
+        log.info(f"found to user: {user} {user.id} {from_user.id}")
+        # FIXME: compound DM name?
+        group_name = '|'.join(sorted([str(from_user.user_profile.id), str(user.user_profile.id)]))
+        log.info(f"DM group name: {group_name}")
+        nu_group = create_group_with_user(group_name, from_user)
+        add_user_to_group(nu_group, user)
+        log.info(f"DM group: {nu_group}")
+        return nu_group
+
+    household = BaseRepository.get_one(Household, "name", name)
+    if household is not None:
+        return create_group_with_user(household.name, from_user)
+
+    cluster = BaseRepository.get_one(Cluster, "name", name)
+    if cluster is not None:
+        return create_group_with_user(cluster.name, from_user)
+
+    # fallback to just creating a group
+    return create_group_with_user(name, from_user)
 
 
 def populate_messages():
@@ -401,9 +478,9 @@ def populate_messages():
 
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")
 def test_app_mode_change():
-    # FIXME - Disabling for now: failing in docker compose version, don't know why.
+    # FIXME - Disable for: failing in docker compose version, don't know why.
     # CODE: 42501
-    #test_app_mode_status_update()
+    test_app_mode_status_update()
     test_unauthorized_app_mode_update()
 
 
