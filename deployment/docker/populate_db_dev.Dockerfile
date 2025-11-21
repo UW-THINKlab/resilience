@@ -4,7 +4,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Copy the Python script and requirements file into the container
-COPY ../../src/support_sphere_py /app/support_sphere_py
+COPY src/support_sphere_py /app/support_sphere_py
 
 
 # Below ENV values are overridden when running the via K8s Job else the above arg values are used.
