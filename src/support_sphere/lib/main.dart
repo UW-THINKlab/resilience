@@ -26,7 +26,8 @@ void main() async {
   try {
     await Config.initSupabase();
   } catch (e, stackTrace) {
-    log.severe('Error initializing DB', e, stackTrace);
+    log.severe('Error initializing DB: $e');
+    log.severe('Trace: $stackTrace');
   }
   runApp(const MyApp());
 }
