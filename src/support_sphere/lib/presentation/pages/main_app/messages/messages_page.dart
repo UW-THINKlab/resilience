@@ -24,7 +24,7 @@ final log = Logger('MessagesPage');
 /// Cluster captains get special display,
 /// and ability to send "urgent" messages
 class MessagesPage extends StatefulWidget {
-  const MessagesPage({Key? key}) : super(key: key);
+  const MessagesPage({super.key});
 
   static Route<void> route() {
     return MaterialPageRoute(
@@ -142,10 +142,10 @@ class MessagesState extends State<MessagesPage> {
 /// Set of widget that contains TextField and Button to submit message
 class MessageBar extends StatefulWidget {
   const MessageBar({
-    Key? key,
+    super.key,
     //required this.sendFunc,
     required this.cluster,
-  }) : super(key: key);
+  });
 
   //final sendFunc;
   final Cluster cluster;
@@ -230,11 +230,11 @@ class _MessageBarState extends State<MessageBar> {
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
-    Key? key,
+    super.key,
     required this.message,
     required this.profile,
     required this.myUserId,
-  }) : super(key: key);
+  });
 
   final Message message;
   final Person? profile;

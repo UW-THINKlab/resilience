@@ -1,12 +1,8 @@
-import 'dart:ui' show Color;
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter_map/flutter_map.dart' show Marker;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart' show FaIcon;
 import 'package:geodesy/geodesy.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:logging/logging.dart';
-import 'package:support_sphere/data/models/point_of_interest.dart';
 
 final log = Logger('Cluster');
 

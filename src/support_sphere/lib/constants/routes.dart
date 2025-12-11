@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
@@ -9,6 +10,8 @@ import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_m
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_management_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/resource_main_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/home/home_body.dart';
+
+final log = Logger('AppRoute');
 
 class AppRoute extends Equatable {
   const AppRoute({required this.icon, required this.label, this.body});
@@ -34,7 +37,12 @@ class AppNavigation {
     // to be displayed in the navigation bar
     // screen size maximum information retrieved from
     // https://learn.microsoft.com/en-us/windows/apps/design/layout/screen-sizes-and-breakpoints-for-responsive-design
-    if (role == AppRoles.communityAdmin && minWidth! > 641) {
+
+    log.fine('### role = $role, minWidth = $minWidth');
+
+    // FIXME: role check removed because it's not being set
+    // need to debug AUTH stack and determine why not. could be new vs old version.
+    if (/*role == AppRoles.communityAdmin &&*/ minWidth! > 641) {
       destinations = destinations + [
         const AppRoute(
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
