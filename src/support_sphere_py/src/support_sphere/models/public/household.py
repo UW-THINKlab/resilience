@@ -3,7 +3,7 @@ from typing import Optional
 
 from support_sphere.models.base import BasePublicSchemaModel
 from sqlmodel import Field, Relationship
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, WKBElement
 
 
 class Household(BasePublicSchemaModel, table=True):
@@ -58,7 +58,8 @@ class Household(BasePublicSchemaModel, table=True):
     notes: str|None = Field(nullable=True)
     pets: str|None = Field(nullable=True)
     accessibility_needs: str | None = Field(nullable=True)
-    geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
+    #geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True)
+    geom: WKBElement|None = Field(sa_type=Geometry(geometry_type="POINT"), nullable=True)
 
     cluster: Optional["Cluster"] = Relationship(back_populates="households", cascade_delete=False)
     people_group: list["PeopleGroup"] = Relationship(back_populates="household", cascade_delete=False)
