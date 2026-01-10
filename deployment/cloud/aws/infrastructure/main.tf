@@ -28,7 +28,7 @@ locals {
 provider "aws" {
   region = "us-west-2"
   assume_role {
-    role_arn     = "arn:aws:iam::871683513797:role/supportsphere-deploy"
+    role_arn     = "arn:aws:iam::${var.account_id}:role/supportsphere-deploy"
     session_name = "${local.resource_prefix}-infra-deployment"
     external_id  = "${local.resource_prefix}-infra-deployment"
   }

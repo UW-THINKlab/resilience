@@ -4,13 +4,14 @@ function sanitize() {
     echo $1 |  tr '[:upper:]' '[:lower:]' | tr -d ' '
 }
 
+export account_id = $(sanitize "$TF_VAR_account_id")
 export project=$(sanitize "$TF_VAR_project_name")
 export neighborhood=$(sanitize "$TF_VAR_neighborhood")
 
 echo "Sourcing credentials"
 
 export sts_output=$(aws sts assume-role \
---role-arn arn:aws:iam::871683513797:role/$project-$neighborhood-server-access-role \
+--role-arn arn:aws:iam::$account_id:role/$project-$neighborhood-server-access-role \
 --role-session-name access-cloud-server \
 --output json \
 )

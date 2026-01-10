@@ -27,12 +27,12 @@ provider "aws" {
 
 # s3 tf state bucket
 
-resource "aws_s3_bucket" "tf_state" {
+data "aws_s3_bucket" "tf_state" {
   bucket = "${var.account_resource_prefix}-${var.account_id}-opentofu-state"
 }
 
 resource "aws_s3_bucket_versioning" "this" {
-  bucket = aws_s3_bucket.tf_state.bucket
+  bucket = data.aws_s3_bucket.tf_state.bucket
 
   versioning_configuration {
     status = "Enabled"
@@ -41,7 +41,7 @@ resource "aws_s3_bucket_versioning" "this" {
 }
 
 resource "aws_s3_bucket_public_access_block" "example" {
-  bucket = aws_s3_bucket.tf_state.bucket
+  bucket = data.aws_s3_bucket.tf_state.bucket
 
   block_public_acls       = true
   block_public_policy     = true
@@ -103,8 +103,8 @@ resource "aws_iam_policy" "tf_state_access" {
           "s3:ListBucket",
         ],
         Resource = [
-          "${aws_s3_bucket.tf_state.arn}/*",
-          aws_s3_bucket.tf_state.arn,
+          "${data.aws_s3_bucket.tf_state.arn}/*",
+          data.aws_s3_bucket.tf_state.arn,
         ],
       },
     ],
