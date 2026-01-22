@@ -130,6 +130,7 @@ resource "aws_iam_role_policy" "kms_key_access" {
           "kms:UpdateKeyDescription",
           "kms:CreateKey",
           "kms:CreateAlias",
+          "kms:UpdateAlias"
         ],
         Resource = "*",
       },
