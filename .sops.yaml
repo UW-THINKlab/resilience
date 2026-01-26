@@ -2,4 +2,4 @@
 creation_rules:
   - path_regex: values\.cloud\.yaml$
     pgp: 'AD28C8D8C60268C5F329509B31FEC69867EB2B81'
-    kms: 'arn:aws:kms:us-west-2:871683513797:key/9531919a-aae2-4ad9-bd2a-4f30eb8250c3,arn:aws:kms:us-east-1:871683513797:key/0fc8c451-67d6-4b6f-8ad2-d8537d375937'
+    kms: 'arn:aws:kms:us-west-2:503561456208:key/c8a2c58b-f793-4a56-87d9-708e0a67569c'
