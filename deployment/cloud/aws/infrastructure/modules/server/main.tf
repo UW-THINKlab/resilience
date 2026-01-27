@@ -172,7 +172,7 @@ resource "aws_autoscaling_group" "this" {
   }
   min_size            = 0
   max_size            = 1
-  desired_capacity    = 1
+  desired_capacity    = 0
   vpc_zone_identifier = [module.vpc.public_subnets[0]]
 
   dynamic "tag" {
