@@ -11,33 +11,17 @@ users:
     groups: docker
 
 packages:
-  - git
-  - curl
-  - wget
   - python-pip
   - postgresql-client
   - awscli
-  - ca-certificates
   - gnupg-agent
-  - software-properties-common
   - apt-transport-https
   - cargo
   - libpq-dev
   - jq
+  - docker.io
 
 runcmd:
-  # docker installation borrowed from https://gist.github.com/vtrifonov-esfiddle/068dd818b5f929709b688c805c507e65
-  # install docker following the guide: https://docs.docker.com/install/linux/docker-ce/ubuntu/
-  - echo "Installing Docker"
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get -y update
-  - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
-  - sudo systemctl enable docker
-  # install docker-compose following the guide: https://docs.docker.com/compose/install/
-  - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
-
   # install pixi
   - echo "Installing Pixi"
   - export PIXI_HOME=/opt/pixi
@@ -52,6 +36,8 @@ runcmd:
   - cd /opt
   - git clone https://github.com/${github_organization}/${github_repo}.git
   - cd ${github_repo}
+  # FIXME current dev branch
+  - git checkout messages
 
   # install backend tools
   - echo "Setting up backend infra"

@@ -4,7 +4,7 @@ function sanitize() {
     echo $1 |  tr '[:upper:]' '[:lower:]' | tr -d ' '
 }
 
-export account_id = $(sanitize "$TF_VAR_account_id")
+export account_id=$(sanitize "$TF_VAR_account_id")
 export project=$(sanitize "$TF_VAR_project_name")
 export neighborhood=$(sanitize "$TF_VAR_neighborhood")
 
