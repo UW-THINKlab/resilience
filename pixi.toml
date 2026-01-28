@@ -259,6 +259,10 @@ cmd = "tofu fmt -recursive && tofu apply"
 cwd = "deployment/cloud/aws/account"
 depends-on = ["cloud-account-setup"]
 
+[feature.cloud.tasks.cloud-account-destroy]
+cmd = "tofu destroy"
+cwd = "deployment/cloud/aws/account"
+
 [feature.cloud.tasks.cloud-account-init]
 cmd = "tofu init -reconfigure"
 cwd = "deployment/cloud/aws/account"
