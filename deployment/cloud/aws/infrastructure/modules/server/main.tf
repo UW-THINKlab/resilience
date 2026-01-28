@@ -189,18 +189,18 @@ resource "aws_autoscaling_group" "this" {
   }
 }
 
-// Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
-resource "aws_autoscaling_schedule" "scale_down" {
-  # only create this resource in non-prod environments
-  count = var.stage != "prod" ? 1 : 0
-
-  scheduled_action_name  = "${var.resource_prefix}-asg-shutdown-after-working-hours"
-  min_size               = 0
-  desired_capacity       = 0
-  max_size               = 1
-  recurrence             = "0 1 * * MON-FRI"
-  autoscaling_group_name = aws_autoscaling_group.this.name
-}
+//// Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
+//resource "aws_autoscaling_schedule" "scale_down" {
+//  # only create this resource in non-prod environments
+//  count = var.stage != "prod" ? 1 : 0
+//
+//  scheduled_action_name  = "${var.resource_prefix}-asg-shutdown-after-working-hours"
+//  min_size               = 0
+//  desired_capacity       = 0
+//  max_size               = 1
+//  recurrence             = "0 1 * * MON-FRI"
+//  autoscaling_group_name = aws_autoscaling_group.this.name
+//}
 
 // ALB and target group
 resource "aws_lb" "this" {
