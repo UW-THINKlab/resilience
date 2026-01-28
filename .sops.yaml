@@ -1,5 +1,4 @@
 # configuration file for SOPS/encryption
 creation_rules:
   - path_regex: values\.cloud\.yaml$
-    pgp: 'AD28C8D8C60268C5F329509B31FEC69867EB2B81'
-    kms: 'arn:aws:kms:us-west-2:503561456208:key/c8a2c58b-f793-4a56-87d9-708e0a67569c'
+    kms: 'arn:aws:kms:us-west-2:503561456208:key/8f487e8c-d6c5-4ed4-9ace-c5011baead84,arn:aws:kms:us-east-1:503561456208:key/4ce4551c-4b42-4e0a-ac14-961f385c9517'
