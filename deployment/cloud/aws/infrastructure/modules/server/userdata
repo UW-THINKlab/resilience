@@ -39,6 +39,15 @@ runcmd:
   # FIXME current dev branch
   - git checkout messages
 
+  # *** WAIT FOR INSTANCE METADATA + IAM ROLE ***
+  - echo "Waiting for EC2 metadata service and IAM role..."
+  - |
+    until curl -sf http://169.254.169.254/latest/meta-data/iam/security-credentials/; do
+      echo "Waiting for IAM credentials endpoint... (sleep 5)"
+      sleep 5
+    done
+    echo "✅ IAM credentials available"
+
   # install backend tools
   - echo "Setting up backend infra"
   - export PATH=/usr/lib/postgresql/14/bin/:$PATH
