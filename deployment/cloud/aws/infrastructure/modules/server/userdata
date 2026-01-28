@@ -48,6 +48,11 @@ runcmd:
     done
     echo "✅ IAM credentials available"
 
+  # tool pathing for root
+  - echo "export PATH=\$PATH:$PWD/.pixi/envs/backend/bin" >> /root/.bashrc
+  - echo "export KUBECONFIG=$PWD/.kube/config" >> /root/.bashrc
+
+
   # install backend tools
   - echo "Setting up backend infra"
   - export PATH=/usr/lib/postgresql/14/bin/:$PATH
