@@ -37,7 +37,7 @@ runcmd:
   - git clone https://github.com/${github_organization}/${github_repo}.git
   - cd ${github_repo}
   # FIXME current dev branch
-  - git checkout messages
+  - git checkout tofu-esther
 
   # *** WAIT FOR INSTANCE METADATA + IAM ROLE ***
   - echo "Waiting for EC2 metadata service and IAM role..."
