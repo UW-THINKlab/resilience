@@ -33,11 +33,14 @@ class AppConfig {
   AppConfig({required this.supabaseUrl, required this.supabaseAnonKey});
 
   factory AppConfig.fromJson(String jsonString) {
-    // TODO - Check env.
     final Map<String, dynamic> data = json.decode(jsonString);
+
+    final String supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: data['supabaseUrl']);
+    final String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: data['supabaseAnonKey']);
+
     return AppConfig(
-      supabaseUrl: data['supabaseUrl'],
-      supabaseAnonKey: data['supabaseAnonKey'],
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey,
     );
   }
 
