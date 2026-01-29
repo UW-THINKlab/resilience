@@ -9,13 +9,13 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - messages
   workflow_dispatch:
-    
+
 
 jobs:
   call-run-server:
-    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@main
+    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@messages
   build-and-publish:
     runs-on: ubuntu-latest
     # This workflow accesses secrets and checks out a PR, so only run if labelled
@@ -43,7 +43,7 @@ jobs:
         --base-href "/resilience/" \
         --web-renderer html \
         --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
-        --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+        --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
 
     - name: Upload Pages HTML
       uses: actions/upload-pages-artifact@v3

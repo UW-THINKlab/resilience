@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-run-server:
-    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@main
+    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@messages
   add-preview:
     runs-on: ubuntu-latest
     # This workflow accesses secrets and checks out a PR, so only run if labelled
@@ -29,7 +29,7 @@ jobs:
         flutter-version: '3.24.5'
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
-    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+    - run: flutter build web --web-renderer html --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
 
     - name: Deploy Website Preview
       if: always()
