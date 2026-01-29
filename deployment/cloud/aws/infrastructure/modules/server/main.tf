@@ -64,7 +64,8 @@ resource "aws_iam_role" "instance" {
             "ec2:StartInstances",
             "ec2:StopInstances",
             "ec2:AssociateAddress",
-            "ec2:DisassociateAddress"
+            "ec2:DisassociateAddress",
+            "kms:Decrypt"
           ],
           Resource = "*",
           Condition = {
