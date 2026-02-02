@@ -9,13 +9,13 @@ final log = Logger('AppConfig');
 /// Environment variables constants.
 abstract class EnvironmentConfig {
   static const String supabaseUrl = String.fromEnvironment(
-    'API_URL',
-    defaultValue: 'http://localhost:8000',
+    'SUPABASE_URL',
+    defaultValue: '',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
-    'ANON_KEY',
-    defaultValue: 'soMe-SuperlongAnonKey',
+    'SUPABASE_ANON_KEY',
+    defaultValue: '',
   );
 }
 
@@ -24,7 +24,7 @@ abstract class EnvironmentConfig {
 
 const configFileName = 'assets/app_config.json';
 
-class AppConfigNotFoundError extends Error {}
+//class AppConfigNotFoundError extends Error {}
 
 class AppConfig {
   final String supabaseUrl;
@@ -33,10 +33,20 @@ class AppConfig {
   AppConfig({required this.supabaseUrl, required this.supabaseAnonKey});
 
   factory AppConfig.fromJson(String jsonString) {
+    // Load the config file
     final Map<String, dynamic> data = json.decode(jsonString);
+    final jsonUrl = data['supabaseUrl'];
+    final jsonAnonKey = data['supabaseAnonKey'];
 
-    final String supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: data['supabaseUrl']);
-    final String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: data['supabaseAnonKey']);
+    log.fine('EnvironmentConfig.supabaseUrl: ${EnvironmentConfig.supabaseUrl}');
+    log.fine('EnvironmentConfig.supabaseAnonKey: ${EnvironmentConfig.supabaseAnonKey.substring(0, 4)}...${EnvironmentConfig.supabaseAnonKey.substring(EnvironmentConfig.supabaseAnonKey.length - 4)}');
+
+
+    final String supabaseUrl = EnvironmentConfig.supabaseUrl != '' ? EnvironmentConfig.supabaseUrl : jsonUrl;
+    final String supabaseAnonKey = EnvironmentConfig.supabaseAnonKey != '' ? EnvironmentConfig.supabaseAnonKey : jsonAnonKey;
+
+    log.fine('AppConfig - supabaseUrl: $supabaseUrl');
+    log.fine('AppConfig - supabaseAnonKey: ${supabaseAnonKey.substring(0, 4)}...${supabaseAnonKey.substring(supabaseAnonKey.length - 4)}');
 
     return AppConfig(
       supabaseUrl: supabaseUrl,
@@ -50,7 +60,7 @@ class AppConfig {
       WidgetsFlutterBinding.ensureInitialized();
       final String jsonStr = await rootBundle.loadString(configFileName);
       if (jsonStr.isEmpty) {
-        throw AppConfigNotFoundError();
+        throw Error();
       }
       final config = AppConfig.fromJson(jsonStr);
       return config;
@@ -58,7 +68,7 @@ class AppConfig {
     catch (e, stackTrace) {
       log.severe('Error loading bundle: $e');
       log.severe('Trace: $stackTrace');
-      throw AppConfigNotFoundError();
+      throw Error();
     }
   }
 }
