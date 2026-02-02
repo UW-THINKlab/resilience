@@ -38,10 +38,6 @@ class AppConfig {
     final jsonUrl = data['supabaseUrl'];
     final jsonAnonKey = data['supabaseAnonKey'];
 
-    log.fine('EnvironmentConfig.supabaseUrl: ${EnvironmentConfig.supabaseUrl}');
-    log.fine('EnvironmentConfig.supabaseAnonKey: ${EnvironmentConfig.supabaseAnonKey.substring(0, 4)}...${EnvironmentConfig.supabaseAnonKey.substring(EnvironmentConfig.supabaseAnonKey.length - 4)}');
-
-
     final String supabaseUrl = EnvironmentConfig.supabaseUrl != '' ? EnvironmentConfig.supabaseUrl : jsonUrl;
     final String supabaseAnonKey = EnvironmentConfig.supabaseAnonKey != '' ? EnvironmentConfig.supabaseAnonKey : jsonAnonKey;
 
