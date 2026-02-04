@@ -8,11 +8,11 @@ import 'package:support_sphere/data/utils.dart';
 class AuthenticationRepository {
   final _authService = AuthService();
 
-  /// Stream of [AuthUser] which will emit the current user when
+  /// Stream of [MyAuthUser] which will emit the current user when
   /// the authentication state changes.
   ///
-  /// Emits [AuthUser.empty] if the user is not authenticated.
-  Stream<AuthUser> get user {
+  /// Emits [MyAuthUser.empty] if the user is not authenticated.
+  Stream<MyAuthUser> get user {
     // Transform the regular supabase user object to our own User model
     return _authService.getCurrentSession().map((session) {
       String userRole = _parseUserRole(session);
@@ -20,7 +20,7 @@ class AuthenticationRepository {
     });
   }
 
-  AuthUser get currentUser {
+  MyAuthUser get currentUser {
     supabase_flutter.Session? session = _authService.getUserSession();
     // Transform the regular supabase user object to our own User model
     String userRole = _parseUserRole(session);
@@ -52,10 +52,10 @@ class AuthenticationRepository {
     }
   }
 
-  AuthUser _parseUser(supabase_flutter.User? user, String userRole) {
+  MyAuthUser _parseUser(supabase_flutter.User? user, String userRole) {
     return user == null
-        ? AuthUser.empty
-        : AuthUser(
+        ? MyAuthUser.empty
+        : MyAuthUser(
             uuid: user.id,
             userRole: userRole,
             email: user.email,
@@ -68,13 +68,13 @@ class AuthenticationRepository {
       String token = session.accessToken;
       Map<String, dynamic> decodedToken = Jwtdecode(token);
       String userRole = decodedToken['user_role'] ?? defaultReturn;
-      print("User role: ${userRole}");
+      print("User role: $userRole");
       return userRole;
     }
     return defaultReturn;
   }
 
-  Future<AuthUser> updateUserPhoneNumber({
+  Future<MyAuthUser> updateUserPhoneNumber({
     String? phone,
   }) async {
     final response = await _authService.updateUserPhone(phone);

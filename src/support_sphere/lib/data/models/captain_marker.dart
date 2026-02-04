@@ -21,7 +21,7 @@ class CaptainMarker extends Equatable {
   @override
   List<Object?> get props => [id, familyName, givenName, householdGeom];
 
-  copyWith({
+  CaptainMarker copyWith({
     required String id,
     required String familyName,
     required String givenName,

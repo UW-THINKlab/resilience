@@ -1,12 +1,7 @@
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
-import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 import 'package:support_sphere/presentation/components/resource_search_bar.dart';
@@ -36,7 +31,7 @@ class _ManageResourceBodyControllerState
 
   @override
   Widget build(BuildContext context) {
-    void _switchPage() {
+    void switchPage() {
       setState(() {
         _showingAddResource = !_showingAddResource;
       });
@@ -45,8 +40,8 @@ class _ManageResourceBodyControllerState
     return BlocProvider(
       create: (context) => ManageResourceCubit(),
       child: (_showingAddResource)
-          ? AddResourceView(onPressed: _switchPage)
-          : ManageResourceView(addResourceOnPressed: _switchPage),
+          ? AddResourceView(onPressed: switchPage)
+          : ManageResourceView(addResourceOnPressed: switchPage),
     );
   }
 }
@@ -61,8 +56,8 @@ class ManageResourceView extends StatelessWidget {
     return Column(
       children: [
         const Padding(
-          padding: const EdgeInsets.all(12),
-          child: const Center(
+          padding: EdgeInsets.all(12),
+          child: Center(
             child: Text(ResourceStrings.manageResources,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
@@ -128,7 +123,7 @@ class AddResourceView extends StatelessWidget {
 }
 
 class _ResourcesBody extends StatefulWidget {
-  const _ResourcesBody({super.key, this.addResourceOnPressed});
+  const _ResourcesBody({this.addResourceOnPressed});
 
   final VoidCallback? addResourceOnPressed;
 
@@ -137,7 +132,7 @@ class _ResourcesBody extends StatefulWidget {
 }
 
 class _ResourcesBodyState extends State<_ResourcesBody> {
-  List<Resource>? _searchResults = null;
+  List<Resource>? _searchResults;
   String _nameQuery = '';
   String _resourceTypeQuery = '';
 
@@ -224,8 +219,7 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
 class _ResourceViewSection extends StatelessWidget {
   final List<Resource> searchResults;
 
-  const _ResourceViewSection({Key? key, required this.searchResults})
-      : super(key: key);
+  const _ResourceViewSection({required this.searchResults});
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +229,7 @@ class _ResourceViewSection extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.65,
             padding: const EdgeInsets.all(16),
             // TODO: Add pagination at some point
-            child: (searchResults.length > 0)
+            child: (searchResults.isNotEmpty)
                 ? ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {

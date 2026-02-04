@@ -38,7 +38,7 @@ class ResourceTypes extends Equatable {
     );
   }
 
-  copyWith({
+  ResourceTypes copyWith({
     String? id,
     String? name,
     String? description,

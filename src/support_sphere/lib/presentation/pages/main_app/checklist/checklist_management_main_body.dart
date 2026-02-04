@@ -37,7 +37,7 @@ class ChecklistManagementBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthUser authUser = context.select(
+    final MyAuthUser authUser = context.select(
       (AuthenticationBloc bloc) => bloc.state.user,
     );
 

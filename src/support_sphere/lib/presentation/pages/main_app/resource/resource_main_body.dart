@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,7 +22,7 @@ class ResourceBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthUser authUser = context.select(
+    final MyAuthUser authUser = context.select(
       (AuthenticationBloc bloc) => bloc.state.user,
     );
     return BlocProvider(

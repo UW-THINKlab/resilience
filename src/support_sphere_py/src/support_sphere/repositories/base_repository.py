@@ -28,7 +28,7 @@ class BaseRepository:
             statement = select(from_table)
             results = session.exec(statement)
             return results.all()
-        
+
     @classmethod
     def check_exists(cls, from_table: Type[T], col: str, value: Any) -> bool:
         with Session(BaseRepository.repository_engine) as session:

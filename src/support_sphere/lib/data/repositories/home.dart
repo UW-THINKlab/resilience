@@ -1,16 +1,24 @@
 import 'package:geodesy/geodesy.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
+import 'package:support_sphere/data/services/poi_service.dart';
+import 'package:support_sphere/data/models/point_of_interest.dart';
+
+final log = Logger('HomeRepository');
+
 
 class HomeRepository {
   final ClusterService _clusterService = ClusterService();
+  final PointOfInterestService _poiService = PointOfInterestService();
 
   // get all required data for displaying map on home page
   Future<
       ({
         List<CaptainMarker>? captainMarkers,
         Cluster? cluster,
+        List<PointOfInterest>? pointsOfInterest,
       })?> getHomeData(String userProfileId) async {
     final clusterData =
         await _clusterService.getClusterIdByUserProfileId(userProfileId);
@@ -24,6 +32,10 @@ class HomeRepository {
         await _clusterService.getCaptainsByClusterId(clusterId);
     final captains =
         captainsData?.map((row) => row['captain']['user_profile']['person']);
+
+    final cluster = userCluster != null ? Cluster.fromJson(userCluster) : null;
+
+    final pointsOfInterest = await _poiService.getPointsOfInterest();
 
     return (
       captainMarkers: captains
@@ -39,7 +51,35 @@ class HomeRepository {
                     : null,
               ))
           .toList(),
-      cluster: userCluster != null ? Cluster.fromJson(userCluster) : null,
+      cluster: cluster,
+      pointsOfInterest: pointsOfInterest,
     );
   }
+
+  Future<List<Cluster>> getAllClusters() async {
+      //log.fine("getAllClusters");
+
+      final clusterList = await _clusterService.getAllClusters();
+      if (clusterList == null || clusterList.isEmpty) {
+        return [];
+      }
+
+      final List<Cluster> clusters = [];
+      for (var clusterData in clusterList) {
+        var cluster = Cluster.fromJson(clusterData);
+        clusters.add(cluster);
+      }
+      log.fine("getAllClusters found ${clusters.length} clusters");
+
+      return clusters;
+    }
+
+    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint) async {
+      if (meetingPoint == null) {
+        return cluster;
+      }
+      // update db
+      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint);
+      return Cluster.fromJson(data!);
+    }
 }

@@ -45,7 +45,7 @@ class AppPage extends StatelessWidget {
                   current.selectedBottomNavIndex ||
               previous.mode != current.mode,
           builder: (context, state) {
-            final AuthUser authUser = context.select(
+            final MyAuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
             MediaQueryData screenData = MediaQuery.of(context);
@@ -118,7 +118,7 @@ class AppPage extends StatelessWidget {
 /// Only visible to users that have a role
 /// of community admin and above
 class _DeclareEmergencyButton extends StatelessWidget {
-  const _DeclareEmergencyButton({super.key});
+  const _DeclareEmergencyButton();
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +171,7 @@ class _DeclareEmergencyButton extends StatelessWidget {
 }
 
 class _AppModeChangeDialog extends StatelessWidget {
-  const _AppModeChangeDialog({super.key, required this.parentContext});
+  const _AppModeChangeDialog({required this.parentContext});
 
   final BuildContext parentContext;
 
@@ -204,7 +204,7 @@ class _AppModeChangeDialog extends StatelessWidget {
 /// If the user selects "Yes", the app will switch to normal mode.
 /// If the user selects "No", the dialog will close.
 class _EmergencyAlertDialog extends StatelessWidget {
-  const _EmergencyAlertDialog({super.key, required this.parentContext});
+  const _EmergencyAlertDialog({required this.parentContext});
 
   final BuildContext parentContext;
 
@@ -248,7 +248,7 @@ class _EmergencyAlertDialog extends StatelessWidget {
 /// If the user selects "Test", the app will switch to test emergency mode.
 /// If the user selects "Cancel", the dialog will close.
 class _NormalAlertDialog extends StatelessWidget {
-  const _NormalAlertDialog({super.key, required this.parentContext});
+  const _NormalAlertDialog({required this.parentContext});
 
   final BuildContext parentContext;
 

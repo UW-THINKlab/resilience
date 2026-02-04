@@ -24,7 +24,7 @@ class AuthenticationBloc
   }
 
   final AuthenticationRepository _authRepository;
-  late final StreamSubscription<AuthUser> _userSubscription;
+  late final StreamSubscription<MyAuthUser> _userSubscription;
 
   void _onCurrentUserChanged(
       AuthOnCurrentUserChanged event, Emitter<AuthenticationState> emit) {

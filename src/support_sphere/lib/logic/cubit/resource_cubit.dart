@@ -16,7 +16,7 @@ class ResourceCubit extends Cubit<ResourceState> {
     fetchUserResources(authUser.uuid);
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
 
   final ResourceRepository _resourceRepository = ResourceRepository();
 

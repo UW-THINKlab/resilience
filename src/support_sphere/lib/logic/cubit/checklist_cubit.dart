@@ -11,7 +11,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
     fetchUserChecklists(authUser.uuid);
   }
 
-  final AuthUser authUser;
+  final MyAuthUser authUser;
   final ChecklistRepository _checklistRepository = ChecklistRepository();
 
   Future<void> fetchUserChecklists(String userId) async {

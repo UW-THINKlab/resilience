@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
+import 'package:google_fonts/google_fonts.dart' as fonts;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/constants/color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,12 +11,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
 
+void initializeLogging(Level level) {
+  Logger.root.level = level;
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print - This is a standard logger
+    print('${record.time}: ${record.message}');
+  });
+}
+
+final log = Logger('MyApp');
+
 void main() async {
+  initializeLogging(Level.FINE);
   try {
     await Config.initSupabase();
-  } catch (e) {
-    // TODO: Log error
-    print(e);
+  } catch (e, stackTrace) {
+    log.severe('Error initializing DB', e, stackTrace);
   }
   runApp(const MyApp());
 }
@@ -89,7 +100,7 @@ class AppView extends StatelessWidget {
     );
   }
 
-  ThemeData _buildTheme(brightness) {
+  ThemeData _buildTheme(Brightness brightness) {
     var baseTheme = ThemeData(
       brightness: brightness,
       colorScheme: ColorScheme.fromSeed(
@@ -116,7 +127,7 @@ class AppView extends StatelessWidget {
     );
 
     return baseTheme.copyWith(
-      textTheme: GoogleFonts.latoTextTheme(baseTheme.textTheme),
+      textTheme: fonts.GoogleFonts.latoTextTheme(baseTheme.textTheme),
     );
   }
 }

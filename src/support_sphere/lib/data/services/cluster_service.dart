@@ -1,3 +1,4 @@
+import 'package:geodesy/geodesy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -10,11 +11,11 @@ class ClusterService {
   /// Returns null if the cluster does not exist.
   Future<PostgrestMap?> getClusterById(String clusterId) async {
     /// This query will perform a join on the user_profiles and people tables
-    return await _supabaseClient.from('clusters').select('''
-      id,
-      name,
-      meeting_place
-    ''').eq('id', clusterId).maybeSingle();
+    return await _supabaseClient.from('clusters').select('*').eq('id', clusterId).maybeSingle();
+  }
+
+  Future<PostgrestList?> getAllClusters() async {
+    return await _supabaseClient.from('clusters').select('*');
   }
 
   Future<PostgrestMap?> getClusterIdByUserProfileId(String userProfileId) async {
@@ -28,6 +29,13 @@ class ClusterService {
         )
       )
     ''').eq('id', userProfileId).maybeSingle();
+  }
+
+  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location) async {
+    // update
+    await _supabaseClient.from('clusters').update({'meeting_point': location}).eq('id', clusterId);
+    // new version
+    return getClusterById(clusterId);
   }
 
   Future<PostgrestList?> getCaptainsByClusterId(String clusterId) async {

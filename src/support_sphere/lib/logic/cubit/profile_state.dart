@@ -9,7 +9,7 @@ class ProfileState extends Equatable {
   });
 
   final Person? userProfile;
-  final AuthUser? authUser;
+  final MyAuthUser? authUser;
   final Household? household;
   final Cluster? cluster;
 
@@ -18,7 +18,7 @@ class ProfileState extends Equatable {
 
   ProfileState copyWith({
     Person? userProfile,
-    AuthUser? authUser,
+    MyAuthUser? authUser,
     Household? household,
     Cluster? cluster,
   }) {

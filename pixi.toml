@@ -29,7 +29,7 @@ ipykernel = ">=6.29.5,<7"
 start-jupyterlab = { cmd = "jupyter lab", cwd = "notebooks" }
 
 [feature.data-analysis.pypi-dependencies]
-supabase = ">=2.6.0,<2.7"
+supabase = ">=2.6.0,<2.99"
 
 # ==== Backend Database environment ====
 [feature.db.dependencies]
@@ -57,6 +57,7 @@ cmd = "k3d image import pdc/populate_db:1.0 -c pdc-cluster"
 
 [feature.db.tasks.create-configmap]
 cmd = """
+kubectl delete configmap config-dev; \
 kubectl create configmap config-dev \
   --from-literal=DB_HOST="supabase-supabase-db" \
   --from-literal=DB_PORT="5432" \
@@ -64,12 +65,16 @@ kubectl create configmap config-dev \
   --from-literal=SUPABASE_KONG_PORT="8000"
 """
 
+
 [feature.db.tasks.run-container-job]
 cmd = """
 kubectl apply -f deployment/kubernetes/populate_db_job.yaml && \
   sleep 10 && \
-  kubectl get pods --selector=job-name=populate-db-job
+  kubectl logs -l job-name=populate-db-job --tail -1 && \
+  kubectl get pods -l job-name=populate-db-job
 """
+
+
 
 # ==== Backend environment ====
 [feature.backend.tasks]
@@ -128,6 +133,10 @@ cmd = "rm deployment/values.cloud.decrypted.yaml"
 [feature.backend.tasks.port-forward-supabase-db]
 cmd = "kubectl port-forward service/supabase-supabase-db 5432:5432"
 
+[feature.backend.tasks.port-forward-supabase-kong]
+cmd = "kubectl port-forward service/supabase-supabase-kong 8000:8000"
+
+
 # K3D Tasks
 [feature.backend.tasks.install-k3d]
 cmd = "curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
@@ -174,10 +183,16 @@ rich = ">=13.7.1,<13.8"
 ruby = ">=3.3.3,<3.4"
 
 # Flutter tasks
-[feature.frontend.tasks.flutter-run]
-cmd = "flutter run"
+[feature.frontend.tasks.run-web]
+cmd = "flutter run --dart-define-from-file=../../.env -d chrome"
 cwd = "src/support_sphere"
-depends-on = ["flutter-devices", "flutter-get"]
+#depends-on = ["flutter-devices", "flutter-get"]
+
+# Flutter tasks
+[feature.frontend.tasks.run]
+cmd = "flutter run --dart-define-from-file=../../.env"
+cwd = "src/support_sphere"
+#depends-on = ["flutter-devices", "flutter-get"]
 
 [feature.frontend.tasks.flutter-get]
 cmd = "flutter pub get"
@@ -285,3 +300,25 @@ gnupg = ">=2.4.5"
 
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --pinentry-mode loopback --output - keys.asc | gpg --import"
+
+[tasks.execute_sql]
+cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
+cwd = "src/support_sphere_py"
+
+[tasks.db-init]
+cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "db_init", "run-all"]
+cwd = "src/support_sphere_py"
+depends-on = ["execute_sql"]
+
+[tasks.clean]
+cmd = ["docker", "system", "prune", "-af"]
+depends-on = ["k3d-delete-cluster"]
+
+# there's got to be a better way: "all the tasks in env backend"?
+[tasks.local]
+depends-on = [
+  { task = "build-docker-image-for-api-service", environment = "backend" },
+  { task = "install-tools", environment = "backend" },
+  { task = "setup-infra", environment = "backend" },
+  { task = "setup-db-data-via-k8s-job", environment = "backend" },
+]
