@@ -318,10 +318,12 @@ cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "db_init", "run-all
 cwd = "src/support_sphere_py"
 depends-on = ["execute-sql"]
 
-
 [tasks.clean]
 cmd = ["docker", "system", "prune", "-af"]
 depends-on = ["k3d-delete-cluster"]
+
+[tasks.backup]
+cmd = "scripts/backup-kube.sh"
 
 # there's got to be a better way: "all the tasks in env backend"?
 [tasks.local]
