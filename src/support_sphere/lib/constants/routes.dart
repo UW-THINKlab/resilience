@@ -37,12 +37,7 @@ class AppNavigation {
     // to be displayed in the navigation bar
     // screen size maximum information retrieved from
     // https://learn.microsoft.com/en-us/windows/apps/design/layout/screen-sizes-and-breakpoints-for-responsive-design
-
-    log.fine('### role = $role, minWidth = $minWidth');
-
-    // FIXME: role check removed because it's not being set
-    // need to debug AUTH stack and determine why not. could be new vs old version.
-    if (/*role == AppRoles.communityAdmin &&*/ minWidth! > 641) {
+    if (role == AppRoles.communityAdmin && minWidth! > 641) {
       destinations = destinations + [
         const AppRoute(
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),

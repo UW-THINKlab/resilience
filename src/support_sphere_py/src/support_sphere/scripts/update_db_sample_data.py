@@ -489,8 +489,7 @@ def test_app_mode_change():
     # CODE: 42501
     # Authorization and roles are validated with custom functions in execute_sql_statement.py
     # Something has invalidated that running against a later version, based on row-level-auth.
-    # test_app_mode_status_update()
-    # FIXME ^^^
+    test_app_mode_status_update()
     test_unauthorized_app_mode_update()
 
 
