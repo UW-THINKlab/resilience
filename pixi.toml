@@ -322,8 +322,6 @@ depends-on = ["execute-sql"]
 cmd = ["docker", "system", "prune", "-af"]
 depends-on = ["k3d-delete-cluster"]
 
-[tasks.backup]
-cmd = "scripts/backup-kube.sh"
 
 # there's got to be a better way: "all the tasks in env backend"?
 [tasks.local]
@@ -333,3 +331,9 @@ depends-on = [
   { task = "setup-infra", environment = "backend" },
   { task = "setup-db-data-via-k8s-job", environment = "backend" },
 ]
+
+[tasks.db-backup]
+cmd = "scripts/backup-kube.sh"
+
+[tasks.db-restore]
+cmd = "scripts/restore-kube.sh"
