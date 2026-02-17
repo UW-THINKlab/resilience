@@ -17,15 +17,18 @@ Setting up the backend:
 Now, the choice is to load data, either the Laurelhurst test data or a backup.
 
 To load Laurelhurst test data:
-    - `pixi run -e backend setup-db-data-via-k8s-job`
+    
+    pixi run -e backend setup-db-data-via-k8s-job
 
 To load from a backup file named `backup-Laurelhurst-2026-02-17-1133.sql.gz`:
-    - `pixi run db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz`
+
+    pixi run db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz
 
 To create a backup from the current instance:
-    - `pixi run db-backup`
+    
+    pixi run db-backup
 
-Which will create a backup file with the neighborhood name and timestamp.
+Which will create a backup file with the neighborhood name and timestamp: `backup-Laurelhurst-2026-02-17-1133.sql.gz`
 
 ## Introduction
 
