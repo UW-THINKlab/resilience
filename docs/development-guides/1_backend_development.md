@@ -1,12 +1,41 @@
 # Backend Components
 
+## tl;dr
+
+Setting up the backend:
+1. Install `git` and clone repo:
+    - `git clone https://github.com/UW-THINKlab/resilience`
+    - `cd resilience`
+2. [Install pixi](https://pixi.prefix.dev/latest/installation/):
+    - `curl -fsSL https://pixi.sh/install.sh | sh`
+3. Install backend tools:
+    - `pixi run -e backend install-tools`
+4. Install backend infrastructure:
+    - `pixi run -e backend setup-infra`
+5. Confirm supabase is running at http://localhost
+
+Now, the choice is to load data, either the Laurelhurst test data or a backup.
+
+To load Laurelhurst test data:
+    - `pixi run -e backend setup-db-data-via-k8s-job`
+
+To load from a backup file named `backup-Laurelhurst-2026-02-17-1133.sql.gz`:
+    - `pixi run db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz`
+
+To create a backup from the current instance:
+    - `pixi run db-backup`
+
+Which will create a backup file with the neighborhood name and timestamp.
+
+## Introduction
+
 For the backend infrastructure, the storage and API interfaces,
 we utilize Supabase, an open source Firebase alternative. It is made up of many services on top of a Postgres database.
 
 ![supabase architecture](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fsupabase-architecture.svg&w=640&q=75&dpl=dpl_59dEA9dppFNxofYyfzjyLZjscsqB)
 
 For deployment of Supabase, we utilized the community supabase kubernetes helm chart.
-The helm chart can be found in [supabase-community/supabase-kubernetes](https://github.com/supabase-community/supabase-kubernetes). 
+The helm chart can be found in [supabase-community/supabase-kubernetes](https://github.com/supabase-community/supabase-kubernetes).
 This helm chart allows for a cloud agnostic deployment as long as a Kubernetes cluster is available.
 This ensures that the cloud deployment is exactly the same as the local deployment.
 
@@ -85,9 +114,9 @@ It does contains unencrypted secrets and should not be used in production.
 #### `values.cloud.yaml`: This is the values file for the production environment.
 You can use this file to deploy the backend services to a production kubernetes cluster,
 whether it be on the cloud or on-premises.
-It contains encrypted secrets and can be used in production. 
-    
-    
+It contains encrypted secrets and can be used in production.
+
+
 ##### Editing values.cloud.yaml (Optional)
 
 The `values.cloud.yaml` has been encrypted using a tool called [SOPS: Secrets OPerationS](https://github.com/getsops/sops).
@@ -169,7 +198,7 @@ To run this app locally, follow these steps:
     pixi run -e backend setup-infra
     ```
     After the setup, when prompted to log in, enter your Supabase project credentials (Username and Password) for successful authentication. The credentials can be found in `deployment/values.dev.yaml`.
-4. Optional: If you want to add sample entries in your local Supabase Instance. 
+4. Optional: If you want to add sample entries in your local Supabase Instance.
     Run the following command in a new terminal session.
     ```console
     pixi run -e backend setup-db-data-via-k8s-job
@@ -180,4 +209,3 @@ To run this app locally, follow these steps:
 Date generated: 11/25/2024
 
 ![database diagram](../assets/images/pdc_20241125.png)
-
