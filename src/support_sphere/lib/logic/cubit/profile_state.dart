@@ -4,6 +4,7 @@ class ProfileState extends Equatable {
   const ProfileState({
     this.userProfile,
     this.household,
+    this.inviteCode,
     this.authUser,
     this.cluster,
   });
@@ -11,6 +12,7 @@ class ProfileState extends Equatable {
   final Person? userProfile;
   final MyAuthUser? authUser;
   final Household? household;
+  final String? inviteCode;
   final Cluster? cluster;
 
   @override
@@ -20,12 +22,14 @@ class ProfileState extends Equatable {
     Person? userProfile,
     MyAuthUser? authUser,
     Household? household,
+    String? inviteCode,
     Cluster? cluster,
   }) {
     return ProfileState(
       userProfile: userProfile ?? this.userProfile,
       authUser: authUser ?? this.authUser,
       household: household ?? this.household,
+      inviteCode: inviteCode ?? this.inviteCode,
       cluster: cluster ?? this.cluster,
     );
   }

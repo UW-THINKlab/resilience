@@ -211,6 +211,7 @@ class _HouseholdInformation extends StatelessWidget {
       buildWhen: (previous, current) => previous.household != current.household,
       builder: (context, state) {
         Household? household = state.household;
+        String inviteCode = state.inviteCode ?? '';
         String address = household?.address ?? '';
         String pets = household?.pets ?? '';
         String notes = household?.notes ?? '';
@@ -289,6 +290,13 @@ class _HouseholdInformation extends StatelessWidget {
             ),
           ),
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Invite Code"),
+                Text(inviteCode),
+              ],
+            ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -296,7 +304,7 @@ class _HouseholdInformation extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 50.0,
+              height: 100.0,
               child: ListView(shrinkWrap: true, children: [
                 for (var member in householdMembers)
                   Row(

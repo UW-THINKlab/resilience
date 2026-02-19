@@ -219,7 +219,9 @@ class UserRepository {
         userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
 
     // Invalidate the signup code used to create the user
-    await _authService.invalidateSignupCode(data["code"]);
+    //await _authService.invalidateSignupCode(data["code"]);
+    String email = user.email ?? '[unknown]';
+    await _authService.logUseOfSignupCode(email, data["household_id"], data["code"]);
   }
 
   Future<void> updateUserName({

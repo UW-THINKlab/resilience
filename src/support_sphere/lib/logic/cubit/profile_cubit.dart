@@ -29,8 +29,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(authUser: authUser));
   }
 
-  void householdChanged(Household? household) {
-    emit(state.copyWith(household: household));
+  void householdChanged(Household? household, String? inviteCode) {
+    emit(state.copyWith(household: household, inviteCode: inviteCode));
   }
 
   void clusterChanged(Cluster? cluster) {
@@ -53,13 +53,15 @@ class ProfileCubit extends Cubit<ProfileState> {
         userProfile.id,
       );
       if (household != null) {
+        final inviteCode = await _authRepository.getSignUpCodeForHousehold(household.id);
+
         /// Get the household members of the household
         final HouseHoldMembers? houseHoldMembers = await _userRepository.getHouseholdMembersByHouseholdId(household.id);
 
         if (houseHoldMembers != null) {
           household = household.copyWith(houseHoldMembers: houseHoldMembers);
         }
-        householdChanged(household);
+        householdChanged(household, inviteCode);
       } else {
         throw Exception('Household not found');
       }
@@ -84,7 +86,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (_) {
       /// TODO: Handle error if there are no user profile or household for some reason
       profileChanged(null);
-      householdChanged(null);
+      householdChanged(null, null);
       clusterChanged(null);
     }
   }

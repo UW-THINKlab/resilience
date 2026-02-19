@@ -82,4 +82,8 @@ class AuthenticationRepository {
 
     return _parseUser(response.user, _parseUserRole(session));
   }
+
+  Future<String?> getSignUpCodeForHousehold(String household_id) async {
+    return _authService.getSignUpCodeForHousehold(household_id);
+  }
 }

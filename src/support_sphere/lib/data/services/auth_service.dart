@@ -3,6 +3,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:uuid/v4.dart' show UuidV4;
 // TODO: ADD API Handling in here for exceptions
 
 final _log = Logger('AuthService');
@@ -16,6 +17,24 @@ class AuthService extends Equatable{
 
   Future<Map<String, dynamic>?> isSignupCodeValid(String code) async {
     return await _supabaseClient.from('signup_codes').select().eq('code', code).maybeSingle();
+  }
+
+  Future<String?> getSignUpCodeForHousehold(String household_id) async {
+    PostgrestMap? result = await _supabaseClient.from('signup_codes').select().eq('household_id', household_id).maybeSingle();
+    _log.finer("get SIGNUP CODE for $household_id: $result");
+    return result?['code'];
+  }
+
+  Future<void> logUseOfSignupCode(String email, String householdId, String code) async {
+    // add log to table
+    await _supabaseClient.from('signup_logs').insert({
+      'id': const UuidV4().generate(),
+      'created_by': _supabaseClient.auth.currentUser!.id,
+      'created_at': DateTime.now().toIso8601String(),
+      'email': email,
+      'household_id': householdId,
+      'code': code,
+    });
   }
 
   Future<void> invalidateSignupCode(String code) async {
