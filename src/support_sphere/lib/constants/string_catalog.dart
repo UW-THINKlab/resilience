@@ -65,6 +65,11 @@ class UserProfileStrings {
   static const String meetingPlace = 'Meeting place';
   static const String captains = 'Captain(s)';
   static const String submit = 'Submit';
+  static const String deleteMyAccount = 'Delete My Account';
+  static const String confirmPrompt = 'Please Confirm';
+  static const String confirmAccountDelete = 'Are you sure you want to delete your account?';
+
+
 }
 
 /// Checklist messages

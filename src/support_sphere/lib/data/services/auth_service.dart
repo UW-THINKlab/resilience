@@ -41,6 +41,17 @@ class AuthService extends Equatable{
     await _supabaseClient.rpc('invalidate_signup_code', params: {'input_code': code});
   }
 
+  // Delete the users account
+  Future <void> deleteMyAccount() async {
+    String? userId = _supabaseAuth.currentUser?.id;
+    await _supabaseClient.rpc('delete_user', params: {'user_id': userId});
+  }
+
+  // Delete an account
+  Future <void> deleteUser(String userId) async {
+    await _supabaseClient.rpc('delete_user', params: {'user_id': userId});
+  }
+
   Future<AuthResponse> signUpWithEmailAndPassword(String email, String password) async {
     // TODO: Add email verification in the future
     final response = await _supabaseAuth.signUp(email: email, password: password);

@@ -56,6 +56,7 @@ class ProfileBody extends StatelessWidget {
                     // _PrivacyAndNotifications(),
                     // Log Out Button
                     _LogOutButton(),
+                    _DeleteMyAccountButton(),
                   ],
                 ),
               ),
@@ -81,6 +82,49 @@ class _LogOutButton extends StatelessWidget {
                 context.read<AuthenticationBloc>().add(AuthOnLogoutRequested()),
             icon: const Icon(Ionicons.log_out_outline),
             label: const Text(LoginStrings.logout),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DeleteMyAccountButton extends StatelessWidget {
+  const _DeleteMyAccountButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.all(10),
+          child: ElevatedButton.icon(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext ctx) {
+                return AlertDialog(
+                  title: const Text(UserProfileStrings.confirmPrompt),
+                  content: const Text(UserProfileStrings.confirmAccountDelete),
+                  actions: [
+                    // Yes button
+                    TextButton(
+                        onPressed: () {
+                          // request delete
+                          context.read<AuthenticationBloc>().add(AuthDeleteMyUserRequested());
+
+                          // Close the dialog
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(EmergencyAlertDialogStrings.buttonYes)),
+                    // No button
+                    TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text(EmergencyAlertDialogStrings.buttonNo))
+                  ],
+                );
+              }),
+            icon: const Icon(Ionicons.trash_bin_outline),
+            label: const Text(UserProfileStrings.deleteMyAccount),
           ),
         );
       },

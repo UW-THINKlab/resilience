@@ -33,7 +33,10 @@ class AuthenticationRepository {
   }) async =>
       _authService.signInWithEmailAndPassword(email, password);
 
+
   Future<void> logOut() async => await _authService.signOut();
+
+  Future<void> deleteMyAccount() async => await _authService.deleteMyAccount();
 
   Future<Map<String, dynamic>> signUp({
     required String email,
