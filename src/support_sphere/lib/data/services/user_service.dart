@@ -141,4 +141,16 @@ class UserService {
       'household_id': householdId,
     });
   }
+
+  /// Creates a user role with the default 'USER' role for the given user id.
+  Future<void> createUserRole({
+    required String userId,
+  }) async {
+    final roleId = const UuidV4().generate();
+    await _supabaseClient.from('user_roles').insert({
+      'id': roleId,
+      'user_profile_id': userId,
+      'role': 'USER',
+    });
+  }
 }

@@ -140,9 +140,10 @@ class UserRepository {
 
 
   /// Create a new user with the given user info.
-  /// This will perform two operations:
+  /// This will perform three operations:
   /// 1. Create a user profile with the given user id and empty username
   /// 2. Create a person with the given user id, given name, and family name.
+  /// 3. Assign a default 'USER' role to the new user.
   /// Returns a [Future] that completes when the user is created.
   Future<void> createNewUser({
     required supabase_flutter.User user,
@@ -159,6 +160,9 @@ class UserRepository {
     // Create a person with the given user id, given name, family name, and household id
     await _userService.createPerson(
         userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
+
+    // Assign the default user role to the new user
+    await _userService.createUserRole(userId: userId);
 
     // Invalidate the signup code used to create the user
     await _authService.invalidateSignupCode(data["code"]);
