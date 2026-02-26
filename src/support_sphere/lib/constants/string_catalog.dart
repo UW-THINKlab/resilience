@@ -182,4 +182,22 @@ class NavRouteLabels {
   static const String messages = 'Messages';
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
+  static const String manageUsers = 'Manage Users';
+}
+
+class ManageUsersStrings {
+  static const String manageUsers = 'Manage Users';
+  static const String noUsers = 'No users found in this cluster';
+  static const String clusterCaptain = 'Cluster Captain';
+  static const String regularUser = 'Regular User';
+  static const String unknownUser = 'Unknown User';
+  static const String grant = 'Grant';
+  static const String revoke = 'Revoke';
+  static const String cancel = 'Cancel';
+  static const String grantCaptainTitle = 'Grant Cluster Captain Role';
+  static const String grantCaptainMessage =
+      'Are you sure you want to grant this user the Cluster Captain role?';
+  static const String revokeCaptainTitle = 'Revoke Cluster Captain Role';
+  static const String revokeCaptainMessage =
+      'Are you sure you want to revoke the Cluster Captain role from this user?';
 }

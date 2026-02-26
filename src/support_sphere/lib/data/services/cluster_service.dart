@@ -44,6 +44,7 @@ class ClusterService {
         .select('''
         captain:user_roles (
           user_profile:user_profiles (
+            id,
             person:people (
               id,
               given_name,
@@ -59,5 +60,96 @@ class ClusterService {
       ''')
         .eq('cluster_id', clusterId)
         .eq('user_roles.role', AppRoles.subcommunityAgent);
+  }
+
+  /// Retrieves all users in a cluster with their captain status.
+  /// Returns a list of people with their user_profile_id and captain status.
+  Future<PostgrestList?> getUsersByClusterId(String clusterId) async {
+    return await _supabaseClient.from('households').select('''
+      people_groups (
+        people (
+          id,
+          user_profile_id,
+          given_name,
+          family_name,
+          nickname,
+          is_safe,
+          needs_help
+        )
+      )
+    ''').eq('cluster_id', clusterId);
+  }
+
+  /// Grants the cluster captain role to the user with the given [userProfileId]
+  /// for the cluster with the given [clusterId].
+  Future<void> grantClusterCaptain({
+    required String userProfileId,
+    required String clusterId,
+  }) async {
+    // Upsert the user role to SUBCOM_AGENT
+    await _supabaseClient.from('user_roles').upsert(
+      {
+        'user_profile_id': userProfileId,
+        'role': AppRoles.subcommunityAgent,
+      },
+      onConflict: 'user_profile_id',
+    );
+
+    // Retrieve the user_role id
+    final userRoleData = await _supabaseClient
+        .from('user_roles')
+        .select('id')
+        .eq('user_profile_id', userProfileId)
+        .single();
+
+    final String userRoleId = userRoleData['id'];
+
+    // Insert into user_captain_clusters if not already present
+    await _supabaseClient.from('user_captain_clusters').upsert(
+      {
+        'cluster_id': clusterId,
+        'user_role_id': userRoleId,
+      },
+      onConflict: 'cluster_id, user_role_id',
+    );
+  }
+
+  /// Revokes the cluster captain role from the user with the given [userProfileId]
+  /// for the cluster with the given [clusterId].
+  Future<void> revokeClusterCaptain({
+    required String userProfileId,
+    required String clusterId,
+  }) async {
+    // Retrieve the user_role id
+    final userRoleData = await _supabaseClient
+        .from('user_roles')
+        .select('id')
+        .eq('user_profile_id', userProfileId)
+        .maybeSingle();
+
+    if (userRoleData == null) return;
+
+    final String userRoleId = userRoleData['id'];
+
+    // Delete the captain cluster entry
+    await _supabaseClient
+        .from('user_captain_clusters')
+        .delete()
+        .eq('cluster_id', clusterId)
+        .eq('user_role_id', userRoleId);
+
+    // Check if the user has remaining captaincies
+    final remaining = await _supabaseClient
+        .from('user_captain_clusters')
+        .select('id')
+        .eq('user_role_id', userRoleId);
+
+    if (remaining.isEmpty) {
+      // Revert the user role to USER
+      await _supabaseClient
+          .from('user_roles')
+          .update({'role': AppRoles.user})
+          .eq('user_profile_id', userProfileId);
+    }
   }
 }

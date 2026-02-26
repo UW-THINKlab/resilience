@@ -94,3 +94,27 @@ class Captains extends Equatable {
     );
   }
 }
+
+/// Represents a user in a cluster with their captain status.
+class ClusterUser extends Equatable {
+  const ClusterUser({
+    required this.person,
+    required this.isCaptain,
+  });
+
+  final Person person;
+  final bool isCaptain;
+
+  @override
+  List<Object?> get props => [person, isCaptain];
+
+  ClusterUser copyWith({
+    Person? person,
+    bool? isCaptain,
+  }) {
+    return ClusterUser(
+      person: person ?? this.person,
+      isCaptain: isCaptain ?? this.isCaptain,
+    );
+  }
+}

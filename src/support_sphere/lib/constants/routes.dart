@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/manage_users/manage_users_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/checklist/checklist_main_body.dart';
@@ -40,6 +41,8 @@ class AppNavigation {
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
         const AppRoute(
             icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
+        const AppRoute(
+            icon: Icon(Ionicons.people_sharp), label: NavRouteLabels.manageUsers, body: ManageUsersBody()),
       ];
     }
     return destinations;

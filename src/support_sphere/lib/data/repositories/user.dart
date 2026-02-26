@@ -191,4 +191,81 @@ class UserRepository {
       notes: notes,
     );
   }
+
+  /// Grant the cluster captain role to a user for a given cluster.
+  Future<void> grantClusterCaptain({
+    required String userProfileId,
+    required String clusterId,
+  }) async {
+    await _clusterService.grantClusterCaptain(
+      userProfileId: userProfileId,
+      clusterId: clusterId,
+    );
+  }
+
+  /// Revoke the cluster captain role from a user for a given cluster.
+  Future<void> revokeClusterCaptain({
+    required String userProfileId,
+    required String clusterId,
+  }) async {
+    await _clusterService.revokeClusterCaptain(
+      userProfileId: userProfileId,
+      clusterId: clusterId,
+    );
+  }
+
+  /// Get all users in a cluster with their captain status.
+  Future<List<ClusterUser>> getClusterUsersWithCaptainStatus({
+    required String clusterId,
+  }) async {
+    final data = await _clusterService.getUsersByClusterId(clusterId);
+    final captainsData = await _clusterService.getCaptainsByClusterId(clusterId);
+
+    // Build a set of user_profile_ids that are captains
+    final Set<String> captainUserProfileIds = {};
+    if (captainsData != null) {
+      for (var record in captainsData) {
+        final captainData = record["captain"];
+        if (captainData != null) {
+          final userProfileData = captainData["user_profile"];
+          if (userProfileData != null) {
+            final String? userProfileId = userProfileData["id"];
+            if (userProfileId != null) {
+              captainUserProfileIds.add(userProfileId);
+            }
+          }
+        }
+      }
+    }
+
+    List<ClusterUser> clusterUsers = [];
+    if (data != null) {
+      for (var householdRecord in data) {
+        final List peopleGroups = householdRecord["people_groups"] ?? [];
+        for (var groupRecord in peopleGroups) {
+          final personData = groupRecord["people"];
+          if (personData == null) continue;
+          final String? userProfileId = personData["user_profile_id"];
+          if (userProfileId == null) continue;
+
+          final person = Person(
+            id: personData["id"],
+            profile: Profile(id: userProfileId),
+            givenName: personData["given_name"] ?? '',
+            familyName: personData["family_name"] ?? '',
+            nickname: personData["nickname"],
+            isSafe: personData["is_safe"] ?? true,
+            needsHelp: personData["needs_help"] ?? false,
+          );
+
+          clusterUsers.add(ClusterUser(
+            person: person,
+            isCaptain: captainUserProfileIds.contains(userProfileId),
+          ));
+        }
+      }
+    }
+
+    return clusterUsers;
+  }
 }
