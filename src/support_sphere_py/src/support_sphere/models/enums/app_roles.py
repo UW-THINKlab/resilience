@@ -1,3 +1,9 @@
+"""
+User role definitions for the Resilience App.
+
+This module is the canonical location where all user roles are defined.
+To add or modify roles, update the :class:`AppRoles` enum below.
+"""
 from enum import Enum
 
 

@@ -175,6 +175,34 @@ To run this app locally, follow these steps:
     pixi run -e backend setup-db-data-via-k8s-job
     ```
 
+## User Roles and Permissions
+
+The app defines different user roles that control what actions each user can perform.
+
+### Roles
+
+User roles are defined as a Python enum in
+[`src/support_sphere_py/src/support_sphere/models/enums/app_roles.py`](https://github.com/UW-THINKlab/resilience/blob/main/src/support_sphere_py/src/support_sphere/models/enums/app_roles.py).
+
+| Role | Value | Description |
+|------|-------|-------------|
+| `USER` | `user` | Community members, workers, business entities, or non-profits |
+| `SUBCOM_AGENT` | `subcommunity_agent` | Cluster captains of the community |
+| `COM_ADMIN` | `community_admin` | Community steering committee members |
+| `ADMIN` | `admin` | University of Washington team members |
+
+### Permissions
+
+Permissions are defined in
+[`src/support_sphere_py/src/support_sphere/models/enums/app_permissions.py`](https://github.com/UW-THINKlab/resilience/blob/main/src/support_sphere_py/src/support_sphere/models/enums/app_permissions.py).
+
+Role-to-permission mappings are stored in the `role_permissions` database table,
+modelled in
+[`src/support_sphere_py/src/support_sphere/models/public/role_permission.py`](https://github.com/UW-THINKlab/resilience/blob/main/src/support_sphere_py/src/support_sphere/models/public/role_permission.py).
+
+Individual user role assignments are stored in the `user_roles` table, modelled in
+[`src/support_sphere_py/src/support_sphere/models/public/user_role.py`](https://github.com/UW-THINKlab/resilience/blob/main/src/support_sphere_py/src/support_sphere/models/public/user_role.py).
+
 ## Database diagram
 
 Date generated: 11/25/2024
