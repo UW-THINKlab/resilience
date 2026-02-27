@@ -5,9 +5,11 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/models/user_role_record.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
@@ -189,6 +191,52 @@ class UserRepository {
       pets: pets,
       accessibilityNeeds: accessibilityNeeds,
       notes: notes,
+    );
+  }
+
+  /// Get all users with their current roles.
+  /// Returns a list of [UserRoleRecord] objects.
+  Future<List<UserRoleRecord>> getAllUsersWithRoles() async {
+    final data = await _userService.getAllUserProfiles();
+    List<UserRoleRecord> users = [];
+
+    for (var record in data) {
+      // people and user_roles are returned as single objects (not arrays)
+      // because user_profile_id has a UNIQUE constraint in both tables
+      final Map<String, dynamic>? personData = record['people'];
+      final Map<String, dynamic>? userRoleData = record['user_roles'];
+
+      String givenName = personData?['given_name'] ?? '';
+      String familyName = personData?['family_name'] ?? '';
+
+      String role = userRoleData?['role'] ?? AppRoles.user;
+      String? userRoleId = userRoleData?['id'];
+
+      users.add(UserRoleRecord(
+        userProfileId: record['id'],
+        givenName: givenName,
+        familyName: familyName,
+        role: role,
+        userRoleId: userRoleId,
+      ));
+    }
+
+    return users;
+  }
+
+  /// Grant the SUBCOM_AGENT role to a user.
+  Future<void> grantSubcomAgentRole(String userProfileId) async {
+    await _userService.upsertUserRole(
+      userProfileId: userProfileId,
+      role: AppRoles.subcommunityAgent,
+    );
+  }
+
+  /// Revoke the SUBCOM_AGENT role from a user (revert to USER role).
+  Future<void> revokeSubcomAgentRole(String userProfileId) async {
+    await _userService.upsertUserRole(
+      userProfileId: userProfileId,
+      role: AppRoles.user,
     );
   }
 }

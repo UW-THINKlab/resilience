@@ -182,4 +182,17 @@ class NavRouteLabels {
   static const String messages = 'Messages';
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
+  static const String manageUserRoles = 'Manage Roles';
+}
+
+class ManageUserRolesStrings {
+  static const String pageTitle = 'Manage User Roles';
+  static const String grantRole = 'Grant SUBCOM_AGENT';
+  static const String revokeRole = 'Revoke SUBCOM_AGENT';
+  static const String currentRole = 'Current Role';
+  static const String confirmGrant = 'Are you sure you want to grant the SUBCOM_AGENT role to this user?';
+  static const String confirmRevoke = 'Are you sure you want to revoke the SUBCOM_AGENT role from this user?';
+  static const String buttonConfirm = 'Confirm';
+  static const String buttonCancel = 'Cancel';
+  static const String noUsers = 'No users found';
 }

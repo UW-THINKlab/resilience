@@ -141,4 +141,32 @@ class UserService {
       'household_id': householdId,
     });
   }
+
+  /// Retrieves all user profiles with their person details and roles.
+  Future<PostgrestList> getAllUserProfiles() async {
+    return await _supabaseClient.from('user_profiles').select('''
+      id,
+      people(
+        given_name,
+        family_name
+      ),
+      user_roles(
+        id,
+        role
+      )
+    ''');
+  }
+
+  /// Updates the role for a user in the user_roles table.
+  /// If the user already has a role row, it will be updated.
+  /// If not, a new row will be inserted.
+  Future<void> upsertUserRole({
+    required String userProfileId,
+    required String role,
+  }) async {
+    await _supabaseClient.from('user_roles').upsert({
+      'user_profile_id': userProfileId,
+      'role': role,
+    }, onConflict: 'user_profile_id');
+  }
 }
