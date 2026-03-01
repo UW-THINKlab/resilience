@@ -133,6 +133,8 @@ class AddResourceInventoryFormStrings {
   static String addTitle(String resourceName) =>
       "Add $resourceName to Inventory";
   static const String howManyAdding = 'How many are you adding?';
+  static const String setSharingScopeNormal = 'Who can request this item?';
+  static const String setSharingScopeEmergency = 'Who can request this in an emergency?';
   static String askSubtype(String resourceName) =>
       "What type of $resourceName is it (if known)?";
   static const String notes = 'Any notes on this item?';
