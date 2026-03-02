@@ -30,6 +30,16 @@ To create a backup from the current instance:
 
 Which will create a backup file with the neighborhood name and timestamp: `backup-Laurelhurst-2026-02-17-1133.sql.gz`
 
+Full backup in the cloud:
+
+    pixi run cloud-server-access
+    sudo su
+    cd /opt/resilience/
+    pixi run db-backup
+
+Note: `/opt/resilience/` is created by `root` in the automated instance create process. It's a git repo, and should be managed as the creating user.
+
+
 ## Introduction
 
 For the backend infrastructure, the storage and API interfaces,
