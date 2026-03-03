@@ -11,12 +11,16 @@ class Resource extends Equatable {
     this.qtyNeeded = 0,
     this.qtyAvailable = 0,
     this.userQuantity = 0,
+    this.sharingScope = '',
+    this.sharingScopeEmergency = '',
   });
 
   final String id;
   final String name;
   final String? description;
   final String? notes;
+  final String? sharingScope;
+  final String? sharingScopeEmergency;
   final int qtyNeeded;
   final int qtyAvailable;
   final int userQuantity;
@@ -43,6 +47,8 @@ class Resource extends Equatable {
         description: resourceTypesJson['description']
       ),
       notes: json['notes'],
+      sharingScope: json['sharing_scope'],
+      sharingScopeEmergency: json['sharing_scope_emergency'],
       qtyNeeded: neededQuantity < 0 ? 0 : neededQuantity,
       qtyAvailable: json['qty_available'] + userQuantity,
     );
@@ -53,6 +59,8 @@ class Resource extends Equatable {
     String? name,
     String? description,
     String? notes,
+    String? sharingScope,
+    String? sharingScopeEmergency,
     int? qtyNeeded,
     int? qtyAvailable,
     int? userQuantity,
@@ -64,6 +72,8 @@ class Resource extends Equatable {
       description: description ?? this.description,
       resourceType: resourceType ?? this.resourceType,
       notes: notes ?? this.notes,
+      sharingScope: sharingScope ?? this.sharingScope,
+      sharingScopeEmergency: sharingScopeEmergency ?? this.sharingScopeEmergency,
       userQuantity: userQuantity ?? this.userQuantity,
       qtyNeeded: qtyNeeded ?? this.qtyNeeded,
       qtyAvailable: qtyAvailable ?? this.qtyAvailable,

@@ -17,11 +17,15 @@ class AddToInventoryFormData extends Equatable {
     // TODO: Implement Subtype
     // this.subtype,
     this.notes,
+    this.sharingScope,
+    this.sharingScopeEmergency,
   });
   final String? resourceId;
   final int? quantity;
   // final String? subtype;
   final String? notes;
+  final String? sharingScope;
+  final String? sharingScopeEmergency;
 
   @override
   List<Object?> get props => [
@@ -29,6 +33,8 @@ class AddToInventoryFormData extends Equatable {
         quantity,
         // subtype,
         notes,
+        sharingScope,
+        sharingScopeEmergency,
       ];
 
   AddToInventoryFormData copyWith({
@@ -36,12 +42,16 @@ class AddToInventoryFormData extends Equatable {
     int? quantity,
     // String? subtype,
     String? notes,
+    String? sharingScope,
+    String? sharingScopeEmergency,
   }) {
     return AddToInventoryFormData(
       resourceId: resourceId ?? this.resourceId,
       quantity: quantity ?? this.quantity,
       // subtype: subtype ?? this.subtype,
-      notes: notes ?? this.notes
+      notes: notes ?? this.notes,
+      sharingScope: sharingScope ?? this.sharingScope,
+      sharingScopeEmergency: sharingScopeEmergency ?? this.sharingScopeEmergency
     );
   }
 
@@ -53,6 +63,8 @@ class AddToInventoryFormData extends Equatable {
       'quantity': quantity,
       // 'subtype': subtype,
       'notes': notes,
+      'sharing_scope': sharingScope,
+      'sharing_scope_emergency': sharingScopeEmergency,
       'created_at': now,
       'updated_at': now,
     };
@@ -71,111 +83,245 @@ class AddToInventoryForm extends StatefulWidget {
 class _AddToInventoryFormState extends State<AddToInventoryForm> {
   final _formKey = GlobalKey<FormState>();
   AddToInventoryFormData _formData = AddToInventoryFormData();
+  // state variables for sharing scopes radio buttons
+  SharingScopes? _sharingScope;
+  SharingScopes? _sharingScopeEmergency;
 
   @override
   Widget build(BuildContext context) {
     final resource = widget.resource;
     return BlocProvider.value(
       value: BlocProvider.of<ResourceCubit>(context),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Text(AddResourceInventoryFormStrings.addTitle(resource.name),
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FaIcon(resource.resourceType.icon, size: 15),
-                const SizedBox(width: 4),
-                Text(resource.resourceType.name),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(resource.description ?? ''),
-            const SizedBox(height: 16),
-            TextFormField(
-              key: const Key('AddToInventoryForm_quantity_textFormField'),
-              initialValue: '1',
-              keyboardType: TextInputType.number,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              onSaved: (value) => _formData = _formData.copyWith(
-                    quantity: int.tryParse(value ?? '0')),
-              validator: FormBuilderValidators.compose([
-                FormBuilderValidators.required(),
-                FormBuilderValidators.numeric(),
-                FormBuilderValidators.min(1)
-              ]),
-              decoration: InputDecoration(
-                  labelText: AddResourceInventoryFormStrings.howManyAdding,
-                  helperText: '',
-                  border: border(context),
-                  enabledBorder: border(context),
-                  focusedBorder: focusBorder(context)),
-            ),
-            // TODO: Implement Subtype
-            // const SizedBox(height: 16),
-            // TextFormField(
-            //   key:
-            //       const Key('AddToInventoryForm_resourceSubtype_textFormField'),
-            //   // onSaved: (value) => _formData = _formData.copyWith(subtype: value),
-            //   autovalidateMode: AutovalidateMode.onUserInteraction,
-            //   decoration: InputDecoration(
-            //       labelText:
-            //           AddResourceInventoryFormStrings.askSubtype(resource.name),
-            //       helperText: '',
-            //       border: border(context),
-            //       enabledBorder: border(context),
-            //       focusedBorder: focusBorder(context)),
-            // ),
-            const SizedBox(height: 16),
-            // Resource Notes (Only user and cluster captains can see)
-            TextFormField(
-              key: const Key('AddToInventoryForm_notes_textFormField'),
-              onSaved: (value) => _formData = _formData.copyWith(notes: value),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: 5,
-              decoration: InputDecoration(
-                  labelText: AddResourceInventoryFormStrings.notes,
-                  helperText: AddResourceInventoryFormStrings.notesHelperText,
-                  helperMaxLines: 3,
-                  border: border(context),
-                  enabledBorder: border(context),
-                  focusedBorder: focusBorder(context)),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // TODO: Implement Save Item for User Invetory
-                ElevatedButton(onPressed: () {
-                  _formKey.currentState!.save();
-                  if (_formKey.currentState!.validate()) {
-                    _formData = _formData.copyWith(resourceId: resource.id);
-                    context
-                        .read<ResourceCubit>()
-                        .addToUserInventory(_formData.toJson());
-                    context
-                        .read<ResourceCubit>()
-                        .currentNavChanged(ResourceNav.savedResourceInventory);
-                  }
-                }, child: Text("Save Item")),
-                const SizedBox(width: 4),
-                ElevatedButton(
-                    onPressed: () {
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Text(AddResourceInventoryFormStrings.addTitle(resource.name),
+                  style:
+                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FaIcon(resource.resourceType.icon, size: 15),
+                  const SizedBox(width: 4),
+                  Text(resource.resourceType.name),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(resource.description ?? ''),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('AddToInventoryForm_quantity_textFormField'),
+                initialValue: '1',
+                keyboardType: TextInputType.number,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onSaved: (value) => _formData = _formData.copyWith(
+                      quantity: int.tryParse(value ?? '0')),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.numeric(),
+                  FormBuilderValidators.min(1)
+                ]),
+                decoration: InputDecoration(
+                    labelText: AddResourceInventoryFormStrings.howManyAdding,
+                    helperText: '',
+                    border: border(context),
+                    enabledBorder: border(context),
+                    focusedBorder: focusBorder(context)),
+              ),
+              // Row(
+              //   children: [
+              //     Text(AddResourceInventoryFormStrings.setSharingScopeNormal),
+              //     Expanded(child: Container())
+              //   ],
+              // ),
+              FormField<SharingScopes?>(
+                initialValue: null,
+                validator: (value) => value == null ? 'Please choose who can request this item.' : null,
+                onSaved: (value) => _formData = _formData.copyWith(
+                  sharingScope: value!.dbValue,  // value is guaranteed non-null
+                ),
+                builder: (field) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (field.hasError)
+                      Text(field.errorText!, style: TextStyle(color: Colors.red)),
+                    Text(AddResourceInventoryFormStrings.setSharingScopeNormal ?? ''),
+                    RadioButtonGroup<SharingScopes>(
+                      value: field.value,
+                      onChanged: field.didChange,
+                      options: SharingScopes.values,
+                      labelBuilder: (scope) => scope.displayName,
+                    ),
+                  ],
+                ),
+              ),
+              FormField<SharingScopes?>(
+                initialValue: null,
+                validator: (value) => value == null ? 'Please choose who can request this in an emergency.' : null,
+                onSaved: (value) => _formData = _formData.copyWith(
+                  sharingScopeEmergency: value!.dbValue,  // value is guaranteed non-null
+                ),
+                builder: (field) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (field.hasError)
+                      Text(field.errorText!, style: TextStyle(color: Colors.red)),
+                    Text(AddResourceInventoryFormStrings.setSharingScopeEmergency ?? ''),
+                    RadioButtonGroup<SharingScopes>(
+                      value: field.value,
+                      onChanged: field.didChange,
+                      options: SharingScopes.values,
+                      labelBuilder: (scope) => scope.displayName,
+                    ),
+                  ],
+                ),
+              ),
+              // Row(
+              //   children: [
+              //     Text(AddResourceInventoryFormStrings.setSharingScopeEmergency),
+              //     Expanded(child: Container())
+              //   ],
+              // ),
+              // RadioButtonGroup<SharingScopes>(
+              //   value: _sharingScopeEmergency,
+              //   onChanged: (value) => setState(() { _sharingScopeEmergency = value; }),
+              //   onSaved: () => _formData = _formData.copyWith(
+              //     sharingScopeEmergency: _sharingScopeEmergency?.dbValue,
+              //   ),
+              //   options: SharingScopes.values,
+              //   labelBuilder: (scope) => scope.displayName,
+              // ),
+              const SizedBox(height: 16),
+              // Resource Notes (Only user and cluster captains can see)
+              TextFormField(
+                key: const Key('AddToInventoryForm_notes_textFormField'),
+                onSaved: (value) => _formData = _formData.copyWith(notes: value),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: 5,
+                decoration: InputDecoration(
+                    labelText: AddResourceInventoryFormStrings.notes,
+                    helperText: AddResourceInventoryFormStrings.notesHelperText,
+                    helperMaxLines: 3,
+                    border: border(context),
+                    enabledBorder: border(context),
+                    focusedBorder: focusBorder(context)),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ElevatedButton(onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      _formData = _formData.copyWith(resourceId: resource.id);
                       context
                           .read<ResourceCubit>()
-                          .currentNavChanged((ResourceNav.showAllResources));
-                    },
-                    child: Text("Cancel")),
-              ],
-            ),
-          ],
+                          .addToUserInventory(_formData.toJson());
+                      context
+                          .read<ResourceCubit>()
+                          .currentNavChanged(ResourceNav.savedResourceInventory);
+                    }
+                  }, child: Text("Save Item")),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                      onPressed: () {
+                        context
+                            .read<ResourceCubit>()
+                            .currentNavChanged((ResourceNav.showAllResources));
+                      },
+                      child: Text("Cancel")),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+enum SharingScopes { cluster, neighborhood, everyone }
+
+extension SharingScopesExtension on SharingScopes {
+  String get displayName => switch (this) {
+    SharingScopes.cluster => 'My Cluster Only',
+    SharingScopes.neighborhood => 'All Clusters in Neighborhood',
+    SharingScopes.everyone => 'Everyone',
+  };
+  String get dbValue => switch (this) {
+    SharingScopes.cluster => 'cluster',
+    SharingScopes.neighborhood => 'neighborhood',
+    SharingScopes.everyone => 'everyone',
+  };
+}
+
+class RadioButtonGroup<T> extends StatefulWidget {
+  final T? value;
+  final ValueChanged<T?> onChanged;
+  final VoidCallback? onSaved;   // ← new: like TextFormField.onSaved
+  final List<T> options;
+  final String Function(T) labelBuilder;
+
+  const RadioButtonGroup({
+    super.key,
+    this.value,
+    required this.onChanged,
+    this.onSaved,        // optional
+    required this.options,
+    required this.labelBuilder,
+  });
+
+  @override
+  State<RadioButtonGroup<T>> createState() => _RadioButtonGroupState<T>();
+}
+
+class _RadioButtonGroupState<T> extends State<RadioButtonGroup<T>> {
+  late T? _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(covariant RadioButtonGroup<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value) {
+      _selected = widget.value;
+    }
+  }
+
+  void _handleChanged(T? value) {
+    if (value == null) return;
+    _selected = value;
+    widget.onChanged(value);      // your usual state update
+    widget.onSaved?.call();        // optional save callback
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RadioGroup<T>(
+      groupValue: _selected,
+      onChanged: _handleChanged,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: widget.options.map(
+              (option) {
+            final label = widget.labelBuilder(option);
+            return RadioListTile<T>(
+              title: Text(label),
+              value: option,
+              // groupValue: _selected,
+              onChanged: (value) => _handleChanged(value),
+            );
+          },
+        ).toList(),
       ),
     );
   }

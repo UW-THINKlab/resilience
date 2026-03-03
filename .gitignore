@@ -1,3 +1,6 @@
+# App_config for db backend, so our anon key is not unencrypted in github
+src/support_sphere/assets/app_config.json
+
 # Android Studio
 .idea/
 
