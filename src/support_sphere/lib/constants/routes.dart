@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_admin_body.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_admin_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/manage_resources_body.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/profile_body.dart';
@@ -43,6 +45,15 @@ class AppNavigation {
             icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
         const AppRoute(
             icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
+        const AppRoute(
+            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminNeighborhood, body: NeighborhoodAdminBody()),
+      ];
+    }
+    // The cluster captain controls
+    if (role == AppRoles.subcommunityAgent && minWidth! > 641) {
+      destinations = destinations + [
+        const AppRoute(
+            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminCluster, body: ClusterAdminBody()),
       ];
     }
     return destinations;

@@ -68,8 +68,12 @@ class UserProfileStrings {
   static const String deleteMyAccount = 'Delete My Account';
   static const String confirmPrompt = 'Please Confirm';
   static const String confirmAccountDelete = 'Are you sure you want to delete your account?';
+}
 
-
+// Household related
+class HouseholdStrings {
+  static const String addHousehold = 'Add Household';
+  static const String selectFilter = 'Filter...';
 }
 
 /// Checklist messages
@@ -189,4 +193,6 @@ class NavRouteLabels {
   static const String messages = 'Messages';
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
+  static const String adminCluster = 'Cluster Admin';
+  static const String adminNeighborhood = 'Neighbothood Admin';
 }

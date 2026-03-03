@@ -1,6 +1,7 @@
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
 
 final log = Logger('ClusterRepository');
@@ -56,5 +57,17 @@ class ClusterRepository {
       final updated = Cluster.fromJson(data!);
       log.fine("<<< Updated cluster meeting point: ${updated.meetingPoint}");
       return updated;
+    }
+
+    Future<List<Household>> getHouseholds(String clusterId) {
+      return _clusterService.getHouseholds(clusterId);
+    }
+
+    Future<void> addHousehold(String clusterId, Household household) async {
+      return _clusterService.addHousehold(clusterId, household);
+    }
+
+    Future<void> deleteHousehold(String householdId) async {
+      return _clusterService.deleteHousehold(householdId);
     }
 }

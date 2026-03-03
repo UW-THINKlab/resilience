@@ -259,7 +259,7 @@ class _HouseholdInformation extends StatelessWidget {
         String address = household?.address ?? '';
         String pets = household?.pets ?? '';
         String notes = household?.notes ?? '';
-        String accessibilityNeeds = household?.accessibility_needs ?? '';
+        String accessibilityNeeds = household?.accessibilityNeeds ?? '';
         List<Person?> householdMembers =
             household?.houseHoldMembers?.members ?? [];
         householdMembers.map((person) {

@@ -70,7 +70,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       // ignore: unnecessary_null_comparison
       Cluster? cluster = household == null
         ? null
-        : await clusterRepo.getCluster(household.cluster_id);
+        : await clusterRepo.getCluster(household.clusterId);
 
       if (cluster != null) {
         /// Get the captains of the cluster

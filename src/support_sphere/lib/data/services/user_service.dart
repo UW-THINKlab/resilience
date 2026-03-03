@@ -3,7 +3,9 @@ import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
 class UserService {
-  final SupabaseClient _supabaseClient = supabase;
+  String getMyId() {
+    return supabase.auth.currentUser!.id;
+  }
 
   /// Retrieves the household members by household id.
   Future<PostgrestList?> getAllPeople() async {
@@ -12,7 +14,7 @@ class UserService {
 
   /// Retrieves the person household by person id.
   Future<PostgrestMap?> getPersonHouseholdByPersonId(String personId) async {
-    return await _supabaseClient.from('people_groups').select('''
+    return await supabase.from('people_groups').select('''
       people(
         id
       ),
@@ -30,7 +32,7 @@ class UserService {
 
   /// Retrieves the household members by household id.
   Future<PostgrestList?> getHouseholdMembersByHouseholdId(String householdId) async {
-    return await _supabaseClient.from('people_groups').select('''
+    return await supabase.from('people_groups').select('''
       people(
         id,
         user_profile_id,
@@ -44,7 +46,7 @@ class UserService {
   }
 
   Future<PostgrestList?> getPeopleByCluster(String clusterId) async {
-    return await _supabaseClient.from('people_groups').select('''
+    return await supabase.from('people_groups').select('''
       people(
         id,
         user_profile_id,
@@ -62,7 +64,7 @@ class UserService {
   /// Returns null if the user profile and person do not exist.
   Future<PostgrestMap?> getProfileAndPersonByUserId(String userId) async {
     /// This query will perform a join on the user_profiles and people tables
-    return await _supabaseClient.from('user_profiles').select('''
+    return await supabase.from('user_profiles').select('''
       id,
       people(
         id,
@@ -80,7 +82,7 @@ class UserService {
   Future<void> createUserProfile({
     required String userId,
   }) async {
-    await _supabaseClient.from('user_profiles').insert({
+    await supabase.from('user_profiles').insert({
       'id': userId,
     });
   }
@@ -93,7 +95,7 @@ class UserService {
     required String householdId,
   }) async {
     final personId = const UuidV4().generate();
-    await _supabaseClient.from('people').insert({
+    await supabase.from('people').insert({
       'id': personId,
       'user_profile_id': userId,
       'given_name': givenName,
@@ -122,10 +124,7 @@ class UserService {
     if (isSafe != null) payload['is_safe'] = isSafe;
     if (needsHelp != null) payload['needs_help'] = needsHelp;
 
-    await _supabaseClient
-        .from('people')
-        .update(payload)
-        .eq('id', id);
+    await supabase.from('people').update(payload).eq('id', id);
   }
 
   /// Updates a household's details in the households table.
@@ -143,10 +142,7 @@ class UserService {
     if (accessibilityNeeds != null) payload['accessibility_needs'] = accessibilityNeeds;
     if (notes != null) payload['notes'] = notes;
 
-    await _supabaseClient
-        .from('households')
-        .update(payload)
-        .eq('id', id);
+    await supabase.from('households').update(payload).eq('id', id);
   }
 
   /// Link a person to a household.
@@ -155,7 +151,7 @@ class UserService {
     required String personId,
     required String householdId,
   }) async {
-    await _supabaseClient.from('people_groups').insert({
+    await supabase.from('people_groups').insert({
       'people_id': personId,
       'household_id': householdId,
     });

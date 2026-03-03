@@ -122,8 +122,8 @@ class UserRepository {
         address: householdData["address"],
         notes: householdData["notes"],
         pets: householdData["pets"],
-        accessibility_needs: householdData["accessibility_needs"],
-        cluster_id: householdData["cluster_id"],
+        accessibilityNeeds: householdData["accessibility_needs"],
+        clusterId: householdData["cluster_id"],
       );
     }
     return null;
@@ -250,5 +250,12 @@ class UserRepository {
       accessibilityNeeds: accessibilityNeeds,
       notes: notes,
     );
+  }
+
+  Future<Cluster?> getMyCluster() async {
+    // get my household
+    final household = await getHouseholdByPersonId(_userService.getMyId());
+    // get my cluster info
+    return await _clusters.getCluster(household!.clusterId);
   }
 }

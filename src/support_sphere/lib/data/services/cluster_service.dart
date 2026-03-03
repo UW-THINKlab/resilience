@@ -1,8 +1,10 @@
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/models/households.dart' show Household;
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:uuid/v4.dart' show UuidV4;
 
 final log = Logger('ClusterService');
 
@@ -73,5 +75,35 @@ class ClusterService {
       ''')
         .eq('cluster_id', clusterId)
         .eq('user_roles.role', AppRoles.subcommunityAgent);
+  }
+
+  Future<List<Household>> getHouseholds(String clusterId) async {
+    PostgrestList? data = await supabase.from('households').select('*').eq('cluster_id', clusterId);
+
+    List<Household> households = [];
+
+    for (var record in data) {
+      households.add(Household.fromJson(record));
+    }
+
+    return households;
+  }
+
+  Future<void> addHousehold(String clusterId, Household household) async {
+    await supabase.from('households').insert({
+      'id': const UuidV4().generate(),
+      'cluster_id': household.clusterId,
+      'name': household.name,
+      'address': household.address,
+      'notes': household.notes,
+      'pets': household.pets,
+      'accessibility_needs': household.accessibilityNeeds,
+      //'created_by': supabase.auth.currentUser!.id,
+      //'created_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> deleteHousehold(String householdId) async {
+    await supabase.from('households').delete().eq('id', householdId);
   }
 }
