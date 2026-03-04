@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
@@ -88,25 +87,25 @@ class HomeMap extends StatelessWidget {
     );
   }
 
-  Marker _buildCaptainMarker(BuildContext context, CaptainMarker captainMarker) {
-    return Marker(
-      point: captainMarker.householdGeom!,
-      width: 40,
-      height: 40,
-      child: GestureDetector(
-        onTap: () => _showCaptainDetails(context, captainMarker),
-        child: const Icon(
-          Ionicons.person,
-          color: Colors.green,
-          size: 40,
-        ),
-      ),
-    );
-  }
+  // Marker _buildCaptainMarker(BuildContext context, CaptainMarker captainMarker) {
+  //   return Marker(
+  //     point: captainMarker.householdGeom!,
+  //     width: 40,
+  //     height: 40,
+  //     child: GestureDetector(
+  //       onTap: () => _showCaptainDetails(context, captainMarker),
+  //       child: const Icon(
+  //         Ionicons.person,
+  //         color: Colors.green,
+  //         size: 40,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void _showCaptainDetails(BuildContext context, CaptainMarker captain) {
-    // TODO: implement showing a dialog with captain details
-  }
+  // void _showCaptainDetails(BuildContext context, CaptainMarker captain) {
+  //   // TODO: implement showing a dialog with captain details
+  // }
 
   // void _editMode(HomeState state) {
   //   if (state.cluster != null && state.cluster!.geom != null ) {

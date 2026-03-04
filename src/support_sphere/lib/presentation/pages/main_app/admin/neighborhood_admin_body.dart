@@ -1,56 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/data/models/resource.dart';
-import 'package:support_sphere/presentation/components/manage_resource_card.dart';
-import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
-import 'package:support_sphere/presentation/components/resource_search_bar.dart';
-import 'package:support_sphere/presentation/components/resource_type_filter.dart';
-import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
+import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
-// FIXME
+
 class NeighborhoodAdminBody extends StatelessWidget {
   const NeighborhoodAdminBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ManageResourceBodyController();
+    return ManageNeighborhoodBodyController();
   }
 }
 
-class ManageResourceBodyController extends StatefulWidget {
-  const ManageResourceBodyController({super.key});
+class ManageNeighborhoodBodyController extends StatefulWidget {
+  const ManageNeighborhoodBodyController({super.key});
 
   @override
-  _ManageResourceBodyControllerState createState() =>
-      _ManageResourceBodyControllerState();
+  _ManageNeighborhoodBodyControllerState createState() =>
+      _ManageNeighborhoodBodyControllerState();
 }
 
-class _ManageResourceBodyControllerState
-    extends State<ManageResourceBodyController> {
-  bool _showingAddResource = false;
+class _ManageNeighborhoodBodyControllerState
+    extends State<ManageNeighborhoodBodyController> {
+  bool _showingAddNeighborhood = false;
 
   @override
   Widget build(BuildContext context) {
     void switchPage() {
       setState(() {
-        _showingAddResource = !_showingAddResource;
+        _showingAddNeighborhood = !_showingAddNeighborhood;
       });
     }
 
     return BlocProvider(
-      create: (context) => ManageResourceCubit(),
-      child: (_showingAddResource)
-          ? AddResourceView(onPressed: switchPage)
-          : ManageResourceView(addResourceOnPressed: switchPage),
+      create: (context) => ManageNeighborhoodCubit(),
+      child: (_showingAddNeighborhood)
+          ? AddClusterView(onPressed: switchPage)
+          : ManageNeighborhoodView(addNeighborhoodOnPressed: switchPage),
     );
   }
 }
 
-class ManageResourceView extends StatelessWidget {
-  const ManageResourceView({super.key, this.addResourceOnPressed});
+class ManageNeighborhoodView extends StatelessWidget {
+  const ManageNeighborhoodView({super.key, this.addNeighborhoodOnPressed});
 
-  final VoidCallback? addResourceOnPressed;
+  final VoidCallback? addNeighborhoodOnPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +57,24 @@ class ManageResourceView extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.all(12),
           child: Center(
-            child: Text(ResourceStrings.manageResources,
+            child: Text('NeighborhoodStrings.manageNeighborhoods',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
         ),
-        _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
+        _NeighborhoodsBody(addNeighborhoodOnPressed: addNeighborhoodOnPressed),
       ],
     );
   }
 }
 
-class AddResourceView extends StatelessWidget {
-  const AddResourceView({super.key, this.onPressed});
+class AddClusterView extends StatelessWidget {
+  const AddClusterView({super.key, this.onPressed});
 
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+    return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       builder: (context, state) {
         return Column(
           children: [
@@ -91,7 +89,7 @@ class AddResourceView extends StatelessWidget {
                   TextButton.icon(
                     icon: const Icon(Icons.arrow_back),
                     label: const Text(
-                      ResourceStrings.manageResources,
+                      'NeighborhoodStrings.manageNeighborhoods',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -100,14 +98,12 @@ class AddResourceView extends StatelessWidget {
                     onPressed: onPressed,
                   ),
 
-                  /// Add Resource Form
+                  /// Add Neighborhood Form
                   Expanded(
                     child: Card(
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
-                        child: AddResourceForm(
-                          resourceTypes: state.resourceTypes,
-                          resources: state.resources,
+                        child: AddClusterForm(
                           onCancel: onPressed,
                         ),
                       ),
@@ -123,38 +119,36 @@ class AddResourceView extends StatelessWidget {
   }
 }
 
-class _ResourcesBody extends StatefulWidget {
-  const _ResourcesBody({this.addResourceOnPressed});
+class _NeighborhoodsBody extends StatefulWidget {
+  const _NeighborhoodsBody({this.addNeighborhoodOnPressed});
 
-  final VoidCallback? addResourceOnPressed;
+  final VoidCallback? addNeighborhoodOnPressed;
 
   @override
-  _ResourcesBodyState createState() => _ResourcesBodyState();
+  _NeighborhoodsBodyState createState() => _NeighborhoodsBodyState();
 }
 
-class _ResourcesBodyState extends State<_ResourcesBody> {
-  List<Resource>? _searchResults;
+class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
+  List<Cluster>? _searchResults;
   String _nameQuery = '';
   String _resourceTypeQuery = '';
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+    return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       buildWhen: (previous, current) {
-        _searchResults = current.resources.where((item) {
-          return item.resourceType.name.contains(_resourceTypeQuery) &&
-              item.name.toLowerCase().contains(_nameQuery);
+        _searchResults = current.clusters.where((item) {
+          return item.name?.toLowerCase().contains(_nameQuery) ?? false;
         }).toList();
-        return previous.resources != current.resources;
+        return previous.clusters != current.clusters;
       },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {
           setState(() {
-            _searchResults = state.resources.where((item) {
+            _searchResults = state.clusters.where((item) {
               _nameQuery = query;
-              return item.name.toLowerCase().contains(_nameQuery) &&
-                  item.resourceType.name.contains(_resourceTypeQuery);
+              return item.name?.toLowerCase().contains(_nameQuery) ?? false;
             }).toList();
           });
         }
@@ -165,21 +159,19 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
             if (_searchResults != null) {
               // Case to filter with search
               if (value != null && value != 'All') {
-                _searchResults = state.resources.where((item) {
+                _searchResults = state.clusters.where((item) {
                   _resourceTypeQuery = value;
-                  return item.resourceType.name.contains(_resourceTypeQuery) &&
-                      item.name.toLowerCase().contains(_nameQuery);
+                  return item.name?.toLowerCase().contains(_nameQuery) ?? false;
                 }).toList();
               } else {
-                _searchResults = state.resources.where((item) {
-                  return item.name.toLowerCase().contains(_nameQuery);
+                _searchResults = state.clusters.where((item) {
+                  return item.name?.toLowerCase().contains(_nameQuery) ?? false;
                 }).toList();
               }
             } else {
               // Case to filter without search
-              _searchResults = state.resources.where((item) {
-                _resourceTypeQuery = value != 'All' ? value ?? '' : '';
-                return item.resourceType.name.contains(_resourceTypeQuery);
+              _searchResults = state.clusters.where((item) {
+                return item.captains!.people!.length > 0;
               }).toList();
             }
           });
@@ -192,12 +184,11 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
               children: [
                 const SizedBox(width: 16),
                 ElevatedButton(
-                    onPressed: widget.addResourceOnPressed,
-                    child: Text(ResourceStrings.addResource)),
-                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
+                    onPressed: widget.addNeighborhoodOnPressed,
+                    child: Text('NeighborhoodStrings.addNeighborhood')),
+                // FIXME Expanded(child: NeighborhoodSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
-                    child: ResourceTypeFilter(
-                  resourceTypes: state.resourceTypes,
+                    child: NeighborhoodFilter(
                   onSelected: onSelected,
                 )),
               ],
@@ -205,8 +196,8 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
             Row(
               children: [
                 Expanded(
-                  child: _ResourceViewSection(
-                      searchResults: _searchResults ?? state.resources),
+                  child: _NeighborhoodViewSection(
+                      searchResults: _searchResults ?? state.clusters),
                 ),
               ],
             ),
@@ -217,14 +208,14 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
   }
 }
 
-class _ResourceViewSection extends StatelessWidget {
-  final List<Resource> searchResults;
+class _NeighborhoodViewSection extends StatelessWidget {
+  final List<Cluster> searchResults;
 
-  const _ResourceViewSection({required this.searchResults});
+  const _NeighborhoodViewSection({required this.searchResults});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+    return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       builder: (context, state) {
         return Container(
             height: MediaQuery.of(context).size.height * 0.65,
@@ -234,13 +225,13 @@ class _ResourceViewSection extends StatelessWidget {
                 ? ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {
-                      final resource = searchResults[index];
+                      final cluster = searchResults[index];
 
-                      return ManageResourceCard(resource: resource);
+                      return ManageNeighborhoodCard(cluster: cluster);
                     },
                   )
                 : Center(
-                    child: Text(ResourceStrings.noResourcesFound),
+                    child: Text('NeighborhoodStrings.noNeighborhoodsFound'),
                   ));
       },
     );

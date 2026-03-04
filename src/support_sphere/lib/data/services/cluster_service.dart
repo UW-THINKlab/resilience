@@ -1,6 +1,7 @@
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart' show Household;
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -105,5 +106,22 @@ class ClusterService {
 
   Future<void> deleteHousehold(String householdId) async {
     await supabase.from('households').delete().eq('id', householdId);
+  }
+
+  Future<void> addCluster(Cluster cluster) async {
+    // FIXME Cluster -> json
+    await supabase.from('clusters').insert({
+      'id': cluster.id,
+      'name': cluster.name,
+      'notes': cluster.notes,
+      'meeting_place': cluster.meetingPlace,
+      'geom': cluster.geom,
+      'meeting_point': cluster.meetingPoint,
+      'captains': cluster.captains,
+    });
+  }
+
+  Future<void> deleteCluster(String clusterId) async {
+    await supabase.from('clusters').delete().eq('id', clusterId);
   }
 }

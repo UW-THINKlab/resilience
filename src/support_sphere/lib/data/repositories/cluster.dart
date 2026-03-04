@@ -70,4 +70,12 @@ class ClusterRepository {
     Future<void> deleteHousehold(String householdId) async {
       return _clusterService.deleteHousehold(householdId);
     }
+
+  Future<void> addCluster(Cluster cluster) async {
+      return _clusterService.addCluster(cluster);
+  }
+
+  Future<void> deleteCluster(String clusterId) async {
+      return _clusterService.deleteCluster(clusterId);
+  }
 }

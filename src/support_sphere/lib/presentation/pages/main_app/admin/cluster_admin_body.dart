@@ -8,7 +8,6 @@ import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 import 'package:support_sphere/presentation/components/resource_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
-import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
 
 class ClusterAdminBody extends StatelessWidget {
   const ClusterAdminBody({super.key});

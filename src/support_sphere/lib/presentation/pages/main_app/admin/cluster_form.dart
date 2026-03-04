@@ -1,20 +1,16 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-//import 'package:searchfield/searchfield.dart';
-import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/data/models/households.dart';
-import 'package:support_sphere/logic/cubit/manage_cluster_cubit.dart';
+import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 import 'package:uuid/v4.dart';
 
-import 'package:equatable/equatable.dart';
-
-class AddHouseholdFormData extends Equatable {
-  const AddHouseholdFormData({
-    this.clusterId,
+class AddClusterFormData extends Equatable {
+  const AddClusterFormData({
     this.name,
     this.address,
     this.notes,
@@ -22,7 +18,6 @@ class AddHouseholdFormData extends Equatable {
     this.accessibilityNeeds
   });
 
-  final String? clusterId;
   final String? name;
   final String? address;
   final String? notes;
@@ -32,7 +27,6 @@ class AddHouseholdFormData extends Equatable {
 
   @override
   List<Object?> get props => [
-        clusterId,
         name,
         address,
         pets,
@@ -41,7 +35,7 @@ class AddHouseholdFormData extends Equatable {
       ];
 
 
-  AddHouseholdFormData copyWith({
+  AddClusterFormData copyWith({
     String? clusterId,
     String? name,
     String? address,
@@ -49,8 +43,7 @@ class AddHouseholdFormData extends Equatable {
     String? pets,
     String? accessibilityNeeds,
   }) {
-    return AddHouseholdFormData(
-      clusterId: clusterId ?? this.clusterId,
+    return AddClusterFormData(
       name: name ?? this.name,
       address: address ?? this.address,
       pets: pets ?? this.pets,
@@ -59,33 +52,28 @@ class AddHouseholdFormData extends Equatable {
     );
   }
 
-
-  Household toHousehold() {
-    return Household(
+  Cluster toCluster() {
+    return Cluster(
       id: const UuidV4().generate(),
-      clusterId: clusterId!,
       name: name!,
-      address: address,
       notes: notes,
-      pets: pets!,
-      accessibilityNeeds: accessibilityNeeds!,
     );
   }
 }
 
-class AddHouseholdForm extends StatefulWidget {
-  const AddHouseholdForm(
+class AddClusterForm extends StatefulWidget {
+  const AddClusterForm(
       {super.key, this.onCancel});
 
   final VoidCallback? onCancel;
 
   @override
-  State<AddHouseholdForm> createState() => _AddHouseholdFormState();
+  State<AddClusterForm> createState() => _AddClusterFormState();
 }
 
-class _AddHouseholdFormState extends State<AddHouseholdForm> {
+class _AddClusterFormState extends State<AddClusterForm> {
   final _formKey = GlobalKey<FormState>();
-  AddHouseholdFormData _formData = AddHouseholdFormData();
+  AddClusterFormData _formData = AddClusterFormData();
 
   @override
   Widget build(BuildContext context) {
@@ -96,25 +84,23 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
       child: Column(
         children: [
           const Center(
-              child: Text(
-            HouseholdStrings.addHousehold,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Text('ClusterStrings.addCluster', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           )),
-          // Name of Household and Household Type
+          // Name of Cluster and Cluster Type
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // FIXME broken search form
               // Expanded(
-              //   child: SearchField<Household>(
-              //     key: const Key('AddHouseholdForm_nameOfHousehold_searchField'),
+              //   child: SearchField<Cluster>(
+              //     key: const Key('AddClusterForm_nameOfCluster_searchField'),
               //     onSaved: (value) {
-              //       _formData = _formData.copyWith(nameOfHousehold: value);
+              //       _formData = _formData.copyWith(nameOfCluster: value);
               //     },
               //     autovalidateMode: AutovalidateMode.always,
               //     searchInputDecoration: SearchInputDecoration(
-              //         labelText: AddHouseholdFormStrings.nameOfHousehold,
+              //         labelText: AddClusterFormStrings.nameOfCluster,
               //         helperText: '',
               //         border: border(context),
               //         enabledBorder: border(context),
@@ -128,7 +114,7 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               //               element.name.toLowerCase().trim() ==
               //               value.toLowerCase().trim());
               //           return resourceExists
-              //               ? 'Household already exists'
+              //               ? 'Cluster already exists'
               //               : null;
               //         }
 
@@ -137,7 +123,7 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               //     ]),
               //     suggestions: widget.resources!
               //         .map(
-              //           (e) => SearchFieldListItem<Household>(
+              //           (e) => SearchFieldListItem<Cluster>(
               //             e.name,
               //             item: e,
               //             // Use child to show Custom Widgets in the suggestions
@@ -158,8 +144,8 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               //   ),
               // ),
               Expanded(
-                child: HouseholdFilter(
-                    key: const Key('AddHouseholdForm_resourceTypeFilter'),
+                child: NeighborhoodFilter(
+                    key: const Key('AddClusterForm_resourceTypeFilter'),
                     //resourceTypes: widget.resourceTypes!,
                     onSelected: (value) {
                       // FIXME filter
@@ -177,7 +163,7 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               child: TextFormField(
                 initialValue: '0',
                 keyboardType: TextInputType.number,
-                key: const Key('AddHouseholdForm_totalNumberNeeded_textFormField'),
+                key: const Key('AddClusterForm_totalNumberNeeded_textFormField'),
                 // FIXME onSaved: (value) => _formData = _formData.copyWith(totalNumberNeeded: int.tryParse(value ?? '0')),
                 autovalidateMode: AutovalidateMode.always,
                 validator: FormBuilderValidators.compose([
@@ -196,14 +182,14 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               child: TextFormField(
                 initialValue: '0',
                 keyboardType: TextInputType.number,
-                key: const Key('AddHouseholdForm_numberAvailable_textFormField'),
+                key: const Key('AddClusterForm_numberAvailable_textFormField'),
                 //onSaved: (value) => _formData = _formData.copyWith(numberAvailable: int.tryParse(value ?? '0')),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.numeric(),
                 ]),
                 decoration: InputDecoration(
-                    labelText: "AddHouseholdFormStrings.numberAvailable",
+                    labelText: "AddClusterFormStrings.numberAvailable",
                     helperText: '',
                     border: border(context),
                     enabledBorder: border(context),
@@ -212,36 +198,36 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
             ),
           ]),
           const SizedBox(height: 10),
-          // Household Description (FOR EVERYONE)
+          // Cluster Description (FOR EVERYONE)
           TextFormField(
-            key: const Key('AddHouseholdForm_description_textFormField'),
+            key: const Key('AddClusterForm_description_textFormField'),
             //onSaved: (value) => _formData = _formData.copyWith(description: value),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
-                labelText: 'AddHouseholdFormStrings.description',
+                labelText: 'AddClusterFormStrings.description',
                 helperText: '',
                 border: border(context),
                 enabledBorder: border(context),
                 focusedBorder: focusBorder(context)),
           ),
           const SizedBox(height: 10),
-          // Household Subtype
+          // Cluster Subtype
           // TODO: Update to become tags for subtypes
           // TextFormField(
-          //   key: const Key('AddHouseholdForm_subtype_textFormField'),
+          //   key: const Key('AddClusterForm_subtype_textFormField'),
           //   onSaved: (value) => _formData = _formData.copyWith(subtype: value),
           //   autovalidateMode: AutovalidateMode.onUserInteraction,
           //   decoration: InputDecoration(
-          //       labelText: AddHouseholdFormStrings.subtype,
+          //       labelText: AddClusterFormStrings.subtype,
           //       helperText: '',
           //       border: border(context),
           //       enabledBorder: border(context),
           //       focusedBorder: focusBorder(context)),
           // ),
           const SizedBox(height: 10),
-          // Household Notes (ONLY FOR Neighborhood Manager)
+          // Cluster Notes (ONLY FOR Neighborhood Manager)
           TextFormField(
-            key: const Key('AddHouseholdForm_notes_textFormField'),
+            key: const Key('AddClusterForm_notes_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(notes: value),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: TextInputType.multiline,
@@ -261,9 +247,7 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
               onPressed: () {
                 _formKey.currentState!.save();
                 if (_formKey.currentState!.validate()) {
-                  context
-                      .read<ManageClusterCubit>()
-                      .addHousehold(_formData.toHousehold());
+                  context.read<ManageNeighborhoodCubit>().addCluster(_formData.toCluster());
                   widget.onCancel!();
                 }
               },
