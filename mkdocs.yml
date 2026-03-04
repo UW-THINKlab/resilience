@@ -4,6 +4,7 @@ site_name: Resilience App Documentation
 # Repository
 repo_name: UW-THINKlab/resilience
 repo_url: https://github.com/UW-THINKlab/resilience
+edit_uri: edit/main/docs/
 
 # Configuration
 theme:
