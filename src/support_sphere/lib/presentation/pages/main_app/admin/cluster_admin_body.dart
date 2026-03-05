@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/data/models/resource.dart';
-import 'package:support_sphere/logic/cubit/manage_cluster_cubit.dart';
-import 'package:support_sphere/presentation/components/manage_resource_card.dart';
-import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
-import 'package:support_sphere/presentation/components/resource_search_bar.dart';
-import 'package:support_sphere/presentation/components/resource_type_filter.dart';
+import 'package:support_sphere/data/models/households.dart';
+import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/household_search_bar.dart' show HouseholdSearchBar;
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
 
 class ClusterAdminBody extends StatelessWidget {
   const ClusterAdminBody({super.key});
@@ -39,10 +38,10 @@ class _ClusterAdminBodyControllerState
     }
 
     return BlocProvider(
-      create: (context) => ManageResourceCubit(),
+      create: (context) => ManageClusterCubit(),
       child: (_showingAddHousehold)
           ? AddHouseholdView(onPressed: switchPage)
-          : ManageClusterView(addResourceOnPressed: switchPage),
+          : ManageClusterView(addHouseholdOnPressed: switchPage),
     );
   }
 }
@@ -55,29 +54,32 @@ class AddHouseholdView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    // FIXME!!!
     throw UnimplementedError();
   }
 }
 
 class ManageClusterView extends StatelessWidget {
-  const ManageClusterView({super.key, this.addResourceOnPressed});
+  const ManageClusterView({super.key, this.addHouseholdOnPressed});
 
-  final VoidCallback? addResourceOnPressed;
+  final VoidCallback? addHouseholdOnPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(12),
-          child: Center(
-            child: Text(ResourceStrings.manageResources,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ),
-        ),
-        _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
-      ],
-    );
+    return BlocBuilder<ManageClusterCubit, ManageClusterState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Center(
+                child: Text("Manage Cluster - ${state.cluster?.name}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed),
+          ],
+        );
+      });
   }
 }
 
@@ -133,63 +135,79 @@ class AddClusterView extends StatelessWidget {
   }
 }
 
-class _ResourcesBody extends StatefulWidget {
-  const _ResourcesBody({this.addResourceOnPressed});
+class _ClusterAdminBody extends StatefulWidget {
+  const _ClusterAdminBody({this.addHouseholdOnPressed});
 
-  final VoidCallback? addResourceOnPressed;
+  final VoidCallback? addHouseholdOnPressed;
 
   @override
-  _ResourcesBodyState createState() => _ResourcesBodyState();
+  _ClusterAdminBodyState createState() => _ClusterAdminBodyState();
 }
 
-class _ResourcesBodyState extends State<_ResourcesBody> {
-  List<Resource>? _searchResults;
+class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
+  List<Household>? _searchResults;
   String _nameQuery = '';
-  String _resourceTypeQuery = '';
+  String _householdFilter = '';
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+    return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       buildWhen: (previous, current) {
-        _searchResults = current.resources.where((item) {
-          return item.resourceType.name.contains(_resourceTypeQuery) &&
-              item.name.toLowerCase().contains(_nameQuery);
-        }).toList();
-        return previous.resources != current.resources;
+        // _searchResults = current.households.where((item) {
+        //   return item.name!.toLowerCase().contains(_nameQuery);
+        // }).toList();
+        return previous.households != current.households;
       },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {
           setState(() {
-            _searchResults = state.resources.where((item) {
+            _searchResults = state.households.where((item) {
               _nameQuery = query;
-              return item.name.toLowerCase().contains(_nameQuery) &&
-                  item.resourceType.name.contains(_resourceTypeQuery);
+              return item.name!.toLowerCase().contains(_nameQuery);
             }).toList();
           });
         }
 
-        // Filter drowndown onSelected
+        // Filter dropdown onSelected
         void onSelected(String? value) {
           setState(() {
             if (_searchResults != null) {
               // Case to filter with search
-              if (value != null && value != 'All') {
-                _searchResults = state.resources.where((item) {
-                  _resourceTypeQuery = value;
-                  return item.resourceType.name.contains(_resourceTypeQuery) &&
-                      item.name.toLowerCase().contains(_nameQuery);
-                }).toList();
-              } else {
-                _searchResults = state.resources.where((item) {
-                  return item.name.toLowerCase().contains(_nameQuery);
-                }).toList();
+              if (value != null && value != ClusterAdminString.clusterFilterAll) {
+                // value selected
+                // "Has resources" or "Low participation";
+                // need queries....
+                _householdFilter = value;
+                switch (_householdFilter) {
+                  case ClusterAdminString.clusterFilterParticipate:
+                    _searchResults = state.households.where((item) {
+                      return item.houseHoldMembers!.members.isNotEmpty &&
+                        item.name!.toLowerCase().contains(_nameQuery);
+                      }).toList();
+                      break;
+                  case ClusterAdminString.clusterFilterAssist:
+                    _searchResults = state.households.where((item) {
+                      return item.accessibilityNeeds!.isNotEmpty &&
+                        item.name!.toLowerCase().contains(_nameQuery);
+                      }).toList();
+                      break;
+                  case ClusterAdminString.clusterFilterResources:
+                    // FIXME: right now, requires a extra query
+                    // this is a place holder that looks for pets
+                    _searchResults = state.households.where((item) {
+                      return item.pets!.isNotEmpty &&
+                        item.name!.toLowerCase().contains(_nameQuery);
+                      }).toList();
+                      break;
+                }
               }
             } else {
               // Case to filter without search
-              _searchResults = state.resources.where((item) {
-                _resourceTypeQuery = value != 'All' ? value ?? '' : '';
-                return item.resourceType.name.contains(_resourceTypeQuery);
+              // FIXME???
+              _searchResults = state.households.where((item) {
+                _householdFilter = value != 'All' ? value ?? '' : '';
+                return item.name!.contains(_householdFilter);
               }).toList();
             }
           });
@@ -202,21 +220,20 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
               children: [
                 const SizedBox(width: 16),
                 ElevatedButton(
-                    onPressed: widget.addResourceOnPressed,
-                    child: Text(ResourceStrings.addResource)),
-                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
+                    onPressed: widget.addHouseholdOnPressed,
+                    child: Text(ClusterAdminString.addHousehold)),
+                Expanded(child: HouseholdSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
-                    child: ResourceTypeFilter(
-                  resourceTypes: state.resourceTypes,
-                  onSelected: onSelected,
+                  child: HouseholdFilter(
+                    onSelected: onSelected,
                 )),
               ],
             ),
             Row(
               children: [
                 Expanded(
-                  child: _ResourceViewSection(
-                      searchResults: _searchResults ?? state.resources),
+                  child: _NeighborhoodViewSection(
+                      searchResults: _searchResults ?? state.households),
                 ),
               ],
             ),
@@ -227,14 +244,14 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
   }
 }
 
-class _ResourceViewSection extends StatelessWidget {
-  final List<Resource> searchResults;
+class _NeighborhoodViewSection extends StatelessWidget {
+  final List<Household> searchResults;
 
-  const _ResourceViewSection({required this.searchResults});
+  const _NeighborhoodViewSection({required this.searchResults});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManageResourceCubit, ManageResourceState>(
+    return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       builder: (context, state) {
         return Container(
             height: MediaQuery.of(context).size.height * 0.65,
@@ -244,13 +261,13 @@ class _ResourceViewSection extends StatelessWidget {
                 ? ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {
-                      final resource = searchResults[index];
+                      final household = searchResults[index];
 
-                      return ManageResourceCard(resource: resource);
+                      return ManageHouseholdCard(household: household);
                     },
                   )
                 : Center(
-                    child: Text(ResourceStrings.noResourcesFound),
+                    child: Text(ClusterAdminString.noHouseholdsFound),
                   ));
       },
     );

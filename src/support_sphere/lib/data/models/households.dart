@@ -56,9 +56,10 @@ class Household extends Equatable {
   }
 
   factory Household.fromJson(Map<String, dynamic> json) {
+    // {type: Point, coordinates: [47.6501785, -122.2767234]}
     LatLng? point;
     if (json['geom'] != null) {
-      point = LatLng(json['geom'][0], json['geom'][1]);
+      point = LatLng(json['geom']['coordinates'][0], json['geom']['coordinates'][1]);
     }
 
     return Household(

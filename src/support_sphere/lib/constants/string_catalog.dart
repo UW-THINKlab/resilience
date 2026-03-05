@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 /// Strings used in the app
 class AppStrings {
-  static const String appName = 'Resilience - Laurelhurst';
+  static const String appName = 'Resilience - Laurelhurst'; // FIXME - determine from url/metadata/server somehow
   static const String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
   static const String testEmergencyBannerText = "This is a test emergency.";
@@ -68,12 +68,6 @@ class UserProfileStrings {
   static const String deleteMyAccount = 'Delete My Account';
   static const String confirmPrompt = 'Please Confirm';
   static const String confirmAccountDelete = 'Are you sure you want to delete your account?';
-}
-
-// Household related
-class HouseholdStrings {
-  static const String addHousehold = 'Add Household';
-  static const String selectFilter = 'Filter...';
 }
 
 /// Checklist messages
@@ -195,4 +189,15 @@ class NavRouteLabels {
   static const String manageChecklists = 'Manage Checklists';
   static const String adminCluster = 'Cluster Admin';
   static const String adminNeighborhood = 'Neighbothood Admin';
+}
+
+class ClusterAdminString {
+  static const String addHousehold = 'Add Household';
+  static const String selectFilter = 'Filter households';
+  static const String clusterFilterAll = "All households";
+  static const String clusterFilterAssist = "Needs assisstance";
+  static const String clusterFilterResources = "Has resources";
+  static const String clusterFilterParticipate = "Low participation";
+  static const String searchHouseholds = "Search households";
+  static const String noHouseholdsFound = 'No households found';
 }

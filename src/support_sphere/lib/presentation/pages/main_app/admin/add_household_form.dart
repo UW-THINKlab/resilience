@@ -5,7 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 //import 'package:searchfield/searchfield.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
-import 'package:support_sphere/logic/cubit/manage_cluster_cubit.dart';
+import 'package:support_sphere/logic/cubit/manage_cluster_state.dart' show ManageClusterCubit;
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:uuid/v4.dart';
@@ -96,10 +96,10 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
       child: Column(
         children: [
           const Center(
-              child: Text(
-            HouseholdStrings.addHousehold,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          )),
+            child: Text(
+              ClusterAdminString.addHousehold,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            )),
           // Name of Household and Household Type
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,

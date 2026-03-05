@@ -87,6 +87,11 @@ class ClusterService {
       households.add(Household.fromJson(record));
     }
 
+    if (households.isEmpty) {
+      log.warning("No households for cluster $clusterId");
+      log.fine("Repsonse: $data");
+    }
+
     return households;
   }
 

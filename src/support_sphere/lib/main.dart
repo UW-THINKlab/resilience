@@ -22,7 +22,7 @@ void initializeLogging(Level level) {
 final log = Logger('MyApp');
 
 void main() async {
-  initializeLogging(Level.FINEST);
+  initializeLogging(Level.FINER);
   try {
     await Config.initSupabase();
   } catch (e, stackTrace) {

@@ -3,10 +3,6 @@ import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
 class UserService {
-  String getMyId() {
-    return supabase.auth.currentUser!.id;
-  }
-
   /// Retrieves the household members by household id.
   Future<PostgrestList?> getAllPeople() async {
     return await supabase.from('people').select('*');

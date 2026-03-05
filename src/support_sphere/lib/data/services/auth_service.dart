@@ -19,9 +19,9 @@ class AuthService extends Equatable{
     return await _supabaseClient.from('signup_codes').select().eq('code', code).maybeSingle();
   }
 
-  Future<String?> getSignUpCodeForHousehold(String household_id) async {
-    PostgrestMap? result = await _supabaseClient.from('signup_codes').select().eq('household_id', household_id).maybeSingle();
-    _log.finer("get SIGNUP CODE for $household_id: $result");
+  Future<String?> getSignUpCodeForHousehold(String householdId) async {
+    PostgrestMap? result = await _supabaseClient.from('signup_codes').select().eq('household_id', householdId).maybeSingle();
+    _log.finer("get SIGNUP CODE for $householdId: $result");
     return result?['code'];
   }
 

@@ -252,10 +252,17 @@ class UserRepository {
     );
   }
 
+  Future<Person?> getMyProfile() async {
+    return await getPersonProfileByUserId(userId: _authService.getSignedInUser()!.id);
+  }
+
+  Future<Household?> getMyHousehold() async {
+    final profile = await getMyProfile();
+    return await getHouseholdByPersonId(profile!.id);
+  }
+
   Future<Cluster?> getMyCluster() async {
-    // get my household
-    final household = await getHouseholdByPersonId(_userService.getMyId());
-    // get my cluster info
+    final household = await getMyHousehold();
     return await _clusters.getCluster(household!.clusterId);
   }
 }
