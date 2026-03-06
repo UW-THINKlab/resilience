@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart' show ManageNeighborhoodCubit;
 
@@ -17,8 +18,6 @@ class _ClusterCardState extends State<ManageClusterCard> {
 
   @override
   Widget build(BuildContext context) {
-    //final resourceDescription = widget.resource.description ?? '';
-    //final resourceName = widget.resource.name;
     return BlocProvider.value(
       value: BlocProvider.of<ManageNeighborhoodCubit>(context),
       child: Card(
@@ -37,11 +36,17 @@ class _ClusterCardState extends State<ManageClusterCard> {
                   // ),
                   SizedBox(
                     width: 200,
-                    child: Text(widget.cluster.name ?? "- no name -",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      children: [
+                        FaIcon(FontAwesomeIcons.shapes, size: 15),
+                        const SizedBox(width: 4),
+                        Text(widget.cluster.name ?? "- no name -",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -53,32 +58,32 @@ class _ClusterCardState extends State<ManageClusterCard> {
                 children: [
                   Row(
                     children: [
-                      // FIXME FaIcon(widget.resource.resourceType.icon, size: 15),
-                      const SizedBox(width: 4),
-                      Text('widget.resource.resourceType.name'),
+                      Text('Meeting place: ${widget.cluster.meetingPlace}'),
+                      Text('Captains: ${widget.cluster.captains}'),
+                      Text('Notes: ${widget.cluster.notes}'),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Badge(
-                        label:
-                            Text(" available"),
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                      const SizedBox(width: 4),
-                      Badge(
-                        label: Text("widget.resource.qtyNeeded needed"),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    ],
-                  )
+                  // Row(
+                  //   children: [
+                  //     Badge(
+                  //       label:
+                  //           Text(" available"),
+                  //       backgroundColor: Colors.blueAccent,
+                  //     ),
+                  //     const SizedBox(width: 4),
+                  //     Badge(
+                  //       label: Text("widget.resource.qtyNeeded needed"),
+                  //       backgroundColor: Colors.redAccent,
+                  //     ),
+                  //   ],
+                  // )
                 ],
               )),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.all(8),
-            child: Text('resourceDescription'),
-          ),
+          // Container(
+          //   alignment: Alignment.centerLeft,
+          //   padding: const EdgeInsets.all(8),
+          //   child: Text('resourceDescription'),
+          // ),
           // (widget.resource.notes != null && widget.resource.notes!.isNotEmpty)
           //     ? Container(
           //         alignment: Alignment.centerLeft,

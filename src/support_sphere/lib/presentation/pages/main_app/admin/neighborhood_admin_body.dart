@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_form.dart';
@@ -57,7 +58,7 @@ class ManageNeighborhoodView extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.all(12),
           child: Center(
-            child: Text('NeighborhoodStrings.manageNeighborhoods',
+            child: Text(NeighborhoodStrings.manageNeighborhood,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
         ),
@@ -89,7 +90,7 @@ class AddClusterView extends StatelessWidget {
                   TextButton.icon(
                     icon: const Icon(Icons.arrow_back),
                     label: const Text(
-                      'NeighborhoodStrings.manageNeighborhoods',
+                      NeighborhoodStrings.manageNeighborhood,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -131,7 +132,6 @@ class _NeighborhoodsBody extends StatefulWidget {
 class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   List<Cluster>? _searchResults;
   String _nameQuery = '';
-  String _resourceTypeQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +158,8 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
           setState(() {
             if (_searchResults != null) {
               // Case to filter with search
-              if (value != null && value != 'All') {
+              if (value != null && value != 'All clusters') {
                 _searchResults = state.clusters.where((item) {
-                  _resourceTypeQuery = value;
                   return item.name?.toLowerCase().contains(_nameQuery) ?? false;
                 }).toList();
               } else {
@@ -185,7 +184,7 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
                 const SizedBox(width: 16),
                 ElevatedButton(
                     onPressed: widget.addNeighborhoodOnPressed,
-                    child: Text('NeighborhoodStrings.addNeighborhood')),
+                    child: Text(NeighborhoodStrings.addCluster)),
                 // FIXME Expanded(child: NeighborhoodSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: NeighborhoodFilter(
@@ -231,7 +230,7 @@ class _NeighborhoodViewSection extends StatelessWidget {
                     },
                   )
                 : Center(
-                    child: Text('NeighborhoodStrings.noNeighborhoodsFound'),
+                    child: Text(NeighborhoodStrings.noClustersFound),
                   ));
       },
     );

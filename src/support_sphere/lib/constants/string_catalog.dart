@@ -191,7 +191,7 @@ class NavRouteLabels {
   static const String adminNeighborhood = 'Neighbothood Admin';
 }
 
-class ClusterAdminString {
+class ClusterAdminStrings {
   static const String addHousehold = 'Add Household';
   static const String selectFilter = 'Filter households';
   static const String clusterFilterAll = "All households";
@@ -200,4 +200,16 @@ class ClusterAdminString {
   static const String clusterFilterParticipate = "Low participation";
   static const String searchHouseholds = "Search households";
   static const String noHouseholdsFound = 'No households found';
+}
+
+class NeighborhoodStrings {
+  static const String addCluster = 'Add cluster';
+  static const String selectFilter = 'Filter clusters';
+  static const String clusterFilterAll = "All clusters";
+  static const String clusterFilterNeedCaptain = "Needs captain";
+  static const String clusterFilterParticipate = "Low participation";
+  static const String searchClusters = "Search clusters";
+  static const String noClustersFound = 'No Cluster found';
+
+  static const String manageNeighborhood = "Manage Laurenhurst"; // FIXME - neighborhood name
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 
 class NeighborhoodFilter extends StatefulWidget {
   NeighborhoodFilter(
@@ -30,7 +31,7 @@ class _NeighborhoodTypeFilterState extends State<NeighborhoodFilter> {
       padding: EdgeInsets.all(16),
       child: DropdownMenu<String>(
         width: 200,
-        label: const Text("NeighborhoodStrings.selectFilter"),
+        label: const Text(NeighborhoodStrings.selectFilter),
         initialSelection: filters.first,
         onSelected: widget.onSelected ?? _defaultOnSelected,
         dropdownMenuEntries:

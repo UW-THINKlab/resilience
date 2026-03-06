@@ -27,7 +27,7 @@ class _SearchBarState extends State<HouseholdSearchBar> {
       child: TextField(
         onChanged: widget.onQueryChanged ?? _defaultOnQueryChanged,
         decoration: InputDecoration(
-          labelText: ClusterAdminString.searchHouseholds,
+          labelText: ClusterAdminStrings.searchHouseholds,
           border: OutlineInputBorder(),
           prefixIcon: Icon(Icons.search),
         ),

@@ -218,25 +218,25 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
           setState(() {
             if (_searchResults != null) {
               // Case to filter with search
-              if (value != null && value != ClusterAdminString.clusterFilterAll) {
+              if (value != null && value != ClusterAdminStrings.clusterFilterAll) {
                 // value selected
                 // "Has resources" or "Low participation";
                 // need queries....
                 _householdFilter = value;
                 switch (_householdFilter) {
-                  case ClusterAdminString.clusterFilterParticipate:
+                  case ClusterAdminStrings.clusterFilterParticipate:
                     _searchResults = state.households.where((item) {
                       return item.houseHoldMembers!.members.isNotEmpty &&
                         item.name!.toLowerCase().contains(_nameQuery);
                       }).toList();
                       break;
-                  case ClusterAdminString.clusterFilterAssist:
+                  case ClusterAdminStrings.clusterFilterAssist:
                     _searchResults = state.households.where((item) {
                       return item.accessibilityNeeds!.isNotEmpty &&
                         item.name!.toLowerCase().contains(_nameQuery);
                       }).toList();
                       break;
-                  case ClusterAdminString.clusterFilterResources:
+                  case ClusterAdminStrings.clusterFilterResources:
                     // FIXME: right now, requires a extra query
                     // this is a place holder that looks for pets
                     _searchResults = state.households.where((item) {
@@ -265,7 +265,7 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
                 const SizedBox(width: 16),
                 ElevatedButton(
                     onPressed: widget.addHouseholdOnPressed,
-                    child: Text(ClusterAdminString.addHousehold)),
+                    child: Text(ClusterAdminStrings.addHousehold)),
                 Expanded(child: HouseholdSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                   child: HouseholdFilter(
@@ -306,11 +306,10 @@ class _ClusterViewSection extends StatelessWidget {
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {
                       return ManageHouseholdCard(household: searchResults[index]);
-                      //return HouseholdListItem(household: searchResults[index]);
                     },
                   )
                 : Center(
-                    child: Text(ClusterAdminString.noHouseholdsFound),
+                    child: Text(ClusterAdminStrings.noHouseholdsFound),
                   ));
       },
     );

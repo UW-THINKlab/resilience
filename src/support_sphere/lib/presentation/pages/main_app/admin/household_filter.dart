@@ -7,9 +7,9 @@ class HouseholdFilter extends StatefulWidget {
   final void Function(String?)? onSelected;
 
   final List<String> householdFilters = [
-    ClusterAdminString.clusterFilterAll,
-    ClusterAdminString.clusterFilterResources,
-    ClusterAdminString.clusterFilterParticipate
+    ClusterAdminStrings.clusterFilterAll,
+    ClusterAdminStrings.clusterFilterResources,
+    ClusterAdminStrings.clusterFilterParticipate
   ];
 
   @override
@@ -35,7 +35,7 @@ class _HouseholdTypeFilterState extends State<HouseholdFilter> {
       padding: EdgeInsets.all(16),
       child: DropdownMenu<String>(
         width: 200,
-        label: const Text(ClusterAdminString.selectFilter),
+        label: const Text(ClusterAdminStrings.selectFilter),
         initialSelection: filters.first,
         onSelected: widget.onSelected ?? _defaultOnSelected,
         dropdownMenuEntries:

@@ -97,7 +97,7 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
         children: [
           const Center(
             child: Text(
-              ClusterAdminString.addHousehold,
+              ClusterAdminStrings.addHousehold,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             )),
           // Name of Household and Household Type

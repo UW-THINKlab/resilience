@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 
 final log = Logger('Cluster');
 
-class Cluster extends Equatable {
+class Cluster extends Equatable implements Comparable {
 
   const Cluster({
     required this.id,
@@ -78,6 +78,17 @@ class Cluster extends Equatable {
   LatLng? centroid() {
     return geom != null ? PolygonCentroid.findPolygonCentroid(geom!): null;
   }
+
+  @override
+  int compareTo(other) {
+    if (other.runtimeType == Cluster) {
+      return name!.compareTo(other.name);
+    }
+    else {
+      return -1;
+    }
+  }
+
 
 //   List<Marker> markers() {
 //     final List<Marker> markers = [];
