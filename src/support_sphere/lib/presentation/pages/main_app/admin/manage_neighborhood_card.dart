@@ -2,27 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
-import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 
-// FIXME - placeholder
 
 class ManageNeighborhoodCard extends StatefulWidget {
+  //final Neighborhood cluster;
 
-  const ManageNeighborhoodCard({super.key, required Cluster cluster});
+  const ManageNeighborhoodCard({super.key});
 
   @override
-  _ResourceCardState createState() => _ResourceCardState();
+  _NeighborhoodCardState createState() => _NeighborhoodCardState();
 }
 
-class _ResourceCardState extends State<ManageNeighborhoodCard> {
+class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
 
 
   @override
   Widget build(BuildContext context) {
     //final resourceDescription = widget.resource.description ?? '';
-    //final resourceName = widget.resource.name;
+    //final clusterName = widget..n
     return BlocProvider.value(
-      value: BlocProvider.of<ManageResourceCubit>(context),
+      value: BlocProvider.of<ManageNeighborhoodCubit>(context),
       child: Card(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -39,8 +38,7 @@ class _ResourceCardState extends State<ManageNeighborhoodCard> {
                   // ),
                   SizedBox(
                     width: 200,
-                    child: Text(
-                      'neighborhood-admin',
+                    child: Text("Laurenhurst", // FIXME
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -109,13 +107,13 @@ class _ResourceCardState extends State<ManageNeighborhoodCard> {
                 //   onPressed: null,
                 // ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
-                  ),
-                  onPressed: () {
-                  context.read<ManageNeighborhoodCubit>().deleteCluster("widget.cluster.id");
-                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
+                // ElevatedButton(
+                //   style: ButtonStyle(
+                //     backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
+                //   ),
+                //   onPressed: () {
+                //   context.read<ManageNeighborhoodCubit>().deleteNeighborhood(widget.cluster.id);
+                // }, child: Text("Delete", style: TextStyle(color: Colors.white)))
               ],
             ),
           ),

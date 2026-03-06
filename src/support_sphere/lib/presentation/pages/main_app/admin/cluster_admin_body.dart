@@ -59,6 +59,50 @@ class AddHouseholdView extends StatelessWidget {
   }
 }
 
+// class HouseholdList extends StatelessWidget {
+//   const HouseholdList({super.key, required this.households});
+
+//   final List<Household> households;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.builder(
+//       padding: const EdgeInsets.all(8),
+//       itemCount: households.length,
+//       itemBuilder: (BuildContext context, int index) {
+//         return HouseholdListItem(household: households[index]);
+//       }
+//     );
+//   }
+// }
+
+class HouseholdListItem extends StatelessWidget {
+  const HouseholdListItem({super.key, required this.household});
+
+  final Household household;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      //color: Colors.amber[colorCodes[index]],
+      child: Center(child: Text('Entry $household')),
+    );
+  }
+}
+
+// children: [
+//   FaIcon(FontAwesomeIcons.house, size: 15),
+//   const SizedBox(width: 4),
+//   Text(name),
+//   const SizedBox(width: 4),
+//   Text(address),
+//   const SizedBox(width: 4),
+//   Text(widget.household.pets ?? ''),
+//   const SizedBox(width: 4),
+//   Text(widget.household.accessibilityNeeds ?? ''),
+// ],
+
 class ManageClusterView extends StatelessWidget {
   const ManageClusterView({super.key, this.addHouseholdOnPressed});
 
@@ -232,7 +276,7 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
             Row(
               children: [
                 Expanded(
-                  child: _NeighborhoodViewSection(
+                  child: _ClusterViewSection(
                       searchResults: _searchResults ?? state.households),
                 ),
               ],
@@ -244,10 +288,10 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   }
 }
 
-class _NeighborhoodViewSection extends StatelessWidget {
+class _ClusterViewSection extends StatelessWidget {
   final List<Household> searchResults;
 
-  const _NeighborhoodViewSection({required this.searchResults});
+  const _ClusterViewSection({required this.searchResults});
 
   @override
   Widget build(BuildContext context) {
@@ -261,9 +305,8 @@ class _NeighborhoodViewSection extends StatelessWidget {
                 ? ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {
-                      final household = searchResults[index];
-
-                      return ManageHouseholdCard(household: household);
+                      return ManageHouseholdCard(household: searchResults[index]);
+                      //return HouseholdListItem(household: searchResults[index]);
                     },
                   )
                 : Center(

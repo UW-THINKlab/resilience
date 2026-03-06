@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_form.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_cluster_card.dart' show ManageClusterCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
 
@@ -227,7 +227,7 @@ class _NeighborhoodViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cluster = searchResults[index];
 
-                      return ManageNeighborhoodCard(cluster: cluster);
+                      return ManageClusterCard(cluster: cluster);
                     },
                   )
                 : Center(

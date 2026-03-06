@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/clusters.dart';
-import 'package:support_sphere/logic/cubit/manage_cluster_state.dart' show ManageClusterCubit;
-
-// FIXME - placeholder
+import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart' show ManageNeighborhoodCubit;
 
 // Information about the CLUSTER
 class ManageClusterCard extends StatefulWidget {
+  final Cluster cluster;
 
-  const ManageClusterCard({super.key, required Cluster cluster});
+  const ManageClusterCard({super.key, required this.cluster});
 
   @override
   _ClusterCardState createState() => _ClusterCardState();
@@ -21,7 +20,7 @@ class _ClusterCardState extends State<ManageClusterCard> {
     //final resourceDescription = widget.resource.description ?? '';
     //final resourceName = widget.resource.name;
     return BlocProvider.value(
-      value: BlocProvider.of<ManageClusterCubit>(context),
+      value: BlocProvider.of<ManageNeighborhoodCubit>(context),
       child: Card(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -38,8 +37,7 @@ class _ClusterCardState extends State<ManageClusterCard> {
                   // ),
                   SizedBox(
                     width: 200,
-                    child: Text(
-                      'Cluster-admin',
+                    child: Text(widget.cluster.name ?? "- no name -",
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -113,7 +111,7 @@ class _ClusterCardState extends State<ManageClusterCard> {
                     backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
                   ),
                   onPressed: () {
-                  context.read<ManageClusterCubit>().deleteHousehold("widget.household.id" ); //FIXME
+                  context.read<ManageNeighborhoodCubit>().deleteCluster(widget.cluster.id);
                 }, child: Text("Delete", style: TextStyle(color: Colors.white)))
               ],
             ),
