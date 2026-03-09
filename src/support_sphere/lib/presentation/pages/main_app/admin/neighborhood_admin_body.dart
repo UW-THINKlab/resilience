@@ -4,7 +4,9 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_cluster_card.dart' show ManageClusterCard;
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
 
@@ -41,28 +43,22 @@ class _ManageNeighborhoodBodyControllerState
       create: (context) => ManageNeighborhoodCubit(),
       child: (_showingAddNeighborhood)
           ? AddClusterView(onPressed: switchPage)
-          : ManageNeighborhoodView(addNeighborhoodOnPressed: switchPage),
+          : ManageNeighborhoodView(addClusterOnPressed: switchPage),
     );
   }
 }
 
 class ManageNeighborhoodView extends StatelessWidget {
-  const ManageNeighborhoodView({super.key, this.addNeighborhoodOnPressed});
+  const ManageNeighborhoodView({super.key, this.addClusterOnPressed});
 
-  final VoidCallback? addNeighborhoodOnPressed;
+  final VoidCallback? addClusterOnPressed;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.all(12),
-          child: Center(
-            child: Text(NeighborhoodStrings.manageNeighborhood,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ),
-        ),
-        _NeighborhoodsBody(addNeighborhoodOnPressed: addNeighborhoodOnPressed),
+        ManageNeighborhoodCard(),
+        _NeighborhoodsBody(addClusterOnPressed: addClusterOnPressed),
       ],
     );
   }
@@ -121,9 +117,9 @@ class AddClusterView extends StatelessWidget {
 }
 
 class _NeighborhoodsBody extends StatefulWidget {
-  const _NeighborhoodsBody({this.addNeighborhoodOnPressed});
+  const _NeighborhoodsBody({this.addClusterOnPressed});
 
-  final VoidCallback? addNeighborhoodOnPressed;
+  final VoidCallback? addClusterOnPressed;
 
   @override
   _NeighborhoodsBodyState createState() => _NeighborhoodsBodyState();
@@ -132,48 +128,60 @@ class _NeighborhoodsBody extends StatefulWidget {
 class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   List<Cluster>? _searchResults;
   String _nameQuery = '';
+  String _filterValue = '';
+
+  bool matchCluster(Cluster cluster) {
+     //   meetingPlace notes
+    return (cluster.name?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (cluster.meetingPlace?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (cluster.notes?.toLowerCase().contains(_nameQuery) ?? false);
+  }
+
+  List<Cluster> applySearch(List<Cluster> clusters) {
+    log.fine("AAA");
+
+    switch (_filterValue) {
+      case NeighborhoodStrings.clusterFilterParticipate:
+        // FIXME: What is participation?
+        return clusters.where((item) {
+          return (item.notes == null) &&  matchCluster(item);
+        }).toList();
+      case NeighborhoodStrings.clusterFilterNeedCaptain:
+        return clusters.where((item) {
+          return (item.captains == null) &&  matchCluster(item);
+        }).toList();
+      default:
+        return clusters.where((item) {
+          return matchCluster(item);
+        }).toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       buildWhen: (previous, current) {
-        _searchResults = current.clusters.where((item) {
-          return item.name?.toLowerCase().contains(_nameQuery) ?? false;
-        }).toList();
+        _searchResults = applySearch(current.clusters);
         return previous.clusters != current.clusters;
       },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {
           setState(() {
-            _searchResults = state.clusters.where((item) {
-              _nameQuery = query;
-              return item.name?.toLowerCase().contains(_nameQuery) ?? false;
-            }).toList();
+            _nameQuery = query;
+            _searchResults = applySearch(state.clusters);
           });
+          log.fine("query: $query, #results: ${_searchResults?.length}");
         }
 
         // Filter drowndown onSelected
         void onSelected(String? value) {
           setState(() {
-            if (_searchResults != null) {
-              // Case to filter with search
-              if (value != null && value != 'All clusters') {
-                _searchResults = state.clusters.where((item) {
-                  return item.name?.toLowerCase().contains(_nameQuery) ?? false;
-                }).toList();
-              } else {
-                _searchResults = state.clusters.where((item) {
-                  return item.name?.toLowerCase().contains(_nameQuery) ?? false;
-                }).toList();
-              }
-            } else {
-              // Case to filter without search
-              _searchResults = state.clusters.where((item) {
-                return item.captains!.people!.length > 0;
-              }).toList();
-            }
+            _filterValue = value ?? ClusterAdminStrings.clusterFilterAll;
+            _searchResults = applySearch(state.clusters);
           });
+          log.fine("filter: $value, #results: ${_searchResults?.length}");
+
         }
 
         return Column(
@@ -183,9 +191,9 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
               children: [
                 const SizedBox(width: 16),
                 ElevatedButton(
-                    onPressed: widget.addNeighborhoodOnPressed,
+                    onPressed: widget.addClusterOnPressed,
                     child: Text(NeighborhoodStrings.addCluster)),
-                // FIXME Expanded(child: NeighborhoodSearchBar(onQueryChanged: onQueryChanged)),
+                Expanded(child: ClusterSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: NeighborhoodFilter(
                   onSelected: onSelected,

@@ -100,27 +100,27 @@ class _ClusterCardState extends State<ManageClusterCard> {
           //         ),
           //       )
           //     : SizedBox(),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                // TODO: Implement ElevatedButton for editing
-                // ElevatedButton(
-                //   child: const Text('Edit'),
-                //   onPressed: null,
-                // ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
-                  ),
-                  onPressed: () {
-                  context.read<ManageNeighborhoodCubit>().deleteCluster(widget.cluster.id);
-                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.end,
+          //     children: <Widget>[
+          //       // TODO: Implement ElevatedButton for editing
+          //       // ElevatedButton(
+          //       //   child: const Text('Edit'),
+          //       //   onPressed: null,
+          //       // ),
+          //       const SizedBox(width: 8),
+          //       ElevatedButton(
+          //         style: ButtonStyle(
+          //           backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
+          //         ),
+          //         onPressed: () {
+          //         context.read<ManageNeighborhoodCubit>().deleteCluster(widget.cluster.id);
+          //       }, child: Text("Delete", style: TextStyle(color: Colors.white)))
+          //     ],
+          //   ),
+          // ),
         ],
       )),
     );

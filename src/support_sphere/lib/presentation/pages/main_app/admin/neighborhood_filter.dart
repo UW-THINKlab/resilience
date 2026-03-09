@@ -5,7 +5,11 @@ class NeighborhoodFilter extends StatefulWidget {
   NeighborhoodFilter(
       {super.key, this.onSelected});
 
-  final List<String> clusterFilters = ["All clusters", "Without captain", "Low participation"]; // FIXME stringify
+  final List<String> clusterFilters = [
+    NeighborhoodStrings.clusterFilterAll,
+    NeighborhoodStrings.clusterFilterNeedCaptain,
+    NeighborhoodStrings.clusterFilterParticipate,
+  ];
   final void Function(String?)? onSelected;
 
   @override

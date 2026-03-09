@@ -59,22 +59,22 @@ class AddHouseholdView extends StatelessWidget {
   }
 }
 
-// class HouseholdList extends StatelessWidget {
-//   const HouseholdList({super.key, required this.households});
+class HouseholdList extends StatelessWidget {
+  const HouseholdList({super.key, required this.households});
 
-//   final List<Household> households;
+  final List<Household> households;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView.builder(
-//       padding: const EdgeInsets.all(8),
-//       itemCount: households.length,
-//       itemBuilder: (BuildContext context, int index) {
-//         return HouseholdListItem(household: households[index]);
-//       }
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: households.length,
+      itemBuilder: (BuildContext context, int index) {
+        return HouseholdListItem(household: households[index]);
+      }
+    );
+  }
+}
 
 class HouseholdListItem extends StatelessWidget {
   const HouseholdListItem({super.key, required this.household});
@@ -83,7 +83,7 @@ class HouseholdListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 50,
       //color: Colors.amber[colorCodes[index]],
       child: Center(child: Text('Entry $household')),
@@ -197,9 +197,9 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   Widget build(BuildContext context) {
     return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       buildWhen: (previous, current) {
-        // _searchResults = current.households.where((item) {
-        //   return item.name!.toLowerCase().contains(_nameQuery);
-        // }).toList();
+        _searchResults = current.households.where((item) {
+          return item.name!.toLowerCase().contains(_nameQuery);
+        }).toList();
         return previous.households != current.households;
       },
       builder: (context, state) {
