@@ -92,9 +92,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-   - assets/app_config.json
-  #   - images/a_dot_ham.jpeg
+  # FIXME - needed for andriod build but breaks web build if not present. MUST NOT CONTAIN SECRETS if checked in
+  #assets:
+  # - assets/app_config.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
