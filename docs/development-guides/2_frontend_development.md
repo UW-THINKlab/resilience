@@ -10,8 +10,8 @@ See [Official Documentation](https://flutter.dev/docs).
 ## lt;dr
 
 1. (Install flutter)[https://docs.flutter.dev/install]
-  - `pixi -e pixi run -e frontend install-tools` also works.
-  - Installing Android Studio is the trickies part
+    - `pixi -e pixi run -e frontend install-tools` also works.
+    - Installing Android Studio is the trickies part
 2. Confirm valid setup with `flutter doctor`
 3. Checkout the codebase: `git clone https://github.com/UW-THINKlab/resilience`
 4. If running a remote instance of supabase, update `.env` with `SUPABASE_URL` and `SUPABASE_ANON_KEY` for remove system.
