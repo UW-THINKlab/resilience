@@ -15,9 +15,9 @@ See [Official Documentation](https://flutter.dev/docs).
 2. Confirm valid setup with `flutter doctor`
 3. Checkout the codebase: `git clone https://github.com/UW-THINKlab/resilience`
 4. If running a remote instance of supabase, update `.env` with `SUPABASE_URL` and `SUPABASE_ANON_KEY` for remove system.
-  - Default settings are for local development, based on `deployment\values.dev.yaml`. 
+    - Default settings are for local development, based on `deployment\values.dev.yaml`. 
 4. Run the frontend with: `pixi run -e frontend run-web`
-  - Alternatively, `pixi run -e frontend run` will alow selection of web, simulated device or loading onto a device.
+    - Alternatively, `pixi run -e frontend run` will alow selection of web, simulated device or loading onto a device.
 
 This will start a local debug service running with the app in Chrome. Login with example credentials.
 
