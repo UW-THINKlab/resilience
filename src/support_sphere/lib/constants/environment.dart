@@ -38,6 +38,7 @@ class AppConfig {
     final jsonUrl = data['supabaseUrl'];
     final jsonAnonKey = data['supabaseAnonKey'];
 
+    // Prefer EnvironmentConfig (envvar) over json
     final String supabaseUrl = EnvironmentConfig.supabaseUrl != '' ? EnvironmentConfig.supabaseUrl : jsonUrl;
     final String supabaseAnonKey = EnvironmentConfig.supabaseAnonKey != '' ? EnvironmentConfig.supabaseAnonKey : jsonAnonKey;
 
@@ -54,10 +55,13 @@ class AppConfig {
   static Future<AppConfig> loadBundle() async {
     try {
       WidgetsFlutterBinding.ensureInitialized();
+      // Load app_config
       final String jsonStr = await rootBundle.loadString(configFileName);
       if (jsonStr.isEmpty) {
         throw Error();
       }
+      // FIXME: Graceful failure if file is missing or string is empty, so
+      // AppConfig can load from other sources (env)
       final config = AppConfig.fromJson(jsonStr);
       return config;
     }

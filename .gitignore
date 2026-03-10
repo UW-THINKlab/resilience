@@ -1,5 +1,9 @@
 # App_config for db backend, so our anon key is not unencrypted in github
-src/support_sphere/assets/app_config.json
+#src/support_sphere/assets/app_config.json
+# NOTE: Adding an app_config with open/default/demo settings (from values.dev.yaml)
+# because it seems to be baked into the deploy process now, and can't be deployed without
+# it. I have confirmed the EVNVARs take precedence over thses settings, allowing full
+# operation with automated CI/CD.
 
 # Android Studio
 .idea/
