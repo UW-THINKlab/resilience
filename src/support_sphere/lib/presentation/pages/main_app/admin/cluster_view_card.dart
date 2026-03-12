@@ -5,22 +5,29 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart' show ManageNeighborhoodCubit;
 
 // Information about the CLUSTER
-class ManageClusterCard extends StatefulWidget {
+class ClusterViewCard extends StatefulWidget {
   final Cluster cluster;
 
-  const ManageClusterCard({super.key, required this.cluster});
+  const ClusterViewCard({super.key, required this.cluster});
 
   @override
   _ClusterCardState createState() => _ClusterCardState();
 }
 
-class _ClusterCardState extends State<ManageClusterCard> {
+class _ClusterCardState extends State<ClusterViewCard> {
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: BlocProvider.of<ManageNeighborhoodCubit>(context),
-      child: Card(
+      child: GestureDetector(
+        // detect the card has been clicked on, open the
+        // details panel
+        onTap: () {
+          log.fine("Clicked on ${widget.cluster.name}");
+          // FIXME Navigator.push(context, )
+        },
+        child: Card(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -58,8 +65,8 @@ class _ClusterCardState extends State<ManageClusterCard> {
                 children: [
                   Row(
                     children: [
-                      Text('Meeting place: ${widget.cluster.meetingPlace}'),
-                      Text('Captains: ${widget.cluster.captains}'),
+                      Text('Meeting place: ${widget.cluster.meetingPlace}   '),
+                      Text('Captains: ${widget.cluster.captains}   '),
                       Text('Notes: ${widget.cluster.notes}'),
                     ],
                   ),
@@ -123,6 +130,6 @@ class _ClusterCardState extends State<ManageClusterCard> {
           // ),
         ],
       )),
-    );
+    ));
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/cluster_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
-import 'package:support_sphere/presentation/pages/main_app/admin/manage_cluster_card.dart' show ManageClusterCard;
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
@@ -29,21 +29,28 @@ class ManageNeighborhoodBodyController extends StatefulWidget {
 
 class _ManageNeighborhoodBodyControllerState
     extends State<ManageNeighborhoodBodyController> {
-  bool _showingAddNeighborhood = false;
+  bool _showingAddEdit = false;
 
   @override
   Widget build(BuildContext context) {
     void switchPage() {
       setState(() {
-        _showingAddNeighborhood = !_showingAddNeighborhood;
+        _showingAddEdit = !_showingAddEdit;
       });
+    }
+
+    void addCluster() {
+      Navigator.push(
+        context,
+        ClusterEditForm.route()
+      );
     }
 
     return BlocProvider(
       create: (context) => ManageNeighborhoodCubit(),
-      child: (_showingAddNeighborhood)
-          ? AddClusterView(onPressed: switchPage)
-          : ManageNeighborhoodView(addClusterOnPressed: switchPage),
+      child: (_showingAddEdit)
+          ? EditClusterView(onPressed: switchPage)
+          : ManageNeighborhoodView(addClusterOnPressed: addCluster),
     );
   }
 }
@@ -64,8 +71,8 @@ class ManageNeighborhoodView extends StatelessWidget {
   }
 }
 
-class AddClusterView extends StatelessWidget {
-  const AddClusterView({super.key, this.onPressed});
+class EditClusterView extends StatelessWidget {
+  const EditClusterView({super.key, this.onPressed});
 
   final VoidCallback? onPressed;
 
@@ -95,12 +102,12 @@ class AddClusterView extends StatelessWidget {
                     onPressed: onPressed,
                   ),
 
-                  /// Add Neighborhood Form
+                  /// Edit Cluster Form
                   Expanded(
                     child: Card(
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
-                        child: AddClusterForm(
+                        child: ClusterEditForm(
                           onCancel: onPressed,
                         ),
                       ),
@@ -138,8 +145,6 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   }
 
   List<Cluster> applySearch(List<Cluster> clusters) {
-    log.fine("AAA");
-
     switch (_filterValue) {
       case NeighborhoodStrings.clusterFilterParticipate:
         // FIXME: What is participation?
@@ -234,7 +239,7 @@ class _NeighborhoodViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cluster = searchResults[index];
 
-                      return ManageClusterCard(cluster: cluster);
+                      return ClusterViewCard(cluster: cluster);
                     },
                   )
                 : Center(
