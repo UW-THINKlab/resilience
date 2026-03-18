@@ -61,7 +61,7 @@ class Cluster extends Equatable implements Comparable {
       }
     }
     final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;
-    log.fine("#### $meetingPoint -- ${json['meeting_point']}");
+    //log.fine("#### $meetingPoint -- ${json['meeting_point']}");
     final captains = json['captains'] != null ? Captains.fromJson(json['captains']) : null;
 
     return Cluster(
@@ -73,6 +73,19 @@ class Cluster extends Equatable implements Comparable {
       meetingPoint: meetingPoint,
       captains: captains,
     );
+  }
+
+  // Define a toJson method to convert Cluster object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'notes': notes,
+      'meeting_place': meetingPlace,
+      'geom': geom,
+      'meeting_point': meetingPoint,
+      'captains': captains,
+    };
   }
 
   LatLng? centroid() {

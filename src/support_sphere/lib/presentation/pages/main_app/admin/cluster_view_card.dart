@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
-import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart' show ManageNeighborhoodCubit;
+import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart' show ManageNeighborhoodCubit;
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart' show ClusterEditForm;
 
 // Information about the CLUSTER
 class ClusterViewCard extends StatefulWidget {
   final Cluster cluster;
+  final ManageNeighborhoodCubit cubit;
 
-  const ClusterViewCard({super.key, required this.cluster});
+  const ClusterViewCard({super.key, required this.cluster,  required this.cubit});
 
   @override
-  _ClusterCardState createState() => _ClusterCardState();
+  ClusterCardState createState() => ClusterCardState();
 }
 
-class _ClusterCardState extends State<ClusterViewCard> {
-
+class ClusterCardState extends State<ClusterViewCard> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -23,10 +24,12 @@ class _ClusterCardState extends State<ClusterViewCard> {
       child: GestureDetector(
         // detect the card has been clicked on, open the
         // details panel
-        onTap: () {
-          log.fine("Clicked on ${widget.cluster.name}");
-          // FIXME Navigator.push(context, )
-        },
+        onTap: () => showDialog(
+          context: context,
+          builder: (BuildContext context) => Dialog(
+            child: ClusterEditForm(cluster: widget.cluster, cubit: widget.cubit)
+          )
+        ),
         child: Card(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

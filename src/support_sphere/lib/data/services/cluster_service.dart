@@ -3,6 +3,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart' show Household;
+import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:uuid/v4.dart' show UuidV4;
@@ -38,6 +39,17 @@ class ClusterService {
   // FIXME - couldn't find an existing lib
   String pointGisStr(LatLng location) {
     return "POINT(${location.longitude} ${location.latitude})";
+  }
+
+  // POLYGON ((latVal longVal, latVal longVal, ...))"
+  String regionGisStr(List<LatLng> geometry) {
+    String buffer = "POLYGON ((";
+    for (final location in geometry) {
+      buffer += "${location.latitude} ${location.longitude}, ";
+    }
+    buffer = buffer.substring(0, buffer.length - 2); // strip the last ', '
+    buffer += "))";
+    return buffer;
   }
 
   Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location, String? description) async {
@@ -113,17 +125,30 @@ class ClusterService {
     await supabase.from('households').delete().eq('id', householdId);
   }
 
-  Future<void> addCluster(Cluster cluster) async {
-    // FIXME Cluster -> json
-    await supabase.from('clusters').insert({
-      'id': cluster.id,
-      'name': cluster.name,
-      'notes': cluster.notes,
-      'meeting_place': cluster.meetingPlace,
-      'geom': cluster.geom,
-      'meeting_point': cluster.meetingPoint,
-      'captains': cluster.captains,
-    });
+  Future<void> addClusterCaptain(String clusterId, Person? person) async {
+    log.fine("Implement add captain to cluster!");
+    // check if they're already a captain: role
+    // add the new captain role in user_role, get id
+    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
+  }
+
+  Future<void> upsertCluster(Map<String, dynamic> clusterUpdate) async {
+    // if (cluster.captains != null && cluster.captains!.people.isNotEmpty) {
+    //   // FIXME: How do captains get removed?
+    //   for (final user in cluster.captains!.people) {
+    //     addClusterCaptain(cluster.id, user);
+    //   }
+    // }
+    //final jsonMap = cluster.toJson();
+    // fix geometry <--- BROKE geometry
+    //if (jsonMap.containsKey('geom')) {
+    //  final geoStr = regionGisStr(jsonMap['geom']);
+    //  log.fine("@@@@ $geoStr");
+    //  jsonMap['geom'] = geoStr;
+    //}
+    //jsonMap.remove('captains');  // check if contains?
+    log.finer("Updating cluster: $clusterUpdate");
+    await supabase.from('clusters').upsert(clusterUpdate);
   }
 
   Future<void> deleteCluster(String clusterId) async {

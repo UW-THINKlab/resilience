@@ -134,6 +134,7 @@ class HomeMap extends StatelessWidget {
     // could be based on hash of cluster name
     // or cluster geometry
     final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    log.fine("Cluster polygon: ${cluster.name} ${cluster.geom}");
     return Polygon(
         label: cluster.name,
         points: cluster.geom!,

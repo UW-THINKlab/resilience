@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
+import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 
 class ManageNeighborhoodCard extends StatefulWidget {
   const ManageNeighborhoodCard({super.key});

@@ -73,6 +73,20 @@ class Household extends Equatable {
       geom: point,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'address': address,
+      'notes': notes,
+      'pets': pets,
+      'accessibilityNeeds': accessibilityNeeds,
+      'houseHoldMembers': houseHoldMembers,
+      'clusterId': clusterId,
+      'geom': geom,
+    };
+  }
 }
 
 class HouseHoldMembers extends Equatable {

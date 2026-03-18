@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
-import 'package:support_sphere/logic/cubit/manage_neighborhood_cubit.dart';
+import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
@@ -40,9 +40,10 @@ class _ManageNeighborhoodBodyControllerState
     }
 
     void addCluster() {
-      Navigator.push(
-        context,
-        ClusterEditForm.route()
+      Navigator.push(context,
+        MaterialPageRoute<void>(
+              builder: (context) => ClusterEditForm(),
+            )
       );
     }
 
@@ -107,9 +108,7 @@ class EditClusterView extends StatelessWidget {
                     child: Card(
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
-                        child: ClusterEditForm(
-                          onCancel: onPressed,
-                        ),
+                        child: ClusterEditForm(),
                       ),
                     ),
                   )
@@ -239,7 +238,7 @@ class _NeighborhoodViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cluster = searchResults[index];
 
-                      return ClusterViewCard(cluster: cluster);
+                      return ClusterViewCard(cluster: cluster, cubit: context.read<ManageNeighborhoodCubit>());
                     },
                   )
                 : Center(

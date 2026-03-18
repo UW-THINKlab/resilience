@@ -71,8 +71,8 @@ class ClusterRepository {
       return _clusterService.deleteHousehold(householdId);
     }
 
-  Future<void> addCluster(Cluster cluster) async {
-      return _clusterService.addCluster(cluster);
+  Future<void> upsertCluster(Map<String, dynamic> cluster) async {
+      return _clusterService.upsertCluster(cluster);
   }
 
   Future<void> deleteCluster(String clusterId) async {
