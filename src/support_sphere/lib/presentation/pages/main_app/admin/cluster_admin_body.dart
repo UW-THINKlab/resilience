@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:support_sphere/constants/environment.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
@@ -25,8 +26,7 @@ class ClusterAdminBodyController extends StatefulWidget {
       _ClusterAdminBodyControllerState();
 }
 
-class _ClusterAdminBodyControllerState
-    extends State<ClusterAdminBodyController> {
+class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController> {
   bool _showingAddHousehold = false;
 
   @override
@@ -193,71 +193,65 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   String _nameQuery = '';
   String _householdFilter = '';
 
+  bool matchHousehold(Household household) {
+     //   meetingPlace notes
+    return (household.name?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (household.address?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (household.pets?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (household.accessibilityNeeds?.toLowerCase().contains(_nameQuery) ?? false) ||
+      (household.notes?.toLowerCase().contains(_nameQuery) ?? false);
+  }
+
+  List<Household> applySearch(List<Household> households) {
+    log.fine("ONE");
+    switch (_householdFilter) {
+      case ClusterAdminStrings.clusterFilterParticipate:
+        log.fine("TWO");
+
+        return households.where((item) {
+          // FIXME: Add "participation" metadata
+          return (item.notes == null) &&  matchHousehold(item);
+        }).toList();
+      case ClusterAdminStrings.clusterFilterResources:
+        log.fine("THREE");
+
+        return households.where((item) {
+          // FIXME: Add resources metadata
+          return (item.notes == null) &&  matchHousehold(item);
+        }).toList();
+      default:
+        log.fine("DEFAULT");
+
+        return households.where((item) {
+          return matchHousehold(item);
+        }).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       buildWhen: (previous, current) {
-        _searchResults = current.households.where((item) {
-          if (_nameQuery == '') {
-            return true;
-          }
-          return item.name == null ? false : item.name!.toLowerCase().contains(_nameQuery);
-        }).toList();
+        _searchResults = applySearch(current.households);
         return previous.households != current.households;
       },
       builder: (context, state) {
         // Search bar query changed
         void onQueryChanged(String query) {
           setState(() {
-            _searchResults = state.households.where((item) {
-              _nameQuery = query;
-              return item.name!.toLowerCase().contains(_nameQuery);
-            }).toList();
+            _nameQuery = query;
+            _searchResults = applySearch(state.households);
           });
+          log.finer("query: $query, #results: ${_searchResults?.length}");
         }
 
-        // Filter dropdown onSelected
+        // Filter drowndown onSelected
         void onSelected(String? value) {
           setState(() {
-            if (_searchResults != null) {
-              // Case to filter with search
-              if (value != null && value != ClusterAdminStrings.clusterFilterAll) {
-                // value selected
-                // "Has resources" or "Low participation";
-                // need queries....
-                _householdFilter = value;
-                switch (_householdFilter) {
-                  case ClusterAdminStrings.clusterFilterParticipate:
-                    _searchResults = state.households.where((item) {
-                      return item.houseHoldMembers!.members.isNotEmpty &&
-                        item.name!.toLowerCase().contains(_nameQuery);
-                      }).toList();
-                      break;
-                  case ClusterAdminStrings.clusterFilterAssist:
-                    _searchResults = state.households.where((item) {
-                      return item.accessibilityNeeds!.isNotEmpty &&
-                        item.name!.toLowerCase().contains(_nameQuery);
-                      }).toList();
-                      break;
-                  case ClusterAdminStrings.clusterFilterResources:
-                    // FIXME: right now, requires a extra query
-                    // this is a place holder that looks for pets
-                    _searchResults = state.households.where((item) {
-                      return item.pets!.isNotEmpty &&
-                        item.name!.toLowerCase().contains(_nameQuery);
-                      }).toList();
-                      break;
-                }
-              }
-            } else {
-              // Case to filter without search
-              // FIXME???
-              _searchResults = state.households.where((item) {
-                _householdFilter = value != 'All' ? value ?? '' : '';
-                return item.name!.contains(_householdFilter);
-              }).toList();
-            }
+            _householdFilter = value ?? ClusterAdminStrings.clusterFilterAll;
+            _searchResults = applySearch(state.households);
           });
+          log.finer("filter: $value, #results: ${_searchResults?.length}");
         }
 
         return Column(

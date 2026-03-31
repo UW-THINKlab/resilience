@@ -175,7 +175,7 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
             _nameQuery = query;
             _searchResults = applySearch(state.clusters);
           });
-          log.fine("query: $query, #results: ${_searchResults?.length}");
+          log.finer("query: $query, #results: ${_searchResults?.length}");
         }
 
         // Filter drowndown onSelected
