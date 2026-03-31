@@ -198,7 +198,10 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
     return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       buildWhen: (previous, current) {
         _searchResults = current.households.where((item) {
-          return item.name!.toLowerCase().contains(_nameQuery);
+          if (_nameQuery == '') {
+            return true;
+          }
+          return item.name == null ? false : item.name!.toLowerCase().contains(_nameQuery);
         }).toList();
         return previous.households != current.households;
       },
