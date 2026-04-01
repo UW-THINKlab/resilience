@@ -10,7 +10,7 @@ See [Official Documentation](https://flutter.dev/docs).
 ## lt;dr
 
 1. [Install flutter](https://docs.flutter.dev/install)
-    - `pixi -e pixi run -e frontend install-tools` also works.
+    - `pixi run -e frontend install-tools` also works.
     - Installing Android Studio is the tricky part, on linux.
 2. Confirm valid setup with `flutter doctor`
 3. Checkout the codebase: `git clone https://github.com/UW-THINKlab/resilience`
