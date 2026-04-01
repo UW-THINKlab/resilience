@@ -22,11 +22,11 @@ To load Laurelhurst test data:
 
 To load from a backup file named `backup-Laurelhurst-2026-02-17-1133.sql.gz`:
 
-    pixi run db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz
+    pixi run -e backend db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz
 
 To create a backup from the current instance:
     
-    pixi run db-backup
+    pixi run -e backend db-backup
 
 Which will create a backup file with the neighborhood name and timestamp: `backup-Laurelhurst-2026-02-17-1133.sql.gz`
 
