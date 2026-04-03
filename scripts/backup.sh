@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-# Backup the resilience DB using supabase tool
+# Backup the resilience DB
 
 script_dir=$(dirname "$0")
 backup_script='backup-on-db.sh'
-#backup_script='backup-auth.sh'
 
 #echo backup script: $script_dir/$backup_script
 
