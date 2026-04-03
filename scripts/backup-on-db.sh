@@ -28,9 +28,9 @@ PGUSER=${PGUSER:-postgres} # POSTGRES_USER
 PGPASSWORD=${PGPASSWORD:-postgres}
 PGDATABASE=${PGDATABASE:-postgres}
 
-echo db: $PGHOST:$PGPORT
-echo db user: $PGUSER
-echo db name: $PGDATABASE
+# echo db: $PGHOST:$PGPORT
+# echo db user: $PGUSER
+# echo db name: $PGDATABASE
 
 # Explanation of pg_dump flags:
 #
@@ -48,9 +48,10 @@ echo db name: $PGDATABASE
 #   - do not create pgtle schema and extension comments
 #   - do not create publication "supabase_realtime"
 #   - do not set transaction_timeout which requires pg17
+#
+#   --schema-only \
 pg_dump \
     --username $PGUSER \
-    --schema-only \
     --quote-all-identifier \
     --role "postgres" \
     --exclude-schema "information_schema|pg_*|_analytics|_realtime|_supavisor|auth|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault" \

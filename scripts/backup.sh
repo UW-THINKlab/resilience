@@ -23,7 +23,4 @@ echo Creating $backup_file from $pod_name
 kubectl cp $script_dir/$backup_script $pod_name:/tmp/$backup_script
 
 # Execute the script on the POD, gzip the results to the file
-kubectl exec $pod_name -- /tmp/$backup_script
-
-# FIXME for now, to stdout
-#| gzip > $backup_file
+kubectl exec $pod_name -- /tmp/$backup_script | gzip > $backup_file
