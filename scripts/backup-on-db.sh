@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-#
+
+
 # This script is run in the db container in kubernetes
 # There is another script, run from pixi, that:
 # 1. finds the correct db pod
@@ -14,23 +15,19 @@
 # supabase db dump --local --data-only >> $backup_file
 # gzip $backup_file
 
+set -euo pipefail
+
 # NOTE: admin user is needed for dumpall
 #user=supabase_admin
 
 # dump schema first
 # based on `supabase db dump --dry-run --local`
 
-# set -euo pipefail
-
-PGHOST=${PGHOST:-127.0.0.1}
-PGPORT=${PGPORT:-5432}
-PGUSER=${PGUSER:-postgres} # POSTGRES_USER
-PGPASSWORD=${PGPASSWORD:-postgres}
-PGDATABASE=${PGDATABASE:-postgres}
-
-# echo db: $PGHOST:$PGPORT
-# echo db user: $PGUSER
-# echo db name: $PGDATABASE
+export PGHOST=${PGHOST:-127.0.0.1}
+export PGPORT=${PGPORT:-5432}
+export PGUSER=${PGUSER:-postgres} # POSTGRES_USER
+export PGPASSWORD=${PGPASSWORD:-postgres}
+export PGDATABASE=${PGDATABASE:-postgres}
 
 # Explanation of pg_dump flags:
 #
@@ -54,7 +51,12 @@ pg_dump \
     --username $PGUSER \
     --quote-all-identifier \
     --role "postgres" \
-    --exclude-schema "information_schema|pg_*|_analytics|_realtime|_supavisor|auth|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault" \
+    --exclude-schema "information_schema|pg_*|_analytics|_realtime|_supavisor|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault" \
+    --exclude-table "auth.schema_migrations" \
+    --exclude-table "storage.migrations" \
+    --exclude-table "supabase_functions.migrations" \
+    --schema "*" \
+    --column-inserts --rows-per-insert 100000 \
      \
 | sed -E 's/^\\(un)?restrict .*$/-- &/' \
 | sed -E 's/^CREATE SCHEMA "/CREATE SCHEMA IF NOT EXISTS "/' \

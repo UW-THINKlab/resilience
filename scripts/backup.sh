@@ -4,8 +4,9 @@
 
 script_dir=$(dirname "$0")
 backup_script='backup-on-db.sh'
+#backup_script='backup-auth.sh'
 
-echo backup script: $script_dir/$backup_script
+#echo backup script: $script_dir/$backup_script
 
 # FIXME: Name file based on neighborhood. from... ENV?
 # Currently, Neighborhood is hardcoded in code.
