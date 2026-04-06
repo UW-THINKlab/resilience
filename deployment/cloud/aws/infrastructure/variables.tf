@@ -37,7 +37,7 @@ variable "instance_type" {
 
 variable "volume_size" {
   description = "The size of the volume, in GiB"
-  type        = int
+  type        = string
   default     = 512
 }
 
