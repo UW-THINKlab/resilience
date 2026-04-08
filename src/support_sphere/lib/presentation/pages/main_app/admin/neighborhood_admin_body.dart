@@ -27,8 +27,7 @@ class ManageNeighborhoodBodyController extends StatefulWidget {
       _ManageNeighborhoodBodyControllerState();
 }
 
-class _ManageNeighborhoodBodyControllerState
-    extends State<ManageNeighborhoodBodyController> {
+class _ManageNeighborhoodBodyControllerState extends State<ManageNeighborhoodBodyController> {
   bool _showingAddEdit = false;
 
   @override
@@ -39,10 +38,15 @@ class _ManageNeighborhoodBodyControllerState
       });
     }
 
+    void clusterUpdated(Map<String,dynamic> clusterData) {
+      final cubit = context.read<ManageNeighborhoodCubit>();
+      cubit.upsertCluster(clusterData);
+    }
+
     void addCluster() {
       Navigator.push(context,
         MaterialPageRoute<void>(
-              builder: (context) => ClusterEditForm(),
+              builder: (context) => ClusterEditForm( updateCluster: clusterUpdated ),
             )
       );
     }
@@ -108,7 +112,12 @@ class EditClusterView extends StatelessWidget {
                     child: Card(
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
-                        child: ClusterEditForm(),
+                        child: ClusterEditForm(
+                          updateCluster: (clusterData) {
+                            final cubit = context.read<ManageNeighborhoodCubit>();
+                            cubit.upsertCluster(clusterData);
+                          }
+                        ),
                       ),
                     ),
                   )
@@ -238,7 +247,13 @@ class _NeighborhoodViewSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cluster = searchResults[index];
 
-                      return ClusterViewCard(cluster: cluster, cubit: context.read<ManageNeighborhoodCubit>());
+                      return ClusterViewCard(
+                        cluster: cluster,
+                        updateCluster: (clusterData) {
+                          final cubit = context.read<ManageNeighborhoodCubit>();
+                          cubit.upsertCluster(clusterData);
+                        }
+                      );
                     },
                   )
                 : Center(

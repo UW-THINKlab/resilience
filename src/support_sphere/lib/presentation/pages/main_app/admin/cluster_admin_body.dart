@@ -5,6 +5,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/household_search_bar.dart' show HouseholdSearchBar;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
@@ -120,6 +121,14 @@ class ManageClusterView extends StatelessWidget {
                 child: Text("Manage Cluster - ${state.cluster?.name}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
             ),
+            state.cluster != null ?
+              ClusterViewCard(
+                cluster: state.cluster!,
+                updateCluster: (clusterData) {
+                  final cubit = context.read<ManageClusterCubit>();
+                  cubit.upsertCluster(clusterData);
+                }
+              ) : Text(""),// EMPTY VIEW???
             _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed),
           ],
         );

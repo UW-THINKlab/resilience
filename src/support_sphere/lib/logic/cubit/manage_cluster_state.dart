@@ -62,4 +62,10 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     await _clusterRepo.deleteHousehold(id);
     fetchCluster();
   }
+
+  void upsertCluster(Map<String, dynamic> cluster) async {
+    await _clusterRepo.upsertCluster(cluster);
+    fetchCluster();
+  }
+
 }
