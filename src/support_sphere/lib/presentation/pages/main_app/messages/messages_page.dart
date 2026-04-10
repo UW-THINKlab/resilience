@@ -15,22 +15,21 @@ const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey
 
 final log = Logger('MessagesPage');
 
-// ASIDE: "Groups" include households, clusters
-
 // based on github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
 
-
-/// Initial page for cluster messaging.
+/// Full page for group messaging.
 /// Cluster captains get special display,
 /// and ability to send "urgent" messages
 class MessagesPage extends StatefulWidget {
-  const MessagesPage({super.key});
+  final String groupId;
 
-  static Route<void> route() {
-    return MaterialPageRoute(
-      builder: (context) => const MessagesPage(),
-    );
-  }
+  const MessagesPage({super.key, required this.groupId});
+
+  // static Route<void> route() {
+  //   return MaterialPageRoute(
+  //     builder: (context) => const MessagesPage(groupId: groupId,),
+  //   );
+  // }
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -71,6 +70,9 @@ class MessagesState extends State<MessagesPage> {
     log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
 
     cluster = await clusterRepo.getClusterByUser(myUserId);
+    clusterId = cluster!.id;
+    print('LOADED: clusterId = "$clusterId" from ${cluster!.name}'); // Terminal output
+    log.fine('Cluster loaded: ID="$clusterId", name="${cluster!.name}"');
     title = "${cluster!.name} Messages";
     //log.fine("CLUSTER: $cluster");
 
@@ -94,7 +96,8 @@ class MessagesState extends State<MessagesPage> {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: StreamBuilder<List<Message>>(
-        stream: messagesStream,
+        //stream: messagesStream,
+        stream: messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -213,13 +216,20 @@ class _MessageBarState extends State<MessageBar> {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
     if (text.isEmpty) {
+      print('DEBUG: Empty message skipped'); // Instant terminal output
       return;
     }
+
+    print('DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
+
     _textController.clear();
 
     //log.fine("Sent message from:$myUserId, to:$toId: $text");
     try {
-      MessagesRepository().sendMessage(myUserId, toId, text);
+      //MessagesRepository().sendMessage(myUserId, toId, text);
+      await MessagesRepository().sendMessage(myUserId, toId, text);
+      print('SUCCESS: Message sent!'); // Confirm send completed
+      log.fine('Message sent: $text'); // Your existing logger
     } on Exception catch (error) {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar

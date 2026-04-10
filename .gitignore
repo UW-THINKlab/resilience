@@ -10,6 +10,15 @@
 
 # MacOS
 .DS_Store
+src/support_sphere/macos/
+
+# Deployment secrets
+.sops.yaml.bak
+deployment/*cloud_values.yaml
+keys/*
+
+# Android
+src/support_sphere/android/app/.cxx/
 
 # VS Code
 .vscode/
