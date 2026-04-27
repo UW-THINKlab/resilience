@@ -122,6 +122,7 @@ class InboxView extends StatelessWidget {
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) {
+    print('🧭 Navigating to: ${group.id}');  // ✅ Verify source
     Navigator.push(
       context,
       MaterialPageRoute(
