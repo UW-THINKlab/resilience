@@ -48,6 +48,8 @@ class AppPage extends StatelessWidget {
             final MyAuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
+            print('Logged in from App Page: ${authUser.uuid} (${authUser.email})');
+            debugPrint('User role from App Page: ${authUser.userRole}');
             MediaQueryData screenData = MediaQuery.of(context);
             AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole, screenData: screenData);
             return SafeArea(

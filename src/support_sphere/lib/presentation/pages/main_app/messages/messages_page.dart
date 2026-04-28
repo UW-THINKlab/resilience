@@ -15,22 +15,21 @@ const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey
 
 final log = Logger('MessagesPage');
 
-// ASIDE: "Groups" include households, clusters
-
 // based on github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
 
-
-/// Initial page for cluster messaging.
+/// Full page for group messaging.
 /// Cluster captains get special display,
 /// and ability to send "urgent" messages
 class MessagesPage extends StatefulWidget {
-  const MessagesPage({super.key});
+  final String groupId;
 
-  static Route<void> route() {
-    return MaterialPageRoute(
-      builder: (context) => const MessagesPage(),
-    );
-  }
+  const MessagesPage({super.key, required this.groupId});
+
+  // static Route<void> route() {
+  //   return MaterialPageRoute(
+  //     builder: (context) => const MessagesPage(groupId: groupId,),
+  //   );
+  // }
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -43,36 +42,40 @@ class MessagesState extends State<MessagesPage> {
 
   late final Stream<List<Message>> messagesStream;
   late final Stream<Person?> profileStream;
-  late final Cluster? cluster;
-  late final String clusterId;
   final Map<String,Person> profileCache = {};
   late final String myUserId;
-  late final Person? myUser;
+  // late final Person? myUser;
 
   String title = "Messages";
   bool _isLoading = true;
 
+  // int _loadCount = 0;
+
   @override
   void initState() {
+    print('🚀 initState groupId: "${widget.groupId}"');  // ✅ Print here
+    super.initState();
+
     myUserId = supabase.auth.currentUser!.id;
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
-    super.initState();
+    _loadInitialData();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadInitialData();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _loadInitialData();
+    // });
   }
 
   Future<void> _loadInitialData() async {
-    setState(() => _isLoading = true);
+    print('✅ Group ID: $widget.groupId');
+    print('✅ My User: $myUserId');
+    // setState(() => _isLoading = true);
+    setState(() => _isLoading = false);
 
     final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
     log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
+    log.fine("MY GROUP ID: $widget.groupId");
 
-    cluster = await clusterRepo.getClusterByUser(myUserId);
-    title = "${cluster!.name} Messages";
-    //log.fine("CLUSTER: $cluster");
 
     final allUsers = await userRepo.getAllMembers();
     profileCache.addAll(allUsers);
@@ -94,7 +97,8 @@ class MessagesState extends State<MessagesPage> {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: StreamBuilder<List<Message>>(
-        stream: messagesStream,
+        //stream: messagesStream,
+        stream: messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -117,7 +121,7 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                MessageBar(cluster: cluster!),
+                MessageBar(groupId: widget.groupId),
               ],
             );
           } else {
@@ -130,7 +134,7 @@ class MessagesState extends State<MessagesPage> {
 
   void _sendMessage(String text) {
     try {
-      MessagesRepository().sendMessage(myUserId, clusterId, text);
+      MessagesRepository().sendMessage(myUserId, widget.groupId, text);
     } on Exception catch (error) {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
@@ -144,11 +148,11 @@ class MessageBar extends StatefulWidget {
   const MessageBar({
     super.key,
     //required this.sendFunc,
-    required this.cluster,
+    required this.groupId,
   });
 
   //final sendFunc;
-  final Cluster cluster;
+  final String groupId;
 
   @override
   State<MessageBar> createState() => _MessageBarState();
@@ -193,7 +197,7 @@ class _MessageBarState extends State<MessageBar> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => _submitMessage(context, widget.cluster.id),
+                onPressed: () => _submitMessage(context, widget.groupId),
                 child: const Text('Send Message'), // FIXME formatting, text
               ),
             ],
@@ -212,14 +216,23 @@ class _MessageBarState extends State<MessageBar> {
   void _submitMessage(BuildContext context, String toId) async {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
+    print('✅ Group ID: $widget.groupId');
+    print('✅ To ID: $toId');
     if (text.isEmpty) {
+      print('DEBUG: Empty message skipped'); // Instant terminal output
       return;
     }
+
+    print('DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
+
     _textController.clear();
 
     //log.fine("Sent message from:$myUserId, to:$toId: $text");
     try {
-      MessagesRepository().sendMessage(myUserId, toId, text);
+      //MessagesRepository().sendMessage(myUserId, toId, text);
+      await MessagesRepository().sendMessage(myUserId, toId, text);
+      print('SUCCESS: Message sent!'); // Confirm send completed
+      log.fine('Message sent: $text'); // Your existing logger
     } on Exception catch (error) {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
