@@ -77,7 +77,18 @@ class UserRepository {
     return null;
   }
 
+  Future<List<Person>> getClusterMembers(String clusterId) async {
+    List<Person> people = [];
+    final data = await _userService.getPeopleByCluster(clusterId);
+    if (data != null) {
+      for (var member in data) {
+        people.add(Person.fromJson(member["people"]));
+      }
+    }
+    return people;
+  }
 
+  // Not currently used
   Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
     final cluster = await _clusters.getCluster(clusterId);
 
@@ -195,7 +206,6 @@ class UserRepository {
     }
     return null;
   }
-
 
   /// Create a new user with the given user info.
   /// This will perform two operations:

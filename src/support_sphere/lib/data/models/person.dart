@@ -24,7 +24,7 @@ class Person extends Equatable {
   /// The current user's profile.
   /// This is optional and may be null.
   final Profile? profile;
-  
+
   /// The current user's given name.
   final String givenName;
 
@@ -62,6 +62,11 @@ class Person extends Equatable {
         isSafe,
         needsHelp,
       ];
+
+  /// Format the user's full name
+  String name() {
+    return (nickname != null && nickname!.isNotEmpty) ? nickname! : "$givenName $familyName";
+  }
 }
 
 

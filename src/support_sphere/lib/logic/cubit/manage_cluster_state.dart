@@ -2,36 +2,46 @@ import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
-import 'package:support_sphere/data/repositories/cluster.dart';
-import 'package:support_sphere/data/repositories/user.dart';
+import 'package:support_sphere/data/models/person.dart' show Person;
+import 'package:support_sphere/data/repositories/cluster.dart' hide log;
+import 'package:support_sphere/data/repositories/user.dart' hide log;
 
 
 class ManageClusterState extends Equatable {
   const ManageClusterState({
+    required this.clusterId,
     this.households = const [],
-    this.cluster,
+    this.members = const [],
+    this.cluster = null,
   });
 
-  final List<Household> households;
+  final String clusterId;
   final Cluster? cluster;
+  final List<Household> households;
+  final List<Person> members;
 
   @override
-  List<Object?> get props => [cluster, households];
+  List<Object?> get props => [clusterId, cluster, households, members];
 
   ManageClusterState copyWith({
     final List<Household>? households,
     final Cluster? cluster,
+    final List<Person>? members,
   }) {
     return ManageClusterState(
+      clusterId: this.clusterId,
       households: households ?? this.households,
       cluster: cluster ?? this.cluster,
+      members: members ?? this.members,
     );
   }
 }
 
 class ManageClusterCubit extends Cubit<ManageClusterState> {
-  ManageClusterCubit() : super(const ManageClusterState()) {
+  ManageClusterCubit(String clusterId) : super(ManageClusterState(clusterId: clusterId)) {
     fetchCluster();
+    fetchHouseholds();
+    fetchMembers();
   }
 
   final ClusterRepository _clusterRepo = ClusterRepository();
@@ -45,16 +55,36 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     emit(state.copyWith(cluster: cluster));
   }
 
-  void fetchCluster() async {
-    Cluster? cluster = await _userRepo.getMyCluster();
-    clusterChanged(cluster!);
+  void membersChanged(List<Person> members) {
+    emit(state.copyWith(members: members));
+  }
 
-    List<Household> households = await _clusterRepo.getHouseholds(state.cluster!.id);
+  void fetchCluster() async {
+    var clusterId = state.clusterId;
+    if (clusterId == "") {
+      log.warning("Cluster not initialized. Using users cluster.");
+      var cluster = await _userRepo.getMyCluster();
+      if (cluster != null) {
+        clusterId = cluster.id;
+      }
+    }
+
+    Cluster? cluster = await _clusterRepo.getCluster(clusterId);
+    clusterChanged(cluster!);
+  }
+
+  void fetchHouseholds() async {
+    List<Household> households = await _clusterRepo.getHouseholds(state.clusterId);
     householdsChanged(households);
   }
 
+  void fetchMembers() async {
+    List<Person> members = await _userRepo.getClusterMembers(state.clusterId);
+    membersChanged(members);
+  }
+
   void addHousehold(Household household) async {
-    await _clusterRepo.addHousehold(state.cluster!.id, household);
+    await _clusterRepo.addHousehold(state.clusterId, household);
     fetchCluster();
   }
 
@@ -68,4 +98,7 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     fetchCluster();
   }
 
+  Future<List<Person>> getClusterMembers(String clusterId) async {
+    return await _userRepo.getClusterMembers(clusterId);
+  }
 }

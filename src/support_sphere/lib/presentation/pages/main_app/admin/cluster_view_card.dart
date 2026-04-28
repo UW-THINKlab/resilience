@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/person.dart' show Person;
+import 'package:support_sphere/presentation/components/people_select_list.dart' show PersonSelectList;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart' show ClusterEditForm;
 
 // Information about the CLUSTER
 class ClusterViewCard extends StatefulWidget {
   final Cluster cluster;
+  final List<Person> members;
   final Function(Map<String,dynamic>) updateCluster;
 
-  const ClusterViewCard({super.key, required this.cluster, required this.updateCluster});
+  ClusterViewCard({super.key,
+    required this.cluster,
+    required this.updateCluster,
+    List<Person>? members
+  }): members = members ?? [];
+
 
   @override
   ClusterCardState createState() => ClusterCardState();
 }
 
 class ClusterCardState extends State<ClusterViewCard> {
-  // cluster edit callback
-  // this should only be called if the cluster has been edited
-  void clusterUpdated(Map<String,dynamic> clusterData) {
-    log.fine("Cluster updated: {clusterData}");
-    // FIXME - update cluster
-    // the cluster has been updated.
-    // params should probably be {name:value, ...} to denote change?
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -32,7 +31,7 @@ class ClusterCardState extends State<ClusterViewCard> {
       onTap: () => showDialog(
         context: context,
         builder: (BuildContext context) => Dialog(
-          child: ClusterEditForm(cluster: widget.cluster, updateCluster: this.clusterUpdated)
+          child: ClusterEditForm(cluster: widget.cluster, updateCluster: widget.updateCluster)
         )
       ),
       child: Card(
@@ -53,11 +52,11 @@ class ClusterCardState extends State<ClusterViewCard> {
                   width: 200,
                   child: Row(
                     children: [
-                      FaIcon(FontAwesomeIcons.shapes, size: 15),
+                      FaIcon(FontAwesomeIcons.shapes, size: 18),
                       const SizedBox(width: 4),
                       Text(widget.cluster.name ?? "- no name -",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -73,25 +72,47 @@ class ClusterCardState extends State<ClusterViewCard> {
               children: [
                 Row(
                   children: [
-                    Text('Meeting place: ${widget.cluster.meetingPlace}   '),
-                    Text('Captains: ${widget.cluster.captains}   '),
+                    Text('Meeting place: ${widget.cluster.meetingPlace}'),
+                  ],
+                ),
+              ],
+            )),
+            Container(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
                     Text('Notes: ${widget.cluster.notes}'),
                   ],
                 ),
-                // Row(
-                //   children: [
-                //     Badge(
-                //       label:
-                //           Text(" available"),
-                //       backgroundColor: Colors.blueAccent,
-                //     ),
-                //     const SizedBox(width: 4),
-                //     Badge(
-                //       label: Text("widget.resource.qtyNeeded needed"),
-                //       backgroundColor: Colors.redAccent,
-                //     ),
-                //   ],
-                // )
+              ],
+            )),
+            Container(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text('Captains: ${widget.cluster.captains}'),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => Dialog.fullscreen(
+                          child: PersonSelectList(
+                            people: widget.members,
+                            onConfirm: (List<Person> updatedCaptains) {
+                              widget.updateCluster({'captains': updatedCaptains});
+                            })
+                        ),
+                      ),
+                      child: Text("Manage Captains", style: const TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
               ],
             )),
         // Container(
