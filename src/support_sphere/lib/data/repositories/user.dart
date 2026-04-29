@@ -122,6 +122,7 @@ class UserRepository {
 
   /// Get the household by person id.
   Future<Household?> getHouseholdByPersonId(String personId) async {
+    log.fine("getting household for person id: $personId");
     final data = await _userService.getPersonHouseholdByPersonId(personId);
 
     if (data != null) {
@@ -267,12 +268,37 @@ class UserRepository {
   }
 
   Future<Household?> getMyHousehold() async {
+    log.finer("calling: getMyProfile");
     final profile = await getMyProfile();
-    return await getHouseholdByPersonId(profile!.id);
+    if (profile != null) {
+      log.finer("Found profile: $profile");
+      return await getHouseholdByPersonId(profile.id);
+    }
+    else {
+      log.fine("NO PROFILE");
+      return null;
+    }
+  }
+
+  Future<String?> getMyClusterId() async {
+    final household = await getMyHousehold();
+    if (household != null) {
+      return household.clusterId;
+    }
+    else {
+      log.warning("My cluster not found");
+      return null;
+    }
   }
 
   Future<Cluster?> getMyCluster() async {
-    final household = await getMyHousehold();
-    return await _clusters.getCluster(household!.clusterId);
+    final myClusterId = await getMyClusterId();
+    log.finer("✅ GOT clusterid: $myClusterId");
+    if (myClusterId != null) {
+      return await _clusters.getCluster(myClusterId);
+    }
+    else {
+      return null;
+    }
   }
 }

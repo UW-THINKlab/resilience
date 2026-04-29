@@ -32,24 +32,28 @@ class ClusterAdminBodyController extends StatefulWidget {
 class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController> {
   bool _showingAddHousehold = false;
   String myClusterId = "";
+  bool isReady = false;
 
   final UserRepository userRepo = UserRepository();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadInitialData();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadInitialData();
+  // }
 
-  Future<void> _loadInitialData() async {
-    final myCluster = await userRepo.getMyCluster();
-    if (myCluster != null) {
-      myClusterId = myCluster.id;
-    }
-    else {
-      log.fine("Unable to load myCluster.");
-    }
-  }
+  // Future<void> _loadInitialData() async {
+  //   final myCluster = await userRepo.getMyCluster();
+  //   if (myCluster != null) {
+  //     myClusterId = myCluster.id;
+  //   }
+  //   else {
+  //     log.fine("Unable to load myCluster.");
+  //   }
+  //   setState(() {
+  //     isReady = true;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,7 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
         _showingAddHousehold = !_showingAddHousehold;
       });
     }
-
+    // FIXME: Wait until myClusterId is initialized?
     return BlocProvider(
       create: (context) => ManageClusterCubit(myClusterId),
       child: (_showingAddHousehold)

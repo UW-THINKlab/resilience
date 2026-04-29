@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
@@ -10,6 +11,7 @@ class UserService {
 
   /// Retrieves the person household by person id.
   Future<PostgrestMap?> getPersonHouseholdByPersonId(String personId) async {
+    print("getting houshold for id=$personId");
     return await supabase.from('people_groups').select('''
       people(
         id

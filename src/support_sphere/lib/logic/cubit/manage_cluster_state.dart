@@ -62,7 +62,7 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
   void fetchCluster() async {
     var clusterId = state.clusterId;
     if (clusterId == "") {
-      log.warning("Cluster not initialized. Using users cluster.");
+      log.warning("Cluster not initialized. Using user's cluster.");
       var cluster = await _userRepo.getMyCluster();
       if (cluster != null) {
         clusterId = cluster.id;
