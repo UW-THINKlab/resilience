@@ -9,27 +9,28 @@ import 'package:support_sphere/data/repositories/user.dart' hide log;
 
 class ManageClusterState extends Equatable {
   const ManageClusterState({
-    required this.clusterId,
+    //this.clusterId,
     this.households = const [],
     this.members = const [],
     this.cluster = null,
   });
 
-  final String clusterId;
+  //final String? clusterId;
   final Cluster? cluster;
   final List<Household> households;
   final List<Person> members;
 
   @override
-  List<Object?> get props => [clusterId, cluster, households, members];
+  List<Object?> get props => [cluster, households, members];
 
   ManageClusterState copyWith({
+    //final String? clusterId,
     final List<Household>? households,
     final Cluster? cluster,
     final List<Person>? members,
   }) {
     return ManageClusterState(
-      clusterId: this.clusterId,
+      //clusterId: clusterId ?? this.clusterId,
       households: households ?? this.households,
       cluster: cluster ?? this.cluster,
       members: members ?? this.members,
@@ -37,11 +38,19 @@ class ManageClusterState extends Equatable {
   }
 }
 
+// Notes to self, in the code, after watching BLoC and Cubit research.
+// The ManageClusterState has all necessary data RE "editing" a cluster.
+// This includes cluster details, captains, households and members.
+// Instead of initialization, use an external call - state change.
+
 class ManageClusterCubit extends Cubit<ManageClusterState> {
-  ManageClusterCubit(String clusterId) : super(ManageClusterState(clusterId: clusterId)) {
-    fetchCluster();
-    fetchHouseholds();
-    fetchMembers();
+  ManageClusterCubit(String? clusterId) : super(ManageClusterState()) {
+    if (clusterId != null && clusterId != "") {
+      fetchClusterId(clusterId);
+    }
+    else {
+      fetchMyCluster();
+    }
   }
 
   final ClusterRepository _clusterRepo = ClusterRepository();
@@ -51,54 +60,69 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     emit(state.copyWith(households: households));
   }
 
-  void clusterChanged(Cluster cluster) {
-    emit(state.copyWith(cluster: cluster));
+  void allChanged(Cluster cluster, List<Household> households, List<Person> members) {
+    emit(state.copyWith(
+      cluster: cluster,
+      households: households,
+      members: members,
+    ));
   }
 
   void membersChanged(List<Person> members) {
     emit(state.copyWith(members: members));
   }
 
-  void fetchCluster() async {
-    var clusterId = state.clusterId;
-    if (clusterId == "") {
-      log.warning("Cluster not initialized. Using user's cluster.");
-      var cluster = await _userRepo.getMyCluster();
-      if (cluster != null) {
-        clusterId = cluster.id;
-      }
-    }
+  void clusterChanged(Cluster cluster) {
+    emit(state.copyWith(cluster: cluster));
+  }
 
+  void fetchMyCluster() async {
+    Cluster? cluster = await _userRepo.getMyCluster();
+    fetchCluster(cluster);
+  }
+
+  void fetchClusterId(String clusterId) async {
     Cluster? cluster = await _clusterRepo.getCluster(clusterId);
-    clusterChanged(cluster!);
+    fetchCluster(cluster);
+  }
+
+  void fetchCluster(Cluster? cluster) async {
+    if (cluster != null) {
+      List<Household> households = await _clusterRepo.getHouseholds(cluster.id);
+      List<Person> members = await _userRepo.getClusterMembers(cluster.id);
+      allChanged(cluster, households, members);
+    }
   }
 
   void fetchHouseholds() async {
-    List<Household> households = await _clusterRepo.getHouseholds(state.clusterId);
+    List<Household> households = await _clusterRepo.getHouseholds(state.cluster!.id);
     householdsChanged(households);
   }
 
-  void fetchMembers() async {
-    List<Person> members = await _userRepo.getClusterMembers(state.clusterId);
-    membersChanged(members);
-  }
+  // void fetchMembers() async {
+  //   log.fine("clusterId: ${state.clusterId}, cluster: ${state.cluster}, members: ${state.members}");
+  //   if (state.clusterId == "") {
+  //     log.warning("Cluster state not yet initialized");
+  //   }
+  //   else {
+  //     List<Person> members = await _userRepo.getClusterMembers(state.clusterId);
+  //     membersChanged(members);
+  //   }
+  // }
 
   void addHousehold(Household household) async {
-    await _clusterRepo.addHousehold(state.clusterId, household);
-    fetchCluster();
+    await _clusterRepo.addHousehold(state.cluster!.id, household);
+    fetchHouseholds();
   }
 
   void deleteHousehold(String id) async {
     await _clusterRepo.deleteHousehold(id);
-    fetchCluster();
+    fetchHouseholds();
   }
 
   void upsertCluster(Map<String, dynamic> cluster) async {
+    String clusterId = cluster['id'];
     await _clusterRepo.upsertCluster(cluster);
-    fetchCluster();
-  }
-
-  Future<List<Person>> getClusterMembers(String clusterId) async {
-    return await _userRepo.getClusterMembers(clusterId);
+    fetchClusterId(clusterId);
   }
 }

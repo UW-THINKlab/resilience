@@ -95,7 +95,6 @@ class UserRepository {
     List<Person> people = [];
     final data = await _userService.getPeopleByCluster(clusterId);
     if (data != null) {
-
       for (var member in data) {
         Map<String, dynamic> personData = member["people"];
         Profile? profile;
@@ -282,11 +281,13 @@ class UserRepository {
 
   Future<String?> getMyClusterId() async {
     final household = await getMyHousehold();
+    log.finer("✅ GOT household: $household");
+
     if (household != null) {
       return household.clusterId;
     }
     else {
-      log.warning("My cluster not found");
+      log.warning("My household not found");
       return null;
     }
   }
