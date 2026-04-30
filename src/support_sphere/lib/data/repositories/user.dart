@@ -79,44 +79,42 @@ class UserRepository {
 
   Future<List<Person>> getClusterMembers(String clusterId) async {
     List<Person> people = [];
-    final data = await _userService.getPeopleByCluster(clusterId);
-    if (data != null) {
-      for (var member in data) {
-        people.add(Person.fromJson(member["people"]));
-      }
+    final data = await _userService.getClusterMembers(clusterId);
+    for (var item in data) {
+      people.add(Person.fromJson(item["people"]));
     }
     return people;
   }
 
-  // Not currently used
-  Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
-    final cluster = await _clusters.getCluster(clusterId);
+  // Not currently used, move to repo if needed.
+  // Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
+  //   final cluster = await _clusters.getCluster(clusterId);
 
-    List<Person> people = [];
-    final data = await _userService.getPeopleByCluster(clusterId);
-    if (data != null) {
-      for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        Profile? profile;
-        String? userProfileId = personData["user_profile_id"];
+  //   List<Person> people = [];
+  //   final data = await _userService.getPeopleByCluster(clusterId);
+  //   if (data != null) {
+  //     for (var member in data) {
+  //       Map<String, dynamic> personData = member["people"];
+  //       Profile? profile;
+  //       String? userProfileId = personData["user_profile_id"];
 
-        if (userProfileId != null) {
-          profile = Profile(id: userProfileId);
-        }
+  //       if (userProfileId != null) {
+  //         profile = Profile(id: userProfileId);
+  //       }
 
-        people.add(Person(
-          id: personData["id"],
-          profile: profile,
-          givenName: personData["given_name"],
-          familyName: personData["family_name"],
-          nickname: personData["nickname"],
-          isSafe: personData["is_safe"],
-          needsHelp: personData["needs_help"],
-        ));
-      }
-    }
-    return (cluster,people);
-  }
+  //       people.add(Person(
+  //         id: personData["id"],
+  //         profile: profile,
+  //         givenName: personData["given_name"],
+  //         familyName: personData["family_name"],
+  //         nickname: personData["nickname"],
+  //         isSafe: personData["is_safe"],
+  //         needsHelp: personData["needs_help"],
+  //       ));
+  //     }
+  //   }
+  //   return (cluster,people);
+  // }
 
 
   /// Get the household by person id.

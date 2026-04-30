@@ -24,13 +24,11 @@ class ManageClusterState extends Equatable {
   List<Object?> get props => [cluster, households, members];
 
   ManageClusterState copyWith({
-    //final String? clusterId,
     final List<Household>? households,
     final Cluster? cluster,
     final List<Person>? members,
   }) {
     return ManageClusterState(
-      //clusterId: clusterId ?? this.clusterId,
       households: households ?? this.households,
       cluster: cluster ?? this.cluster,
       members: members ?? this.members,
@@ -90,6 +88,7 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     if (cluster != null) {
       List<Household> households = await _clusterRepo.getHouseholds(cluster.id);
       List<Person> members = await _userRepo.getClusterMembers(cluster.id);
+      log.fine("FOUND cluster members: $members");
       allChanged(cluster, households, members);
     }
   }

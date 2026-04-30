@@ -46,35 +46,14 @@ class UserService {
     ''').eq('household_id', householdId);
   }
 
-  Future<PostgrestList?> getPeopleByCluster(String clusterId) async {
-    log.fine("getting all members of cluster id=$clusterId");
-    if (clusterId == "") {
-      log.warning("Empty clusterId.");
-      // Exception?
-      return null;
-    }
-    else {
-      try {
-        final result = await supabase.from('people_groups').select('''
-          people(
-            id,
-            user_profile_id,
-            given_name,
-            family_name,
-            nickname,
-            is_safe,
-            needs_help
-          )
-          households(
 
-          )
-        ''').eq('households.cluster_id', clusterId);
-        log.fine("got result: $result");
-        return result;
-      } catch (e) {
-        log.warning("Error getting members for clusterId $clusterId: $e");
-      }
-    }
+  Future<PostgrestList> getClusterMembers(String clusterId) async {
+    return await supabase.from('people_groups').select('''
+      people(id, user_profile_id, given_name, family_name, nickname, is_safe, needs_help),
+      households (
+        cluster_id
+      )
+    ''').eq('households.cluster_id', clusterId);
   }
 
   /// Retrieves the user profile and person by user id.
