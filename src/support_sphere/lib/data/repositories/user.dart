@@ -22,17 +22,17 @@ class UserRepository {
   final ClusterService _clusterService = ClusterService();
   final ClusterRepository _clusters = ClusterRepository();
 
+  // Builds a mapping of all members: profile-id -> Person
+  // Can be used for cached lookup of user profile info
+  // NOTE: There should probably be a "person view" with all
+  // salient details. This dumps a cache of all users into a users web cache
   Future<Map<String,Person>> getAllMembers() async {
     final data = await _userService.getAllPeople();
-
-    log.fine("people data: $data");
 
     Map<String,Person> members = {};
 
     if (data != null) {
       for (var member in data) {
-        //log.fine(">>> $member");
-        //Map<String, dynamic> personData = member["people"];
         final person = Person.fromJson(member);
         if (person.profile != null) {
           members[person.profile!.id] = person;
@@ -46,30 +46,12 @@ class UserRepository {
   /// Returns a [HouseHoldMembers] object if the household members exist.
   /// Returns null if the household members do not exist.
   /// The [HouseHoldMembers] object contains a list of [Person] objects.
-  Future<HouseHoldMembers?> getHouseholdMembersByHouseholdId(
-      String householdId) async {
+  Future<HouseHoldMembers?> getHouseholdMembersByHouseholdId(String householdId) async {
     final data = await _userService.getHouseholdMembersByHouseholdId(householdId);
-
     if (data != null) {
       List<Person> members = [];
       for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        Profile? profile;
-        String? userProfileId = personData["user_profile_id"];
-
-        if (userProfileId != null) {
-          profile = Profile(id: userProfileId);
-        }
-
-        members.add(Person(
-          id: personData["id"],
-          profile: profile,
-          givenName: personData["given_name"],
-          familyName: personData["family_name"],
-          nickname: personData["nickname"],
-          isSafe: personData["is_safe"],
-          needsHelp: personData["needs_help"],
-        ));
+        members.add(Person.fromJson(member["people"]));
       }
 
       return HouseHoldMembers(members: members);
@@ -86,54 +68,12 @@ class UserRepository {
     return people;
   }
 
-  // Not currently used, move to repo if needed.
-  // Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
-  //   final cluster = await _clusters.getCluster(clusterId);
-
-  //   List<Person> people = [];
-  //   final data = await _userService.getPeopleByCluster(clusterId);
-  //   if (data != null) {
-  //     for (var member in data) {
-  //       Map<String, dynamic> personData = member["people"];
-  //       Profile? profile;
-  //       String? userProfileId = personData["user_profile_id"];
-
-  //       if (userProfileId != null) {
-  //         profile = Profile(id: userProfileId);
-  //       }
-
-  //       people.add(Person(
-  //         id: personData["id"],
-  //         profile: profile,
-  //         givenName: personData["given_name"],
-  //         familyName: personData["family_name"],
-  //         nickname: personData["nickname"],
-  //         isSafe: personData["is_safe"],
-  //         needsHelp: personData["needs_help"],
-  //       ));
-  //     }
-  //   }
-  //   return (cluster,people);
-  // }
-
-
   /// Get the household by person id.
   Future<Household?> getHouseholdByPersonId(String personId) async {
     log.fine("getting household for person id: $personId");
     final data = await _userService.getPersonHouseholdByPersonId(personId);
-
     if (data != null) {
-      Map<String, dynamic> householdData = data["households"];
-
-      return Household(
-        id: householdData["id"],
-        name: householdData["name"],
-        address: householdData["address"],
-        notes: householdData["notes"],
-        pets: householdData["pets"],
-        accessibilityNeeds: householdData["accessibility_needs"],
-        clusterId: householdData["cluster_id"],
-      );
+      return Household.fromJson(data["households"]);
     }
     return null;
   }
@@ -144,19 +84,8 @@ class UserRepository {
     required String userId,
   }) async {
     final data = await _userService.getProfileAndPersonByUserId(userId);
-
     if (data != null) {
-      Map<String, dynamic> personData = data["people"];
-
-      return Person(
-        id: personData["id"],
-        profile: Profile(id: userId),
-        givenName: personData["given_name"],
-        familyName: personData["family_name"],
-        nickname: personData["nickname"],
-        isSafe: personData["is_safe"],
-        needsHelp: personData["needs_help"],
-      );
+      return Person.fromJson(data["people"]);
     }
     return null;
   }
@@ -165,44 +94,8 @@ class UserRepository {
     yield await getPersonProfileByUserId(userId: userId);
   }
 
-  /// Get the cluster by cluster id retrieved from [Household].
-  /// Returns a [Cluster] object
-  // Future<Cluster?> getClusterById({
-  //   required String clusterId,
-  // }) async {
-  //   final data = await _clusterService.getClusterById(clusterId);
-
-  //   if (data != null) {
-  //     return Cluster(
-  //       id: data["id"],
-  //       name: data["name"],
-  //       meetingPlace: data["meeting_place"],
-  //     );
-  //   }
-  //   return null;
-  // }
-
-  Future<Captains?> getCaptainsByClusterId({
-    required String clusterId,
-  }) async {
-    final data = await _clusterService.getCaptainsByClusterId(clusterId);
-
-    if (data != null) {
-      List<Person> captains = [];
-
-      for (var record in data) {
-        Map<String, dynamic> captainData = record["captain"]["user_profile"]["person"];
-
-        captains.add(Person(
-          id: captainData["id"],
-          givenName: captainData["given_name"],
-          familyName: captainData["family_name"],
-        ));
-      }
-
-      return Captains(people: captains);
-    }
-    return null;
+  Future<Captains?> getCaptainsByClusterId(String clusterId) async {
+    return _clusters.getCaptainsByClusterId(clusterId);
   }
 
   /// Create a new user with the given user info.

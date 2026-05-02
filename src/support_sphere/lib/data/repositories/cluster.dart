@@ -70,8 +70,19 @@ class ClusterRepository {
     return _clusterService.deleteHousehold(householdId);
   }
 
-  Future<void> upsertCluster(Map<String, dynamic> cluster) async {
-    return _clusterService.upsertCluster(cluster);
+  /// upsetCluster - takes a name to value mapping to apply values to a cluster
+  /// assumes 'id' is set.
+  /// 'captains' is a special case, that must be managed a different way.
+  Future<void> upsertCluster(Map<String, dynamic> clusterUpdate) async {
+    final clusterId = clusterUpdate['id'];
+    // checking captains
+    if (clusterUpdate.containsKey('captains')) {
+      final captains = clusterUpdate.remove('captains');
+      updateCaptains(clusterId, captains);
+    }
+    // TODO any geometry will also need special case
+
+    _clusterService.upsertCluster(clusterUpdate);
   }
 
   Future<void> deleteCluster(String clusterId) async {
@@ -103,33 +114,49 @@ class ClusterRepository {
     //   .eq('cluster_id', clusterId);
   }
 
-  Future<void> updateCaptains(Cluster cluster, List<Person> captains) async {
-    // FIXME - should be single transaction
-    // remove any existing captains
-    // supabase.from('user_captain_clusters').delete().eq('cluster_id', clusterId);
-    // NO NO NO - messes up existing IDs.
-
+  Future<void> updateCaptains(String clusterId, List<Person> captains) async {
     // index by id, for easy find
     final newCaptains = { for (var c in captains) c.id: c };
 
     // get existing captains, and iterate
-    final currentCaptains = await _clusterService.getCaptainsByClusterId(cluster.id);
+    final currentCaptains = await getCaptainsByClusterId(clusterId);
     if (currentCaptains != null) {
-      for (var record in currentCaptains) {
-        Map<String, dynamic> captainData = record["captain"]["user_profile"]["person"];
+      for (var captain in currentCaptains.people) {
         // - if in new list - remove from new list, continue
-        if (newCaptains.containsKey(captainData["id"])) {
-          newCaptains.remove(captainData["id"]);
+        if (newCaptains.containsKey(captain?.id)) {
+          newCaptains.remove(captain?.id);
+          // newCaptains contains only new captains, not existing
         }
         // - if not - remove existing captain
         else {
-          removeClusterCaptain(cluster.id, captainData["id"]); // PROFILE ID user record?
+          removeClusterCaptain(clusterId, captain);
         }
       }
     }
 
     for (var captain in newCaptains.values) {
-      addClusterCaptain(cluster.id, captain);
+      addClusterCaptain(clusterId, captain);
     }
+  }
+
+  Future<Captains?> getCaptainsByClusterId(String clusterId) async {
+    final data = await _clusterService.getCaptainsByClusterId(clusterId);
+
+    if (data != null) {
+      List<Person> captains = [];
+
+      for (var record in data) {
+        Map<String, dynamic> captainData = record["captain"]["user_profile"]["person"];
+
+        captains.add(Person(
+          id: captainData["id"],
+          givenName: captainData["given_name"],
+          familyName: captainData["family_name"],
+        ));
+      }
+
+      return Captains(people: captains);
+    }
+    return null;
   }
 }

@@ -48,6 +48,7 @@ class EditClusterFormData extends Equatable {
   }
 
   Map<String,dynamic> toUpsert(Cluster? old) {
+    log.fine("UPSERT --- $old");
     // copy over the values from the form
     // TODO: Could check against old for actual changes
     // NOTE: attr names are based on DB column names, and need to be bound to the instance data.
@@ -169,10 +170,8 @@ class ClusterEditFormState extends State<ClusterEditForm> {
                       _formKey.currentState!.save();
                       if (_formKey.currentState!.validate()) {
                         log.finer("Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
-
                         final clusterUpsert = _formData.toUpsert(widget.cluster);
                         log.finer("Updating cluster: $clusterUpsert");
-                        // FIXME: For DB, this might need to be an async function
                         widget.updateCluster(clusterUpsert);
                         Navigator.pop(context);
                       }

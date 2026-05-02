@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/environment.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
-import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/user.dart' show UserRepository;
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
@@ -36,25 +35,6 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
 
   final UserRepository userRepo = UserRepository();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadInitialData();
-  // }
-
-  // Future<void> _loadInitialData() async {
-  //   final myCluster = await userRepo.getMyCluster();
-  //   if (myCluster != null) {
-  //     myClusterId = myCluster.id;
-  //   }
-  //   else {
-  //     log.fine("Unable to load myCluster.");
-  //   }
-  //   setState(() {
-  //     isReady = true;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     void switchPage() {
@@ -62,7 +42,6 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
         _showingAddHousehold = !_showingAddHousehold;
       });
     }
-    // FIXME: Wait until myClusterId is initialized?
     return BlocProvider(
       create: (context) => ManageClusterCubit(myClusterId),
       child: (_showingAddHousehold)
@@ -138,11 +117,6 @@ class ManageClusterView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       builder: (context, state) {
-        List<Person> members = [];
-        if (state.cluster != null) {
-          //final cubit = context.read<ManageClusterCubit>();
-          //members = cubit.getClusterMembers(state.cluster!.id);
-        }
         return Column(
           children: [
             Padding(
@@ -154,24 +128,17 @@ class ManageClusterView extends StatelessWidget {
             state.cluster != null ?
               ClusterViewCard(
                 cluster: state.cluster!,
-                members: members,
+                members: state.members,
                 updateCluster: (clusterData) {
                   final cubit = context.read<ManageClusterCubit>();
                   cubit.upsertCluster(clusterData);
                 },
-                // FIXME move to "captains" field in clusterData.
-                // updateCaptains: (captains) {
-                //   // update the cluster
-                //   if (state.cluster != null) {
-                //     final cubit = context.read<ManageClusterCubit>();
-                //     cubit.updateCaptains(state.cluster!, captains);
-                //   }
-                //},
               ) : Text(""),// EMPTY VIEW???
             _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed),
           ],
         );
-      });
+      }
+    );
   }
 }
 

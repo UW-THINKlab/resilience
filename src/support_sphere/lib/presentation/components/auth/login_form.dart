@@ -117,7 +117,11 @@ class _PasswordInput extends StatelessWidget {
             value,
             context,
           ),
-
+          onFieldSubmitted: (value) {
+            if (context.read<LoginCubit>().isLoginButtonEnabled()) {
+              context.read<LoginCubit>().logInWithCredentials();
+            }
+          },
           decoration: InputDecoration(
             labelText: LoginStrings.password,
             helperText: '',

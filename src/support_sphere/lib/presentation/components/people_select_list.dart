@@ -95,6 +95,8 @@ class PersonSelectListState extends State<PersonSelectList> {
   @override
   Widget build(BuildContext context) {
     final items = widget.people.map((person) => MultiSelectItem<Person>(person, person.name())).toList();
+    // TODO cluster captains should already be selected and sorted to the top.
+    // selecting a new captain puts it in the top part of the list
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.all(20),
@@ -130,6 +132,50 @@ class PersonSelectListState extends State<PersonSelectList> {
           SizedBox(height: 40),
         ]
       )
+    );
+  }
+}
+
+class PersonSelectedField extends StatefulWidget {
+  const PersonSelectedField({super.key, required this.people, required this.onConfirm});
+  // TODO: Need a way to pre-select!
+  final List<Person> people;
+  final Function(List<Person>) onConfirm;
+
+  @override
+  PersonSelectFieldState createState() => PersonSelectFieldState();
+}
+
+class PersonSelectFieldState extends State<PersonSelectedField> {
+  @override
+  Widget build(BuildContext context) {
+    final items = widget.people.map((person) => MultiSelectItem<Person>(person, person.name())).toList();
+    // TODO cluster captains should already be selected and sorted to the top.
+    // selecting a new captain puts it in the top part of the list
+    return MultiSelectDialogField(
+      items: items,
+      //title: Text("Cluster Members"), // FIXME text - PASS IN? "title"
+      //selectedColor: Colors.blue,
+      // decoration: BoxDecoration(
+      //   color: Colors.blue.shade100,
+      //   borderRadius: BorderRadius.all(Radius.circular(40)),
+      //   border: Border.all(
+      //     color: Colors.blue,
+      //     width: 2,
+      //   ),
+      // ),
+      // buttonIcon: Icon(
+      //   Icons.person_3_rounded,
+      //   color: Colors.blue,
+      // ),
+      //buttonText: Text("Cluster Captains", // FIXME text - PASS IN "buttonText"
+        //style: TextStyle(
+        //  color: Colors.blue.shade800,
+        //  fontSize: 16,
+      //),
+      onConfirm: (results) {
+        widget.onConfirm(results);
+      },
     );
   }
 }

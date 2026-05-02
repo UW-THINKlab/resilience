@@ -124,22 +124,9 @@ class ClusterService {
     await supabase.from('households').delete().eq('id', householdId);
   }
 
+  /// upsertCluster - takes a name to value mapping to apply values to a cluster
+  /// assumes 'id' is set.
   Future<void> upsertCluster(Map<String, dynamic> clusterUpdate) async {
-    // if (cluster.captains != null && cluster.captains!.people.isNotEmpty) {
-    //   // FIXME: How do captains get removed?
-    //   for (final user in cluster.captains!.people) {
-    //     addClusterCaptain(cluster.id, user);
-    //   }
-    // }
-    //final jsonMap = cluster.toJson();
-    // fix geometry <--- BROKE geometry
-    //if (jsonMap.containsKey('geom')) {
-    //  final geoStr = regionGisStr(jsonMap['geom']);
-    //  log.fine("@@@@ $geoStr");
-    //  jsonMap['geom'] = geoStr;
-    //}
-    //jsonMap.remove('captains');  // check if contains?
-    // FIXME - Handle 'captains' being updated!
     log.finer("Updating cluster: $clusterUpdate");
     await supabase.from('clusters').upsert(clusterUpdate);
   }
