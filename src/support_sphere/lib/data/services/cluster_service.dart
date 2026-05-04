@@ -3,7 +3,6 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart' show Household;
-import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:uuid/v4.dart' show UuidV4;
@@ -125,28 +124,9 @@ class ClusterService {
     await supabase.from('households').delete().eq('id', householdId);
   }
 
-  Future<void> addClusterCaptain(String clusterId, Person? person) async {
-    log.fine("Implement add captain to cluster!");
-    // check if they're already a captain: role
-    // add the new captain role in user_role, get id
-    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
-  }
-
+  /// upsertCluster - takes a name to value mapping to apply values to a cluster
+  /// assumes 'id' is set.
   Future<void> upsertCluster(Map<String, dynamic> clusterUpdate) async {
-    // if (cluster.captains != null && cluster.captains!.people.isNotEmpty) {
-    //   // FIXME: How do captains get removed?
-    //   for (final user in cluster.captains!.people) {
-    //     addClusterCaptain(cluster.id, user);
-    //   }
-    // }
-    //final jsonMap = cluster.toJson();
-    // fix geometry <--- BROKE geometry
-    //if (jsonMap.containsKey('geom')) {
-    //  final geoStr = regionGisStr(jsonMap['geom']);
-    //  log.fine("@@@@ $geoStr");
-    //  jsonMap['geom'] = geoStr;
-    //}
-    //jsonMap.remove('captains');  // check if contains?
     log.finer("Updating cluster: $clusterUpdate");
     await supabase.from('clusters').upsert(clusterUpdate);
   }

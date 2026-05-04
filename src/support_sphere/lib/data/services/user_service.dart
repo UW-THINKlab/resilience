@@ -1,15 +1,19 @@
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
+final log = Logger('UserService');
+
 class UserService {
-  /// Retrieves the household members by household id.
+  /// Retrieves every person in the system
   Future<PostgrestList?> getAllPeople() async {
     return await supabase.from('people').select('*');
   }
 
   /// Retrieves the person household by person id.
   Future<PostgrestMap?> getPersonHouseholdByPersonId(String personId) async {
+    log.fine("getting household for person id=$personId");
     return await supabase.from('people_groups').select('''
       people(
         id
@@ -28,6 +32,7 @@ class UserService {
 
   /// Retrieves the household members by household id.
   Future<PostgrestList?> getHouseholdMembersByHouseholdId(String householdId) async {
+    log.fine("getting household members for household id=$householdId");
     return await supabase.from('people_groups').select('''
       people(
         id,
@@ -41,16 +46,12 @@ class UserService {
     ''').eq('household_id', householdId);
   }
 
-  Future<PostgrestList?> getPeopleByCluster(String clusterId) async {
+
+  Future<PostgrestList> getClusterMembers(String clusterId) async {
     return await supabase.from('people_groups').select('''
-      people(
-        id,
-        user_profile_id,
-        given_name,
-        family_name,
-        nickname,
-        is_safe,
-        needs_help
+      people(id, user_profile_id, given_name, family_name, nickname, is_safe, needs_help),
+      households (
+        cluster_id
       )
     ''').eq('households.cluster_id', clusterId);
   }
@@ -59,6 +60,8 @@ class UserService {
   /// Returns a [PostgrestMap] object if the user profile and person exist.
   /// Returns null if the user profile and person do not exist.
   Future<PostgrestMap?> getProfileAndPersonByUserId(String userId) async {
+    log.finer("getting profile for user id=$userId");
+
     /// This query will perform a join on the user_profiles and people tables
     return await supabase.from('user_profiles').select('''
       id,

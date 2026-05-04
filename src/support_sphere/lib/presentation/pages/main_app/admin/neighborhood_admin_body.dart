@@ -252,7 +252,7 @@ class _NeighborhoodViewSection extends StatelessWidget {
                         updateCluster: (clusterData) {
                           final cubit = context.read<ManageNeighborhoodCubit>();
                           cubit.upsertCluster(clusterData);
-                        }
+                        },
                       );
                     },
                   )

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/environment.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
+import 'package:support_sphere/data/repositories/user.dart' show UserRepository;
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
@@ -29,6 +30,10 @@ class ClusterAdminBodyController extends StatefulWidget {
 
 class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController> {
   bool _showingAddHousehold = false;
+  String myClusterId = "";
+  bool isReady = false;
+
+  final UserRepository userRepo = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +42,8 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
         _showingAddHousehold = !_showingAddHousehold;
       });
     }
-
     return BlocProvider(
-      create: (context) => ManageClusterCubit(),
+      create: (context) => ManageClusterCubit(myClusterId),
       child: (_showingAddHousehold)
           ? AddHouseholdView(onPressed: switchPage)
           : ManageClusterView(addHouseholdOnPressed: switchPage),
@@ -124,15 +128,17 @@ class ManageClusterView extends StatelessWidget {
             state.cluster != null ?
               ClusterViewCard(
                 cluster: state.cluster!,
+                members: state.members,
                 updateCluster: (clusterData) {
                   final cubit = context.read<ManageClusterCubit>();
                   cubit.upsertCluster(clusterData);
-                }
+                },
               ) : Text(""),// EMPTY VIEW???
             _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed),
           ],
         );
-      });
+      }
+    );
   }
 }
 
@@ -212,25 +218,18 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   }
 
   List<Household> applySearch(List<Household> households) {
-    log.fine("ONE");
     switch (_householdFilter) {
       case ClusterAdminStrings.clusterFilterParticipate:
-        log.fine("TWO");
-
         return households.where((item) {
           // FIXME: Add "participation" metadata
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
       case ClusterAdminStrings.clusterFilterResources:
-        log.fine("THREE");
-
         return households.where((item) {
           // FIXME: Add resources metadata
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
       default:
-        log.fine("DEFAULT");
-
         return households.where((item) {
           return matchHousehold(item);
         }).toList();

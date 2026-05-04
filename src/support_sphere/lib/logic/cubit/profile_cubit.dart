@@ -74,7 +74,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       if (cluster != null) {
         /// Get the captains of the cluster
-        final Captains? captains = await _userRepository.getCaptainsByClusterId(clusterId: cluster.id);
+        final Captains? captains = await _userRepository.getCaptainsByClusterId(cluster.id);
 
         if (captains != null) {
           cluster = cluster.copyWith(captains: captains);
