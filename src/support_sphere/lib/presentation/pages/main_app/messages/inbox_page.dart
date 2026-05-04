@@ -6,10 +6,13 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
-
 import 'package:support_sphere/data/models/chat_group.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/create_chat_group_sheet.dart';
+import 'package:support_sphere/data/repositories/chat_repository.dart';
 
-const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+///TODO- make sure preloader is the same across all pages, potentially move to a shared widget?
+const preloader =
+    Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
 final log = Logger('Message Groups Page');
 
@@ -19,7 +22,8 @@ class InboxPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => InboxCubit(context.read<AuthenticationBloc>().state.user),
+      create: (context) =>
+          InboxCubit(context.read<AuthenticationBloc>().state.user),
       child: const InboxView(),
     );
   }
@@ -42,7 +46,8 @@ class InboxView extends StatelessWidget {
       ),
       body: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
-          if (state.isLoading) return const Center(child: CircularProgressIndicator());
+          if (state.isLoading)
+            return const Center(child: CircularProgressIndicator());
 
           if (state.error != null) {
             return Center(
@@ -106,7 +111,7 @@ class InboxView extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToCompose(context),
+        onPressed: () => _openCreateGroupSheet(context),
         child: const Icon(Icons.add),
       ),
     );
@@ -122,7 +127,7 @@ class InboxView extends StatelessWidget {
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) {
-    print('🧭 Navigating to: ${group.id}');  // ✅ Verify source
+    print('🧭 Navigating to: ${group.id}'); // ✅ Verify source
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -133,7 +138,34 @@ class InboxView extends StatelessWidget {
     );
   }
 
-  void _navigateToCompose(BuildContext context) {
-    Navigator.pushNamed(context, '/compose');  // Your existing compose page
+  Future<void> _openCreateGroupSheet(BuildContext context) async {
+    // final authState = context.read<AuthenticationBloc>().state;
+    // final currentUser = authState.user;
+
+    final myProfileId = context.read<AuthenticationBloc>().state.user.uuid;
+    final chatRepo = ChatRepository();
+
+    final groupId = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => CreateChatGroupSheet(
+        repo: chatRepo,
+        myProfileId: myProfileId,
+      ),
+    );
+
+    if (groupId != null && context.mounted) {
+      await context.read<InboxCubit>().fetchGroups();
+
+      if (!context.mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MessagesPage(groupId: groupId),
+        ),
+      );
+    }
   }
 }

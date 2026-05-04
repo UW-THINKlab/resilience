@@ -11,25 +11,21 @@ import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:timeago/timeago.dart';
 
-const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+const preloader =
+    Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
 final log = Logger('MessagesPage');
 
 // based on github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
 
-/// Full page for group messaging.
-/// Cluster captains get special display,
-/// and ability to send "urgent" messages
+///TODO- display chat group name at the top of the messages pane
+///TODO- add ability to send "urgent" messages (red highlight, icon) for cluster captains
+///TODO- need to make
+
 class MessagesPage extends StatefulWidget {
   final String groupId;
 
   const MessagesPage({super.key, required this.groupId});
-
-  // static Route<void> route() {
-  //   return MaterialPageRoute(
-  //     builder: (context) => const MessagesPage(groupId: groupId,),
-  //   );
-  // }
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -42,7 +38,7 @@ class MessagesState extends State<MessagesPage> {
 
   late final Stream<List<Message>> messagesStream;
   late final Stream<Person?> profileStream;
-  final Map<String,Person> profileCache = {};
+  final Map<String, Person> profileCache = {};
   late final String myUserId;
   // late final Person? myUser;
 
@@ -53,7 +49,7 @@ class MessagesState extends State<MessagesPage> {
 
   @override
   void initState() {
-    print('🚀 initState groupId: "${widget.groupId}"');  // ✅ Print here
+    print('🚀 initState groupId: "${widget.groupId}"'); // ✅ Print here
     super.initState();
 
     myUserId = supabase.auth.currentUser!.id;
@@ -67,7 +63,7 @@ class MessagesState extends State<MessagesPage> {
   }
 
   Future<void> _loadInitialData() async {
-    print('✅ Group ID: $widget.groupId');
+    print('✅ Group ID: ${widget.groupId}');
     print('✅ My User: $myUserId');
     // setState(() => _isLoading = true);
     setState(() => _isLoading = false);
@@ -75,7 +71,6 @@ class MessagesState extends State<MessagesPage> {
     final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
     log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
     log.fine("MY GROUP ID: $widget.groupId");
-
 
     final allUsers = await userRepo.getAllMembers();
     profileCache.addAll(allUsers);
@@ -98,7 +93,8 @@ class MessagesState extends State<MessagesPage> {
       appBar: AppBar(title: Text(title)),
       body: StreamBuilder<List<Message>>(
         //stream: messagesStream,
-        stream: messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
+        stream:
+            messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -139,7 +135,6 @@ class MessagesState extends State<MessagesPage> {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
     }
-
   }
 } // -- end of state
 
@@ -191,7 +186,7 @@ class _MessageBarState extends State<MessageBar> {
                   onFieldSubmitted: (value) {
                     //sendFunc(value);
                     setState(() {
-                        // FIXME
+                      // FIXME
                     });
                   },
                 ),
@@ -223,7 +218,8 @@ class _MessageBarState extends State<MessageBar> {
       return;
     }
 
-    print('DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
+    print(
+        'DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
 
     _textController.clear();
 
@@ -255,18 +251,18 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String metaStr = message.fromId != myUserId ?
-      "${profile?.givenName} ${profile?.familyName} ${format(message.sentOn)}" :
-      format(message.sentOn);
+    String metaStr = message.fromId != myUserId
+        ? "${profile?.givenName} ${profile?.familyName} ${format(message.sentOn)}"
+        : format(message.sentOn);
 
     List<Widget> chatContents = [
       if (message.fromId != myUserId)
         CircleAvatar(
-          child: Center(child: Icon(
-            URGENCY_ICONS[message.urgency],
-            color:  URGENCY_COLOR[message.urgency],
-          ))
-        ),
+            child: Center(
+                child: Icon(
+          URGENCY_ICONS[message.urgency],
+          color: URGENCY_COLOR[message.urgency],
+        ))),
       const SizedBox(width: 12),
       Expanded(
         child: Container(
@@ -292,16 +288,15 @@ class _MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
-
         children: chatContents,
       ),
     );
   }
 
   static const URGENCY_COLOR = {
-    MessageUrgency.emergency:  Colors.red,
+    MessageUrgency.emergency: Colors.red,
     MessageUrgency.urgent: Colors.purpleAccent,
-    MessageUrgency.important:Colors.orange,
+    MessageUrgency.important: Colors.orange,
     MessageUrgency.normal: Colors.blue,
     "default": Colors.grey,
   };
@@ -312,5 +307,4 @@ class _MessageBubble extends StatelessWidget {
     MessageUrgency.important: Icons.label_important,
     MessageUrgency.normal: Icons.mail_rounded,
   };
-
 }

@@ -17,11 +17,11 @@ class Person extends Equatable {
     this.needsHelp = true,
   });
 
-  /// The current user's id.
+  /// The current user's person id.
   /// This is a unique identifier for the user as reflected in the database.
   final String id;
 
-  /// The current user's profile.
+  /// The current user's login profile.
   /// This is optional and may be null.
   final Profile? profile;
 
@@ -43,7 +43,9 @@ class Person extends Equatable {
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
       id: json['id'],
-      profile: json['user_profile_id'] != null ? Profile(id: json['user_profile_id']) : null,
+      profile: json['user_profile_id'] != null
+          ? Profile(id: json['user_profile_id'])
+          : null,
       givenName: json['given_name'],
       familyName: json['family_name'],
       nickname: json['nickname'],
@@ -65,10 +67,11 @@ class Person extends Equatable {
 
   /// Format the user's full name
   String name() {
-    return (nickname != null && nickname!.isNotEmpty) ? nickname! : "$givenName $familyName";
+    return (nickname != null && nickname!.isNotEmpty)
+        ? nickname!
+        : "$givenName $familyName";
   }
 }
-
 
 /// A class representing a user's profile.
 /// A profile is an entity that describes a user's details such as their [id]
@@ -76,7 +79,6 @@ class Person extends Equatable {
 /// A profile is associated with a person that describes the user's real life details.
 /// The profile is use for user app purposes.
 class Profile extends Equatable {
-
   const Profile({
     required this.id,
   });
