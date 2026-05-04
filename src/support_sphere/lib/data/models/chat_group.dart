@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class ChatGroup extends Equatable {
   final String id;
   final String name;
+  final String? description;
   // final String? lastMessage;
   // final DateTime? lastMessageTime;
   // final int unreadCount;
@@ -11,6 +12,7 @@ class ChatGroup extends Equatable {
   const ChatGroup({
     required this.id,
     required this.name,
+    this.description,
     // this.lastMessage,
     // this.lastMessageTime,
     // this.unreadCount = 0,
@@ -19,8 +21,9 @@ class ChatGroup extends Equatable {
 
   factory ChatGroup.fromJson(Map<String, dynamic> json) {
     return ChatGroup(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
       //TODO implement last message, time, unread count, group members
       // lastMessage: json['last_message'],
       // lastMessageTime: json['last_message_time'] != null
