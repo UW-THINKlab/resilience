@@ -86,3 +86,48 @@ This command uses [AWS's Session Manager](https://docs.aws.amazon.com/systems-ma
 ```
 pixi run cloud-server-access
 ```
+
+## Backup
+
+Currently, backups run on system:
+```
+pixi run cloud-server-access
+sudo su
+cd /opt/resilience/
+git pull
+
+pixi run -e backend db-backup
+```
+
+These commands:
+1. Access the cloud server shell
+2. Become root. NOTE: This is needed because the git repo in /opt/resilience is owned by root
+3. Change dir to the resilience project, where the pixi.toml script is
+4. Pull from the git origin to make sure everything is up to date
+5. Run the backup script, which will create a backup file in the same directory: `backup-Laurelhurst-2026-04-08-1801.sql.gz`
+
+## Restore
+
+Given a backup file, restore a full working system:
+
+```
+pixi run cloud-server-access
+sudo su
+cd /opt/resilience/
+git pull
+
+pixi run -e backend db-restore backup-Laurelhurst-2026-04-08-1801.sql.gz
+```
+
+To restore to a fresh system, after reinstalling the kupernetes cluster:
+```
+pixi run cloud-server-access
+sudo su
+cd /opt/resilience/
+git pull
+
+pixi run -e backend setup-infra-cloud
+pixi run -e backend db-restore backup-Laurelhurst-2026-04-08-1801.sql.gz
+```
+
+Deploying a full cloud system takes a lot of time and changes the DNS address, so there are a lot of situations to rebuild the system without a full redeploy.

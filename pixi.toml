@@ -333,7 +333,7 @@ depends-on = [
 ]
 
 [tasks.db-backup]
-cmd = "scripts/backup-kube.sh"
+cmd = "scripts/backup.sh"
 
 [tasks.db-restore]
-cmd = "scripts/restore-kube.sh"
+cmd = "scripts/restore.sh"

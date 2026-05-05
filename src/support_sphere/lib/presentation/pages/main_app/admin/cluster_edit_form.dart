@@ -1,10 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/clusters.dart';
-import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart' show ManageNeighborhoodCubit;
 import 'package:support_sphere/presentation/components/auth/borders.dart';
-import 'package:uuid/v4.dart';
 
 // FORMZ: derive from col/attr list, props from entity...
 class EditClusterFormData extends Equatable {
@@ -51,6 +48,7 @@ class EditClusterFormData extends Equatable {
   }
 
   Map<String,dynamic> toUpsert(Cluster? old) {
+    log.fine("UPSERT --- $old");
     // copy over the values from the form
     // TODO: Could check against old for actual changes
     // NOTE: attr names are based on DB column names, and need to be bound to the instance data.
@@ -73,10 +71,10 @@ class EditClusterFormData extends Equatable {
 
 
 class ClusterEditForm extends StatefulWidget {
-  const ClusterEditForm({super.key, this.cluster, this.cubit});
+  const ClusterEditForm({super.key, this.cluster, required void Function(Map<String,dynamic>) this.updateCluster});
 
   final Cluster? cluster;
-  final ManageNeighborhoodCubit? cubit;
+  final Function(Map<String,dynamic>) updateCluster;
 
   @override
   State<ClusterEditForm> createState() => ClusterEditFormState();
@@ -172,11 +170,9 @@ class ClusterEditFormState extends State<ClusterEditForm> {
                       _formKey.currentState!.save();
                       if (_formKey.currentState!.validate()) {
                         log.finer("Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
-
                         final clusterUpsert = _formData.toUpsert(widget.cluster);
                         log.finer("Updating cluster: $clusterUpsert");
-
-                        widget.cubit!.upsertCluster(clusterUpsert);
+                        widget.updateCluster(clusterUpsert);
                         Navigator.pop(context);
                       }
                     },
