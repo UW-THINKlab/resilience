@@ -90,28 +90,13 @@ class ClusterRepository {
   }
 
   Future<void> addClusterCaptain(String clusterId, Person? person) async {
-    log.fine("IMPLEMENT adding ${person?.name()} as captain for cluster id: $clusterId");
-
-    // FIXME
-    // check if they're already a captain: role
-    // add the new captain role in user_role, get id
-    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
+    log.fine("adding ${person?.name()} as captain for cluster id: $clusterId");
+    await _clusterService.addClusterCaptain(clusterId, person!.profile!.id);
   }
 
   Future<void> removeClusterCaptain(String clusterId, Person? person) async {
-    log.fine("IMPLEMENT removing ${person?.name()} as captain of cluster id: $clusterId");
-
-    // check if they're already a captain: role
-    // add the new captain role in user_role, get id
-    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
-    // FIXME -
-    // delete user_role, or just user_captain_clusters row?
-    // BOTH!!!!
-    // HOW????
-    // supabase.from('user_captain_clusters')
-    //   .delete()
-    //   .eq('user_role_id', 'id:user_role(user_profile_id=${person?.profile?.id})') // FIXME SYNTAX?
-    //   .eq('cluster_id', clusterId);
+    log.fine("removing ${person?.name()} as captain of cluster id: $clusterId");
+    await _clusterService.removeClusterCaptain(clusterId, person!.profile!.id);
   }
 
   Future<void> updateCaptains(String clusterId, List<Person> captains) async {

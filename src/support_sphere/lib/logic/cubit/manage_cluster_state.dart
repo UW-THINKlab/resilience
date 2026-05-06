@@ -98,17 +98,6 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     householdsChanged(households);
   }
 
-  // void fetchMembers() async {
-  //   log.fine("clusterId: ${state.clusterId}, cluster: ${state.cluster}, members: ${state.members}");
-  //   if (state.clusterId == "") {
-  //     log.warning("Cluster state not yet initialized");
-  //   }
-  //   else {
-  //     List<Person> members = await _userRepo.getClusterMembers(state.clusterId);
-  //     membersChanged(members);
-  //   }
-  // }
-
   void addHousehold(Household household) async {
     await _clusterRepo.addHousehold(state.cluster!.id, household);
     fetchHouseholds();

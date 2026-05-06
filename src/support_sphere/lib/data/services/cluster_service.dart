@@ -134,4 +134,38 @@ class ClusterService {
   Future<void> deleteCluster(String clusterId) async {
     await supabase.from('clusters').delete().eq('id', clusterId);
   }
+
+  Future<void> addClusterCaptain(String clusterId, String userProfileId) async {
+    // add user_role
+    final newRoleId = UuidV4().generate();
+    await supabase.from('user_roles').insert({
+      'id': newRoleId,
+      'user_profile_id': userProfileId,
+      'role': AppRoles.subcommunityAgent,
+    });
+
+    // use user_role to create cluster captain
+    await supabase.from('user_captain_clusters').insert({
+      'id': UuidV4().generate(),
+      'cluster_id':  clusterId,
+      'user_role_id': newRoleId,
+    });
+  }
+
+  Future<void> removeClusterCaptain(String clusterId, String userProfileId) async {
+    // find role
+    final role = await supabase.from('user_roles').select().eq('user_profile_id', userProfileId).maybeSingle();
+    if (role != null) {
+      final roleId = role['id'];
+
+      // delete cluster captain
+      await supabase.from('user_captain_clusters').delete().eq('user_role_id', roleId).eq('cluster_id', clusterId);
+
+      // delete role
+      await supabase.from('user_roles').delete().eq('id', roleId);
+    }
+    else {
+      log.warning("Can't find user_roles for user_profile_id=$userProfileId");
+    }
+  }
 }
