@@ -26,7 +26,7 @@ class MessagesPage extends StatefulWidget {
   final String groupId;
   final String groupName;
 
-  const MessagesPage({super.key, required this.groupId, this.groupName = "Messages"});
+  const MessagesPage({super.key, required this.groupId, required this.groupName});
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -43,8 +43,6 @@ class MessagesState extends State<MessagesPage> {
   late final String myUserId;
   // late final Person? myUser;
 
-  // Change this to widget.groupName
-  // String title = widget.groupName;
   bool _isLoading = true;
 
   // int _loadCount = 0;
