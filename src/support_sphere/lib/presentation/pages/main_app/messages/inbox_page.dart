@@ -133,6 +133,7 @@ class InboxView extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => MessagesPage(
           groupId: group.id,
+          groupName: group.name,
         ),
       ),
     );
@@ -145,7 +146,7 @@ class InboxView extends StatelessWidget {
     final myProfileId = context.read<AuthenticationBloc>().state.user.uuid;
     final chatRepo = ChatRepository();
 
-    final groupId = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<(String, String)>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -155,15 +156,17 @@ class InboxView extends StatelessWidget {
       ),
     );
 
-    if (groupId != null && context.mounted) {
+    if (result != null && context.mounted) {
       await context.read<InboxCubit>().fetchGroups();
 
       if (!context.mounted) return;
 
+      final (groupId, groupName) = result;
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => MessagesPage(groupId: groupId),
+          builder: (_) => MessagesPage(groupId: groupId, groupName: groupName),
         ),
       );
     }

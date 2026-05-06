@@ -86,7 +86,7 @@ class _CreateChatGroupSheetState extends State<CreateChatGroupSheet> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pop(groupId);
+      Navigator.of(context).pop((groupId, _nameController.text));
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);

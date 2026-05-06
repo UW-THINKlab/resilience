@@ -24,8 +24,9 @@ final log = Logger('MessagesPage');
 
 class MessagesPage extends StatefulWidget {
   final String groupId;
+  final String groupName;
 
-  const MessagesPage({super.key, required this.groupId});
+  const MessagesPage({super.key, required this.groupId, this.groupName = "Messages"});
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -42,7 +43,8 @@ class MessagesState extends State<MessagesPage> {
   late final String myUserId;
   // late final Person? myUser;
 
-  String title = "Messages";
+  // Change this to widget.groupName
+  // String title = widget.groupName;
   bool _isLoading = true;
 
   // int _loadCount = 0;
@@ -90,7 +92,7 @@ class MessagesState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(widget.groupName)),
       body: StreamBuilder<List<Message>>(
         //stream: messagesStream,
         stream:
