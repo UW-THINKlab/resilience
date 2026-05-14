@@ -96,7 +96,7 @@ class ClusterCardState extends State<ClusterViewCard> {
               children: [
                 Row(
                   children: [
-                    Text('Captains: ${widget.cluster.captains}'),
+                    Text('Captains: ${widget.cluster.captains?.names()}'),
                     PersonSelectedField(
                       people: widget.members,
                       onConfirm: (List<Person> updatedCaptains) {

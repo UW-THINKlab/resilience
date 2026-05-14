@@ -131,8 +131,15 @@ class Captains extends Equatable {
   List<Object?> get props => [people];
 
   factory Captains.fromJson(Map<String, dynamic> json) {
+    log.finer("Building cluster captain list from $json");
     return Captains(
       people: json['people'] != null ? json['people'].map((person) => Person.fromJson(person)).toList() : [],
     );
+  }
+
+  List<String> names() {
+    return people.map((captain) {
+      return captain!.name();
+    }).toList();
   }
 }

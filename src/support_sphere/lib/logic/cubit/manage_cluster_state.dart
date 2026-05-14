@@ -88,6 +88,15 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     if (cluster != null) {
       List<Household> households = await _clusterRepo.getHouseholds(cluster.id);
       List<Person> members = await _userRepo.getClusterMembers(cluster.id);
+
+      // get cluster captains
+      var captains = await _clusterRepo.getCaptainsByClusterId(cluster.id);
+      if (captains != null) {
+        //log.finer("Got captains for cluster ${cluster.id}: $captains");
+        cluster = cluster.copyWith(captains: captains);
+        //log.finer("CLUSTER captains : ${cluster.captains}");
+      }
+
       log.fine("FOUND cluster members: $members");
       allChanged(cluster, households, members);
     }
