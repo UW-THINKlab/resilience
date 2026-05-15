@@ -82,9 +82,10 @@ class PersonTypeFilterState extends State<PersonFilter> {
 // }
 
 class PersonSelectList extends StatefulWidget {
-  const PersonSelectList({super.key, required this.people, required this.onConfirm});
+  const PersonSelectList({super.key, required this.people, required this.onConfirm, required this.initialSelection});
 
   final List<Person> people;
+  final List<Person> initialSelection;
   final Function(List<Person>) onConfirm;
 
   @override
@@ -105,8 +106,11 @@ class PersonSelectListState extends State<PersonSelectList> {
           SizedBox(height: 40),
           MultiSelectDialogField(
             items: items,
+            separateSelectedItems: true,
+            searchable: true,
+            initialValue: widget.initialSelection,
             title: Text("Members"), // FIXME text
-            selectedColor: Colors.blue,
+            //selectedColor: Colors.blue,
             // decoration: BoxDecoration(
             //   color: Colors.blue.shade100,
             //   borderRadius: BorderRadius.all(Radius.circular(40)),
@@ -117,11 +121,11 @@ class PersonSelectListState extends State<PersonSelectList> {
             // ),
             buttonIcon: Icon(
               Icons.person_3_rounded,
-              color: Colors.blue,
+              //color: Colors.blue,
             ),
             buttonText: Text("Selected", // FIXME text
               style: TextStyle(
-                color: Colors.blue.shade800,
+                //color: Colors.blue.shade800,
                 fontSize: 16,
               ),
             ),
@@ -137,10 +141,10 @@ class PersonSelectListState extends State<PersonSelectList> {
 }
 
 class PersonSelectedField extends StatefulWidget {
-  const PersonSelectedField({super.key, required this.people, required this.onConfirm});
-  // TODO: Need a way to pre-select!
+  const PersonSelectedField({super.key, required this.people, required this.initialSelection, required this.onConfirm});
   final List<Person> people;
-  final Function(List<Person>) onConfirm;
+  final List<Person?> initialSelection;
+  final Function(List<Person?>) onConfirm;
 
   @override
   PersonSelectFieldState createState() => PersonSelectFieldState();
@@ -150,11 +154,15 @@ class PersonSelectFieldState extends State<PersonSelectedField> {
   @override
   Widget build(BuildContext context) {
     final items = widget.people.map((person) => MultiSelectItem<Person>(person, person.name())).toList();
+    print("Building select field with: ${widget.initialSelection}");
     // TODO cluster captains should already be selected and sorted to the top.
     // selecting a new captain puts it in the top part of the list
     return MultiSelectDialogField(
       items: items,
-      //title: Text("Cluster Members"), // FIXME text - PASS IN? "title"
+      separateSelectedItems: true,
+      searchable: true,
+      initialValue: widget.initialSelection,
+      title: Text("Cluster Members"), // FIXME text - PASS IN? "title"
       //selectedColor: Colors.blue,
       // decoration: BoxDecoration(
       //   color: Colors.blue.shade100,
@@ -164,15 +172,15 @@ class PersonSelectFieldState extends State<PersonSelectedField> {
       //     width: 2,
       //   ),
       // ),
-      // buttonIcon: Icon(
-      //   Icons.person_3_rounded,
+      buttonIcon: Icon(
+       Icons.person_rounded,
       //   color: Colors.blue,
-      // ),
-      //buttonText: Text("Cluster Captains", // FIXME text - PASS IN "buttonText"
+      ),
+      buttonText: Text("Cluster Captains", // FIXME text - PASS IN "buttonText"
         //style: TextStyle(
         //  color: Colors.blue.shade800,
         //  fontSize: 16,
-      //),
+      ),
       onConfirm: (results) {
         widget.onConfirm(results);
       },

@@ -25,6 +25,7 @@ class ClusterViewCard extends StatefulWidget {
 class ClusterCardState extends State<ClusterViewCard> {
   @override
   Widget build(BuildContext context) {
+    final List<Person?> currentCaptains = widget.cluster.captains != null ? widget.cluster.captains!.people : [];
     return GestureDetector(
       // detect the card has been clicked on, open the
       // details panel
@@ -99,7 +100,8 @@ class ClusterCardState extends State<ClusterViewCard> {
                     Text('Captains: ${widget.cluster.captains?.names()}'),
                     PersonSelectedField(
                       people: widget.members,
-                      onConfirm: (List<Person> updatedCaptains) {
+                      initialSelection: currentCaptains,
+                      onConfirm: (List<Person?> updatedCaptains) {
                         widget.updateCluster({
                           'id': widget.cluster.id,
                           'captains': updatedCaptains

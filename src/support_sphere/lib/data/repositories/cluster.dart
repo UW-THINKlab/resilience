@@ -78,7 +78,7 @@ class ClusterRepository {
     // checking captains
     if (clusterUpdate.containsKey('captains')) {
       final captains = clusterUpdate.remove('captains');
-      updateCaptains(clusterId, captains);
+      updateCaptains(clusterId, List.from(captains));
     }
     // TODO any geometry will also need special case
 
