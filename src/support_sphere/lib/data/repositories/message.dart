@@ -24,6 +24,28 @@ class MessagesRepository {
       .toList());
   }
 
+  Future<int> unreadCount(String groupId, String time) async {
+    final List<dynamic> data = await supabase
+      .from('messages')
+      .select('id') 
+      .eq('to_id', groupId)
+      .gte('sent_on', time);
+    return data.length;
+  }
+
+  Future<String> lastUnreadMessage(String userId, String groupId, String time) async{
+    final response = await supabase
+      .from('messages')
+      .select()
+      .eq('to_id', groupId)
+      .neq('from_id', userId) 
+      .gte('sent_on', time)
+      .order('sent_on', ascending: false)
+      .limit(1)
+      .maybeSingle();
+    return response?['content'] ?? ' ';
+  }
+
   Future<void> sendMessage(String userId, String toId, String text) async {
     log.fine("Sending message from:$userId, to:$toId: $text");
 
