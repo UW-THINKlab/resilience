@@ -9,16 +9,21 @@ import 'package:support_sphere/presentation/pages/main_app/messages/messages_pag
 import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/create_chat_group_sheet.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/data/repositories/message.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ///TODO- make sure preloader is the same across all pages, potentially move to a shared widget?
 const preloader =
     Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
 final log = Logger('Message Groups Page');
+final MessagesRepository messageRepo = MessagesRepository();
+
+
 
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
-
+  // Source - https://stackoverflow.com/a/51901311
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -67,6 +72,7 @@ class InboxView extends StatelessWidget {
           if (state.groups.isEmpty) {
             return const Center(child: Text('No chat groups'));
           }
+  
 
           return ListView.builder(
             itemCount: state.groups.length,
@@ -82,27 +88,27 @@ class InboxView extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // if (group.lastMessage != null)
-                      //   Text(
-                      //     group.lastMessage!,
-                      //     maxLines: 1,
-                      //     overflow: TextOverflow.ellipsis,
-                      //     style: TextStyle(
-                      //       color: group.unreadCount > 0 ? Colors.black : Colors.grey,
-                      //     ),
-                      //   ),
-                      // Text(
-                      //   _formatTime(group.lastMessageTime),
-                      //   style: const TextStyle(fontSize: 12, color: Colors.grey),
-                      // ),
-                    ],
-                  ),
-                  // trailing: group.unreadCount > 0
-                  //     ? Badge(
-                  //   label: Text(group.unreadCount.toString()),
-                  //   child: const Icon(Icons.circle),
-                  // )
-                  //     : null,
+                        if (group.lastMessage != null)
+                          Text(
+                            group.lastMessage!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: group.unreadCount! > 0 ? Colors.black : Colors.grey,
+                            ),
+                          ),
+                        Text(
+                          _formatTime(group.lastMessageTime),
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    trailing: group.unreadCount! > 0
+                        ? Badge(
+                      label: Text(group.unreadCount.toString()),
+                      child: const Icon(Icons.circle),
+                    )
+                        : null,
                   onTap: () => _navigateToChat(context, group),
                 ),
               );
@@ -126,8 +132,10 @@ class InboxView extends StatelessWidget {
     return '${time.day}/${time.month}';
   }
 
-  void _navigateToChat(BuildContext context, ChatGroup group) {
+  void _navigateToChat(BuildContext context, ChatGroup group) async {
     print('🧭 Navigating to: ${group.id}'); // ✅ Verify source
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(group.id, DateTime.now().toString());
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -162,6 +170,8 @@ class InboxView extends StatelessWidget {
       if (!context.mounted) return;
 
       final (groupId, groupName) = result;
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(groupId, DateTime.now().toString());
 
       Navigator.push(
         context,
