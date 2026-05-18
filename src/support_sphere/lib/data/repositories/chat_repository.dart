@@ -2,6 +2,9 @@ import 'dart:developer' as developer;
 import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:support_sphere/data/repositories/message.dart';
+import 'package:support_sphere/data/models/messages.dart';
 
 class ChatRepository {
   Future<List<ChatGroup>> getUserChatGroups(String userId) async {
@@ -9,6 +12,8 @@ class ChatRepository {
       'getUserChatGroups() called for userId=$userId',
       name: 'ChatRepository',
     );
+    final prefs = await SharedPreferences.getInstance();
+    final MessagesRepository messageRepo = MessagesRepository();
     final response = await supabase.from('group_members').select('''
           groups(
             id, 
@@ -29,6 +34,13 @@ class ChatRepository {
       'getUserChatGroups() parsed ${groups.length} groups',
       name: 'ChatRepository',
     );
+    final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    
+    for (ChatGroup group in groups) {
+      group.lastMessageTime = await DateTime.parse(prefs.getString(group.id) ?? epoch.toString());
+      group.unreadCount = await messageRepo.unreadCount(group.id, group.lastMessageTime.toString());
+      group.lastMessage = await messageRepo.lastUnreadMessage(userId, group.id, group.lastMessageTime.toString());
+    }
 
     return groups;
     //TODO implement:

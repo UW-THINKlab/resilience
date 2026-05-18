@@ -183,12 +183,7 @@ class _MessageBarState extends State<MessageBar> {
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
-                  onFieldSubmitted: (value) {
-                    //sendFunc(value);
-                    setState(() {
-                      // FIXME
-                    });
-                  },
+                  onFieldSubmitted: (value) => _submitMessage(context, widget.groupId),
                 ),
               ),
               ElevatedButton(
