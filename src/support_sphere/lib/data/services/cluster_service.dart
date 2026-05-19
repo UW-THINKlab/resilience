@@ -134,4 +134,30 @@ class ClusterService {
   Future<void> deleteCluster(String clusterId) async {
     await supabase.from('clusters').delete().eq('id', clusterId);
   }
+
+  Future<List<String>> getProfileIdsByClusterId(String clusterId) async {
+    final response = await supabase
+        .from('households')
+        .select('people_groups(people(user_profile_id))')
+        .eq('cluster_id', clusterId);
+
+    final profileIds = <String>{};
+    for (final household in response) {
+      final peopleGroups = household['people_groups'] as List? ?? [];
+      for (final pg in peopleGroups) {
+        // people is a single object per people_groups row, not a list
+        final people = pg['people'];
+        if (people is Map) {
+          final id = people['user_profile_id'] as String?;
+          if (id != null) profileIds.add(id);
+        } else if (people is List) {
+          for (final person in people) {
+            final id = (person as Map)['user_profile_id'] as String?;
+            if (id != null) profileIds.add(id);
+          }
+        }
+      }
+    }
+    return profileIds.toList();
+  }
 }

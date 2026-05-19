@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
@@ -20,6 +22,7 @@ class HomeMap extends StatelessWidget {
   final VoidCallback? onMapReady;
   final HomeState state;
   final HomeCubit cubit;
+  final MyAuthUser authUser;
 
   const HomeMap({
     super.key,
@@ -27,6 +30,7 @@ class HomeMap extends StatelessWidget {
     required this.onMapReady,
     required this.state,
     required this.cubit,
+    required this.authUser,
   });
 
   @override
@@ -61,13 +65,8 @@ class HomeMap extends StatelessWidget {
           markers: [
             if (state.userLocation != null) _buildUserMarker(state.userLocation!),
             if (state.cluster?.meetingPoint != null) buildMeetingMarker(state.cluster?.meetingPlace, state.cluster?.meetingPoint),
-            // ...state.captainMarkers!
-            //     .where((marker) => marker.householdGeom != null)
-            //     .map((marker) => _buildCaptainMarker(
-            //           context,
-            //           marker,
-            //         )),
             ..._buildPointsOfInterest(),
+            ..._buildClusterMessageMarkers(context),
           ],
         ),
       ],
@@ -114,6 +113,49 @@ class HomeMap extends StatelessWidget {
   //   }
   // }
 
+  List<Marker> _buildClusterMessageMarkers(BuildContext context) {
+    final role = authUser.userRole;
+    final canMessage = role == AppRoles.admin ||
+        role == AppRoles.communityAdmin ||
+        role == AppRoles.subcommunityAgent;
+    if (!canMessage) return [];
+    if (state.allClusters == null) return [];
+
+    final color = Theme.of(context).colorScheme.primary;
+    return state.allClusters!
+        .where((c) => cubit.canMessageCluster(c))
+        .map((cluster) {
+      final centroid = cluster.centroid();
+      if (centroid == null) return null;
+      return Marker(
+        point: centroid,
+        width: 300,
+        height: 28,
+        child: UnconstrainedBox(
+          child: GestureDetector(
+            onTap: () => cubit.onClusterTapped(cluster),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withAlpha(220),
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 3)],
+              ),
+              child: Text(
+                cluster.name ?? '',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }).whereType<Marker>().toList();
+  }
+
   List<Marker> _buildPointsOfInterest() {
     if (state.pointsOfInterest == null) {
       return [];
@@ -127,16 +169,13 @@ class HomeMap extends StatelessWidget {
     }
   }
 
-  Polygon? clusterPolygon(Cluster cluster) {
+  Polygon? clusterPolygon(Cluster cluster, {bool showLabel = true}) {
     if (cluster.geom == null) return null;
 
-    // random color
-    // could be based on hash of cluster name
-    // or cluster geometry
     final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
     log.fine("Cluster polygon: ${cluster.name} ${cluster.geom}");
     return Polygon(
-        label: cluster.name,
+        label: showLabel ? cluster.name : null,
         points: cluster.geom!,
         color: color.withAlpha(64),
         borderColor: color,
@@ -151,7 +190,10 @@ class HomeMap extends StatelessWidget {
 
     if (state.allClusters != null && state.allClusters!.isNotEmpty) {
       for (var cluster in state.allClusters!) {
-        final poly = clusterPolygon(cluster);
+        // Suppress the polygon's built-in label when we're rendering a tappable
+        // name marker at the centroid instead.
+        final poly = clusterPolygon(cluster,
+            showLabel: !cubit.canMessageCluster(cluster));
         if (poly != null) {
           polygons.add(poly);
         }

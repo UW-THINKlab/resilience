@@ -89,6 +89,10 @@ class ClusterRepository {
     return _clusterService.deleteCluster(clusterId);
   }
 
+  Future<List<String>> getProfileIdsByClusterId(String clusterId) {
+    return _clusterService.getProfileIdsByClusterId(clusterId);
+  }
+
   Future<void> addClusterCaptain(String clusterId, Person? person) async {
     log.fine("IMPLEMENT adding ${person?.name()} as captain for cluster id: $clusterId");
 

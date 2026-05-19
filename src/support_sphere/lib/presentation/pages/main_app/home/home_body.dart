@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
+import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
+import 'package:support_sphere/presentation/components/home/cluster_message_sheet.dart';
 import 'package:support_sphere/presentation/components/home/home_header.dart';
 import 'package:support_sphere/presentation/components/home/home_map.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
 import 'package:geodesy/geodesy.dart';
 
 
@@ -41,9 +44,11 @@ class HomeBodyState extends State<HomeBody> {
         listener: (context, state) {
           if (state.status == HomeStatus.success) {
             _recenterMap(state);
-          }
-          else if (state.status == HomeStatus.editMeetingPlace) {
+          } else if (state.status == HomeStatus.editMeetingPlace) {
             _editMode(state);
+          } else if (state.status == HomeStatus.clusterSelected &&
+              state.selectedCluster != null) {
+            _showClusterMessageSheet(context, authUser, state.selectedCluster!);
           }
         },
         builder: (context, state) {
@@ -62,6 +67,7 @@ class HomeBodyState extends State<HomeBody> {
                       mapController: _mapController,
                       state: state,
                       cubit: context.read<HomeCubit>(),
+                      authUser: authUser,
                       onMapReady: () {
                         setState(() => _isMapReady = true);
                       },
@@ -132,6 +138,31 @@ class HomeBodyState extends State<HomeBody> {
     );
   }
 
+  Future<void> _showClusterMessageSheet(
+      BuildContext context, MyAuthUser authUser, Cluster cluster) async {
+    final cubit = context.read<HomeCubit>();
+    final result = await showModalBottomSheet<(String, String)?>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => ClusterMessageSheet(
+        cluster: cluster,
+        myProfileId: authUser.uuid,
+      ),
+    );
+    cubit.clearClusterSelection();
+    if (result != null && mounted) {
+      final (groupId, groupName) = result;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => MessagesPage(groupId: groupId, groupName: groupName),
+        ),
+      );
+    }
+  }
+
   void _recenterMap(HomeState state) {
     if (!_isMapReady) return;
 
@@ -175,6 +206,7 @@ SystemMouseCursor _cursorFor(HomeStatus status) {
       return SystemMouseCursors.grabbing;
     case HomeStatus.success:
     case HomeStatus.allClusters:
+    case HomeStatus.clusterSelected:
       return SystemMouseCursors.basic;
     case HomeStatus.failure:
       return SystemMouseCursors.forbidden;

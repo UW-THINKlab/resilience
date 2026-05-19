@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -134,6 +135,38 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
+
+  bool canMessageCluster(Cluster cluster) {
+    final role = authUser.userRole;
+    if (role == AppRoles.admin || role == AppRoles.communityAdmin) return true;
+    if (role == AppRoles.subcommunityAgent) return state.cluster?.id == cluster.id;
+    return false;
+  }
+
+  void onClusterTapped(Cluster cluster) {
+    if (!canMessageCluster(cluster)) return;
+    emit(state.copyWith(
+      status: HomeStatus.clusterSelected,
+      selectedCluster: cluster,
+    ));
+  }
+
+  void clearClusterSelection() {
+    emit(HomeState(
+      status: HomeStatus.success,
+      userLocation: state.userLocation,
+      initMapCentroid: state.initMapCentroid,
+      initZoomLevel: state.initZoomLevel,
+      captainMarkers: state.captainMarkers,
+      cluster: state.cluster,
+      pointsOfInterest: state.pointsOfInterest,
+      allClusters: state.allClusters,
+      pickedLocation: state.pickedLocation,
+      pickedOffset: state.pickedOffset,
+      meetingPlace: state.meetingPlace,
+      selectedCluster: null,
+    ));
+  }
 
   Future<void> focusCluster() async {
     if (state.cluster != null) {

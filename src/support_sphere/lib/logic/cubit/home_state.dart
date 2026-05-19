@@ -6,7 +6,7 @@ import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
-enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, failure }
+enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, clusterSelected, failure }
 
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
@@ -29,6 +29,7 @@ class HomeState extends Equatable {
     this.pickedLocation,
     this.pickedOffset,
     this.meetingPlace,
+    this.selectedCluster,
   });
 
   final HomeStatus status;
@@ -42,8 +43,8 @@ class HomeState extends Equatable {
 
   final LatLng? pickedLocation;
   final Offset? pickedOffset;
-  final String? meetingPlace; // description of the pick meeting point
-
+  final String? meetingPlace;
+  final Cluster? selectedCluster;
 
   @override
   List<Object?> get props => [
@@ -58,6 +59,7 @@ class HomeState extends Equatable {
         pickedLocation,
         pickedOffset,
         meetingPlace,
+        selectedCluster,
       ];
 
   HomeState copyWith({
@@ -72,6 +74,7 @@ class HomeState extends Equatable {
     LatLng? pickedLocation,
     Offset? pickedOffset,
     String? meetingPlace,
+    Cluster? selectedCluster,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -85,6 +88,7 @@ class HomeState extends Equatable {
       pickedLocation: pickedLocation ?? this.pickedLocation,
       pickedOffset: pickedOffset ?? this.pickedOffset,
       meetingPlace: meetingPlace ?? this.meetingPlace,
+      selectedCluster: selectedCluster ?? this.selectedCluster,
     );
   }
 }
