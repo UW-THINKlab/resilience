@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
-import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
@@ -46,9 +45,6 @@ class HomeBodyState extends State<HomeBody> {
             _recenterMap(state);
           } else if (state.status == HomeStatus.editMeetingPlace) {
             _editMode(state);
-          } else if (state.status == HomeStatus.clusterSelected &&
-              state.selectedCluster != null) {
-            _showClusterMessageSheet(context, authUser, state.selectedCluster!);
           }
         },
         builder: (context, state) {
@@ -119,8 +115,6 @@ class HomeBodyState extends State<HomeBody> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
-                    // could flip icon! custom icon? mouse pointer?
-                    // assume toggle on/off
                     await cubit.showAllClusters(state.status != HomeStatus.allClusters);
                   },
                   backgroundColor: Colors.white,
@@ -131,36 +125,30 @@ class HomeBodyState extends State<HomeBody> {
                   ),
                 ),
               ),
+              if (state.selectedCluster != null)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: ClusterMessageSheet(
+                    key: ValueKey(state.selectedCluster!.id),
+                    cluster: state.selectedCluster!,
+                    myProfileId: authUser.uuid,
+                    onCancel: () => context.read<HomeCubit>().clearClusterSelection(),
+                    onGroupCreated: (groupId, groupName) {
+                      context.read<HomeCubit>().clearClusterSelection();
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) =>
+                            MessagesPage(groupId: groupId, groupName: groupName),
+                      ));
+                    },
+                  ),
+                ),
             ],
           );
         },
       ),
     );
-  }
-
-  Future<void> _showClusterMessageSheet(
-      BuildContext context, MyAuthUser authUser, Cluster cluster) async {
-    final cubit = context.read<HomeCubit>();
-    final result = await showModalBottomSheet<(String, String)?>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (_) => ClusterMessageSheet(
-        cluster: cluster,
-        myProfileId: authUser.uuid,
-      ),
-    );
-    cubit.clearClusterSelection();
-    if (result != null && mounted) {
-      final (groupId, groupName) = result;
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => MessagesPage(groupId: groupId, groupName: groupName),
-        ),
-      );
-    }
   }
 
   void _recenterMap(HomeState state) {

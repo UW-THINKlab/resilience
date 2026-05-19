@@ -6,11 +6,15 @@ import 'package:support_sphere/data/repositories/cluster.dart';
 class ClusterMessageSheet extends StatefulWidget {
   final Cluster cluster;
   final String myProfileId;
+  final VoidCallback onCancel;
+  final void Function(String groupId, String groupName) onGroupCreated;
 
   const ClusterMessageSheet({
     super.key,
     required this.cluster,
     required this.myProfileId,
+    required this.onCancel,
+    required this.onGroupCreated,
   });
 
   @override
@@ -61,7 +65,7 @@ class _ClusterMessageSheetState extends State<ClusterMessageSheet> {
         createdByProfileId: widget.myProfileId,
         memberProfileIds: _profileIds!,
       );
-      if (mounted) Navigator.of(context).pop((groupId, _nameController.text.trim()));
+      if (mounted) widget.onGroupCreated(groupId, _nameController.text.trim());
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -82,7 +86,10 @@ class _ClusterMessageSheetState extends State<ClusterMessageSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final memberCount = _profileIds?.length;
 
-    return Padding(
+    return Material(
+      elevation: 8,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      child: Padding(
       padding: EdgeInsets.fromLTRB(16, 16, 16, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -121,7 +128,7 @@ class _ClusterMessageSheetState extends State<ClusterMessageSheet> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+                  onPressed: _isSaving ? null : widget.onCancel,
                   child: const Text('Cancel'),
                 ),
               ),
@@ -142,6 +149,6 @@ class _ClusterMessageSheetState extends State<ClusterMessageSheet> {
           ),
         ],
       ),
-    );
+    ));
   }
 }
