@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/messages.dart';
@@ -11,8 +12,7 @@ import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:timeago/timeago.dart';
 
-const preloader =
-    Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+const preloader = Center(child: CircularProgressIndicator());
 
 final log = Logger('MessagesPage');
 
@@ -186,9 +186,10 @@ class _MessageBarState extends State<MessageBar> {
                   onFieldSubmitted: (value) => _submitMessage(context, widget.groupId),
                 ),
               ),
-              ElevatedButton(
+              IconButton(
                 onPressed: () => _submitMessage(context, widget.groupId),
-                child: const Text('Send Message'), // FIXME formatting, text
+                icon: const Icon(Ionicons.send_outline),
+                tooltip: 'Send',
               ),
             ],
           ),

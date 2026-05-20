@@ -37,14 +37,12 @@ class _ResourceCardState extends State<ManageResourceCard> {
                   //   value: _isSelected,
                   //   onChanged: (value) => _toggleSelection(value),
                   // ),
-                  SizedBox(
-                    width: 200,
+                  Expanded(
                     child: Text(
                       resourceName,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   )
                 ],
@@ -66,12 +64,12 @@ class _ResourceCardState extends State<ManageResourceCard> {
                       Badge(
                         label:
                             Text("${widget.resource.qtyAvailable} available"),
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: 4),
                       Badge(
                         label: Text("${widget.resource.qtyNeeded} needed"),
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: Theme.of(context).colorScheme.error,
                       ),
                     ],
                   )
@@ -94,7 +92,7 @@ class _ResourceCardState extends State<ManageResourceCard> {
                     expandOnTextTap: true,
                     collapseOnTextTap: true,
                     maxLines: 2,
-                    linkColor: Colors.blue,
+                    linkColor: Theme.of(context).colorScheme.primary,
                   ),
                 )
               : SizedBox(),
@@ -110,12 +108,15 @@ class _ResourceCardState extends State<ManageResourceCard> {
                 // ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[700],
+                    foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                  context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
-                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
+                    context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
+                  },
+                  child: const Text("Delete"),
+                )
               ],
             ),
           ),

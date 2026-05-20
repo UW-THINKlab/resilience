@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
@@ -12,9 +13,7 @@ import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-///TODO- make sure preloader is the same across all pages, potentially move to a shared widget?
-const preloader =
-    Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+const preloader = Center(child: CircularProgressIndicator());
 
 final log = Logger('Message Groups Page');
 final MessagesRepository messageRepo = MessagesRepository();
@@ -40,85 +39,159 @@ class InboxView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inbox'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<InboxCubit>().fetchGroups(),
-          ),
-        ],
-      ),
-      body: BlocBuilder<InboxCubit, InboxState>(
-        builder: (context, state) {
-          if (state.isLoading)
-            return const Center(child: CircularProgressIndicator());
-
-          if (state.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Error: ${state.error}'),
-                  ElevatedButton(
-                    onPressed: () => context.read<InboxCubit>().fetchGroups(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (state.groups.isEmpty) {
-            return const Center(child: Text('No chat groups'));
-          }
-  
-
-          return ListView.builder(
-            itemCount: state.groups.length,
-            itemBuilder: (context, index) {
-              final group = state.groups[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(group.name[0].toUpperCase()),
-                  ),
-                  title: Text(group.name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                        if (group.lastMessage != null)
-                          Text(
-                            group.lastMessage!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: group.unreadCount! > 0 ? Colors.black : Colors.grey,
-                            ),
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.35),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Ionicons.chatbubbles_outline,
+                        size: 20, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Inbox',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                        Text(
-                          _formatTime(group.lastMessageTime),
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  icon: Icon(Ionicons.refresh_outline,
+                      color: Theme.of(context).colorScheme.primary),
+                  onPressed: () => context.read<InboxCubit>().fetchGroups(),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: BlocBuilder<InboxCubit, InboxState>(
+              builder: (context, state) {
+                if (state.isLoading) return preloader;
+
+                if (state.error != null) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Ionicons.warning_outline,
+                            size: 48, color: Theme.of(context).colorScheme.error),
+                        const SizedBox(height: 12),
+                        Text('Error: ${state.error}'),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          onPressed: () => context.read<InboxCubit>().fetchGroups(),
+                          icon: const Icon(Ionicons.refresh_outline),
+                          label: const Text('Retry'),
                         ),
                       ],
                     ),
-                    trailing: group.unreadCount! > 0
-                        ? Badge(
-                      label: Text(group.unreadCount.toString()),
-                      child: const Icon(Icons.circle),
-                    )
-                        : null,
-                  onTap: () => _navigateToChat(context, group),
-                ),
-              );
-            },
-          );
-        },
+                  );
+                }
+
+                if (state.groups.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Ionicons.chatbubbles_outline,
+                            size: 48, color: Colors.grey[400]),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No conversations yet',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Tap + to start a new chat group.',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: state.groups.length,
+                  itemBuilder: (context, index) {
+                    final group = state.groups[index];
+                    final hasUnread = (group.unreadCount ?? 0) > 0;
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                          child: Text(
+                            group.name[0].toUpperCase(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          group.name,
+                          style: hasUnread
+                              ? const TextStyle(fontWeight: FontWeight.bold)
+                              : null,
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (group.lastMessage != null)
+                              Text(
+                                group.lastMessage!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: hasUnread ? null : Colors.grey,
+                                  fontWeight: hasUnread ? FontWeight.w500 : null,
+                                ),
+                              ),
+                            Text(
+                              _formatTime(group.lastMessageTime),
+                              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                            ),
+                          ],
+                        ),
+                        trailing: hasUnread
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  group.unreadCount.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            : null,
+                        onTap: () => _navigateToChat(context, group),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openCreateGroupSheet(context),
-        child: const Icon(Icons.add),
+        child: const Icon(Ionicons.add_outline),
       ),
     );
   }

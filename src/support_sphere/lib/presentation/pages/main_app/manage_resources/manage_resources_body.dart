@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/presentation/components/manage_resource_card.dart';
@@ -55,11 +56,23 @@ class ManageResourceView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.all(12),
-          child: Center(
-            child: Text(ResourceStrings.manageResources,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.35),
+          child: Row(
+            children: [
+              Icon(Ionicons.cube_outline,
+                  size: 20, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 10),
+              Text(
+                ResourceStrings.manageResources,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+            ],
           ),
         ),
         _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
