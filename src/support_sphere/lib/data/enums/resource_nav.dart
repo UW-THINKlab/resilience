@@ -3,4 +3,5 @@ enum ResourceNav {
   addToResourceInventory,
   savedResourceInventory,
   requestResource,
+  savedRequest,
 }

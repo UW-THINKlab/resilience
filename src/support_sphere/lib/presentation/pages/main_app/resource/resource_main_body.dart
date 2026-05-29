@@ -16,6 +16,7 @@ import 'package:support_sphere/presentation/components/resource_card.dart';
 import 'package:support_sphere/presentation/components/resource_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/add_to_inventory_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/resource/request_resource_form.dart';
 
 class ResourceBody extends StatelessWidget {
   const ResourceBody({super.key});
@@ -63,8 +64,10 @@ class ResourceBody extends StatelessWidget {
             case ResourceNav.savedResourceInventory:
               return AddToResourceThankYou();
             case ResourceNav.requestResource:
-              // TODO: Handle this case.
-              return const SizedBox();
+              return RequestResourceView();
+            case ResourceNav.savedRequest:
+              //TODO- currently the request form does not have a thank you/confirmation page, so we just go back to the all resources tab
+              return AllResourcesTab();
           }
         },
       ),
@@ -286,7 +289,43 @@ class AllResourcesButton extends StatelessWidget {
   }
 }
 
+class RequestResourceView extends StatelessWidget {
+  const RequestResourceView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ResourceCubit, ResourceState>(
+      builder: (context, state) {
+        final Resource resource = state.selectedResource!;
+        return Column(
+          children: [
+            Expanded(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AllResourcesButton(),
+                    Expanded(
+                      child: ContainerCard(
+                        child: RequestResourceForm(resource: resource),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // My Resources Tab
+///////////////////////////////////////////////////////////////////////////////
 class UserResourcesTab extends StatelessWidget {
   const UserResourcesTab({super.key});
 
@@ -334,7 +373,9 @@ class UserResourcesTab extends StatelessWidget {
                           FaIcon(FontAwesomeIcons.calendar, size: 15),
                           const SizedBox(width: 4),
                           Text(
-                              ResourceStrings.addedOnDate(userResource.addedDate!),),
+                            ResourceStrings.addedOnDate(
+                                userResource.addedDate!),
+                          ),
                         ],
                       ),
                     ],
@@ -356,7 +397,9 @@ class UserResourcesTab extends StatelessWidget {
                       icon: const FaIcon(FontAwesomeIcons.circleCheck),
                       iconAlignment: IconAlignment.end,
                       onPressed: () {
-                        context.read<ResourceCubit>().markUpToDateNow(userResource.id);
+                        context
+                            .read<ResourceCubit>()
+                            .markUpToDateNow(userResource.id);
                       },
                       label: const Text(ResourceStrings.markUpToDate)),
                   const SizedBox(height: 8),
@@ -365,7 +408,9 @@ class UserResourcesTab extends StatelessWidget {
                           backgroundColor:
                               WidgetStateProperty.all(Colors.redAccent)),
                       onPressed: () {
-                        context.read<ResourceCubit>().deleteUserResource(userResource.id);
+                        context
+                            .read<ResourceCubit>()
+                            .deleteUserResource(userResource.id);
                       },
                       label: const Text(
                         ResourceStrings.delete,

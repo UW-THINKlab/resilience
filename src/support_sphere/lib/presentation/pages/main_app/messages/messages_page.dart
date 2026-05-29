@@ -26,7 +26,8 @@ class MessagesPage extends StatefulWidget {
   final String groupId;
   final String groupName;
 
-  const MessagesPage({super.key, required this.groupId, required this.groupName});
+  const MessagesPage(
+      {super.key, required this.groupId, required this.groupName});
 
   @override
   State<MessagesPage> createState() => MessagesState();
@@ -183,12 +184,13 @@ class _MessageBarState extends State<MessageBar> {
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
-                  onFieldSubmitted: (value) => _submitMessage(context, widget.groupId),
+                  onFieldSubmitted: (value) =>
+                      _submitMessage(context, widget.groupId),
                 ),
               ),
               ElevatedButton(
                 onPressed: () => _submitMessage(context, widget.groupId),
-                child: const Text('Send Message'), // FIXME formatting, text
+                child: const Text('Send'), // FIXME formatting, text
               ),
             ],
           ),

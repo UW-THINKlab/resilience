@@ -41,7 +41,8 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void fetchResourceTypes() async {
-    List<ResourceTypes> resourceTypes = await _resourceRepository.getResourceTypes();
+    List<ResourceTypes> resourceTypes =
+        await _resourceRepository.getResourceTypes();
     resourceTypesChanged(resourceTypes);
   }
 
@@ -51,7 +52,8 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void fetchUserResources(String userId) async {
-    List<UserResource> userResources = await _resourceRepository.getUserResourcesByUserId(userId);
+    List<UserResource> userResources =
+        await _resourceRepository.getUserResourcesByUserId(userId);
     emit(state.copyWith(userResources: userResources));
   }
 
@@ -76,5 +78,9 @@ class ResourceCubit extends Cubit<ResourceState> {
   void markUpToDateNow(String id) async {
     await _resourceRepository.markUpToDate(id, DateTime.now());
     fetchUserResources(authUser.uuid);
+  }
+
+  Future<void> requestResource(Map<String, dynamic> data) async {
+    await _resourceRepository.requestResource(data);
   }
 }

@@ -79,9 +79,9 @@ class ResourceCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              _INeedThisButton(),
-              const SizedBox(width: 8),
               _IHaveThisButton(resource: resource),
+              const SizedBox(width: 8),
+              _INeedThisButton(resource: resource),
             ],
           ),
         ),
@@ -91,20 +91,27 @@ class ResourceCard extends StatelessWidget {
 }
 
 class _INeedThisButton extends StatelessWidget {
-  const _INeedThisButton();
+  const _INeedThisButton({required this.resource});
 
   final String _buttonText = 'I need this';
+  final Resource resource;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
-        return (state.mode == AppModes.normal)
-            ? const SizedBox()
-            : ElevatedButton(
-                onPressed: () {},
-                child: Text(_buttonText),
-              );
+        void onPressed() {
+          context.read<ResourceCubit>().selectedResourceChanged(resource);
+          context
+              .read<ResourceCubit>()
+              .currentNavChanged(ResourceNav.requestResource);
+        }
+
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+          onPressed: (state.mode == AppModes.normal) ? onPressed : null,
+          child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
+        );
       },
     );
   }
@@ -122,13 +129,13 @@ class _IHaveThisButton extends StatelessWidget {
       builder: (context, state) {
         void onPressed() {
           context.read<ResourceCubit>().selectedResourceChanged(resource);
-          context.read<ResourceCubit>().currentNavChanged(ResourceNav.addToResourceInventory);
+          context
+              .read<ResourceCubit>()
+              .currentNavChanged(ResourceNav.addToResourceInventory);
         }
 
         return ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueAccent
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
           onPressed: (state.mode == AppModes.normal) ? onPressed : null,
           child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
         );

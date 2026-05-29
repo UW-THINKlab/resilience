@@ -22,7 +22,8 @@ class ResourceRepository {
   }
 
   Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
-    PostgrestList? results = await _resourceService.getUserResourcesByUserId(userId);
+    PostgrestList? results =
+        await _resourceService.getUserResourcesByUserId(userId);
     return results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
   }
 
@@ -57,5 +58,9 @@ class ResourceRepository {
 
   Future<void> markUpToDate(String id, DateTime updatedAt) async {
     await _resourceService.markUpToDate(id, updatedAt);
+  }
+
+  Future<void> requestResource(Map<String, dynamic> data) async {
+    await _resourceService.createResourceRequest(data);
   }
 }
