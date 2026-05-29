@@ -8,41 +8,42 @@ final log = Logger('MessagesRepository');
 
 class MessagesRepository {
   Stream<List<Message>> messagesTo(User user) {
-    return supabase.from('messages')
-      .stream(primaryKey: [user.id])
-      .order('sent_on')
-      .map((maps) => maps.map((map) => Message.fromJson(json: map))
-      .toList());
+    return supabase
+        .from('messages')
+        .stream(primaryKey: [user.id])
+        .order('sent_on')
+        .map((maps) => maps.map((map) => Message.fromJson(json: map)).toList());
   }
 
   Stream<List<Message>> messagesFor(User user, String groupId) {
-    return supabase.from('messages')
-      .stream(primaryKey: [user.id])
-      .eq('to_id', groupId)
-      .order('sent_on')
-      .map((maps) => maps.map((map) => Message.fromJson(json: map))
-      .toList());
+    return supabase
+        .from('messages')
+        .stream(primaryKey: [user.id])
+        .eq('to_id', groupId)
+        .order('sent_on')
+        .map((maps) => maps.map((map) => Message.fromJson(json: map)).toList());
   }
 
   Future<int> unreadCount(String groupId, String time) async {
     final List<dynamic> data = await supabase
-      .from('messages')
-      .select('id') 
-      .eq('to_id', groupId)
-      .gte('sent_on', time);
+        .from('messages')
+        .select('id')
+        .eq('to_id', groupId)
+        .gte('sent_on', time);
     return data.length;
   }
 
-  Future<String> lastUnreadMessage(String userId, String groupId, String time) async{
+  Future<String> lastUnreadMessage(
+      String userId, String groupId, String time) async {
     final response = await supabase
-      .from('messages')
-      .select()
-      .eq('to_id', groupId)
-      .neq('from_id', userId) 
-      .gte('sent_on', time)
-      .order('sent_on', ascending: false)
-      .limit(1)
-      .maybeSingle();
+        .from('messages')
+        .select()
+        .eq('to_id', groupId)
+        .neq('from_id', userId)
+        .gte('sent_on', time)
+        .order('sent_on', ascending: false)
+        .limit(1)
+        .maybeSingle();
     return response?['content'] ?? ' ';
   }
 
@@ -51,7 +52,7 @@ class MessagesRepository {
 
     final dateSent = DateTime.now();
     await supabase.from('messages').insert({
-      'id': const UuidV4().generate(), // autogen by table def?
+      'id': const UuidV4().generate(), // TODO autogen by table def?
       'from_id': userId,
       'to_id': toId,
       'content': text,

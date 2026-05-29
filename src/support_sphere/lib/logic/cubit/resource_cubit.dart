@@ -83,4 +83,15 @@ class ResourceCubit extends Cubit<ResourceState> {
   Future<void> requestResource(Map<String, dynamic> data) async {
     await _resourceRepository.requestResource(data);
   }
+
+  Future<void> submitResourceRequest({
+    required Map<String, dynamic> requestData,
+    required String recipientUserId,
+  }) async {
+    await _resourceRepository.submitResourceRequestAndNotify(
+      requestData: requestData,
+      requesterUserId: authUser.uuid,
+      recipientUserId: recipientUserId,
+    );
+  }
 }

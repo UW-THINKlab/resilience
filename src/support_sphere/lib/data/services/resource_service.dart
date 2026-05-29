@@ -111,7 +111,11 @@ class ResourceService {
     await _supabaseClient.from('resources_cv').delete().eq('id', id);
   }
 
-  Future<void> createResourceRequest(Map<String, dynamic> data) async {
-    await _supabaseClient.from('requests').insert(data);
+  Future<Map<String, dynamic>> createResourceRequest(
+      Map<String, dynamic> data) async {
+    final row =
+        await _supabaseClient.from('requests').insert(data).select().single();
+
+    return Map<String, dynamic>.from(row);
   }
 }

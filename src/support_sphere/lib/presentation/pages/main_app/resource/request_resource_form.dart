@@ -178,10 +178,16 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                               _formData.copyWith(resourceId: resource.id);
 
                           try {
+                            // await context
+                            //     .read<ResourceCubit>()
+                            //     .requestResource(_formData.toJson());
                             await context
                                 .read<ResourceCubit>()
-                                .requestResource(_formData.toJson());
-
+                                .submitResourceRequest(
+                                  requestData: _formData.toJson(),
+                                  recipientUserId: //currently hardcoded to a test chat for testing
+                                      '256d26ab-5154-47ec-a08a-d854d6ce0ae6',
+                                );
                             if (!context.mounted) return;
                             context
                                 .read<ResourceCubit>()
