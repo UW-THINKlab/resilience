@@ -10,22 +10,20 @@ import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:uuid/v4.dart';
 
-class AddToInventoryFormData extends Equatable {
-  const AddToInventoryFormData({
+class RequestResourceFormData extends Equatable {
+  const RequestResourceFormData({
     this.resourceId,
     this.quantity,
     // TODO: Implement Subtype
     // this.subtype,
     this.notes,
-    this.sharingScope,
-    this.sharingScopeEmergency,
+    this.requestScope,
   });
   final String? resourceId;
   final int? quantity;
   // final String? subtype;
   final String? notes;
-  final String? sharingScope;
-  final String? sharingScopeEmergency;
+  final String? requestScope;
 
   @override
   List<Object?> get props => [
@@ -33,26 +31,22 @@ class AddToInventoryFormData extends Equatable {
         quantity,
         // subtype,
         notes,
-        sharingScope,
-        sharingScopeEmergency,
+        requestScope,
       ];
 
-  AddToInventoryFormData copyWith({
+  RequestResourceFormData copyWith({
     String? resourceId,
     int? quantity,
     // String? subtype,
     String? notes,
-    String? sharingScope,
-    String? sharingScopeEmergency,
+    String? requestScope,
   }) {
-    return AddToInventoryFormData(
+    return RequestResourceFormData(
         resourceId: resourceId ?? this.resourceId,
         quantity: quantity ?? this.quantity,
         // subtype: subtype ?? this.subtype,
         notes: notes ?? this.notes,
-        sharingScope: sharingScope ?? this.sharingScope,
-        sharingScopeEmergency:
-            sharingScopeEmergency ?? this.sharingScopeEmergency);
+        requestScope: requestScope ?? this.requestScope);
   }
 
   Map<String, dynamic> toJson() {
@@ -63,29 +57,27 @@ class AddToInventoryFormData extends Equatable {
       'quantity': quantity,
       // 'subtype': subtype,
       'notes': notes,
-      'sharing_scope': sharingScope,
-      'sharing_scope_emergency': sharingScopeEmergency,
+      'request_scope': requestScope,
       'created_at': now,
-      'updated_at': now,
+      // 'updated_at': now,
     };
   }
 }
 
-class AddToInventoryForm extends StatefulWidget {
-  const AddToInventoryForm({super.key, required this.resource});
+class RequestResourceForm extends StatefulWidget {
+  const RequestResourceForm({super.key, required this.resource});
 
   final Resource resource;
 
   @override
-  State<AddToInventoryForm> createState() => _AddToInventoryFormState();
+  State<RequestResourceForm> createState() => _RequestResourceFormState();
 }
 
-class _AddToInventoryFormState extends State<AddToInventoryForm> {
+class _RequestResourceFormState extends State<RequestResourceForm> {
   final _formKey = GlobalKey<FormState>();
-  AddToInventoryFormData _formData = AddToInventoryFormData();
+  RequestResourceFormData _formData = RequestResourceFormData();
   // state variables for sharing scopes radio buttons
-  SharingScopes? _sharingScope;
-  SharingScopes? _sharingScopeEmergency;
+  RequestScopes? _requestScope;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +89,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
           key: _formKey,
           child: Column(
             children: [
-              Text(AddResourceInventoryFormStrings.addTitle(resource.name),
+              Text(RequestResourceFormStrings.reqTitle(resource.name),
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -113,7 +105,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               Text(resource.description ?? ''),
               const SizedBox(height: 16),
               TextFormField(
-                key: const Key('AddToInventoryForm_quantity_textFormField'),
+                key: const Key('RequestResourceForm_quantity_textFormField'),
                 initialValue: '1',
                 keyboardType: TextInputType.number,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -125,19 +117,19 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                   FormBuilderValidators.min(1)
                 ]),
                 decoration: InputDecoration(
-                    labelText: AddResourceInventoryFormStrings.howManyAdding,
+                    labelText: RequestResourceFormStrings.numberNeeded,
                     helperText: '',
                     border: border(context),
                     enabledBorder: border(context),
                     focusedBorder: focusBorder(context)),
               ),
-              FormField<SharingScopes?>(
+              FormField<RequestScopes?>(
                 initialValue: null,
                 validator: (value) => value == null
-                    ? 'Please choose who can request this item.'
+                    ? 'Please choose who to ask for this item.'
                     : null,
                 onSaved: (value) => _formData = _formData.copyWith(
-                  sharingScope: value!.dbValue, // value is guaranteed non-null
+                  requestScope: value!.dbValue, // value is guaranteed non-null
                 ),
                 builder: (field) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,40 +137,11 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                     if (field.hasError)
                       Text(field.errorText!,
                           style: TextStyle(color: Colors.red)),
-                    Text(
-                        AddResourceInventoryFormStrings.setSharingScopeNormal ??
-                            ''),
-                    RadioButtonGroup<SharingScopes>(
+                    Text(RequestResourceFormStrings.requestScope ?? ''),
+                    RadioButtonGroup<RequestScopes>(
                       value: field.value,
                       onChanged: field.didChange,
-                      options: SharingScopes.values,
-                      labelBuilder: (scope) => scope.displayName,
-                    ),
-                  ],
-                ),
-              ),
-              FormField<SharingScopes?>(
-                initialValue: null,
-                validator: (value) => value == null
-                    ? 'Please choose who can request this in an emergency.'
-                    : null,
-                onSaved: (value) => _formData = _formData.copyWith(
-                  sharingScopeEmergency:
-                      value!.dbValue, // value is guaranteed non-null
-                ),
-                builder: (field) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (field.hasError)
-                      Text(field.errorText!,
-                          style: TextStyle(color: Colors.red)),
-                    Text(AddResourceInventoryFormStrings
-                            .setSharingScopeEmergency ??
-                        ''),
-                    RadioButtonGroup<SharingScopes>(
-                      value: field.value,
-                      onChanged: field.didChange,
-                      options: SharingScopes.values,
+                      options: RequestScopes.values,
                       labelBuilder: (scope) => scope.displayName,
                     ),
                   ],
@@ -187,7 +150,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               const SizedBox(height: 16),
               // Resource Notes (Only user and cluster captains can see)
               TextFormField(
-                key: const Key('AddToInventoryForm_notes_textFormField'),
+                key: const Key('RequestResourceForm_notes_textFormField'),
                 onSaved: (value) =>
                     _formData = _formData.copyWith(notes: value),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -195,8 +158,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                 minLines: 1,
                 maxLines: 5,
                 decoration: InputDecoration(
-                    labelText: AddResourceInventoryFormStrings.notes,
-                    helperText: AddResourceInventoryFormStrings.notesHelperText,
+                    labelText: RequestResourceFormStrings.notes,
                     helperMaxLines: 3,
                     border: border(context),
                     enabledBorder: border(context),
@@ -207,19 +169,40 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ElevatedButton(
-                      onPressed: () {
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent),
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
                           _formData =
                               _formData.copyWith(resourceId: resource.id);
-                          context
-                              .read<ResourceCubit>()
-                              .addToUserInventory(_formData.toJson());
-                          context.read<ResourceCubit>().currentNavChanged(
-                              ResourceNav.savedResourceInventory);
+
+                          try {
+                            // await context
+                            //     .read<ResourceCubit>()
+                            //     .requestResource(_formData.toJson());
+                            await context
+                                .read<ResourceCubit>()
+                                .submitResourceRequest(
+                                  requestData: _formData.toJson(),
+                                  recipientUserId: //currently hardcoded to a test chat for testing
+                                      '256d26ab-5154-47ec-a08a-d854d6ce0ae6',
+                                );
+                            if (!context.mounted) return;
+                            context
+                                .read<ResourceCubit>()
+                                .currentNavChanged(ResourceNav.savedRequest);
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Failed to save request: $e')),
+                            );
+                          }
                         }
                       },
-                      child: Text("Save Item")),
+                      child: Text("Request",
+                          style: const TextStyle(color: Colors.white))),
                   const SizedBox(width: 4),
                   ElevatedButton(
                       onPressed: () {
@@ -238,25 +221,23 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
   }
 }
 
-enum SharingScopes { cluster, neighborhood, everyone }
+enum RequestScopes { nearby, neighbors }
 
-extension SharingScopesExtension on SharingScopes {
+extension RequestScopesExtension on RequestScopes {
   String get displayName => switch (this) {
-        SharingScopes.cluster => 'My Cluster Only',
-        SharingScopes.neighborhood => 'All Clusters in Neighborhood',
-        SharingScopes.everyone => 'Everyone',
+        RequestScopes.nearby => 'Near Current Location',
+        RequestScopes.neighbors => 'Near Home',
       };
   String get dbValue => switch (this) {
-        SharingScopes.cluster => 'cluster',
-        SharingScopes.neighborhood => 'neighborhood',
-        SharingScopes.everyone => 'everyone',
+        RequestScopes.nearby => 'nearby',
+        RequestScopes.neighbors => 'neighbors',
       };
 }
 
 class RadioButtonGroup<T> extends StatefulWidget {
   final T? value;
   final ValueChanged<T?> onChanged;
-  final VoidCallback? onSaved; // ← new: like TextFormField.onSaved
+  final VoidCallback? onSaved;
   final List<T> options;
   final String Function(T) labelBuilder;
 
@@ -264,7 +245,7 @@ class RadioButtonGroup<T> extends StatefulWidget {
     super.key,
     this.value,
     required this.onChanged,
-    this.onSaved, // optional
+    this.onSaved,
     required this.options,
     required this.labelBuilder,
   });

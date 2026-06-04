@@ -2,7 +2,8 @@ import 'package:intl/intl.dart';
 
 /// Strings used in the app
 class AppStrings {
-  static const String appName = 'Resilience - Laurelhurst'; // FIXME - determine from url/metadata/server somehow
+  static const String appName =
+      'Resilience - Laurelhurst'; // FIXME - determine from url/metadata/server somehow
   static const String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
   static const String testEmergencyBannerText = "This is a test emergency.";
@@ -67,7 +68,8 @@ class UserProfileStrings {
   static const String submit = 'Submit';
   static const String deleteMyAccount = 'Delete My Account';
   static const String confirmPrompt = 'Please Confirm';
-  static const String confirmAccountDelete = 'Are you sure you want to delete your account?';
+  static const String confirmAccountDelete =
+      'Are you sure you want to delete your account?';
 }
 
 /// Checklist messages
@@ -95,7 +97,8 @@ class ChecklistStrings {
       'Complete $frequencyName';
   static const String newChecklist = 'New Checklist';
   static const String manageChecklists = 'Manage Preparedness Checklists';
-  static const String addNewPreparednessChecklist = 'Add New Preparedness Checklist';
+  static const String addNewPreparednessChecklist =
+      'Add New Preparedness Checklist';
   static const String editPreparednessChecklist = 'Edit Preparedness Checklist';
   static const String edit = 'Edit';
   static const String save = 'Save';
@@ -103,8 +106,10 @@ class ChecklistStrings {
   static const String titleFieldLabel = 'Title*';
   static const String frequencyFieldLabel = 'Frequency';
   static const String priorityFieldLabel = 'Priority Level*';
-  static const String descriptionFieldLabel = 'Description* (Visible to all users)';
-  static const String notesFieldLabel = 'Notes (Visible only to LEAP steering committee)';
+  static const String descriptionFieldLabel =
+      'Description* (Visible to all users)';
+  static const String notesFieldLabel =
+      'Notes (Visible only to LEAP steering committee)';
   static const String stepLabelFieldLabel = 'Label*';
   static const String stepDescriptionFieldLabel = 'Step Description';
   static const String pleaseSelect = '-- Please Select --';
@@ -120,7 +125,8 @@ class ResourceStrings {
   static const String manageResources = 'Manage Resources';
   static const String resourcesInventory = 'Resources Inventory';
   static const String noUserResources = 'You have not added any resources yet';
-  static String addedOnDate(DateTime date) => "Added on ${DateFormat.yMMMd('en').format(date)}";
+  static String addedOnDate(DateTime date) =>
+      "Added on ${DateFormat.yMMMd('en').format(date)}";
   static const String markUpToDate = 'Mark as up to date';
   static const String delete = 'Delete item';
 }
@@ -132,14 +138,15 @@ class AddResourceInventoryFormStrings {
       "Add $resourceName to Inventory";
   static const String howManyAdding = 'How many are you adding?';
   static const String setSharingScopeNormal = 'Who can request this item?';
-  static const String setSharingScopeEmergency = 'Who can request this in an emergency?';
+  static const String setSharingScopeEmergency =
+      'Who can request this in an emergency?';
   static String askSubtype(String resourceName) =>
       "What type of $resourceName is it (if known)?";
   static const String notes = 'Any notes on this item?';
   static String notesHelperText =
       "Notes are always visible to ${AppStrings.appName} admins and your cluster captain, and are visible to a requester if you accept their request.";
   static String thankYouText(String resourceName) =>
-      "You have successfully added your $resourceName. You are helping our community be more prepared and resilient! Go to My Resources to update this item at any time. During an emergency, you may receive a request to use your item. The requester won't know your identity until you accept their request. Likewise, you'll be able to request items and skills others have added. To keep our inventory up to date, we'll check in with you in six months to see if the item is still available.";
+      "You have successfully added your $resourceName. Thanks for helping our community be more prepared and resilient! Go to My Resources to update this item at any time. During an emergency, you may receive a request to use your item. The requester won't know your identity until you accept their request. Likewise, you'll be able to request items and skills others have added. To keep our inventory up to date, we'll check in with you in six months to see if the item is still available.";
 }
 
 class AddResourceFormStrings {
@@ -151,6 +158,15 @@ class AddResourceFormStrings {
   static const String subtype = 'Subtype, if applicable';
   static const String notes =
       'Notes (visible only to neighborhood steering committee)';
+}
+
+class RequestResourceFormStrings {
+  static const String numberNeeded = 'Number needed';
+  static const String timeNeeded = 'Time needed';
+  static const String notes =
+      'Details or special notes on this request (optional)';
+  static String reqTitle(String resourceName) => "Request $resourceName";
+  static const String requestScope = 'Who to ask for this item?';
 }
 
 /// Error messages
@@ -211,5 +227,6 @@ class NeighborhoodStrings {
   static const String searchClusters = "Search clusters";
   static const String noClustersFound = 'No Cluster found';
 
-  static const String manageNeighborhood = "Manage Laurenhurst"; // FIXME - neighborhood name
+  static const String manageNeighborhood =
+      "Manage Laurenhurst"; // FIXME - neighborhood name
 }

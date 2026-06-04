@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
 import 'package:support_sphere/data/services/resource_service.dart';
+import 'package:support_sphere/data/repositories/message.dart';
+// import 'package:support_sphere/data/repositories/message.dart';
 
 class ResourceRepository {
+  ResourceRepository({MessagesRepository? messagesRepository})
+      : _messagesRepository = messagesRepository ?? MessagesRepository();
+  final MessagesRepository _messagesRepository;
   final ResourceService _resourceService = ResourceService();
 
   Future<dynamic> queryCV(String text) async {
@@ -22,7 +29,8 @@ class ResourceRepository {
   }
 
   Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
-    PostgrestList? results = await _resourceService.getUserResourcesByUserId(userId);
+    PostgrestList? results =
+        await _resourceService.getUserResourcesByUserId(userId);
     return results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
   }
 
@@ -57,5 +65,25 @@ class ResourceRepository {
 
   Future<void> markUpToDate(String id, DateTime updatedAt) async {
     await _resourceService.markUpToDate(id, updatedAt);
+  }
+
+  Future<void> requestResource(Map<String, dynamic> data) async {
+    await _resourceService.createResourceRequest(data);
+  }
+
+  Future<void> submitResourceRequestAndNotify({
+    required Map<String, dynamic> requestData,
+    required String requesterUserId,
+    required String recipientUserId,
+  }) async {
+    final requestRow =
+        await _resourceService.createResourceRequest(requestData);
+    dev.log('requestRow: ${jsonEncode(requestRow)}');
+
+    await _messagesRepository.sendMessage(
+      requesterUserId,
+      recipientUserId,
+      'New Request',
+    );
   }
 }
