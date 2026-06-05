@@ -57,10 +57,6 @@ class MessagesState extends State<MessagesPage> {
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
     _loadInitialData();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _loadInitialData();
-    // });
   }
 
   Future<void> _loadInitialData() async {
@@ -93,7 +89,6 @@ class MessagesState extends State<MessagesPage> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.groupName)),
       body: StreamBuilder<List<Message>>(
-        //stream: messagesStream,
         stream:
             messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
         builder: (context, snapshot) {
@@ -129,14 +124,15 @@ class MessagesState extends State<MessagesPage> {
     );
   }
 
-  void _sendMessage(String text) {
-    try {
-      MessagesRepository().sendMessage(myUserId, widget.groupId, text);
-    } on Exception catch (error) {
-      log.warning("ERROR: $error");
-      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
-    }
-  }
+  // void _sendMessage(String text) {
+  //   try {
+  //     MessagesRepository().sendMessage(
+  //         fromProfileId: myUserId, groupId: widget.groupId, text: text);
+  //   } on Exception catch (error) {
+  //     log.warning("ERROR: $error");
+  //     //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
+  //   }
+  // }
 } // -- end of state
 
 /// Set of widget that contains TextField and Button to submit message
@@ -211,19 +207,14 @@ class _MessageBarState extends State<MessageBar> {
     print('✅ Group ID: $widget.groupId');
     print('✅ To ID: $toId');
     if (text.isEmpty) {
-      print('DEBUG: Empty message skipped'); // Instant terminal output
+      print('DEBUG: Empty message skipped');
       return;
     }
-
-    print(
-        'DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
-
+    print('DEBUG: Sending message from $myUserId to Group $toId: "$text"');
     _textController.clear();
-
-    //log.fine("Sent message from:$myUserId, to:$toId: $text");
     try {
-      //MessagesRepository().sendMessage(myUserId, toId, text);
-      await MessagesRepository().sendMessage(myUserId, toId, text);
+      await MessagesRepository().sendMessage(
+          fromProfileId: myUserId, groupId: widget.groupId, text: text);
       print('SUCCESS: Message sent!'); // Confirm send completed
       log.fine('Message sent: $text'); // Your existing logger
     } on Exception catch (error) {

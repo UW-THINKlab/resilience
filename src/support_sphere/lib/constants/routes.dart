@@ -29,32 +29,57 @@ class AppRoute extends Equatable {
 class AppNavigation {
   static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
     List<AppRoute> destinations = [
-      const AppRoute(icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
-      const AppRoute(icon: Icon(Ionicons.mail), label: NavRouteLabels.messages, body: InboxPage()),
-      const AppRoute(icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
-      const AppRoute(icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
-      const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.map_sharp),
+          label: NavRouteLabels.home,
+          body: HomeBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.mail),
+          label: NavRouteLabels.messages,
+          body: InboxPage()),
+      const AppRoute(
+          icon: Icon(Ionicons.person_sharp),
+          label: NavRouteLabels.profile,
+          body: ProfileBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.shield_checkmark_sharp),
+          label: NavRouteLabels.prepare,
+          body: ChecklistBody()),
+      const AppRoute(
+          icon: Icon(Ionicons.hammer_sharp),
+          label: NavRouteLabels.resources,
+          body: ResourceBody()),
     ];
     // Set the minimum width for managing resources and checklists
     // to be displayed in the navigation bar
     // screen size maximum information retrieved from
     // https://learn.microsoft.com/en-us/windows/apps/design/layout/screen-sizes-and-breakpoints-for-responsive-design
     if (role == AppRoles.communityAdmin && minWidth! > 641) {
-      destinations = destinations + [
-        const AppRoute(
-            icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
-        const AppRoute(
-            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
-        const AppRoute(
-            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminNeighborhood, body: NeighborhoodAdminBody()),
-      ];
+      destinations = destinations +
+          [
+            const AppRoute(
+                icon: Icon(Ionicons.construct_sharp),
+                label: NavRouteLabels.manageResources,
+                body: ManageResourcesBody()),
+            const AppRoute(
+                icon: Icon(Ionicons.list_sharp),
+                label: NavRouteLabels.manageChecklists,
+                body: ChecklistManagementBody()),
+            const AppRoute(
+                icon: Icon(Ionicons.people_outline),
+                label: NavRouteLabels.adminNeighborhood,
+                body: NeighborhoodAdminBody()),
+          ];
     }
     // The cluster captain controls
     if (role == AppRoles.subcommunityAgent && minWidth! > 641) {
-      destinations = destinations + [
-        const AppRoute(
-            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminCluster, body: ClusterAdminBody()),
-      ];
+      destinations = destinations +
+          [
+            const AppRoute(
+                icon: Icon(Ionicons.people_outline),
+                label: NavRouteLabels.adminCluster,
+                body: ClusterAdminBody()),
+          ];
     }
     return destinations;
   }

@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/widgets.dart'; //debugPrint
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:support_sphere/data/models/supplier_candidate.dart';
 
 class ResourceService {
   final SupabaseClient _supabaseClient = supabase;
@@ -109,6 +111,49 @@ class ResourceService {
 
   Future<void> deleteResourceCV(String id) async {
     await _supabaseClient.from('resources_cv').delete().eq('id', id);
+  }
+
+  Future<List<SupplierCandidate>> getNearestSuppliersByHousehold({
+    required String requesterProfileId,
+    required String resourceId,
+  }) async {
+    final result = await _supabaseClient.rpc(
+      'get_nearest_resource_suppliers_by_household',
+      params: {
+        'p_requester_profile_id': requesterProfileId,
+        'p_resource_id': resourceId,
+      },
+    );
+    debugPrint('RPC raw data: $result');
+    debugPrint('RPC type: ${result.runtimeType}');
+    final rows = List<Map<String, dynamic>>.from(result as List);
+    return rows.map(SupplierCandidate.fromJson).toList();
+  }
+
+  Future<List<SupplierCandidate>> getNearestSuppliersByCurrentLocation({
+    required String requesterProfileId,
+    required String resourceId,
+    required double currentLatitude,
+    required double currentLongitude,
+  }) async {
+    final result = await _supabaseClient.rpc(
+      'get_nearest_resource_suppliers_by_current_location',
+      params: {
+        'p_requester_profile_id': requesterProfileId,
+        'p_resource_id': resourceId,
+        'p_latitude':
+            currentLongitude, //TODO FIXME- HACK TO MATCH SWAPPED COORDINATES IN DB
+        'p_longitude':
+            currentLatitude, //TODO FIXME- HACK TO MATCH SWAPPED COORDINATES IN DB
+      },
+    );
+    debugPrint(
+        'WARNING: GEOMETRY IS FLIPPED IN DB, SO LAT/LON ARE SWAPPED IN THIS RPC CALL');
+    debugPrint('RPC GEOM: $currentLatitude, $currentLongitude');
+    debugPrint('RPC raw data: $result');
+    debugPrint('RPC type: ${result.runtimeType}');
+    final rows = List<Map<String, dynamic>>.from(result as List);
+    return rows.map(SupplierCandidate.fromJson).toList();
   }
 
   Future<Map<String, dynamic>> createResourceRequest(

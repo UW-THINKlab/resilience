@@ -4,7 +4,6 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:support_sphere/data/repositories/message.dart';
-import 'package:support_sphere/data/models/messages.dart';
 
 class ChatRepository {
   Future<List<ChatGroup>> getUserChatGroups(String userId) async {
@@ -35,11 +34,14 @@ class ChatRepository {
       name: 'ChatRepository',
     );
     final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
-    
+
     for (ChatGroup group in groups) {
-      group.lastMessageTime = await DateTime.parse(prefs.getString(group.id) ?? epoch.toString());
-      group.unreadCount = await messageRepo.unreadCount(group.id, group.lastMessageTime.toString());
-      group.lastMessage = await messageRepo.lastUnreadMessage(userId, group.id, group.lastMessageTime.toString());
+      group.lastMessageTime =
+          await DateTime.parse(prefs.getString(group.id) ?? epoch.toString());
+      group.unreadCount = await messageRepo.unreadCount(
+          group.id, group.lastMessageTime.toString());
+      group.lastMessage = await messageRepo.lastUnreadMessage(
+          userId, group.id, group.lastMessageTime.toString());
     }
 
     return groups;
@@ -103,6 +105,46 @@ class ChatRepository {
 
     await supabase.from('group_members').insert(memberRows);
 
+    return groupId;
+  }
+
+  Future<String> getOrCreateDirectRequestGroup({
+    required String name,
+    String? description,
+    required String createdByProfileId,
+    required String otherProfileId,
+  }) async {
+    final existingGroupId = await _findDirectGroupId(
+      profileAId: createdByProfileId,
+      profileBId: otherProfileId,
+    );
+
+    if (existingGroupId != null) {
+      return existingGroupId;
+    }
+
+    return createGroupWithProfiles(
+      name: name,
+      description: description,
+      createdByProfileId: createdByProfileId,
+      memberProfileIds: [otherProfileId],
+    );
+  }
+
+  Future<String?> _findDirectGroupId({
+    required String profileAId,
+    required String profileBId,
+  }) async {
+    final result = await supabase.rpc(
+      'find_direct_group_between_profiles',
+      params: {
+        'p_profile_a': profileAId,
+        'p_profile_b': profileBId,
+      },
+    );
+
+    final groupId = result as String?;
+    if (groupId == null || groupId.isEmpty) return null;
     return groupId;
   }
 

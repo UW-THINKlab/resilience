@@ -10,6 +10,7 @@ import 'package:support_sphere/utils/config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
+import 'package:support_sphere/logic/cubit/location_cubit.dart';
 
 void initializeLogging(Level level) {
   Logger.root.level = level;
@@ -47,10 +48,19 @@ class MyApp extends StatelessWidget {
           create: (_) => UserRepository(),
         ),
       ],
-      child: BlocProvider(
-        create: (_) => AuthenticationBloc(
-          authenticationRepository: context.read<AuthenticationRepository>(),
-        ),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthenticationBloc>(
+            create: (context) => AuthenticationBloc(
+              authenticationRepository:
+                  context.read<AuthenticationRepository>(),
+            ),
+          ),
+          BlocProvider<LocationCubit>(
+            lazy: false,
+            create: (_) => LocationCubit()..getCurrentLocation(),
+          ),
+        ],
         child: const AppView(),
       ),
     );
