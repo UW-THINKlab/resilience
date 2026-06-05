@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
@@ -311,17 +310,17 @@ class _PersonalInformation extends StatelessWidget {
           ),
           children: [
             _InfoRow(
-              icon: Ionicons.person_outline,
+              icon: Icons.person_outline,
               label: UserProfileStrings.fullName,
               value: fullName,
             ),
             _InfoRow(
-              icon: Ionicons.call_outline,
+              icon: Icons.call_outlined,
               label: UserProfileStrings.phone,
               value: phoneNumber,
             ),
             _InfoRow(
-              icon: Ionicons.mail_outline,
+              icon: Icons.mail_outline,
               label: UserProfileStrings.email,
               value: email,
             ),
@@ -423,7 +422,7 @@ class _HouseholdInformation extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child:
-                        Icon(Ionicons.key_outline, size: 18, color: Colors.grey[600]),
+                        Icon(Icons.key_outlined, size: 18, color: Colors.grey[600]),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -466,7 +465,7 @@ class _HouseholdInformation extends StatelessWidget {
                             ),
                             if (inviteCode.isNotEmpty)
                               IconButton(
-                                icon: const Icon(Ionicons.copy_outline, size: 16),
+                                icon: const Icon(Icons.copy_outlined, size: 16),
                                 tooltip: 'Copy invite code',
                                 padding: const EdgeInsets.all(8),
                                 constraints: const BoxConstraints(),
@@ -490,10 +489,10 @@ class _HouseholdInformation extends StatelessWidget {
             _PersonChipsRow(
               people: householdMembers,
               label: UserProfileStrings.householdMembers,
-              icon: Ionicons.people_outline,
+              icon: Icons.people_outline,
             ),
             _InfoRow(
-              icon: Ionicons.location_outline,
+              icon: Icons.location_searching_outlined,
               label: UserProfileStrings.address,
               value: address,
             ),
@@ -515,7 +514,7 @@ class _HouseholdInformation extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: Icon(Ionicons.document_text_outline,
+                    child: Icon(Icons.article,
                         size: 18, color: Colors.grey[600]),
                   ),
                   const SizedBox(width: 10),
@@ -570,19 +569,19 @@ class _ClusterInformation extends StatelessWidget {
           readOnly: true,
           children: [
             _InfoRow(
-              icon: Ionicons.home_outline,
+              icon: Icons.home_outlined,
               label: UserProfileStrings.clusterName,
               value: name,
             ),
             _InfoRow(
-              icon: Ionicons.location_outline,
+              icon: Icons.location_searching_outlined,
               label: UserProfileStrings.meetingPlace,
               value: meetingPlace,
             ),
             _PersonChipsRow(
               people: captains,
               label: UserProfileStrings.captains,
-              icon: Ionicons.shield_checkmark_outline,
+              icon: Icons.gpp_good_outlined,
             ),
           ],
         );
@@ -607,7 +606,7 @@ class _ActionButtons extends StatelessWidget {
                 onPressed: () => context
                     .read<AuthenticationBloc>()
                     .add(AuthOnLogoutRequested()),
-                icon: const Icon(Ionicons.log_out_outline),
+                icon: const Icon(Icons.logout_outlined),
                 label: const Text(LoginStrings.logout),
               ),
               const SizedBox(height: 8),
@@ -639,7 +638,7 @@ class _ActionButtons extends StatelessWidget {
                     );
                   },
                 ),
-                icon: const Icon(Ionicons.trash_bin_outline),
+                icon: const Icon(Icons.delete_outline),
                 label: const Text(UserProfileStrings.deleteMyAccount),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[700],

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_admin_body.dart';
@@ -29,11 +28,11 @@ class AppRoute extends Equatable {
 class AppNavigation {
   static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
     List<AppRoute> destinations = [
-      const AppRoute(icon: Icon(Ionicons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
-      const AppRoute(icon: Icon(Ionicons.mail), label: NavRouteLabels.messages, body: InboxPage()),
-      const AppRoute(icon: Icon(Ionicons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
-      const AppRoute(icon: Icon(Ionicons.shield_checkmark_sharp), label: NavRouteLabels.prepare, body: ChecklistBody()),
-      const AppRoute(icon: Icon(Ionicons.hammer_sharp), label: NavRouteLabels.resources, body: ResourceBody()),
+      const AppRoute(icon: Icon(Icons.home_sharp), label: NavRouteLabels.home, body: HomeBody()),
+      const AppRoute(icon: Icon(Icons.mail), label: NavRouteLabels.messages, body: InboxPage()),
+      const AppRoute(icon: Icon(Icons.person_sharp), label: NavRouteLabels.profile, body: ProfileBody()),
+      const AppRoute(icon: Icon(Icons.gpp_good), label: NavRouteLabels.prepare, body: ChecklistBody()),
+      const AppRoute(icon: Icon(Icons.hardware), label: NavRouteLabels.resources, body: ResourceBody()),
     ];
     // Set the minimum width for managing resources and checklists
     // to be displayed in the navigation bar
@@ -42,18 +41,18 @@ class AppNavigation {
     if (role == AppRoles.communityAdmin && minWidth! > 641) {
       destinations = destinations + [
         const AppRoute(
-            icon: Icon(Ionicons.construct_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
+            icon: Icon(Icons.construction_sharp), label: NavRouteLabels.manageResources, body: ManageResourcesBody()),
         const AppRoute(
-            icon: Icon(Ionicons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
+            icon: Icon(Icons.list_sharp), label: NavRouteLabels.manageChecklists, body: ChecklistManagementBody()),
         const AppRoute(
-            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminNeighborhood, body: NeighborhoodAdminBody()),
+            icon: Icon(Icons.people), label: NavRouteLabels.adminNeighborhood, body: NeighborhoodAdminBody()),
       ];
     }
     // The cluster captain controls
     if (role == AppRoles.subcommunityAgent && minWidth! > 641) {
       destinations = destinations + [
         const AppRoute(
-            icon: Icon(Ionicons.people_outline), label: NavRouteLabels.adminCluster, body: ClusterAdminBody()),
+            icon: Icon(Icons.people_outline), label: NavRouteLabels.adminCluster, body: ClusterAdminBody()),
       ];
     }
     return destinations;

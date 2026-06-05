@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
@@ -30,7 +29,7 @@ class AppPage extends StatelessWidget {
               const MaterialBanner(
                 padding: EdgeInsets.all(5),
                 content: Text(AppStrings.testEmergencyBannerText),
-                leading: Icon(Ionicons.warning_sharp),
+                leading: Icon(Icons.warning_sharp),
                 backgroundColor: Colors.yellow,
                 actions: [SizedBox()],
               ),
@@ -59,7 +58,7 @@ class AppPage extends StatelessWidget {
                   // leading: Builder(
                   //   builder: (context) {
                   //     return IconButton(
-                  //       icon: const Icon(color: Colors.white, Ionicons.menu_outline),
+                  //       icon: const Icon(color: Colors.white, Icons.menu_outline),
                   //       onPressed: () {
                   //         Scaffold.of(context).openDrawer();
                   //       },
@@ -81,7 +80,7 @@ class AppPage extends StatelessWidget {
                     // IconButton(
                     //   icon: const Badge(
                     //       label: Text('2'),
-                    //       child: Icon(Ionicons.notifications_sharp)),
+                    //       child: Icon(Icons.notifications_sharp)),
                     //   color: Colors.white,
                     //   onPressed: () {},
                     // ),

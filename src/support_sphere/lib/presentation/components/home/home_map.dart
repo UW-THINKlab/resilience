@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
@@ -80,7 +79,7 @@ class HomeMap extends StatelessWidget {
       width: 40,
       height: 40,
       child: const Icon(
-        Ionicons.person,
+        Icons.person,
         color: Colors.black,
         size: 40,
       ),
@@ -95,7 +94,7 @@ class HomeMap extends StatelessWidget {
   //     child: GestureDetector(
   //       onTap: () => _showCaptainDetails(context, captainMarker),
   //       child: const Icon(
-  //         Ionicons.person,
+  //         Icons.person,
   //         color: Colors.green,
   //         size: 40,
   //       ),
@@ -170,14 +169,14 @@ class HomeMap extends StatelessWidget {
     //   width: iconSize,
     //   height: iconSize,
     //   child: const Icon(
-    //     Ionicons.people_circle_outline,
+    //     Icons.people_circle_outline,
     //     color: Colors.green,
     //     size: iconSize,
     //   ),
     //   // child: GestureDetector(
     //   //   //onTap: () => _showCaptainDetails(context, captainMarker),
     //   //   child: const Icon(
-    //   //     Ionicons.person,
+    //   //     Icons.person,
     //   //     color: Colors.green,
     //   //     size: iconSize,
     //   //   ),
