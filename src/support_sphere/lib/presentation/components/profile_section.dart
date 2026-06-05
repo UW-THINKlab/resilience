@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
 
 class ProfileSection extends StatelessWidget {
@@ -44,7 +43,7 @@ class ProfileSection extends StatelessWidget {
                     GestureDetector(
                       onTap: () => _showModalBottomSheet(context),
                       child: Icon(
-                        Ionicons.create_outline,
+                        Icons.create,
                         size: 18,
                         color: Theme.of(context).colorScheme.primary,
                       ),

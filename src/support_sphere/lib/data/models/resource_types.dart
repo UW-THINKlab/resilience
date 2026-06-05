@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ResourceTypes extends Equatable {
@@ -16,7 +15,7 @@ class ResourceTypes extends Equatable {
   @override
   List<Object?> get props => [id, name, description];
 
-  IconData get icon {
+  FaIconData get icon {
     // Get the icon based on the resource type
     switch (name) {
       case 'Durable':

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_admin_body.dart';
@@ -30,23 +29,23 @@ class AppNavigation {
   static List<AppRoute> getDestinations(String? role, [double? minWidth]) {
     List<AppRoute> destinations = [
       const AppRoute(
-          icon: Icon(Ionicons.map_sharp),
+          icon: Icon(Icons.map_sharp),
           label: NavRouteLabels.home,
           body: HomeBody()),
       const AppRoute(
-          icon: Icon(Ionicons.mail),
+          icon: Icon(Icons.mail),
           label: NavRouteLabels.messages,
           body: InboxPage()),
       const AppRoute(
-          icon: Icon(Ionicons.person_sharp),
+          icon: Icon(Icons.person_sharp),
           label: NavRouteLabels.profile,
           body: ProfileBody()),
       const AppRoute(
-          icon: Icon(Ionicons.shield_checkmark_sharp),
+          icon: Icon(Icons.gpp_good),
           label: NavRouteLabels.prepare,
           body: ChecklistBody()),
       const AppRoute(
-          icon: Icon(Ionicons.hammer_sharp),
+          icon: Icon(Icons.hardware),
           label: NavRouteLabels.resources,
           body: ResourceBody()),
     ];
@@ -58,15 +57,15 @@ class AppNavigation {
       destinations = destinations +
           [
             const AppRoute(
-                icon: Icon(Ionicons.construct_sharp),
+                icon: Icon(Icons.construction_sharp),
                 label: NavRouteLabels.manageResources,
                 body: ManageResourcesBody()),
             const AppRoute(
-                icon: Icon(Ionicons.list_sharp),
+                icon: Icon(Icons.list_sharp),
                 label: NavRouteLabels.manageChecklists,
                 body: ChecklistManagementBody()),
             const AppRoute(
-                icon: Icon(Ionicons.people_outline),
+                icon: Icon(Icons.people),
                 label: NavRouteLabels.adminNeighborhood,
                 body: NeighborhoodAdminBody()),
           ];
@@ -76,7 +75,7 @@ class AppNavigation {
       destinations = destinations +
           [
             const AppRoute(
-                icon: Icon(Ionicons.people_outline),
+                icon: Icon(Icons.people_outline),
                 label: NavRouteLabels.adminCluster,
                 body: ClusterAdminBody()),
           ];

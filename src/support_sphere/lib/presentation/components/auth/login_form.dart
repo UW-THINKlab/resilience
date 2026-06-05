@@ -1,5 +1,4 @@
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
 import 'package:formz/formz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,7 +82,7 @@ class _EmailInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.mail_outline,
+              Icons.mail_outline,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -129,7 +128,7 @@ class _PasswordInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.lock_closed_outline,
+              Icons.lock_outline,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -139,8 +138,8 @@ class _PasswordInput extends StatelessWidget {
               },
               child: Icon(
                 state.showPassword
-                    ? Ionicons.eye_off_outline
-                    : Ionicons.eye_outline,
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 size: 15.0,
                 color: Theme.of(context).colorScheme.secondary,
               ),

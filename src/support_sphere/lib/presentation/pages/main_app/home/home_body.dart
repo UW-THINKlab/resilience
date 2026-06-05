@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemMouseCursor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
@@ -82,7 +81,7 @@ class HomeBodyState extends State<HomeBody> {
                   backgroundColor: Colors.white,
                   elevation: 2,
                   child: const Icon(
-                    Ionicons.flag,
+                    Icons.flag,
                     color: Colors.black,
                   ),
                 ),
@@ -101,7 +100,7 @@ class HomeBodyState extends State<HomeBody> {
                   backgroundColor: Colors.white,
                   elevation: 2,
                   child: const Icon(
-                    Ionicons.locate,
+                    Icons.location_searching,
                     color: Colors.black,
                   ),
                 ),
@@ -120,7 +119,7 @@ class HomeBodyState extends State<HomeBody> {
                   backgroundColor: Colors.white,
                   elevation: 2,
                   child: const Icon(
-                    Ionicons.square_outline,
+                    Icons.square_outlined,
                     color: Colors.black,
                   ),
                 ),
