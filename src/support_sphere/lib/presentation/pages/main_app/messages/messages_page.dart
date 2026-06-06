@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' show Logger;
-import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -220,12 +219,10 @@ class _MessageBarState extends State<MessageBar> {
 
     _textController.clear();
 
-    //log.fine("Sent message from:$myUserId, to:$toId: $text");
+    log.fine("Sent message from:$myUserId, to:$toId: $text");
     try {
-      //MessagesRepository().sendMessage(myUserId, toId, text);
       await MessagesRepository().sendMessage(myUserId, toId, text);
-      print('SUCCESS: Message sent!'); // Confirm send completed
-      log.fine('Message sent: $text'); // Your existing logger
+      log.fine('Message sent: $text');
     } on Exception catch (error) {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
