@@ -8,7 +8,7 @@ class ChatGroup extends Equatable {
   String? lastMessage;
   DateTime? lastMessageTime;
   // final List<String> members;  // User IDs in group
-  
+
   ChatGroup({
     required this.id,
     required this.name,
@@ -30,7 +30,6 @@ class ChatGroup extends Equatable {
       //     : null,
       // unreadCount: json['unread_count'] ?? 0,
       // members: List<String>.from(json['members'] ?? []),
-
     );
   }
 

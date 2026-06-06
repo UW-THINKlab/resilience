@@ -25,13 +25,11 @@ class Home2Page extends StatefulWidget {
   const Home2Page({super.key});
 
   @override
-  State<Home2Page> createState() =>
-      _HomePageState();
+  State<Home2Page> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<Home2Page> {
   _HomePageState({
-    this.status = HomePageStatus.initial,
     this.userLocation,
     this.initMapCentroid = defaultInitMapCentroid,
     //this.initZoomLevel = 17.5,
@@ -44,7 +42,6 @@ class _HomePageState extends State<Home2Page> {
   final mapController = MapController();
 
   // from orig
-  final HomePageStatus status;
   LatLng? userLocation;
   LatLng? initMapCentroid;
   double? initZoomLevel;
