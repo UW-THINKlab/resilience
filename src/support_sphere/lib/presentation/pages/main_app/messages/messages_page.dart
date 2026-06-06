@@ -43,13 +43,11 @@ class MessagesState extends State<MessagesPage> {
   late final String myUserId;
   // late final Person? myUser;
 
-  bool _isLoading = true;
-
   // int _loadCount = 0;
 
   @override
   void initState() {
-    print('🚀 initState groupId: "${widget.groupId}"'); // ✅ Print here
+    log.fine('🚀 initState groupId: "${widget.groupId}"'); // ✅ Print here
     super.initState();
 
     myUserId = supabase.auth.currentUser!.id;
@@ -63,10 +61,9 @@ class MessagesState extends State<MessagesPage> {
   }
 
   Future<void> _loadInitialData() async {
-    print('✅ Group ID: ${widget.groupId}');
-    print('✅ My User: $myUserId');
-    // setState(() => _isLoading = true);
-    setState(() => _isLoading = false);
+    log.fine('✅ Group ID: ${widget.groupId}');
+    log.fine('✅ My User: $myUserId');
+    setState(() => {});
 
     final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
     log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
@@ -78,7 +75,7 @@ class MessagesState extends State<MessagesPage> {
 
     if (!mounted) return; // avoid calling setState after dispose
 
-    setState(() => _isLoading = false);
+    setState(() => {});
   }
 
   Person? getProfile(String userId) {
@@ -126,15 +123,6 @@ class MessagesState extends State<MessagesPage> {
         },
       ),
     );
-  }
-
-  void _sendMessage(String text) {
-    try {
-      MessagesRepository().sendMessage(myUserId, widget.groupId, text);
-    } on Exception catch (error) {
-      log.warning("ERROR: $error");
-      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
-    }
   }
 } // -- end of state
 
@@ -207,14 +195,14 @@ class _MessageBarState extends State<MessageBar> {
   void _submitMessage(BuildContext context, String toId) async {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
-    print('✅ Group ID: $widget.groupId');
-    print('✅ To ID: $toId');
+    log.fine('✅ Group ID: $widget.groupId');
+    log.fine('✅ To ID: $toId');
     if (text.isEmpty) {
-      print('DEBUG: Empty message skipped'); // Instant terminal output
+      log.fine('DEBUG: Empty message skipped'); // Instant terminal output
       return;
     }
 
-    print(
+    log.fine(
         'DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
 
     _textController.clear();
@@ -233,7 +221,6 @@ class _MessageBarState extends State<MessageBar> {
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
-    super.key,
     required this.message,
     required this.profile,
     required this.myUserId,

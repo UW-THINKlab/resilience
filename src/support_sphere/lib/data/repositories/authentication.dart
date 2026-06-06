@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
@@ -7,6 +8,7 @@ import 'package:support_sphere/data/utils.dart';
 
 class AuthenticationRepository {
   final _authService = AuthService();
+  final log = Logger('Authentication');
 
   /// Stream of [MyAuthUser] which will emit the current user when
   /// the authentication state changes.
@@ -33,7 +35,6 @@ class AuthenticationRepository {
   }) async =>
       _authService.signInWithEmailAndPassword(email, password);
 
-
   Future<void> logOut() async => await _authService.signOut();
 
   Future<void> deleteMyAccount() async => await _authService.deleteMyAccount();
@@ -43,14 +44,16 @@ class AuthenticationRepository {
     required String password,
     required String signupCode,
   }) async {
-    Map<String, dynamic>? codeResult = await _authService.isSignupCodeValid(signupCode);
+    Map<String, dynamic>? codeResult =
+        await _authService.isSignupCodeValid(signupCode);
     bool isCodeValid = codeResult != null;
     if (!isCodeValid) {
       throw Exception(ErrorMessageStrings.invalidSignUpCode);
     } else {
       return {
         'data': codeResult,
-        'response': await _authService.signUpWithEmailAndPassword(email, password),
+        'response':
+            await _authService.signUpWithEmailAndPassword(email, password),
       };
     }
   }
@@ -71,7 +74,7 @@ class AuthenticationRepository {
       String token = session.accessToken;
       Map<String, dynamic> decodedToken = Jwtdecode(token);
       String userRole = decodedToken['user_role'] ?? defaultReturn;
-      print("User role: $userRole");
+      log.fine("User role: $userRole");
       return userRole;
     }
     return defaultReturn;

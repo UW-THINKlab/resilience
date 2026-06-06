@@ -13,7 +13,6 @@ const appUserAgent = "edu.uw.thinklab.resilience";
 
 final log = Logger('HomeMap');
 
-
 class HomeMap extends StatelessWidget {
   final MapController mapController;
   final VoidCallback? onMapReady;
@@ -38,7 +37,7 @@ class HomeMap extends StatelessWidget {
         initialZoom: state.initZoomLevel,
         onMapReady: onMapReady,
         onTap: (_, latLng) {
-            if (state.status == HomeStatus.editMeetingPlace) {
+          if (state.status == HomeStatus.editMeetingPlace) {
             final point = mapController.camera.latLngToScreenOffset(latLng);
             final offset = Offset(point.dx, point.dy);
             cubit.setMeetingPlace(latLng, offset);
@@ -50,16 +49,18 @@ class HomeMap extends StatelessWidget {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: appUserAgent
-        ),
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: appUserAgent),
         PolygonLayer(
           polygons: _generatePolygons(),
         ),
         MarkerLayer(
           markers: [
-            if (state.userLocation != null) _buildUserMarker(state.userLocation!),
-            if (state.cluster?.meetingPoint != null) buildMeetingMarker(state.cluster?.meetingPlace, state.cluster?.meetingPoint),
+            if (state.userLocation != null)
+              _buildUserMarker(state.userLocation!),
+            if (state.cluster?.meetingPoint != null)
+              buildMeetingMarker(
+                  state.cluster?.meetingPlace, state.cluster?.meetingPoint),
             // ...state.captainMarkers!
             //     .where((marker) => marker.householdGeom != null)
             //     .map((marker) => _buildCaptainMarker(
@@ -116,11 +117,10 @@ class HomeMap extends StatelessWidget {
   List<Marker> _buildPointsOfInterest() {
     if (state.pointsOfInterest == null) {
       return [];
-    }
-    else {
+    } else {
       var value = [for (var p in state.pointsOfInterest!) p.marker()];
       //dev.log(value.toString());
-      //print(value);
+      //print.fine(value);
       //log.fine(value.toString());
       return value;
     }
@@ -135,12 +135,12 @@ class HomeMap extends StatelessWidget {
     final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
     log.fine("Cluster polygon: ${cluster.name} ${cluster.geom}");
     return Polygon(
-        label: cluster.name,
-        points: cluster.geom!,
-        color: color.withAlpha(64),
-        borderColor: color,
-        borderStrokeWidth: 3,
-        labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
+      label: cluster.name,
+      points: cluster.geom!,
+      color: color.withAlpha(64),
+      borderColor: color,
+      borderStrokeWidth: 3,
+      labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
     );
   }
 
@@ -184,48 +184,48 @@ class HomeMap extends StatelessWidget {
     // );
   }
 
-  Future<void> _popupDescriptionDialog(BuildContext context, HomeCubit cubit) async {
+  Future<void> _popupDescriptionDialog(
+      BuildContext context, HomeCubit cubit) async {
     return showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        scrollable: true,
-        title: Text('Save meeting point location?'),
-        content: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text('Enter description for '),
-                const SizedBox(height: 15),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    //icon: Icon(Icons.message ),
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              scrollable: true,
+              title: Text('Save meeting point location?'),
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text('Enter description for '),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Description',
+                          //icon: Icon(Icons.message ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
+              actions: [
+                ElevatedButton(
+                    child: Text("Save"),
+                    onPressed: () {
+                      // FIXME: get description from form!
+                      final description = "";
+                      cubit.saveMeetingPlace(description);
+                      Navigator.pop(context);
+                    }),
+                ElevatedButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      cubit.cancelMeetingPlace();
+                      Navigator.pop(context);
+                    }),
               ],
-            ),
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-              child: Text("Save"),
-              onPressed: () {
-                // FIXME: get description from form!
-                final description = "";
-                cubit.saveMeetingPlace(description);
-                Navigator.pop(context);
-              }),
-          ElevatedButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                cubit.cancelMeetingPlace();
-                Navigator.pop(context);
-              }),
-        ],
-      )
-    );
+            ));
   }
 }

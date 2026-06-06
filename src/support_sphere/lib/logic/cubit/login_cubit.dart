@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -7,6 +8,7 @@ import 'package:formz/formz.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
+  final log = Logger('MyApp');
   LoginCubit(this._authenticationRepository) : super(const LoginState());
 
   final AuthenticationRepository _authenticationRepository;
@@ -39,7 +41,7 @@ class LoginCubit extends Cubit<LoginState> implements ValidatableCubit {
       );
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } catch (e) {
-      print('Error during login: $e');
+      log.fine('Error during login: $e');
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   }

@@ -29,14 +29,7 @@ class Home2Page extends StatefulWidget {
 }
 
 class _HomePageState extends State<Home2Page> {
-  _HomePageState({
-    this.userLocation,
-    this.initMapCentroid = defaultInitMapCentroid,
-    //this.initZoomLevel = 17.5,
-    //this.captainMarkers,
-    //this.cluster,
-    //this.pointsOfInterest,
-  });
+  _HomePageState();
   static const double pointSize = 65;
 
   final mapController = MapController();

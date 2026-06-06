@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/data/repositories/checklist.dart';
@@ -7,6 +8,7 @@ import 'package:support_sphere/data/repositories/checklist.dart';
 part 'checklist_management_state.dart';
 
 class ChecklistManagementCubit extends Cubit<ChecklistManagementState> {
+  final log = Logger('MyApp');
   ChecklistManagementCubit(this.authUser)
       : super(const ChecklistManagementState()) {
     fetchAllChecklists();
@@ -22,7 +24,7 @@ class ChecklistManagementCubit extends Cubit<ChecklistManagementState> {
       emit(state.copyWith(allChecklists: checklists));
     } catch (error) {
       /// TODO: handle errors
-      print(error);
+      log.fine(error);
     }
   }
 
