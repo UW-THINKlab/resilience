@@ -130,11 +130,14 @@ class ResourceRepository {
           ? remaining
           : candidate.availableQuantity;
 
-      final person = await _userRepository.getMyProfile();
-      final requesterName = person?.givenName ?? 'Unk Neighbor';
+      final requesterPerson = await _userRepository.getMyProfile();
+      final requesterName = requesterPerson?.name() ?? 'Unk Neighbor 1';
+      final candidatePerson = await _userRepository.getPersonProfileByUserId(
+          userId: candidate.profileId);
+      final candidateName = candidatePerson?.name() ?? 'Unk Neighbor 2';
 
       final groupName =
-          'Request from $requesterName to ${candidate.givenName} for $allocated $resourceName';
+          'Request from $requesterName to $candidateName for $allocated $resourceName';
 
       final groupId = await _chatRepository.createDirectRequestGroup(
         createdByProfileId: requesterProfileId,
@@ -143,18 +146,6 @@ class ResourceRepository {
         name: groupName,
       );
 
-      // final requestRow = await _resourceService.createResourceRequest(
-      //   {
-      //     'resource_id': resourceId,
-      //     'quantity': allocated,
-      //     'notes': notes,
-      //     'request_scope': requestScope,
-      //     'requester_profile_id': requesterProfileId,
-      //     'supplier_profile_id': candidate.profileId,
-      //     'distance_meters': candidate.distanceMeters,
-      //     //TODO urgency
-      //   },
-      // );
       final requestRow = await _resourceService.reserveRequestCandidate(
         resourceId: resourceId,
         quantity: allocated,

@@ -107,15 +107,6 @@ class MessagesState extends State<MessagesPage> {
       ),
     );
   }
-
-  void _sendMessage(String text) {
-    try {
-      MessagesRepository().sendMessage(myUserId, widget.groupId, text);
-    } on Exception catch (error) {
-      log.warning("ERROR: $error");
-      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
-    }
-  }
 } // -- end of state
 
 class MessageBar extends StatefulWidget {
