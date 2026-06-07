@@ -83,8 +83,25 @@ class ResourceService {
     ''');
   }
 
-  Future<void> addUserResource(Map<String, dynamic> data) async {
-    await _supabaseClient.from('user_resources').upsert(data);
+  Future<void> addUserResource({
+    required String userId,
+    required String resourceId,
+    required int quantity,
+    String? notes,
+    required String sharingScope,
+    required String sharingScopeEmergency,
+  }) async {
+    await _supabaseClient.rpc(
+      'add_user_resource',
+      params: {
+        'p_user_id': userId,
+        'p_resource_id': resourceId,
+        'p_quantity': quantity,
+        'p_notes': notes,
+        'p_sharing_scope': sharingScope,
+        'p_sharing_scope_emergency': sharingScopeEmergency,
+      },
+    );
   }
 
   Future<void> deleteUserResource(String id) async {
@@ -141,14 +158,10 @@ class ResourceService {
       params: {
         'p_requester_profile_id': requesterProfileId,
         'p_resource_id': resourceId,
-        'p_latitude':
-            currentLongitude, //TODO FIXME- HACK TO MATCH SWAPPED COORDINATES IN DB
-        'p_longitude':
-            currentLatitude, //TODO FIXME- HACK TO MATCH SWAPPED COORDINATES IN DB
+        'p_latitude': currentLatitude,
+        'p_longitude': currentLongitude,
       },
     );
-    debugPrint(
-        'WARNING: GEOMETRY IS FLIPPED IN DB, SO LAT/LON ARE SWAPPED IN THIS RPC CALL');
     debugPrint('RPC GEOM: $currentLatitude, $currentLongitude');
     debugPrint('RPC raw data: $result');
     debugPrint('RPC type: ${result.runtimeType}');
@@ -156,11 +169,37 @@ class ResourceService {
     return rows.map(SupplierCandidate.fromJson).toList();
   }
 
-  Future<Map<String, dynamic>> createResourceRequest(
-      Map<String, dynamic> data) async {
-    final row =
-        await _supabaseClient.from('requests').insert(data).select().single();
+  // Future<Map<String, dynamic>> createResourceRequest(
+  //     Map<String, dynamic> data) async {
+  //   final row =
+  //       await _supabaseClient.from('requests').insert(data).select().single();
 
-    return Map<String, dynamic>.from(row);
+  //   return Map<String, dynamic>.from(row);
+  // }
+  Future<Map<String, dynamic>> reserveRequestCandidate({
+    required String resourceId,
+    required int quantity,
+    String? notes,
+    required String requestScope,
+    required String requesterProfileId,
+    required String supplierProfileId,
+    required String userResourceId,
+    double? distanceMeters,
+  }) async {
+    final row = await _supabaseClient.rpc(
+      'reserve_request_candidate',
+      params: {
+        'p_resource_id': resourceId,
+        'p_quantity': quantity,
+        'p_request_scope': requestScope,
+        'p_requester_profile_id': requesterProfileId,
+        'p_supplier_profile_id': supplierProfileId,
+        'p_user_resource_id': userResourceId,
+        'p_notes': notes,
+        'p_distance_meters': distanceMeters,
+      },
+    );
+
+    return Map<String, dynamic>.from(row as Map);
   }
 }

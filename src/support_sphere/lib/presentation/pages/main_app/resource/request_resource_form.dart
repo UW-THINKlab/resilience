@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
@@ -95,6 +96,65 @@ class RequestResourceForm extends StatefulWidget {
 class _RequestResourceFormState extends State<RequestResourceForm> {
   final _formKey = GlobalKey<FormState>();
   RequestResourceFormData _formData = RequestResourceFormData();
+
+  Future<void> _handleSubmit(Resource resource) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    _formKey.currentState!.save();
+
+    _formData = _formData.copyWith(
+      resourceId: resource.id,
+      resourceName: resource.name,
+    );
+
+    if (_formData.requestScope == 'nearby') {
+      final locationCubit = context.read<LocationCubit>();
+
+      if (locationCubit.state.userLocation == null) {
+        await locationCubit.getCurrentLocation();
+      }
+
+      final userLocation = locationCubit.state.userLocation;
+      if (userLocation == null) {
+        if (!mounted) return;
+        showErrorSnackBar(
+          context,
+          'Current location is required for nearby requests.',
+        );
+        return;
+      }
+
+      _formData = _formData.copyWith(
+        currentLatitude: userLocation.latitude,
+        currentLongitude: userLocation.longitude,
+      );
+    }
+
+    try {
+      await context.read<ResourceCubit>().submitResourceRequest(
+            requestData: _formData.toJson(),
+          );
+
+      if (!mounted) return;
+
+      showSuccessSnackBar(context, 'Request sent.');
+
+      context.read<ResourceCubit>().currentNavChanged(
+            ResourceNav.savedRequest,
+          );
+    } catch (e) {
+      if (!mounted) return;
+
+      final message = e.toString().toLowerCase();
+
+      showErrorSnackBar(
+        context,
+        message.contains('not enough available inventory')
+            ? 'Not enough inventory to fulfill this request.'
+            : 'Failed to save request: $e',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,59 +248,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent),
-                      // onPressed: _submit,
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          _formData = _formData.copyWith(
-                            resourceId: resource.id,
-                            resourceName: resource.name,
-                          );
-                          if (_formData.requestScope == 'nearby') {
-                            final locationCubit = context.read<LocationCubit>();
-
-                            if (locationCubit.state.userLocation == null) {
-                              await locationCubit.getCurrentLocation();
-                            }
-
-                            final userLocation =
-                                locationCubit.state.userLocation;
-                            if (userLocation == null) {
-                              if (!mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Current location is required for nearby requests.'),
-                                ),
-                              );
-                              return;
-                            }
-
-                            _formData = _formData.copyWith(
-                              currentLatitude: userLocation.latitude,
-                              currentLongitude: userLocation.longitude,
-                            );
-                          }
-
-                          try {
-                            await context
-                                .read<ResourceCubit>()
-                                .submitResourceRequest(
-                                  requestData: _formData.toJson(),
-                                );
-                            if (!context.mounted) return;
-                            context
-                                .read<ResourceCubit>()
-                                .currentNavChanged(ResourceNav.savedRequest);
-                          } catch (e) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Failed to save request: $e')),
-                            );
-                          }
-                        }
-                      },
+                      onPressed: () => _handleSubmit(resource),
                       child: Text("Request",
                           style: const TextStyle(color: Colors.white))),
                   const SizedBox(width: 4),

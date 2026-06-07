@@ -6,6 +6,7 @@ import 'package:support_sphere/data/models/user_resource.dart';
 // import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/models/supplier_candidate.dart';
 import 'package:support_sphere/data/services/resource_service.dart';
+import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/data/repositories/user.dart';
@@ -13,15 +14,18 @@ import 'package:support_sphere/data/repositories/user.dart';
 class ResourceRepository {
   ResourceRepository({
     ResourceService? resourceService,
+    AuthService? authService,
     MessagesRepository? messagesRepository,
     ChatRepository? chatRepository,
     UserRepository? userRepository,
   })  : _resourceService = resourceService ?? ResourceService(),
+        _authService = authService ?? AuthService(),
         _messagesRepository = messagesRepository ?? MessagesRepository(),
         _chatRepository = chatRepository ?? ChatRepository(),
         _userRepository = userRepository ?? UserRepository();
 
   final ResourceService _resourceService;
+  final AuthService _authService;
   final MessagesRepository _messagesRepository;
   final ChatRepository _chatRepository;
   final UserRepository _userRepository;
@@ -68,7 +72,15 @@ class ResourceRepository {
   }
 
   Future<void> addToUserInventory(Map<String, dynamic> data) async {
-    await _resourceService.addUserResource(data);
+    final userId = _authService.getSignedInUser()!.id;
+    await _resourceService.addUserResource(
+      userId: userId,
+      resourceId: data['resource_id'] as String,
+      quantity: data['quantity'] as int,
+      notes: data['notes'] as String?,
+      sharingScope: data['sharing_scope'] as String,
+      sharingScopeEmergency: data['sharing_scope_emergency'] as String,
+    );
   }
 
   Future<void> deleteUserResource(String id) async {
@@ -79,9 +91,9 @@ class ResourceRepository {
     await _resourceService.markUpToDate(id, updatedAt);
   }
 
-  Future<void> requestResource(Map<String, dynamic> data) async {
-    await _resourceService.createResourceRequest(data);
-  }
+  // Future<void> requestResource(Map<String, dynamic> data) async {
+  //   await _resourceService.createResourceRequest(data);
+  // }
 
   Future<void> submitResourceRequestAndNotify({
     required Map<String, dynamic> requestData,
@@ -121,32 +133,44 @@ class ResourceRepository {
       final person = await _userRepository.getMyProfile();
       final requesterName = person?.givenName ?? 'Unk Neighbor';
 
-      final groupName = '$requesterName and ${candidate.givenName}';
+      final groupName =
+          'Request from $requesterName to ${candidate.givenName} for $allocated $resourceName';
 
-      final groupId = await _chatRepository.getOrCreateDirectRequestGroup(
+      final groupId = await _chatRepository.createDirectRequestGroup(
         createdByProfileId: requesterProfileId,
         description: 'DM for resource request',
         otherProfileId: candidate.profileId,
         name: groupName,
       );
 
-      final requestRow = await _resourceService.createResourceRequest(
-        {
-          'resource_id': resourceId,
-          'quantity': allocated,
-          'notes': notes,
-          'request_scope': requestScope,
-          'requester_profile_id': requesterProfileId,
-          'supplier_profile_id': candidate.profileId,
-          'distance_meters': candidate.distanceMeters,
-          //TODO urgency
-        },
+      // final requestRow = await _resourceService.createResourceRequest(
+      //   {
+      //     'resource_id': resourceId,
+      //     'quantity': allocated,
+      //     'notes': notes,
+      //     'request_scope': requestScope,
+      //     'requester_profile_id': requesterProfileId,
+      //     'supplier_profile_id': candidate.profileId,
+      //     'distance_meters': candidate.distanceMeters,
+      //     //TODO urgency
+      //   },
+      // );
+      final requestRow = await _resourceService.reserveRequestCandidate(
+        resourceId: resourceId,
+        quantity: allocated,
+        notes: notes,
+        requestScope: requestScope,
+        requesterProfileId: requesterProfileId,
+        supplierProfileId: candidate.profileId,
+        userResourceId: candidate.userResourceId,
+        distanceMeters: candidate.distanceMeters,
       );
 
       await _messagesRepository.sendMessage(
         fromProfileId: requesterProfileId,
         groupId: groupId,
-        text: 'New resource request for $allocated unit(s) of  $resourceName',
+        text:
+            'New resource request for $allocated unit(s) of  $resourceName. Notes: $notes',
         messageType: 'resource_request',
         requestId: requestRow['id'] as String,
         metadata: {

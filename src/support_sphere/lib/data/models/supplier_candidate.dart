@@ -6,6 +6,7 @@ class SupplierCandidate {
     required this.householdId,
     required this.availableQuantity,
     required this.distanceMeters,
+    required this.userResourceId,
   });
 
   final String profileId;
@@ -14,6 +15,7 @@ class SupplierCandidate {
   final String householdId;
   final int availableQuantity;
   final double distanceMeters;
+  final String userResourceId;
 
   factory SupplierCandidate.fromJson(Map<String, dynamic> json) {
     return SupplierCandidate(
@@ -23,6 +25,7 @@ class SupplierCandidate {
       householdId: json['household_id'] as String,
       availableQuantity: (json['available_quantity'] as num).toInt(),
       distanceMeters: (json['distance_meters'] as num).toDouble(),
+      userResourceId: json['user_resource_id'] as String,
     );
   }
 }

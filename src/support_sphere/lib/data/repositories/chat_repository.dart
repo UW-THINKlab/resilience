@@ -108,23 +108,52 @@ class ChatRepository {
     return groupId;
   }
 
-  Future<String> getOrCreateDirectRequestGroup({
+  // Future<String> getOrCreateDirectRequestGroup({
+  //   required String name,
+  //   String? description,
+  //   required String createdByProfileId,
+  //   required String otherProfileId,
+  // }) async {
+  //   final existingGroupId = await _findDirectGroupId(
+  //     profileAId: createdByProfileId,
+  //     profileBId: otherProfileId,
+  //   );
+
+  //   if (existingGroupId != null) {
+  //     return existingGroupId;
+  //   }
+
+  //   return createGroupWithProfiles(
+  //     name: name,
+  //     description: description,
+  //     createdByProfileId: createdByProfileId,
+  //     memberProfileIds: [otherProfileId],
+  //   );
+  // }
+
+  Future<String> _getNextGroupName({
+    required String baseName,
+  }) async {
+    final result = await supabase.rpc(
+      'get_next_group_name',
+      params: {
+        'p_base_name': baseName,
+      },
+    );
+
+    return result as String;
+  }
+
+  Future<String> createDirectRequestGroup({
     required String name,
     String? description,
     required String createdByProfileId,
     required String otherProfileId,
   }) async {
-    final existingGroupId = await _findDirectGroupId(
-      profileAId: createdByProfileId,
-      profileBId: otherProfileId,
-    );
-
-    if (existingGroupId != null) {
-      return existingGroupId;
-    }
+    final newName = await _getNextGroupName(baseName: name);
 
     return createGroupWithProfiles(
-      name: name,
+      name: newName,
       description: description,
       createdByProfileId: createdByProfileId,
       memberProfileIds: [otherProfileId],
