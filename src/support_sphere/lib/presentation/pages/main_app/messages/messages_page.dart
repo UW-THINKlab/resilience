@@ -54,23 +54,17 @@ class MessagesState extends State<MessagesPage> {
     log.fine('✅ Group ID: ${widget.groupId}');
     log.fine('✅ My User: $myUserId');
     setState(() => {});
-
     final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
     log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
     log.fine("MY GROUP ID: $widget.groupId");
-
     final allUsers = await userRepo.getAllMembers();
     profileCache.addAll(allUsers);
-    //log.fine(">>> $profileCache");
-
-    if (!mounted) return; // avoid calling setState after dispose
-
+    if (!mounted) return;
     setState(() => {});
   }
 
   Person? getProfile(String userId) {
     final person = profileCache[userId];
-    //log.fine("===== Found profile for $userId: $person");
     return person;
   }
 
@@ -219,6 +213,7 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final amSender = message.fromId == myUserId;
     String metaStr = message.fromId != myUserId
         ? "${profile?.givenName} ${profile?.familyName} ${format(message.sentOn)}"
         : format(message.sentOn);
@@ -239,7 +234,9 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: urgencyColors[message.urgency],
+            color: amSender
+                ? urgencyColors["default"]
+                : urgencyColors[message.urgency],
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(message.content, style: TextStyle(color: Colors.white)),
