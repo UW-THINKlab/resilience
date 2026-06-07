@@ -15,11 +15,8 @@ const preloader =
 
 final log = Logger('MessagesPage');
 
-// based on github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
-
 ///TODO- display chat group name at the top of the messages pane
 ///TODO- add ability to send "urgent" messages (red highlight, icon) for cluster captains
-///TODO- need to make
 
 class MessagesPage extends StatefulWidget {
   final String groupId;
@@ -41,23 +38,16 @@ class MessagesState extends State<MessagesPage> {
   late final Stream<Person?> profileStream;
   final Map<String, Person> profileCache = {};
   late final String myUserId;
-  // late final Person? myUser;
-
-  // int _loadCount = 0;
 
   @override
   void initState() {
-    log.fine('🚀 initState groupId: "${widget.groupId}"'); // ✅ Print here
+    log.fine('🚀 initState groupId: "${widget.groupId}"');
     super.initState();
 
     myUserId = supabase.auth.currentUser!.id;
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
     _loadInitialData();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _loadInitialData();
-    // });
   }
 
   Future<void> _loadInitialData() async {
@@ -89,7 +79,6 @@ class MessagesState extends State<MessagesPage> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.groupName)),
       body: StreamBuilder<List<Message>>(
-        //stream: messagesStream,
         stream:
             messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
         builder: (context, snapshot) {
@@ -126,7 +115,6 @@ class MessagesState extends State<MessagesPage> {
   }
 } // -- end of state
 
-/// Set of widget that contains TextField and Button to submit message
 class MessageBar extends StatefulWidget {
   const MessageBar({
     super.key,
@@ -198,12 +186,11 @@ class _MessageBarState extends State<MessageBar> {
     log.fine('✅ Group ID: $widget.groupId');
     log.fine('✅ To ID: $toId');
     if (text.isEmpty) {
-      log.fine('DEBUG: Empty message skipped'); // Instant terminal output
+      log.fine('DEBUG: Empty message skipped');
       return;
     }
 
-    log.fine(
-        'DEBUG: Sending message from $myUserId to $toId: "$text"'); // Shows in terminal
+    log.fine('DEBUG: Sending message from $myUserId to $toId: "$text"');
 
     _textController.clear();
 
@@ -241,8 +228,8 @@ class _MessageBubble extends StatelessWidget {
         CircleAvatar(
             child: Center(
                 child: Icon(
-          URGENCY_ICONS[message.urgency],
-          color: URGENCY_COLOR[message.urgency],
+          urgencyIcons[message.urgency],
+          color: urgencyColors[message.urgency],
         ))),
       const SizedBox(width: 12),
       Expanded(
@@ -252,7 +239,7 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: URGENCY_COLOR[message.urgency],
+            color: urgencyColors[message.urgency],
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(message.content, style: TextStyle(color: Colors.white)),
@@ -274,7 +261,7 @@ class _MessageBubble extends StatelessWidget {
     );
   }
 
-  static const URGENCY_COLOR = {
+  static const urgencyColors = {
     MessageUrgency.emergency: Colors.red,
     MessageUrgency.urgent: Colors.purpleAccent,
     MessageUrgency.important: Colors.orange,
@@ -282,7 +269,7 @@ class _MessageBubble extends StatelessWidget {
     "default": Colors.grey,
   };
 
-  static const URGENCY_ICONS = {
+  static const urgencyIcons = {
     MessageUrgency.emergency: Icons.emergency,
     MessageUrgency.urgent: Icons.explicit_sharp,
     MessageUrgency.important: Icons.label_important,
