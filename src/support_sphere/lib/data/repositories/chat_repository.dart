@@ -21,32 +21,30 @@ class ChatRepository {
           )
         ''').eq('profile_id', userId);
 
-    print('Got response: ${response}');
+    log.fine('Got response: $response');
 
-    final groups = response.map((item) {
-      final json =
-          item['groups'] ?? item; // Flatten json- response comes out nested
-      return ChatGroup.fromJson(json);
-    }).toList();
+    final groups = <ChatGroup>[];
+    for (Map<String, dynamic> item in response) {
+      final json = item['groups'] ?? item;
+      final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+      final id = json['id'] as String;
+      final lastMessageTime =
+          DateTime.parse(prefs.getString(id) ?? epoch.toString());
+      final unreadCount =
+          await messageRepo.unreadCount(id, lastMessageTime.toString());
+      json['last_message_time'] = lastMessageTime;
+      json['unread_count'] = unreadCount;
+      json['last_message'] = await messageRepo.lastUnreadMessage(
+          userId, id, lastMessageTime.toString());
+      final group = ChatGroup.fromJson(json);
+      groups.add(group);
+    }
 
     developer.log(
       'getUserChatGroups() parsed ${groups.length} groups',
       name: 'ChatRepository',
     );
-    final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
-
-    for (ChatGroup group in groups) {
-      group.lastMessageTime =
-          await DateTime.parse(prefs.getString(group.id) ?? epoch.toString());
-      group.unreadCount = await messageRepo.unreadCount(
-          group.id, group.lastMessageTime.toString());
-      group.lastMessage = await messageRepo.lastUnreadMessage(
-          userId, group.id, group.lastMessageTime.toString());
-    }
-
     return groups;
-    //TODO implement:
-    // id, name, last_message, last_message_time, unread_count
   }
 
 // Create new chat group with member profile IDs. Returns new group ID.

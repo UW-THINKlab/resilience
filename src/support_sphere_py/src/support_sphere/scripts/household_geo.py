@@ -34,7 +34,7 @@ def location_to_wkt(location: Location) -> str:
     if location:
         # lat - N/S -> y, long - E/W -> x
         # POINT ( LONG, LAT )
-        return f"POINT ({location.latitude} {location.longitude})"
+        return f"POINT ({location.longitude} {location.latitude})"
     else:
         return ""
 

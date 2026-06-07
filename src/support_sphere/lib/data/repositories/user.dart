@@ -7,29 +7,26 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
-import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 
 final log = Logger('UserRepository');
-
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
   final UserService _userService = UserService();
   final AuthService _authService = AuthService();
-  final ClusterService _clusterService = ClusterService();
   final ClusterRepository _clusters = ClusterRepository();
 
   // Builds a mapping of all members: profile-id -> Person
   // Can be used for cached lookup of user profile info
   // NOTE: There should probably be a "person view" with all
   // salient details. This dumps a cache of all users into a users web cache
-  Future<Map<String,Person>> getAllMembers() async {
+  Future<Map<String, Person>> getAllMembers() async {
     final data = await _userService.getAllPeople();
 
-    Map<String,Person> members = {};
+    Map<String, Person> members = {};
 
     if (data != null) {
       for (var member in data) {
@@ -46,8 +43,10 @@ class UserRepository {
   /// Returns a [HouseHoldMembers] object if the household members exist.
   /// Returns null if the household members do not exist.
   /// The [HouseHoldMembers] object contains a list of [Person] objects.
-  Future<HouseHoldMembers?> getHouseholdMembersByHouseholdId(String householdId) async {
-    final data = await _userService.getHouseholdMembersByHouseholdId(householdId);
+  Future<HouseHoldMembers?> getHouseholdMembersByHouseholdId(
+      String householdId) async {
+    final data =
+        await _userService.getHouseholdMembersByHouseholdId(householdId);
     if (data != null) {
       List<Person> members = [];
       for (var member in data) {
@@ -117,12 +116,16 @@ class UserRepository {
 
     // Create a person with the given user id, given name, family name, and household id
     await _userService.createPerson(
-        userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
+        userId: userId,
+        givenName: givenName,
+        familyName: familyName,
+        householdId: data["household_id"]);
 
     // Invalidate the signup code used to create the user
     //await _authService.invalidateSignupCode(data["code"]);
     String email = user.email ?? '[unknown]';
-    await _authService.logUseOfSignupCode(email, data["household_id"], data["code"]);
+    await _authService.logUseOfSignupCode(
+        email, data["household_id"], data["code"]);
   }
 
   Future<void> updateUserName({
@@ -154,7 +157,8 @@ class UserRepository {
   }
 
   Future<Person?> getMyProfile() async {
-    return await getPersonProfileByUserId(userId: _authService.getSignedInUser()!.id);
+    return await getPersonProfileByUserId(
+        userId: _authService.getSignedInUser()!.id);
   }
 
   Future<Household?> getMyHousehold() async {
@@ -163,8 +167,7 @@ class UserRepository {
     if (profile != null) {
       log.finer("Found profile: $profile");
       return await getHouseholdByPersonId(profile.id);
-    }
-    else {
+    } else {
       log.fine("NO PROFILE");
       return null;
     }
@@ -176,8 +179,7 @@ class UserRepository {
 
     if (household != null) {
       return household.clusterId;
-    }
-    else {
+    } else {
       log.warning("My household not found");
       return null;
     }
@@ -188,8 +190,7 @@ class UserRepository {
     log.finer("✅ GOT clusterid: $myClusterId");
     if (myClusterId != null) {
       return await _clusters.getCluster(myClusterId);
-    }
-    else {
+    } else {
       return null;
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/router/app_body_select.dart';
 import 'package:support_sphere/data/repositories/app.dart';
+
+final log = Logger('MyApp');
 
 class AppPage extends StatelessWidget {
   const AppPage({super.key});
@@ -47,10 +50,12 @@ class AppPage extends StatelessWidget {
             final MyAuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
-            print('Logged in from App Page: ${authUser.uuid} (${authUser.email})');
-            debugPrint('User role from App Page: ${authUser.userRole}');
+            log.fine(
+                'Logged in from App Page: ${authUser.uuid} (${authUser.email})');
+            log.fine('User role from App Page: ${authUser.userRole}');
             MediaQueryData screenData = MediaQuery.of(context);
-            AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole, screenData: screenData);
+            AppBodySelect bodySelector =
+                AppBodySelect(role: authUser.userRole, screenData: screenData);
             return SafeArea(
               child: Scaffold(
                 appBar: AppBar(

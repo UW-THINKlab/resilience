@@ -1,15 +1,17 @@
 import 'dart:async';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/operational_event.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
 class AppRepository {
   final _supabaseClient = supabase;
+  final log = Logger('AppRepo');
 
   Future<void> changeOperationalStatus({
     required String? operationalStatus,
   }) async {
-    print("Changing operational status to $operationalStatus");
+    log.fine("Changing operational status to $operationalStatus");
     await _supabaseClient.from('operational_events').insert({
       'id': const UuidV4().generate(),
       'created_by': _supabaseClient.auth.currentUser!.id,
