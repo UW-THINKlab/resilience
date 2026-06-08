@@ -7,66 +7,68 @@ Support Sphere is a Flutter app that compiles to web. Selenium drives a real
 Chrome browser against the running web build. This file provides pytest
 fixtures that handle browser lifecycle, app connectivity, and authentication.
 
-=== Flutter web + Selenium: renderer choice ===
+=== Flutter web + Selenium: how the DOM works ===
 
-Flutter web has two rendering modes, and the choice determines what Selenium
-can see in the DOM:
+Flutter web (CanvasKit renderer, the default since 3.22) draws all visible UI
+onto a single <canvas> element inside a shadow DOM. The visible pixels are
+not queryable DOM nodes. However, Flutter maintains a parallel accessibility
+/semantics tree that IS exposed as real DOM elements:
 
-  CanvasKit (default): Flutter draws to a <canvas> element. The visible UI
-  exists only as pixels — no semantic HTML. Selenium cannot click buttons,
-  read text, or find form fields, because none of those DOM nodes exist.
+  <flutter-view>
+    <flt-glass-pane>  (shadow root: canvas-only rendering)
+    <flt-semantics-host>
+      <flt-semantics role="button" ...>Login</flt-semantics>
+      …
+    </flt-semantics-host>
 
-  HTML renderer: Flutter emits real DOM nodes. CSS, text, and some interactive
-  elements are queryable. This is required for Selenium testing.
+These <flt-semantics> elements are in the regular DOM (not shadow DOM) and
+are queryable with standard Selenium locators.
 
-  WASM renderer (Flutter 3.22+): Similar to CanvasKit — avoid for Selenium.
+Critically, Flutter only builds this semantics tree AFTER it detects an
+assistive technology or receives a specific activation signal. The helper
+`_enable_flutter_semantics()` clicks the hidden `flt-semantics-placeholder`
+button via the Chrome DevTools Protocol (CDP), which is the trigger Flutter
+uses to switch on the semantics tree.
 
-To run the app in HTML renderer mode:
-  flutter run -d web-server --web-port 42000 --web-renderer html \\
-    --dart-define-from-file=../../.env
+For text inputs, Flutter creates real <input> elements positioned over the
+canvas when a text field is active. These appear in the regular DOM with
+aria-label attributes matching the Flutter TextField's labelText, and are
+the most reliable targets for Selenium typing:
 
-For a built artifact:
-  flutter build web --web-renderer html --dart-define-from-file=../../.env
+  input[aria-label="Email"]
+  input[aria-label="Password"]
 
-Even with the HTML renderer, Flutter wraps the semantic tree in custom
-elements (flt-semantics, flt-text, etc.) inside a shadow DOM. Useful
-locator strategies:
+=== App navigation flow ===
 
-  - Flutter renders accessible labels as aria-label attributes:
-      driver.find_element(By.CSS_SELECTOR, '[aria-label="Email"]')
+Unauthenticated app load:
+  / → OnboardingFlow → LandingView   (logo + "Login" / "Sign Up" buttons)
+                     → LoginPage     (email + password form)
+                     → SignupPage
 
-  - Text content lives in <flt-semantics> or spans inside shadow roots.
-    Use JavaScript to pierce shadow roots when needed:
-      driver.execute_script("return document.querySelector('flt-glass-pane')"
-                            ".shadowRoot.querySelector('[aria-label=\"Login\"]')")
-
-  - Material buttons often expose a role="button" attribute.
-
-  - Prefer aria-label over class names — Flutter classes are mangled at build
-    time and change across releases.
-
-  - Flutter's semantic tree is only enabled when the OS accessibility APIs
-    request it, OR when you call:
-      WidgetsFlutterBinding.ensureInitialized();
-      SemanticsBinding.instance.ensureSemantics();
-    Consider adding a --dart-define flag (e.g. ENABLE_SEMANTICS=true) that
-    your main.dart checks to force-enable semantics in test builds.
+Authenticated app load:
+  / → AuthSelect → main app shell (BottomNavigationBar with Home / Resources /
+                                   Checklist / Messages / Profile tabs)
 
 === Running tests locally ===
 
-1. Start the app with the HTML renderer:
+1. Build the Flutter web app (production build avoids DDC/DWDS complexity):
      cd src/support_sphere
-     flutter run -d web-server --web-port 42000 --web-renderer html \\
-       --dart-define-from-file=../../.env
+     flutter build web --dart-define-from-file=../../.env
 
-2. In a second terminal, run the tests:
+2. Serve it:
+     python3 -m http.server 42000 --directory build/web
+
+3. Run the tests:
      pixi run -e selenium pytest tests/selenium/ -v
 
-   Or with a headed browser so you can watch what happens:
+   Headed (watch the browser):
      SELENIUM_HEADLESS=false pixi run -e selenium pytest tests/selenium/ -v
 
-   Or against a different URL (e.g. a deployed staging build):
+   Against a deployed build:
      APP_URL=https://staging.example.com pixi run -e selenium pytest tests/selenium/ -v
+
+   One-shot build + serve + test:
+     pixi run -e selenium selenium-test-ci
 
 === Environment variables ===
 
@@ -78,35 +80,34 @@ locator strategies:
 
 === Fixture hierarchy ===
 
-  app_url (session)
-      The base URL string. Session-scoped so it is resolved once per run.
+  app_url (session)       — base URL string, resolved once per run
+  driver (function)       — fresh Chrome WebDriver per test, quit after
+  wait (function)         — WebDriverWait bound to the current driver
+  authenticated_driver    — driver after completing the full login flow;
+                            skips if TEST_USER_EMAIL / TEST_USER_PASSWORD absent
 
-  driver (function)
-      A fresh Chrome WebDriver. Created before each test, quit after. Using
-      function scope intentionally: tests must not share browser state.
+=== Locator reference (confirmed via DOM inspection) ===
 
-  wait (function)
-      A WebDriverWait bound to the current driver. Use for explicit waits:
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "...")))
+  Landing page "Login" button:   flt-semantics[role="button"] (text="Login")
+  Email input (login form):      input[aria-label="Email"]
+  Password input (login form):   input[aria-label="Password"]
+  Login submit button:           flt-semantics[role="button"] (text="Login",
+                                   on the form page — disambiguate by waiting
+                                   for the input fields first)
+  "Sign Up" link:                flt-semantics[role="button"] containing "Sign Up"
 
-  authenticated_driver (function)
-      A driver that has completed the login flow before yielding. Skips the
-      test automatically if TEST_USER_EMAIL / TEST_USER_PASSWORD are not set,
-      so the suite still runs partially in environments without a test account.
-
-=== Adding new fixtures ===
-
-For admin-specific tests, add an admin_driver fixture that logs in with a
-second set of env vars (TEST_ADMIN_EMAIL / TEST_ADMIN_PASSWORD) and has an
-admin role in the Supabase user table. Mirror the pattern of authenticated_driver.
+See test_auth.py for a working implementation of the full flow.
 """
 
 import os
+import time
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 APP_URL = os.environ.get("APP_URL", "http://localhost:42000")
@@ -126,8 +127,14 @@ def _chrome_options() -> Options:
         opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-dev-shm-usage")  # avoids /dev/shm exhaustion in CI containers
-    opts.add_argument("--disable-gpu")
     opts.add_argument("--window-size=1280,900")
+    # SwiftShader: software WebGL required for Flutter's CanvasKit renderer in
+    # headless Chrome. Chrome 116+ deprecated the automatic software fallback;
+    # --enable-unsafe-swiftshader re-enables it explicitly.
+    opts.add_argument("--enable-unsafe-swiftshader")
+    # Expose the full Chrome accessibility tree so Flutter's semantics
+    # placeholder is visible to CDP queries (needed by _enable_flutter_semantics).
+    opts.add_argument("--force-renderer-accessibility")
     # Do NOT set binary_location when using the snap chromedriver. The snap
     # chromedriver wrapper resolves its own paired Chromium binary internally;
     # pointing it at /snap/bin/chromium directly causes Chrome to exit
@@ -143,6 +150,53 @@ def _chrome_service() -> Service:
     if os.path.exists(_SNAP_CHROMEDRIVER):
         return Service(executable_path=_SNAP_CHROMEDRIVER)
     return Service()
+
+
+def _enable_flutter_semantics(driver: webdriver.Chrome) -> None:
+    """Activate Flutter's accessibility/semantics DOM overlay.
+
+    Flutter does not build the <flt-semantics> tree by default — it only does
+    so when it detects an assistive technology is present. The detection
+    mechanism is a hidden <flt-semantics-placeholder role="button"> element
+    that assistive tech (or this function) clicks to signal "I am a screen
+    reader, please enable semantics."
+
+    We trigger it via the Chrome DevTools Protocol (CDP) because the element
+    is not directly reachable by Selenium's regular find_element (it's inside
+    the <flt-glass-pane> shadow root, which we can't pierce with CSS selectors
+    in the same way). CDP lets us resolve the element's backend node ID from
+    the accessibility tree and dispatch a click event on it.
+
+    After calling this function, wait briefly (~3 s) before querying for
+    <flt-semantics> elements — Flutter rebuilds the tree asynchronously.
+
+    Raises RuntimeError if the placeholder is not found within the AX tree,
+    which typically means Flutter has not finished initializing yet.
+    """
+    driver.execute_cdp_cmd("Accessibility.enable", {})
+    ax = driver.execute_cdp_cmd("Accessibility.getFullAXTree", {})
+    placeholder = next(
+        (n for n in ax.get("nodes", [])
+         if n.get("name", {}).get("value") == "Enable accessibility"),
+        None,
+    )
+    if placeholder is None:
+        raise RuntimeError(
+            "flt-semantics-placeholder not found in AX tree. "
+            "Flutter may not have finished initializing."
+        )
+    obj = driver.execute_cdp_cmd(
+        "DOM.resolveNode", {"backendNodeId": placeholder["backendDOMNodeId"]}
+    )
+    driver.execute_cdp_cmd("Runtime.callFunctionOn", {
+        "objectId": obj["object"]["objectId"],
+        "functionDeclaration": """function() {
+            this.dispatchEvent(new FocusEvent('focus', {bubbles: true, composed: true}));
+            this.dispatchEvent(new MouseEvent('click', {bubbles: true, composed: true}));
+        }""",
+        "returnByValue": True,
+    })
+    time.sleep(3)  # Flutter rebuilds the semantics tree asynchronously
 
 
 @pytest.fixture(scope="session")
@@ -164,10 +218,9 @@ def driver():
     over from a previous test. This is intentional: Selenium tests that share
     browser state become order-dependent and hard to debug.
 
-    The implicit wait (d.implicitly_wait) tells Selenium to poll for up to
-    TIMEOUT seconds when looking for an element before raising NoSuchElement.
-    Prefer explicit waits (the `wait` fixture) for conditions that need a
-    specific expected state rather than mere presence.
+    Chrome flags used:
+      --enable-unsafe-swiftshader  allows software WebGL for CanvasKit in headless
+      --force-renderer-accessibility  makes the CDP AX tree visible for semantics
     """
     d = webdriver.Chrome(service=_chrome_service(), options=_chrome_options())
     d.implicitly_wait(TIMEOUT)
@@ -185,7 +238,7 @@ def wait(driver):
       from selenium.webdriver.common.by import By
 
       element = wait.until(
-          EC.element_to_be_clickable((By.CSS_SELECTOR, '[aria-label="Login"]'))
+          EC.element_to_be_clickable((By.CSS_SELECTOR, 'flt-semantics[role="button"]'))
       )
 
     Prefer explicit waits over time.sleep() — they fail fast when something
@@ -195,35 +248,62 @@ def wait(driver):
 
 
 @pytest.fixture
-def authenticated_driver(driver, app_url):
-    """Yields a driver that has completed the login flow before the test runs.
+def authenticated_driver(driver, app_url, wait):
+    """Yields a driver that has completed the full login flow.
 
-    Requires TEST_USER_EMAIL and TEST_USER_PASSWORD to be set in the
-    environment. These should correspond to a seeded test account in the
-    Supabase database (create one via the db-init scripts or a migration
-    fixture). The account needs to exist across test runs — do not rely on
-    Supabase's email-confirmation flow unless you mock it.
+    Sequence:
+      1. Load app_url (shows LandingView)
+      2. Activate Flutter semantics via CDP
+      3. Click the landing-page "Login" button → navigates to LoginPage
+      4. Fill email + password inputs
+      5. Click the login submit button
+      6. Wait for the main app shell (BottomNavigationBar) to confirm auth
 
-    Skips the calling test automatically if credentials are absent. This lets
-    the unauthenticated tests (e.g. login page loads) still run in environments
-    that do not have a test account configured.
+    Requires TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables
+    pointing to a seeded test account in the Supabase database. Skips the
+    calling test automatically when these are absent.
 
-    Implementation note: once login locators are known, replace the
-    pytest.skip() below with the actual Selenium login steps:
-
-      driver.get(app_url)
-      driver.find_element(By.CSS_SELECTOR, '[aria-label="Email"]').send_keys(email)
-      driver.find_element(By.CSS_SELECTOR, '[aria-label="Password"]').send_keys(password)
-      driver.find_element(By.CSS_SELECTOR, '[aria-label="Login"]').click()
-      wait.until(EC.url_contains("/home"))  # or whatever the post-login route is
-      yield driver
+    To add a test account:
+      - Use the Supabase dashboard or `flutter run` signup flow
+      - Or insert a row via the db-init seed scripts
+      - Disable email confirmation in the local Supabase config so the
+        account is immediately usable without an email round-trip
     """
     email = os.environ.get("TEST_USER_EMAIL")
     password = os.environ.get("TEST_USER_PASSWORD")
     if not email or not password:
         pytest.skip("TEST_USER_EMAIL / TEST_USER_PASSWORD not set")
+
     driver.get(app_url)
-    # TODO: replace this skip with the actual login interaction once the
-    # Flutter app's DOM locators have been confirmed via browser inspection.
-    pytest.skip("authenticated_driver login steps not yet implemented")
+    # Wait for Flutter/CanvasKit to mount (~3–8 s for a production build)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "flutter-view")))
+    _enable_flutter_semantics(driver)
+
+    # Click landing-page Login button → navigates to the login form
+    landing_login = wait.until(EC.element_to_be_clickable(
+        (By.CSS_SELECTOR, 'flt-semantics[role="button"]')
+    ))
+    landing_login.click()
+
+    # Wait for the real <input> fields to appear (Flutter creates them for text editing)
+    email_input = wait.until(EC.presence_of_element_located(
+        (By.CSS_SELECTOR, 'input[aria-label="Email"]')
+    ))
+    email_input.send_keys(email)
+
+    password_input = driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Password"]')
+    password_input.send_keys(password)
+
+    # Submit — find the Login button on the form page (distinct from landing button
+    # because the email/password inputs are now present)
+    submit = wait.until(EC.element_to_be_clickable(
+        (By.XPATH, '//flt-semantics[@role="button" and normalize-space()="Login"]')
+    ))
+    submit.click()
+
+    # TODO: replace with a reliable post-login landmark once the home page
+    # semantic tree has been inspected (e.g. the nav bar tab for "Home")
+    wait.until(EC.presence_of_element_located(
+        (By.CSS_SELECTOR, 'flt-semantics[role="tab"]')
+    ))
     yield driver
