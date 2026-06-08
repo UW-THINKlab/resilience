@@ -1,0 +1,80 @@
+name: Selenium E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/support_sphere/**'
+      - 'tests/selenium/**'
+      - '.github/workflows/ci_selenium.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/support_sphere/**'
+      - 'tests/selenium/**'
+
+jobs:
+  selenium:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_URL: http://localhost:42000
+      SELENIUM_HEADLESS: "true"
+      SELENIUM_TIMEOUT: "20"
+      # Test credentials — set these as repository secrets
+      TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.41.2'
+
+      - name: Install Flutter dependencies
+        working-directory: src/support_sphere
+        run: flutter pub get
+
+      - name: Build Flutter web
+        working-directory: src/support_sphere
+        run: flutter build web
+        # No --dart-define-from-file in CI; use env-based config or a checked-in .env.ci
+
+      - name: Serve Flutter web build
+        run: |
+          python -m http.server 42000 --directory src/support_sphere/build/web &
+          echo "SERVER_PID=$!" >> "$GITHUB_ENV"
+          # Wait for the server to be ready
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:42000 && break
+            sleep 2
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Selenium test dependencies
+        run: pip install pytest selenium webdriver-manager pytest-html
+
+      - name: Run Selenium tests
+        run: pytest tests/selenium/ -v --html=tests/selenium/report.html --self-contained-html
+
+      - name: Stop web server
+        if: always()
+        run: kill "$SERVER_PID" || true
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-report
+          path: tests/selenium/report.html
+          retention-days: 14
