@@ -1,6 +1,6 @@
 """Poll until the dev server is accepting connections, then exit 0.
 
-Usage: python3 wait_for_server.py <port> [max_wait_seconds]
+Usage: python3 wait_for_client.py <port> [max_wait_seconds]
 """
 import socket
 import sys
@@ -16,5 +16,5 @@ for _ in range(timeout):
     except OSError:
         time.sleep(1)
 
-print(f"Server on port {port} did not become ready after {timeout}s", file=sys.stderr)
+print(f"Client on port {port} did not become ready after {timeout}s", file=sys.stderr)
 sys.exit(1)

@@ -315,9 +315,9 @@ def authenticated_driver(driver, app_url, wait):
     ))
     submit.click()
 
-    # TODO: replace with a reliable post-login landmark once the home page
-    # semantic tree has been inspected (e.g. the nav bar tab for "Home")
-    wait.until(EC.presence_of_element_located(
+    # Flutter rebuilds the full app shell + semantics tree after login, which
+    # takes longer than the standard TIMEOUT — use a dedicated longer wait.
+    WebDriverWait(driver, TIMEOUT * 2).until(EC.presence_of_element_located(
         (By.CSS_SELECTOR, 'flt-semantics[role="tab"]')
     ))
     yield driver

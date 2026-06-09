@@ -16,7 +16,7 @@ def free_port() -> int:
         return s.getsockname()[1]
 
 
-def wait_for_server(port: int, timeout: int = 30) -> bool:
+def wait_for_client(port: int, timeout: int = 30) -> bool:
     for _ in range(timeout):
         try:
             socket.create_connection(("127.0.0.1", port), 1).close()
@@ -40,8 +40,8 @@ def main() -> int:
     )
 
     try:
-        if not wait_for_server(port):
-            print(f"Server on port {port} did not become ready in time", file=sys.stderr)
+        if not wait_for_client(port):
+            print(f"Client on port {port} did not become ready in time", file=sys.stderr)
             return 1
 
         return subprocess.run(
