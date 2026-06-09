@@ -47,17 +47,26 @@ class MessagesRepository {
     return response?['content'] ?? ' ';
   }
 
-  Future<void> sendMessage(String userId, String toId, String text) async {
-    log.fine("Sending message from:$userId, to:$toId: $text");
-
-    final dateSent = DateTime.now();
+  Future<void> sendMessage({
+    required String fromProfileId,
+    required String groupId,
+    required String text,
+    String? requestId,
+    String urgency = 'normal',
+    String messageType = 'text',
+    Map<String, dynamic>? metadata,
+  }) async {
+    log.fine("Sending message from:$fromProfileId, to:$groupId: $text");
     await supabase.from('messages').insert({
-      'id': const UuidV4().generate(), // TODO autogen by table def?
-      'from_id': userId,
-      'to_id': toId,
+      'id': const UuidV4().generate(),
+      'from_id': fromProfileId,
+      'to_id': groupId,
+      'request_id': requestId,
+      'urgency': urgency,
       'content': text,
-      'sent_on': dateSent.toIso8601String(),
-      'urgency': "normal",
+      'sent_on': DateTime.now().toIso8601String(),
+      'message_type': messageType,
+      'metadata': metadata,
     });
   }
 }

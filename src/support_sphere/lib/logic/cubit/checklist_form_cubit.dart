@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/data/models/frequency.dart';
@@ -9,6 +10,7 @@ import 'package:uuid/v4.dart';
 part 'checklist_form_state.dart';
 
 class ChecklistFormCubit extends Cubit<ChecklistFormState> {
+  final log = Logger('MyApp');
   ChecklistFormCubit({required this.authUser, this.initialChecklist})
       : super(ChecklistFormState(
           steps: initialChecklist?.steps ?? const [],
@@ -77,7 +79,7 @@ class ChecklistFormCubit extends Cubit<ChecklistFormState> {
       emit(state.copyWith(frequencies: frequencies));
     } catch (error) {
       /// TODO: handle errors
-      print(error);
+      log.fine(error);
     }
   }
 
@@ -114,12 +116,14 @@ class ChecklistFormCubit extends Cubit<ChecklistFormState> {
 
       if (initialChecklist != null) {
         final deletedStepIds = initialChecklist!.steps
-            .where((oldStep) => !steps.any((newStep) => newStep.id == oldStep.id))
+            .where(
+                (oldStep) => !steps.any((newStep) => newStep.id == oldStep.id))
             .map((step) => step.id)
             .toList();
 
         if (deletedStepIds.isNotEmpty) {
-          await _checklistRepository.deleteChecklistSteps(checklistId, deletedStepIds);
+          await _checklistRepository.deleteChecklistSteps(
+              checklistId, deletedStepIds);
         }
       }
 
@@ -129,7 +133,7 @@ class ChecklistFormCubit extends Cubit<ChecklistFormState> {
       emit(state.copyWith(status: ChecklistFormStatus.success));
     } catch (error) {
       /// TODO: handle errors
-      print(error);
+      log.fine(error);
     }
   }
 }

@@ -127,7 +127,7 @@ class ResourceStrings {
   static const String noUserResources = 'You have not added any resources yet';
   static String addedOnDate(DateTime date) =>
       "Added on ${DateFormat.yMMMd('en').format(date)}";
-  static const String markUpToDate = 'Mark as up to date';
+  static const String markUpToDate = 'Up-to-date';
   static const String delete = 'Delete item';
 }
 

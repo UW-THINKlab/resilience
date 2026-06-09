@@ -19,8 +19,6 @@ const preloader =
 final log = Logger('Message Groups Page');
 final MessagesRepository messageRepo = MessagesRepository();
 
-
-
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
   // Source - https://stackoverflow.com/a/51901311
@@ -51,8 +49,9 @@ class InboxView extends StatelessWidget {
       ),
       body: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
-          if (state.isLoading)
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
+          }
 
           if (state.error != null) {
             return Center(
@@ -72,7 +71,6 @@ class InboxView extends StatelessWidget {
           if (state.groups.isEmpty) {
             return const Center(child: Text('No chat groups'));
           }
-  
 
           return ListView.builder(
             itemCount: state.groups.length,
@@ -88,27 +86,30 @@ class InboxView extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                        if (group.lastMessage != null)
-                          Text(
-                            group.lastMessage!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: group.unreadCount! > 0 ? Colors.black : Colors.grey,
-                            ),
-                          ),
+                      if (group.lastMessage != null)
                         Text(
-                          _formatTime(group.lastMessageTime),
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          group.lastMessage!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: group.unreadCount! > 0
+                                ? Colors.black
+                                : Colors.grey,
+                          ),
                         ),
-                      ],
-                    ),
-                    trailing: group.unreadCount! > 0
-                        ? Badge(
-                      label: Text(group.unreadCount.toString()),
-                      child: const Icon(Icons.circle),
-                    )
-                        : null,
+                      Text(
+                        _formatTime(group.lastMessageTime),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  trailing: group.unreadCount! > 0
+                      ? Badge(
+                          label: Text(group.unreadCount.toString()),
+                          child: const Icon(Icons.circle),
+                        )
+                      : null,
                   onTap: () => _navigateToChat(context, group),
                 ),
               );
@@ -133,7 +134,7 @@ class InboxView extends StatelessWidget {
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) async {
-    print('🧭 Navigating to: ${group.id}'); // ✅ Verify source
+    log.fine('🧭 Navigating to: ${group.id}'); // ✅ Verify source
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(group.id, DateTime.now().toString());
     Navigator.push(
