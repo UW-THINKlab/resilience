@@ -133,9 +133,11 @@ class TestLogin:
 
         # Post-login: main app shell renders a BottomNavigationBar whose tabs
         # are exposed as flt-semantics[role="tab"] nodes.
+        # Flutter rebuilds the full app shell + semantics tree after login;
+        # use TIMEOUT * 2 here for the same reason as in authenticated_driver.
         # TODO: update the selector once the home-page semantic tree has been
         #       inspected (the nav bar label text may differ from "tab").
-        wait.until(EC.presence_of_element_located(
+        WebDriverWait(driver, TIMEOUT * 2).until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, 'flt-semantics[role="tab"]')
         ))
 
