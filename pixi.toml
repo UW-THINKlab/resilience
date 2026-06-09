@@ -11,6 +11,7 @@ frontend = ["frontend"]
 backend = ["backend", "db"]
 deployment = ["cloud", "backup-secret"]
 data-analysis = ["data-analysis", "db"]
+selenium = ["selenium", "frontend"]
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -331,6 +332,37 @@ depends-on = [
   { task = "setup-infra", environment = "backend" },
   { task = "setup-db-data-via-k8s-job", environment = "backend" },
 ]
+
+# ==== Selenium e2e test environment ====
+[feature.selenium.dependencies]
+python = ">=3.10,<3.13"
+pip = "*"
+pytest = ">=7.4"
+selenium = ">=4.18"
+# webdriver-manager resolves the correct chromedriver automatically
+webdriver-manager = ">=4.0"
+
+[feature.selenium.pypi-dependencies]
+pytest-html = ">=4.0"
+
+# Build the Flutter web app for a headless test run
+[feature.selenium.tasks.build-web]
+cmd = "flutter build web --dart-define-from-file=../../.env"
+cwd = "src/support_sphere"
+
+# Serve the built web app on a fixed port
+[feature.selenium.tasks.serve-web]
+cmd = "python -m http.server 42000 --directory src/support_sphere/build/web"
+
+# Run all client tests (expects app already running at APP_URL)
+[feature.selenium.tasks.client-test]
+cmd = "pytest tests/client/ -v --html=tests/client/report.html --self-contained-html"
+
+# Build, serve briefly in background, then test — one-shot local convenience
+# Usage: pixi run -e selenium client-test-ci
+[feature.selenium.tasks.client-test-ci]
+cmd = "python3 scripts/client_test_ci.py"
+
 
 [tasks.db-backup]
 cmd = "scripts/backup.sh"
