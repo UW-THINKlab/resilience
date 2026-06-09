@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      APP_URL: http://localhost:42000
       SELENIUM_HEADLESS: "true"
       SELENIUM_TIMEOUT: "20"
       # Test credentials — set these as repository secrets
@@ -48,11 +47,14 @@ jobs:
 
       - name: Serve Flutter web build
         run: |
-          python -m http.server 42000 --directory src/support_sphere/build/web &
+          # Let the OS pick a free port by binding to 0, then read back what was assigned
+          PORT=$(python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+          python -m http.server "$PORT" --directory src/support_sphere/build/web &
           echo "SERVER_PID=$!" >> "$GITHUB_ENV"
+          echo "APP_URL=http://localhost:$PORT" >> "$GITHUB_ENV"
           # Wait for the server to be ready
           for i in $(seq 1 10); do
-            curl -sf http://localhost:42000 && break
+            curl -sf "http://localhost:$PORT" && break
             sleep 2
           done
 
