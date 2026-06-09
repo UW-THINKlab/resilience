@@ -2,13 +2,13 @@ import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
-import 'package:support_sphere/data/repositories/cluster.dart' show ClusterRepository;
+import 'package:support_sphere/data/repositories/cluster.dart'
+    show ClusterRepository;
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/poi_service.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
 final log = Logger('HomeRepository');
-
 
 class HomeRepository {
   final ClusterService _clusterService = ClusterService();
@@ -39,19 +39,27 @@ class HomeRepository {
     final pointsOfInterest = await _poiService.getPointsOfInterest();
 
     return (
-      captainMarkers: captains
-          ?.map((captain) => CaptainMarker(
-                id: captain['id'],
-                familyName: captain['family_name'],
-                givenName: captain['given_name'],
-                householdGeom: captain['people_groups']['households']['geom'] != null
-                    ? PolygonCentroid.findPolygonCentroid(
-                        captain['people_groups']['households']['geom']['coordinates'][0]
-                            .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
-                            .toList())
-                    : null,
-              ))
-          .toList(),
+      captainMarkers: captains?.map((captain) {
+        LatLng? householdGeom;
+        final geom = captain['people_groups']['households']['geom'];
+        switch (geom['type']) {
+          case "Point":
+            final latlng =
+                LatLng(geom['coordinates'][1], geom['coordinates'][0]);
+            householdGeom = PolygonCentroid.findPolygonCentroid([latlng]);
+            break;
+          default:
+            log.warning(
+              'Geom type of type ${geom['type'].runtimeType} is not handled',
+            );
+        }
+        return CaptainMarker(
+          id: captain['id'],
+          familyName: captain['family_name'],
+          givenName: captain['given_name'],
+          householdGeom: householdGeom,
+        );
+      }).toList(),
       cluster: cluster,
       pointsOfInterest: pointsOfInterest,
     );

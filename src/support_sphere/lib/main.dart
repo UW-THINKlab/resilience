@@ -16,7 +16,7 @@ void initializeLogging(Level level) {
   Logger.root.level = level;
   Logger.root.onRecord.listen((record) {
     // ignore: avoid_print - This is a standard logger
-    log.fine('${record.time} ${record.level}: ${record.message}');
+    debugPrint('${record.time} ${record.level}: ${record.message}');
   });
 }
 
