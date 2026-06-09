@@ -262,6 +262,12 @@ def wait(driver):
 
 
 @pytest.fixture
+# Function scope means a fresh browser and a full login per test, which is
+# expensive but gives each test complete isolation — no risk of one test's
+# navigation or data mutations affecting the next. If the suite grows large
+# and login latency becomes a bottleneck, consider switching to
+# scope="session" (one login for the whole run) and having each test
+# navigate back to a known starting point at the top of its body.
 def authenticated_driver(driver, app_url, wait):
     """Yields a driver that has completed the full login flow.
 
