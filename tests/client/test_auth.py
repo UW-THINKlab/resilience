@@ -52,7 +52,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from conftest import _enable_flutter_semantics
+from conftest import _enable_flutter_semantics, TIMEOUT
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
