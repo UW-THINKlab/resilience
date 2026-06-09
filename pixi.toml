@@ -361,14 +361,7 @@ cmd = "pytest tests/selenium/ -v --html=tests/selenium/report.html --self-contai
 # Build, serve briefly in background, then test — one-shot local convenience
 # Usage: pixi run -e selenium selenium-test-ci
 [feature.selenium.tasks.selenium-test-ci]
-cmd = """
-flutter build web --dart-define-from-file=../../.env && \
-python -m http.server 42000 --directory src/support_sphere/build/web &
-SERVER_PID=$! && sleep 3 && \
-pytest tests/selenium/ -v --html=tests/selenium/report.html --self-contained-html; \
-EXIT=$?; kill $SERVER_PID; exit $EXIT
-"""
-cwd = "src/support_sphere"
+cmd = "python3 scripts/selenium_test_ci.py"
 
 
 [tasks.db-backup]

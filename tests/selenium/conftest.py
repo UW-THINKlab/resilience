@@ -101,6 +101,7 @@ See test_auth.py for a working implementation of the full flow.
 
 import os
 import time
+import warnings
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -110,7 +111,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-APP_URL = os.environ.get("APP_URL", "http://localhost:42000")
+def _resolve_app_url() -> str:
+    url = os.environ.get("APP_URL")
+    if url is None:
+        warnings.warn(
+            "APP_URL is not set — tests will attempt http://127.0.0.1:42000 and likely fail. "
+            "Start the app and re-run with: "
+            "APP_URL=http://127.0.0.1:<port> pixi run -e selenium pytest tests/selenium/ -v",
+            stacklevel=2,
+        )
+        return "http://127.0.0.1:42000"
+    return url
+
+
+APP_URL = _resolve_app_url()
 HEADLESS = os.environ.get("SELENIUM_HEADLESS", "true").lower() == "true"
 TIMEOUT = int(os.environ.get("SELENIUM_TIMEOUT", "15"))
 
