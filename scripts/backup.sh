@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# To backup the resilience database use: pixi run -e backend db-backup
+
 # Backup the resilience DB
 
 script_dir=$(dirname "$0")
@@ -10,8 +12,10 @@ backup_script='backup-on-db.sh'
 # FIXME: Name file based on neighborhood. from... ENV?
 # Currently, Neighborhood is hardcoded in code.
 neighborhood=Laurelhurst
+backup_dir=./backups
 
-backup_file="backup-$neighborhood-`date +%Y-%m-%d-%H%M`.sql.gz"
+mkdir -p $backup_dir
+backup_file="$backup_dir/backup-$neighborhood-`date +%Y-%m-%d-%H%M`.sql.gz"
 
 # Kubernetes version - runs in DB pod
 pod_name=$(kubectl get pods | grep supabase-supabase-db | grep Running | cut -f1 -d' ')
