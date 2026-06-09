@@ -13,6 +13,7 @@
 cat > /etc/cron.daily/db-backup <<EOF
 /opt/pixi/bin/pixi run -m /opt/resilience -e backend db-backup >> /var/log/db-backup.log 2>&1
 EOF
+chmod +x /etc/cron.daily/db-backup
 
 
 cat > /etc/logrotate.d/db-backup <<EOF
