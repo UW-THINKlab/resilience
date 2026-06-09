@@ -151,6 +151,10 @@ class TestLogin:
         password_input.send_keys("wrongpassword123")
         _submit_login(driver, wait)
 
+        # Flutter's SnackBar slide-in animation is 250ms — sleep until it
+        # settles so the semantics tree is stable before we query it.
+        time.sleep(0.3)
+
         # Wait for error snackbar — it contains the error message text
         # TODO: confirm exact error text once the Supabase response is observed;
         #       the default is "Authentication failure" (see login_form.dart)

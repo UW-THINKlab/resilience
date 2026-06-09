@@ -31,6 +31,7 @@ import pytest
 
 
 class TestHomePage:
+    @pytest.mark.skip(reason="Add locator: home page root / navigation element")
     def test_home_page_loads_after_login(self, authenticated_driver, app_url):
         """An authenticated user should land on the home dashboard after login.
 
@@ -45,8 +46,8 @@ class TestHomePage:
         #   assert authenticated_driver.find_element(
         #       By.CSS_SELECTOR, '[aria-label="Home"]'
         #   ).is_displayed()
-        pytest.skip("Add locator: home page root / navigation element")
 
+    @pytest.mark.skip(reason="Add locators: nav bar items (Home, Resources, Checklist, Profile, Messages)")
     def test_navigation_bar_visible(self, authenticated_driver):
         """The bottom navigation bar should be visible with all expected tabs.
 
@@ -60,8 +61,8 @@ class TestHomePage:
         # TODO: find all tab elements, e.g. driver.find_elements(By.CSS_SELECTOR, '[role="tab"]')
         # TODO: collect their aria-label values
         # TODO: assert the expected set is a subset of the found labels
-        pytest.skip("Add locators: nav bar items (Home, Resources, Checklist, Profile, Messages)")
 
+    @pytest.mark.skip(reason="Add locator: operational event banner element")
     def test_operational_event_banner(self, authenticated_driver):
         """When an active OperationalEvent exists it should surface in the UI.
 
@@ -76,4 +77,3 @@ class TestHomePage:
         """
         # TODO: assert presence of the operational event banner/card element
         # TODO: optionally verify the event name text matches what was seeded
-        pytest.skip("Add locator: operational event banner element")

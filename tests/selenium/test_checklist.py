@@ -43,6 +43,7 @@ import pytest
 
 
 class TestChecklist:
+    @pytest.mark.skip(reason="Add locators: checklist nav tab, checklist container")
     def test_checklist_tab_navigates(self, authenticated_driver):
         """Tapping the Checklist tab should render the user's checklist view.
 
@@ -52,8 +53,8 @@ class TestChecklist:
         """
         # TODO: click the Checklist tab in the bottom nav bar
         # TODO: wait for the checklist container element to appear
-        pytest.skip("Add locators: checklist nav tab, checklist container")
 
+    @pytest.mark.skip(reason="Add locator: checklist item element")
     def test_checklist_items_visible(self, authenticated_driver):
         """The checklist should display the user's task items when seed data exists.
 
@@ -63,8 +64,8 @@ class TestChecklist:
         # TODO: navigate to checklist tab
         # TODO: find all checklist item elements ([role="checkbox"] or similar)
         # TODO: assert at least one item is visible
-        pytest.skip("Add locator: checklist item element")
 
+    @pytest.mark.skip(reason="Add locators: first uncompleted item checkbox, completed state indicator")
     def test_complete_checklist_item(self, authenticated_driver):
         """Checking off an item should update its aria-checked state.
 
@@ -77,8 +78,8 @@ class TestChecklist:
         # TODO: find the first uncompleted checkbox (aria-checked="false")
         # TODO: click it
         # TODO: wait until aria-checked == "true"
-        pytest.skip("Add locators: first uncompleted item checkbox, completed state indicator")
 
+    @pytest.mark.skip(reason="Add locator: progress bar / counter element")
     def test_checklist_progress_updates(self, authenticated_driver):
         """The progress indicator should reflect the ratio of completed items.
 
@@ -90,4 +91,3 @@ class TestChecklist:
         # TODO: navigate to checklist tab, read the initial progress value
         # TODO: complete one unchecked item
         # TODO: assert the progress element text or aria-valuenow changed
-        pytest.skip("Add locator: progress bar / counter element")

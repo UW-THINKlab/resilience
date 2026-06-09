@@ -34,6 +34,7 @@ import pytest
 
 
 class TestResourceBrowsing:
+    @pytest.mark.skip(reason="Add locators: resources nav tab, resource list container")
     def test_resources_tab_navigates(self, authenticated_driver):
         """Tapping the Resources tab should show the resource list view.
 
@@ -43,8 +44,8 @@ class TestResourceBrowsing:
         """
         # TODO: click the Resources tab in the bottom nav bar
         # TODO: wait for the resource list container to appear
-        pytest.skip("Add locators: resources nav tab, resource list container")
 
+    @pytest.mark.skip(reason="Add locator: individual resource list item")
     def test_resource_list_not_empty(self, authenticated_driver):
         """The resource list should show at least one item when seed data exists.
 
@@ -56,8 +57,8 @@ class TestResourceBrowsing:
         # TODO: navigate to Resources tab
         # TODO: find all resource list item elements
         # TODO: assert len(items) > 0
-        pytest.skip("Add locator: individual resource list item")
 
+    @pytest.mark.skip(reason="Add locators: first resource item, detail view heading")
     def test_resource_detail_opens(self, authenticated_driver):
         """Tapping a resource item should open its detail view.
 
@@ -68,10 +69,10 @@ class TestResourceBrowsing:
         # TODO: navigate to Resources tab, click the first list item
         # TODO: wait for a detail view heading or unique detail element
         # TODO: assert the heading text is non-empty
-        pytest.skip("Add locators: first resource item, detail view heading")
 
 
 class TestResourceRequests:
+    @pytest.mark.skip(reason="Add locators: request button, form fields")
     def test_request_resource_form_opens(self, authenticated_driver):
         """Tapping the request button should open the resource request form.
 
@@ -82,8 +83,8 @@ class TestResourceRequests:
         # TODO: navigate to Resources tab, open a resource detail
         # TODO: find and click the "Request" button
         # TODO: wait for form fields (resource selector, quantity, notes) to appear
-        pytest.skip("Add locators: request button, form fields")
 
+    @pytest.mark.skip(reason="Add locators: form fields, submit button, confirmation indicator")
     def test_submit_resource_request(self, authenticated_driver):
         """A completed resource request form should create a ResourceRequest row.
 
@@ -100,10 +101,10 @@ class TestResourceRequests:
         # TODO: fill form fields with valid data
         # TODO: click submit button
         # TODO: wait for confirmation element or redirect
-        pytest.skip("Add locators: form fields, submit button, confirmation indicator")
 
 
 class TestAdminResourceManagement:
+    @pytest.mark.skip(reason="Requires admin-role authenticated_driver; add locators for request list")
     def test_admin_can_view_all_requests(self, authenticated_driver):
         """Admin users should see the full list of pending resource requests.
 
@@ -115,8 +116,8 @@ class TestAdminResourceManagement:
         # TODO: switch to admin_driver fixture once it exists in conftest.py
         # TODO: navigate to the manage_resources admin view
         # TODO: assert at least one pending request is listed (needs seed data)
-        pytest.skip("Requires admin-role authenticated_driver; add locators for request list")
 
+    @pytest.mark.skip(reason="Add locators: request item, fulfill action, status update")
     def test_admin_can_fulfill_request(self, authenticated_driver):
         """An admin should be able to mark a resource request as fulfilled.
 
@@ -131,4 +132,3 @@ class TestAdminResourceManagement:
         # TODO: navigate to admin resource management page
         # TODO: find the seeded pending request, click fulfill
         # TODO: assert the status element reflects the fulfilled state
-        pytest.skip("Add locators: request item, fulfill action, status update")

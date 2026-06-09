@@ -45,6 +45,7 @@ import pytest
 
 
 class TestMessages:
+    @pytest.mark.skip(reason="Add locators: messages nav tab, messages container")
     def test_messages_tab_navigates(self, authenticated_driver):
         """Tapping the Messages tab should show the conversation list.
 
@@ -54,8 +55,8 @@ class TestMessages:
         """
         # TODO: click the Messages tab in the bottom nav bar
         # TODO: wait for the messages container / conversation list to appear
-        pytest.skip("Add locators: messages nav tab, messages container")
 
+    @pytest.mark.skip(reason="Add locators: first conversation item, thread message input")
     def test_message_thread_opens(self, authenticated_driver):
         """Tapping a conversation should open the message thread view.
 
@@ -67,8 +68,8 @@ class TestMessages:
         # TODO: navigate to Messages tab
         # TODO: click the first conversation in the list
         # TODO: wait for the thread view to appear (look for the text input field)
-        pytest.skip("Add locators: first conversation item, thread message input")
 
+    @pytest.mark.skip(reason="Add locators: message input, send button, sent message bubble")
     def test_send_message(self, authenticated_driver):
         """Typing and submitting a message should append it to the thread.
 
@@ -86,4 +87,3 @@ class TestMessages:
         # TODO: click the Send button
         # TODO: wait for a message bubble containing the typed text to appear
         # TODO: assert bubble text matches the sent string
-        pytest.skip("Add locators: message input, send button, sent message bubble")
