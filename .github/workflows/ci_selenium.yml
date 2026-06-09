@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - 'src/support_sphere/**'
-      - 'tests/selenium/**'
+      - 'tests/client/**'
       - '.github/workflows/ci_selenium.yml'
   push:
     branches:
       - main
     paths:
       - 'src/support_sphere/**'
-      - 'tests/selenium/**'
+      - 'tests/client/**'
 
 jobs:
   selenium:
@@ -67,7 +67,7 @@ jobs:
         run: pip install pytest selenium webdriver-manager pytest-html
 
       - name: Run Selenium tests
-        run: pytest tests/selenium/ -v --html=tests/selenium/report.html --self-contained-html
+        run: pytest tests/client/ -v --html=tests/client/report.html --self-contained-html
 
       - name: Stop web server
         if: always()
@@ -78,5 +78,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: selenium-report
-          path: tests/selenium/report.html
+          path: tests/client/report.html
           retention-days: 14
