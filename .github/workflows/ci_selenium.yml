@@ -13,6 +13,9 @@ on:
       - 'src/support_sphere/**'
       - 'tests/client/**'
 
+permissions:
+  contents: read
+
 jobs:
   selenium:
     runs-on: ubuntu-latest
