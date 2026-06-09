@@ -59,16 +59,16 @@ Authenticated app load:
      python3 -m http.server 42000 --directory build/web
 
 3. Run the tests:
-     pixi run -e selenium pytest tests/selenium/ -v
+     pixi run -e selenium pytest tests/client/ -v
 
    Headed (watch the browser):
-     SELENIUM_HEADLESS=false pixi run -e selenium pytest tests/selenium/ -v
+     SELENIUM_HEADLESS=false pixi run -e selenium pytest tests/client/ -v
 
    Against a deployed build:
-     APP_URL=https://staging.example.com pixi run -e selenium pytest tests/selenium/ -v
+     APP_URL=https://staging.example.com pixi run -e selenium pytest tests/client/ -v
 
    One-shot build + serve + test:
-     pixi run -e selenium selenium-test-ci
+     pixi run -e selenium client-test-ci
 
 === Environment variables ===
 
@@ -117,7 +117,7 @@ def _resolve_app_url() -> str:
         warnings.warn(
             "APP_URL is not set — tests will attempt http://127.0.0.1:42000 and likely fail. "
             "Start the app and re-run with: "
-            "APP_URL=http://127.0.0.1:<port> pixi run -e selenium pytest tests/selenium/ -v",
+            "APP_URL=http://127.0.0.1:<port> pixi run -e selenium pytest tests/client/ -v",
             stacklevel=2,
         )
         return "http://127.0.0.1:42000"

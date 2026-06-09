@@ -354,14 +354,14 @@ cwd = "src/support_sphere"
 [feature.selenium.tasks.serve-web]
 cmd = "python -m http.server 42000 --directory src/support_sphere/build/web"
 
-# Run all Selenium tests (expects app already running at APP_URL)
-[feature.selenium.tasks.selenium-test]
-cmd = "pytest tests/selenium/ -v --html=tests/selenium/report.html --self-contained-html"
+# Run all client tests (expects app already running at APP_URL)
+[feature.selenium.tasks.client-test]
+cmd = "pytest tests/client/ -v --html=tests/client/report.html --self-contained-html"
 
 # Build, serve briefly in background, then test — one-shot local convenience
-# Usage: pixi run -e selenium selenium-test-ci
-[feature.selenium.tasks.selenium-test-ci]
-cmd = "python3 scripts/selenium_test_ci.py"
+# Usage: pixi run -e selenium client-test-ci
+[feature.selenium.tasks.client-test-ci]
+cmd = "python3 scripts/client_test_ci.py"
 
 
 [tasks.db-backup]

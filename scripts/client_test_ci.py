@@ -45,7 +45,7 @@ def main() -> int:
             return 1
 
         return subprocess.run(
-            ["pytest", "tests/selenium/", "-v", "--html=tests/selenium/report.html", "--self-contained-html"],
+            ["pytest", "tests/client/", "-v", "--html=tests/client/report.html", "--self-contained-html"],
             cwd=REPO_ROOT,
             env={**os.environ, "APP_URL": f"http://127.0.0.1:{port}"},
         ).returncode
