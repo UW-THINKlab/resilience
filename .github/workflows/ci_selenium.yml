@@ -56,10 +56,18 @@ jobs:
           echo "SERVER_PID=$!" >> "$GITHUB_ENV"
           echo "APP_URL=http://localhost:$PORT" >> "$GITHUB_ENV"
           # Wait for the server to be ready
+          READY=false
           for i in $(seq 1 10); do
-            curl -sf "http://localhost:$PORT" && break
+            if curl -sf "http://localhost:$PORT" >/dev/null; then
+              READY=true
+              break
+            fi
             sleep 2
           done
+          if [ "$READY" != "true" ]; then
+            echo "Web server failed to start at http://localhost:$PORT"
+            exit 1
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
