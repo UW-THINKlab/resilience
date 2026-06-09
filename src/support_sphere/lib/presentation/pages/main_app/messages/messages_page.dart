@@ -190,8 +190,10 @@ class _MessageBarState extends State<MessageBar> {
 
     log.fine("Sent message from:$myUserId, to:$toId: $text");
     try {
-      await MessagesRepository().sendMessage(myUserId, toId, text);
-      log.fine('Message sent: $text');
+      await MessagesRepository().sendMessage(
+          fromProfileId: myUserId, groupId: widget.groupId, text: text);
+      print('SUCCESS: Message sent!'); // Confirm send completed
+      log.fine('Message sent: $text'); // Your existing logger
     } on Exception catch (error) {
       log.warning("ERROR: $error");
       //context.showErrorSnackBar(message: error.message); // FIXME - snackbar

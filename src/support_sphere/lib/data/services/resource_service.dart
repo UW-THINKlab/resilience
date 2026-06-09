@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/widgets.dart'; //debugPrint
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:support_sphere/data/models/supplier_candidate.dart';
 
 class ResourceService {
   final SupabaseClient _supabaseClient = supabase;
@@ -81,8 +83,25 @@ class ResourceService {
     ''');
   }
 
-  Future<void> addUserResource(Map<String, dynamic> data) async {
-    await _supabaseClient.from('user_resources').upsert(data);
+  Future<void> addUserResource({
+    required String userId,
+    required String resourceId,
+    required int quantity,
+    String? notes,
+    required String sharingScope,
+    required String sharingScopeEmergency,
+  }) async {
+    await _supabaseClient.rpc(
+      'add_user_resource',
+      params: {
+        'p_user_id': userId,
+        'p_resource_id': resourceId,
+        'p_quantity': quantity,
+        'p_notes': notes,
+        'p_sharing_scope': sharingScope,
+        'p_sharing_scope_emergency': sharingScopeEmergency,
+      },
+    );
   }
 
   Future<void> deleteUserResource(String id) async {
@@ -111,11 +130,76 @@ class ResourceService {
     await _supabaseClient.from('resources_cv').delete().eq('id', id);
   }
 
-  Future<Map<String, dynamic>> createResourceRequest(
-      Map<String, dynamic> data) async {
-    final row =
-        await _supabaseClient.from('requests').insert(data).select().single();
+  Future<List<SupplierCandidate>> getNearestSuppliersByHousehold({
+    required String requesterProfileId,
+    required String resourceId,
+  }) async {
+    final result = await _supabaseClient.rpc(
+      'get_nearest_resource_suppliers_by_household',
+      params: {
+        'p_requester_profile_id': requesterProfileId,
+        'p_resource_id': resourceId,
+      },
+    );
+    debugPrint('RPC raw data: $result');
+    debugPrint('RPC type: ${result.runtimeType}');
+    final rows = List<Map<String, dynamic>>.from(result as List);
+    return rows.map(SupplierCandidate.fromJson).toList();
+  }
 
-    return Map<String, dynamic>.from(row);
+  Future<List<SupplierCandidate>> getNearestSuppliersByCurrentLocation({
+    required String requesterProfileId,
+    required String resourceId,
+    required double currentLatitude,
+    required double currentLongitude,
+  }) async {
+    final result = await _supabaseClient.rpc(
+      'get_nearest_resource_suppliers_by_current_location',
+      params: {
+        'p_requester_profile_id': requesterProfileId,
+        'p_resource_id': resourceId,
+        'p_latitude': currentLatitude,
+        'p_longitude': currentLongitude,
+      },
+    );
+    debugPrint('RPC GEOM: $currentLatitude, $currentLongitude');
+    debugPrint('RPC raw data: $result');
+    debugPrint('RPC type: ${result.runtimeType}');
+    final rows = List<Map<String, dynamic>>.from(result as List);
+    return rows.map(SupplierCandidate.fromJson).toList();
+  }
+
+  // Future<Map<String, dynamic>> createResourceRequest(
+  //     Map<String, dynamic> data) async {
+  //   final row =
+  //       await _supabaseClient.from('requests').insert(data).select().single();
+
+  //   return Map<String, dynamic>.from(row);
+  // }
+  Future<Map<String, dynamic>> reserveRequestCandidate({
+    required String resourceId,
+    required int quantity,
+    String? notes,
+    required String requestScope,
+    required String requesterProfileId,
+    required String supplierProfileId,
+    required String userResourceId,
+    double? distanceMeters,
+  }) async {
+    final row = await _supabaseClient.rpc(
+      'reserve_request_candidate',
+      params: {
+        'p_resource_id': resourceId,
+        'p_quantity': quantity,
+        'p_request_scope': requestScope,
+        'p_requester_profile_id': requesterProfileId,
+        'p_supplier_profile_id': supplierProfileId,
+        'p_user_resource_id': userResourceId,
+        'p_notes': notes,
+        'p_distance_meters': distanceMeters,
+      },
+    );
+
+    return Map<String, dynamic>.from(row as Map);
   }
 }
