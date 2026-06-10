@@ -92,7 +92,7 @@ class InboxView extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: group.unreadCount! > 0
+                            color: group.unreadCount > 0
                                 ? Colors.black
                                 : Colors.grey,
                           ),
@@ -104,7 +104,7 @@ class InboxView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing: group.unreadCount! > 0
+                  trailing: group.unreadCount > 0
                       ? Badge(
                           label: Text(group.unreadCount.toString()),
                           child: const Icon(Icons.circle),

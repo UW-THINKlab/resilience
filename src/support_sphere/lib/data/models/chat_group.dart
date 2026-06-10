@@ -4,7 +4,7 @@ class ChatGroup extends Equatable {
   final String id;
   final String name;
   final String? description;
-  final int? unreadCount;
+  final int unreadCount;
   final String? lastMessage;
   final DateTime? lastMessageTime;
   final List<String> members; // User IDs in group
@@ -16,18 +16,26 @@ class ChatGroup extends Equatable {
     this.lastMessage,
     this.lastMessageTime,
     required this.members,
-    this.unreadCount,
+    required this.unreadCount,
   });
 
-  factory ChatGroup.fromJson(Map<String, dynamic> json) {
+  factory ChatGroup.from(
+    String id,
+    String name, {
+    int unreadCount = 0,
+    List<String> members = const [],
+    String? description,
+    String? lastMessage,
+    DateTime? lastMessageTime,
+  }) {
     return ChatGroup(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      lastMessage: json['last_message'] as String?,
-      lastMessageTime: json['last_message_time'],
-      unreadCount: json['unread_count'] ?? 0,
-      members: List<String>.from(json['members'] ?? []),
+      id: id,
+      name: name,
+      description: description,
+      lastMessage: lastMessage,
+      lastMessageTime: lastMessageTime,
+      unreadCount: unreadCount,
+      members: members,
     );
   }
 
