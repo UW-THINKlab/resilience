@@ -18,9 +18,10 @@ class InboxState extends Equatable {
     List<ChatGroup>? groups,
     bool? isLoading,
     String? error,
-  }) => InboxState(
-    groups: groups ?? this.groups,
-    isLoading: isLoading ?? this.isLoading,
-    error: error ?? this.error,
-  );
+  }) =>
+      InboxState(
+        groups: groups ?? this.groups,
+        isLoading: isLoading ?? this.isLoading,
+        error: error ?? this.error,
+      );
 }

@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/widgets.dart'; //debugPrint
 import 'package:support_sphere/utils/supabase.dart';
@@ -5,6 +6,7 @@ import 'package:support_sphere/data/models/supplier_candidate.dart';
 
 class ResourceService {
   final SupabaseClient _supabaseClient = supabase;
+  final log = Logger('ResourceService');
 
   Future<PostgrestList?> getUserResourcesByUserId(String userId) async {
     return await _supabaseClient.from('user_resources').select('''
@@ -141,8 +143,8 @@ class ResourceService {
         'p_resource_id': resourceId,
       },
     );
-    debugPrint('RPC raw data: $result');
-    debugPrint('RPC type: ${result.runtimeType}');
+    log.fine('RPC raw data: $result');
+    log.fine('RPC type: ${result.runtimeType}');
     final rows = List<Map<String, dynamic>>.from(result as List);
     return rows.map(SupplierCandidate.fromJson).toList();
   }

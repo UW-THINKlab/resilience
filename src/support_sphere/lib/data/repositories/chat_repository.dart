@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:support_sphere/data/models/chat_group.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ class ChatRepository {
       id,
       name,
       description,
+      type,
       group_members(
         profile_id,
         user_profiles(
@@ -70,6 +72,7 @@ class ChatRepository {
             .map((m) => m['user_profiles']['people']['given_name'])
             .join('-');
       }
+
       final group = ChatGroup.from(
         id,
         name,
@@ -78,6 +81,11 @@ class ChatRepository {
         unreadCount: unreadCount,
         lastMessage: lastMessage,
         members: membersJson.map((m) => m['profile_id'] as String).toList(),
+        type: GROUP_CHAT_TYPE.values.firstWhere(
+          (e) =>
+              e.toString().split('.')[1].toUpperCase() ==
+              groupJson['type'].toUpperCase(),
+        ),
       );
       groups.add(group);
     }
@@ -90,12 +98,12 @@ class ChatRepository {
   }
 
 // Create new chat group with member profile IDs. Returns new group ID.
-  Future<String> createGroupWithProfiles({
-    required String name,
-    String? description,
-    required String createdByProfileId,
-    required List<String> memberProfileIds,
-  }) async {
+  Future<String> createGroupWithProfiles(
+      {required String name,
+      String? description,
+      required String createdByProfileId,
+      required List<String> memberProfileIds,
+      GROUP_CHAT_TYPE type = GROUP_CHAT_TYPE.chat}) async {
     String cleanName = name.trim();
     // Ensure creator is included and uniqueness
     final allProfileIds = {
@@ -132,17 +140,17 @@ class ChatRepository {
     );
 
     // groups.created_by should be a profile id (auth user id)
-    final insertedGroup = await supabase
-        .from('groups')
-        .insert({
-          'name': cleanName,
-          'description': cleanDescription,
-          'created_by_id': createdByProfileId,
-        })
-        .select('id')
+    final insertedGroup = await supabase.groups
+        .insert(Groups.insert(
+          createdById: createdByProfileId,
+          name: cleanName,
+          description: cleanDescription,
+          type: type,
+        ))
+        .select()
         .single();
 
-    final groupId = insertedGroup['id'] as String;
+    final groupId = Groups.fromJson(insertedGroup).id;
 
     developer.log(
       'createGroupWithProfiles() inserted groupId=$groupId',
@@ -152,7 +160,7 @@ class ChatRepository {
     final memberRows = allProfileIds.map((profileId) {
       return {
         'group_id': groupId,
-        'profile_id': profileId, // profile.id == auth user id
+        'profile_id': profileId,
       };
     }).toList();
 
@@ -165,29 +173,6 @@ class ChatRepository {
 
     return groupId;
   }
-
-  // Future<String> getOrCreateDirectRequestGroup({
-  //   required String name,
-  //   String? description,
-  //   required String createdByProfileId,
-  //   required String otherProfileId,
-  // }) async {
-  //   final existingGroupId = await _findDirectGroupId(
-  //     profileAId: createdByProfileId,
-  //     profileBId: otherProfileId,
-  //   );
-
-  //   if (existingGroupId != null) {
-  //     return existingGroupId;
-  //   }
-
-  //   return createGroupWithProfiles(
-  //     name: name,
-  //     description: description,
-  //     createdByProfileId: createdByProfileId,
-  //     memberProfileIds: [otherProfileId],
-  //   );
-  // }
 
   Future<String> _getNextGroupName({
     required String baseName,
@@ -208,31 +193,13 @@ class ChatRepository {
     required String createdByProfileId,
     required String otherProfileId,
   }) async {
-    final newName = await _getNextGroupName(baseName: name);
-
     return createGroupWithProfiles(
-      name: newName,
+      name: await _getNextGroupName(baseName: name),
       description: description,
       createdByProfileId: createdByProfileId,
       memberProfileIds: [otherProfileId],
+      type: GROUP_CHAT_TYPE.request,
     );
-  }
-
-  Future<String?> _findDirectGroupId({
-    required String profileAId,
-    required String profileBId,
-  }) async {
-    final result = await supabase.rpc(
-      'find_direct_group_between_profiles',
-      params: {
-        'p_profile_a': profileAId,
-        'p_profile_b': profileBId,
-      },
-    );
-
-    final groupId = result as String?;
-    if (groupId == null || groupId.isEmpty) return null;
-    return groupId;
   }
 
 //TODO Later- change this function out for Paul's

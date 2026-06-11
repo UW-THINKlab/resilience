@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/resource.dart';
+import 'package:support_sphere/data/models/resource_request.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
@@ -89,8 +90,17 @@ class ResourceCubit extends Cubit<ResourceState> {
     // required String recipientUserId,
   }) async {
     if (isClosed) return;
+    final ResourceRequest resourceRequest = ResourceRequest(
+      resourceId: requestData['resource_id'],
+      resourceName: requestData['resource_name'],
+      quantity: requestData['quantity'],
+      requestScope: requestData['request_scope'],
+      notes: requestData['notes'],
+      lon: requestData['current_longitude'],
+      lat: requestData['current_latitude'],
+    );
     await _resourceRepository.submitResourceRequestAndNotify(
-      requestData: requestData,
+      resourceRequest: resourceRequest,
       requesterProfileId: authUser.uuid,
     );
   }

@@ -183,9 +183,9 @@ class ErrorMessageStrings {
 
 /// App Modes Strings
 class AppModes {
-  static const String normal = 'NORMAL';
-  static const String emergency = 'EMERGENCY';
-  static const String testEmergency = 'TEST';
+  static const String normal = 'normal';
+  static const String emergency = 'emergency';
+  static const String testEmergency = 'test';
 }
 
 class AppRoles {

@@ -1,0 +1,23 @@
+import 'package:support_sphere/data/models/messages.dart';
+
+class ResourceRequest {
+  final String resourceId;
+  final String resourceName;
+  final int quantity;
+  final String requestScope;
+  final MessageUrgency urgency;
+  final String? notes;
+  final double? lon;
+  final double? lat;
+
+  ResourceRequest({
+    required this.resourceId,
+    required this.resourceName,
+    required this.quantity,
+    required this.requestScope,
+    required this.notes,
+    required this.lon,
+    required this.lat,
+    this.urgency = MessageUrgency.normal,
+  });
+}

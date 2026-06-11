@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
@@ -94,6 +95,9 @@ class InboxView extends StatelessWidget {
                   ],
                 ),
                 child: Card(
+                  color: group.type == GROUP_CHAT_TYPE.request
+                      ? Colors.amberAccent
+                      : null,
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: ListTile(

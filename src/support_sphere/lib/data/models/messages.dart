@@ -1,10 +1,12 @@
+enum MessageUrgency {
+  normal(name: 'normal'),
+  important(name: 'important'),
+  urgent(name: 'urgent'),
+  emergency(name: 'emergency');
 
+  final String name;
 
-class MessageUrgency {
-  static const String normal = "normal";
-  static const String important = "important";
-  static const String urgent = "urgent";
-  static const String emergency = "emergency";
+  const MessageUrgency({required this.name});
 }
 
 class Message {
@@ -50,5 +52,4 @@ class Message {
     }
     return messages;
   }
-
 }
