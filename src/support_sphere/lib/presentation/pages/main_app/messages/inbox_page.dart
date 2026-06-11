@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
@@ -76,41 +77,59 @@ class InboxView extends StatelessWidget {
             itemCount: state.groups.length,
             itemBuilder: (context, index) {
               final group = state.groups[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(group.name[0].toUpperCase()),
-                  ),
-                  title: Text(group.name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (group.lastMessage != null)
-                        Text(
-                          group.lastMessage!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: group.unreadCount > 0
-                                ? Colors.black
-                                : Colors.grey,
+              return Slidable(
+                key: ValueKey(group.id),
+                endActionPane: ActionPane(
+                  motion: ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (BuildContext context) async {
+                        await context.read<InboxCubit>().deleteGroup(group.id);
+                      },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'delete',
+                    ),
+                  ],
+                ),
+                child: Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(group.name[0].toUpperCase()),
+                    ),
+                    title: Text(group.name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (group.lastMessage != null)
+                          Text(
+                            group.lastMessage!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: group.unreadCount > 0
+                                  ? Colors.black
+                                  : Colors.grey,
+                            ),
                           ),
+                        Text(
+                          _formatTime(group.lastMessageTime),
+                          style:
+                              const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
-                      Text(
-                        _formatTime(group.lastMessageTime),
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
+                      ],
+                    ),
+                    trailing: group.unreadCount > 0
+                        ? Badge(
+                            label: Text(group.unreadCount.toString()),
+                            child: const Icon(Icons.circle),
+                          )
+                        : null,
+                    onTap: () => _navigateToChat(context, group),
                   ),
-                  trailing: group.unreadCount > 0
-                      ? Badge(
-                          label: Text(group.unreadCount.toString()),
-                          child: const Icon(Icons.circle),
-                        )
-                      : null,
-                  onTap: () => _navigateToChat(context, group),
                 ),
               );
             },
@@ -137,15 +156,17 @@ class InboxView extends StatelessWidget {
     log.fine('🧭 Navigating to: ${group.id}'); // ✅ Verify source
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(group.id, DateTime.now().toString());
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MessagesPage(
-          groupId: group.id,
-          groupName: group.name,
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MessagesPage(
+            groupId: group.id,
+            groupName: group.name,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _openCreateGroupSheet(BuildContext context) async {
@@ -167,19 +188,19 @@ class InboxView extends StatelessWidget {
 
     if (result != null && context.mounted) {
       await context.read<InboxCubit>().fetchGroups();
-
-      if (!context.mounted) return;
-
       final (groupId, groupName) = result;
       final prefs = await SharedPreferences.getInstance();
       prefs.setString(groupId, DateTime.now().toString());
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => MessagesPage(groupId: groupId, groupName: groupName),
-        ),
-      );
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                MessagesPage(groupId: groupId, groupName: groupName),
+          ),
+        );
+      }
     }
   }
 }

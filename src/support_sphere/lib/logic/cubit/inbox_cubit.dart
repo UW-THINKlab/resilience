@@ -23,4 +23,15 @@ class InboxCubit extends Cubit<InboxState> {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
+
+  Future<void> deleteGroup(String id) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      await _repo.deleteGroup(id);
+      final groups = await _repo.getUserChatGroups(authUser.uuid);
+      emit(state.copyWith(groups: groups, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, error: e.toString()));
+    }
+  }
 }

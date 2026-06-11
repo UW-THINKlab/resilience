@@ -270,4 +270,9 @@ class ChatRepository {
 
     return list;
   }
+
+  Future<void> deleteGroup(String id) async {
+    await supabase.from('messages').delete().eq('to_id', id);
+    await supabase.from('groups').delete().eq('id', id);
+  }
 }
