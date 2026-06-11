@@ -6,34 +6,36 @@ This doc deals with various migrations that one may need to do when productional
 
 When changing where in GitHub this package is located, the following locations in the code also need to be updated:
 
-* [pixi.toml](https://github.com/UW-THINKlab/resilience/blob/main/pixi.toml#L212-L213)
+* [`pixi.toml`](https://github.com/UW-THINKlab/resilience/blob/main/pixi.toml#L212-L213)
 * GitHub Actions configurations
  * [web preview main branch](https://github.com/UW-THINKlab/resilience/blob/main/.github/workflows/web-main.yaml#L18)
  * [web preview for PRs](https://github.com/UW-THINKlab/resilience/blob/main/.github/workflows/webpreview.yaml#L10)
 * deployment configurations (if changing GitHub organization ONLY)
  * Run the workflow for publishing new repository images, found in [`.github/workflows/images.yaml`](https://github.com/UW-THINKlab/resilience/blob/main/.github/workflows/images.yaml)
  * all instances of `ghcr.io/<organization name>/...` and the associated tags, based on the previously-ran workflow
-   * values.dev.yaml ([example](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/values.dev.yaml#L23-L25))
-   * values.cloud.yaml  ([example](https://github.com/UW-THINKlab/resilience/blob/main/deployment/values.cloud.yaml#L22-L24))
+   * `values.dev.yaml` ([example](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/values.dev.yaml#L23-L25))
+   * `values.cloud.yaml`  ([example](https://github.com/UW-THINKlab/resilience/blob/main/deployment/values.cloud.yaml#L22-L24))
        * note: need to decrypt this file to edit it ([documentation](https://resilience.readthedocs.io/en/latest/deployment/3_cloud_deployment/#editing-deploymentvaluescloudyaml))
-* mkdocs.yml
+* `mkdocs.yml`
   * [change 1](https://github.com/UW-THINKlab/resilience/blob/e1e0972c9ab0f7a9b889f3c81e2c259441af0437/mkdocs.yml#L5-L6)
   * [change 2](https://github.com/UW-THINKlab/resilience/blob/e1e0972c9ab0f7a9b889f3c81e2c259441af0437/mkdocs.yml#L47-L50)
 
 
 ## Database URL migration
 
-When changing the URL location of the deployment database (at https://laurelhurst.supportsphere.nikiofti.me as of January 2025), the following changes need to be made.
+When changing the URL location of the deployment database (at https://laurelhurst.supportsphere.nikiofti.me as of January 2025), make the following changes:
 
-* Assuming the AWS backend will still be in place, the ACM certificate will need to be reissued
- * Change the domain name [here](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/cloud/aws/infrastructure/modules/server/main.tf#L252)
- * Update the DNS record where your new domain is located following this documentation: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html 
-   * NOTE: we have run into problems trying to do this with an Azure-hosted DNS provider
-* Update deployment/values.cloud.yaml in the following places
-    * note: need to decrypt this file to edit it ([documentation](https://resilience.readthedocs.io/en/latest/deployment/3_cloud_deployment/#editing-deploymentvaluescloudyaml))
+### Config changes in the repo:
+ * Change the domain name in  `deployment/values.cloud.yaml` and `deployment/cloud/aws/infrastructure/modules/server/main.tf` ([here](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/cloud/aws/infrastructure/modules/server/main.tf#L252))
+* Update `deployment/values.cloud.yaml` in the following places
     * [studio.environment.SUPABASE_PUBLIC_URL](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/values.cloud.yaml#L46)
     * [auth.environment.API_EXTERNAL_URL and GOTRUE_SITE_URL](https://github.com/UW-THINKlab/resilience/blob/74480c2c24eefd3f51e7687cdd94e7053b312d4c/deployment/values.cloud.yaml#L60-L61)
+    * Note: Run `pixi run edit-cloud-values` in order to decrypt and edit `values.cloud.yaml` ([documentation](https://resilience.readthedocs.io/en/latest/deployment/3_cloud_deployment/#editing-deploymentvaluescloudyaml)). `grep` will not find the DNS name in that file because it's encrypted.
 
+### Update and Validate Cert:
+* Assuming the AWS backend will still be in place, the ACM certificate will need to be reissued
+* Update the DNS record where your new domain is located following this documentation: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html 
+   * NOTE: we have run into problems trying to do this with an Azure-hosted DNS provider
 
 ## AWS Account Migration
 
@@ -89,24 +91,18 @@ To be more explicit, these exist in `values.cloud.yaml`, which is currently edit
 ```
 pixi run edit-cloud-values
 ```
-
-#### 4) Update all mentions of the previous DNS name used for the db.
-
-This should be in  `values.cloud.yaml` and `deployment/cloud/aws/infrastructure/modules/server/main.tf`
-
-Remember- You will have to run `pixi run edit-cloud-values` in order to decrypt and edit `values.cloud.yaml`. 
-(`grep` will not find the name in that file because it's encrypted.)
-
-##### 4.5) Validate ACM certificate for that domain.
+##### 3.5) Note- Make sure ACM certificate for the db URL is validated.
 
 Follow this documentation: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html 
 
-#### 5) Delete old .terraform.tfstate terraform state files.
+OpenTofu will create a cert if none exists, but it will not be validated and will fail to associate correctly to the other infra.
+
+#### 4) Delete old .terraform.tfstate terraform state files.
 
 These live in `deployment/cloud/aws/infrastructure/.terraform/terraform.tfstate` and `deployment/cloud/aws/account/.terraform/terraform.tfstate`.
 Otherwise, you will get errors from tofu commands when the pixi scripts run.
 
-#### 6) Rebuild account infrastructure
+#### 5) Rebuild account infrastructure
 
 With credentials from the new AWS account in your `.aws/config` file (under the `default` user, required for the pixi scripts), run
 
@@ -116,7 +112,7 @@ pixi run cloud-account-deploy
 ```
 Note at this point that you won't be able to run the command `pixi run edit-cloud-values` because the old AWS creds will no longer be in your default config.
 
-#### 7) Rebuild infrastructure
+#### 6) Rebuild infrastructure
 
 With credentials from the new AWS account, run
 
@@ -125,7 +121,7 @@ pixi run cloud-init
 pixi run cloud-deploy
 ```
 
-#### 8) Update SOPS
+#### 7) Update SOPS
 
 In [the .sops.yaml file](https://github.com/UW-THINKlab/resilience/blob/main/.sops.yaml), edit the KMS keys to be the ones that have been newly created.
 
