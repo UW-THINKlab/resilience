@@ -91,10 +91,6 @@ class ResourceRepository {
     await _resourceService.markUpToDate(id, updatedAt);
   }
 
-  // Future<void> requestResource(Map<String, dynamic> data) async {
-  //   await _resourceService.createResourceRequest(data);
-  // }
-
   Future<void> submitResourceRequestAndNotify({
     required Map<String, dynamic> requestData,
     required String requesterProfileId,

@@ -7,21 +7,15 @@ class ResourceService {
   final SupabaseClient _supabaseClient = supabase;
 
   Future<PostgrestList?> getUserResourcesByUserId(String userId) async {
-    return await _supabaseClient.from('user_resources').select('''
+    return await _supabaseClient.from('user_resources_view').select('''
       id,
       user_id,
-      resources (
-        resources_cv (
-          id,
-          name,
-          description
-        ),
-        resource_types (
-          id,
-          name,
-          description
-        )
-      ),
+      rc_id,
+      rc_name,
+      rc_desc,
+      rt_id,
+      rt_name,
+      rt_desc,
       quantity,
       notes,
       created_at,

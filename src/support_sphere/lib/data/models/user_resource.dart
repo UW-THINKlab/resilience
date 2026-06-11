@@ -24,10 +24,6 @@ class UserResource extends Equatable {
   List<Object?> get props =>
       [id, name, resourceType, qtyAvailable, notes, addedDate, reviewedDate];
 
-  // static UserResource fromJson(Map<String, dynamic> json) {
-
-  // }
-
   UserResource copyWith({
     String? id,
     String? name,
@@ -49,11 +45,14 @@ class UserResource extends Equatable {
   }
 
   static UserResource fromJson(Map<String, dynamic> json) {
-    var resources = json['resources'];
     return UserResource(
       id: json['id'],
-      name: resources['resources_cv']['name'],
-      resourceType: ResourceTypes.fromJson(resources['resource_types']),
+      name: json['rc_name'],
+      resourceType: ResourceTypes(
+        id: json['rt_id'],
+        name: json['rt_name'],
+        description: json['rt_desc'],
+      ),
       qtyAvailable: json['quantity'],
       notes: json['notes'],
       addedDate: DateTime.parse(json['created_at']),
