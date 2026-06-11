@@ -203,3 +203,6 @@ keys.asc
 
 # db backup files
 backups/
+
+# selenium test report
+tests/client/report.html
