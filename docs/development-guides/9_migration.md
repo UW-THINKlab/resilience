@@ -37,7 +37,8 @@ When changing the URL location of the deployment database (at https://laurelhurs
 
 ## AWS Account Migration
 
-These steps are as-yet untested. Niki Burggraf (nikib@uw.edu) is more than happy to help with any issues that may crop up along the way when these are run.
+These steps are slowly being tested and debugged. 
+Niki Burggraf (nikib@uw.edu) is more than happy to help with any issues that may crop up along the way when these are run.
 
 ### Starting Configuration
 
@@ -50,6 +51,10 @@ gpg --import <key file location>
 ```
 
 ### Steps
+
+#### 0) Note
+
+All pixi scripts are run from the top level of the repo where `pixi.toml` lives. 
 
 #### 1) Destroy old infrastructure
 
@@ -77,18 +82,41 @@ In order to destroy the old infrastructure, you'll need to keep the existing inf
 2. Cloud account infrastructure: https://github.com/UW-THINKlab/resilience/blob/e1e0972c9ab0f7a9b889f3c81e2c259441af0437/deployment/cloud/aws/account/main.tf#L10
 3. Cloud infrastructure: https://github.com/UW-THINKlab/resilience/blob/e1e0972c9ab0f7a9b889f3c81e2c259441af0437/deployment/cloud/aws/infrastructure/main.tf#L10 
 
-#### 3) Update all mentions of the previous account ID
+#### 3) Update all mentions of the previous AWS account ID
 These can be found through a code search here: https://github.com/search?q=repo%3AUW-THINKlab%2Fresilience%20871683513797&type=code
-#### 5) Rebuild account infrastructure
 
-With credentials from the new AWS account, run
+To be more explicit, these exist in `values.cloud.yaml`, which is currently edited via 
+```
+pixi run edit-cloud-values
+```
+
+#### 4) Update all mentions of the previous DNS name used for the db.
+
+This should be in  `values.cloud.yaml` and `deployment/cloud/aws/infrastructure/modules/server/main.tf`
+
+Remember- You will have to run `pixi run edit-cloud-values` in order to decrypt and edit `values.cloud.yaml`. 
+(`grep` will not find the name in that file because it's encrypted.)
+
+##### 4.5) Validate ACM certificate for that domain.
+
+Follow this documentation: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html 
+
+#### 5) Delete old .terraform.tfstate terraform state files.
+
+These live in `deployment/cloud/aws/infrastructure/.terraform/terraform.tfstate` and `deployment/cloud/aws/account/.terraform/terraform.tfstate`.
+Otherwise, you will get errors from tofu commands when the pixi scripts run.
+
+#### 6) Rebuild account infrastructure
+
+With credentials from the new AWS account in your `.aws/config` file (under the `default` user, required for the pixi scripts), run
 
 ```
 pixi run cloud-account-init
 pixi run cloud-account-deploy
 ```
+Note at this point that you won't be able to run the command `pixi run edit-cloud-values` because the old AWS creds will no longer be in your default config.
 
-#### 6) Rebuild infrastructure
+#### 7) Rebuild infrastructure
 
 With credentials from the new AWS account, run
 
@@ -96,12 +124,6 @@ With credentials from the new AWS account, run
 pixi run cloud-init
 pixi run cloud-deploy
 ```
-
-#### 7) Validate ACM certificate
-
-Follow this documentation: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html 
-
-If the database url is still laurelhurst.supportsphere.nikiofti.me, contact Niki Burggraf (nikib@uw.edu) for assistance, since she own and administers that domain.
 
 #### 8) Update SOPS
 
