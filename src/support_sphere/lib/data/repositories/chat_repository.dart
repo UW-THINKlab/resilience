@@ -166,29 +166,6 @@ class ChatRepository {
     return groupId;
   }
 
-  // Future<String> getOrCreateDirectRequestGroup({
-  //   required String name,
-  //   String? description,
-  //   required String createdByProfileId,
-  //   required String otherProfileId,
-  // }) async {
-  //   final existingGroupId = await _findDirectGroupId(
-  //     profileAId: createdByProfileId,
-  //     profileBId: otherProfileId,
-  //   );
-
-  //   if (existingGroupId != null) {
-  //     return existingGroupId;
-  //   }
-
-  //   return createGroupWithProfiles(
-  //     name: name,
-  //     description: description,
-  //     createdByProfileId: createdByProfileId,
-  //     memberProfileIds: [otherProfileId],
-  //   );
-  // }
-
   Future<String> _getNextGroupName({
     required String baseName,
   }) async {
@@ -203,36 +180,16 @@ class ChatRepository {
   }
 
   Future<String> createDirectRequestGroup({
-    required String name,
     String? description,
     required String createdByProfileId,
     required String otherProfileId,
   }) async {
-    final newName = await _getNextGroupName(baseName: name);
-
     return createGroupWithProfiles(
-      name: newName,
+      name: '',
       description: description,
       createdByProfileId: createdByProfileId,
       memberProfileIds: [otherProfileId],
     );
-  }
-
-  Future<String?> _findDirectGroupId({
-    required String profileAId,
-    required String profileBId,
-  }) async {
-    final result = await supabase.rpc(
-      'find_direct_group_between_profiles',
-      params: {
-        'p_profile_a': profileAId,
-        'p_profile_b': profileBId,
-      },
-    );
-
-    final groupId = result as String?;
-    if (groupId == null || groupId.isEmpty) return null;
-    return groupId;
   }
 
 //TODO Later- change this function out for Paul's
