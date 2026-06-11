@@ -139,14 +139,9 @@ class _CreateChatGroupSheetState extends State<CreateChatGroupSheet> {
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(
-                      labelText: 'Group name',
+                      labelText: 'Group name (optional)',
                       border: OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      final text = value?.trim() ?? '';
-                      if (text.isEmpty) return 'Please enter a group name';
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(

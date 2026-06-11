@@ -13,30 +13,72 @@ class ChatRepository {
     );
     final prefs = await SharedPreferences.getInstance();
     final MessagesRepository messageRepo = MessagesRepository();
-    final response = await supabase.from('group_members').select('''
-          groups(
-            id, 
-            name,
-            description
-          )
-        ''').eq('profile_id', userId);
 
+    final response = await supabase.from('groups').select('''
+      id,
+      name,
+      description,
+      group_members(
+        profile_id,
+        user_profiles(
+          id,
+          people(
+            given_name
+          )
+        )
+      )
+    ''');
     log.fine('Got response: $response');
 
     final groups = <ChatGroup>[];
     for (Map<String, dynamic> item in response) {
-      final json = item['groups'] ?? item;
+      final groupJson = item['groups'] ?? item;
+      final membersJson = item['group_members'] as List<dynamic>;
+      /**
+       * This is pretty icky, and the groups should filter based on the query.
+       * Because there is no direct relation between profile and group,
+       *   I couldn't figure out how to make the query filter the groups for us.
+       * However, the fact that this works reveals a security problem,
+       *   a user's authentication token should be sufficient to query database
+       *   items that are relevant to that query only.
+       * The query above should fail altogether or at the very least not return
+       *   chat groups that our user shouldn't have access to.
+       */
+      if (!membersJson.map((m) => m['profile_id'] ?? '').contains(userId)) {
+        continue;
+      }
       final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
-      final id = json['id'] as String;
-      final lastMessageTime =
-          DateTime.parse(prefs.getString(id) ?? epoch.toString());
-      final unreadCount =
-          await messageRepo.unreadCount(id, lastMessageTime.toString());
-      json['last_message_time'] = lastMessageTime;
-      json['unread_count'] = unreadCount;
-      json['last_message'] = await messageRepo.lastUnreadMessage(
-          userId, id, lastMessageTime.toString());
-      final group = ChatGroup.fromJson(json);
+      final id = groupJson['id'] as String;
+      final lastMessageTime = DateTime.parse(
+        prefs.getString(id) ?? epoch.toString(),
+      );
+      final unreadCount = await messageRepo.unreadCount(
+        id,
+        lastMessageTime.toString(),
+      );
+      final lastMessage = await messageRepo.lastUnreadMessage(
+        userId,
+        id,
+        lastMessageTime.toString(),
+      );
+      final String name;
+      if (groupJson.containsKey('name') && groupJson['name'].isNotEmpty) {
+        name = groupJson['name'];
+      } else {
+        name = membersJson
+            .where((m) => m['profile_id'] != userId)
+            .map((m) => m['user_profiles']['people']['given_name'])
+            .join('-');
+      }
+      final group = ChatGroup.from(
+        id,
+        name,
+        description: groupJson['description'],
+        lastMessageTime: lastMessageTime,
+        unreadCount: unreadCount,
+        lastMessage: lastMessage,
+        members: membersJson.map((m) => m['profile_id'] as String).toList(),
+      );
       groups.add(group);
     }
 
@@ -54,15 +96,33 @@ class ChatRepository {
     required String createdByProfileId,
     required List<String> memberProfileIds,
   }) async {
-    final cleanName = name.trim();
-    final cleanDescription =
-        (description?.trim().isEmpty ?? true) ? null : description!.trim();
-
+    String cleanName = name.trim();
     // Ensure creator is included and uniqueness
     final allProfileIds = {
       createdByProfileId,
       ...memberProfileIds,
     }.toList();
+    /**
+     * If an existing chat has same members, return that instead.
+     * This is only triggered when a name is empty, chats without name are
+     *   identified by their group members.
+     */
+    if (cleanName.isEmpty) {
+      final existing = (await getUserChatGroups(createdByProfileId)).where((g) {
+        if (g.members.length != allProfileIds.length) return false;
+        for (final m in g.members) {
+          if (!allProfileIds.contains(m)) {
+            return false;
+          }
+        }
+        return true;
+      }).firstOrNull;
+      if (existing != null) {
+        return existing.id;
+      }
+    }
+    final cleanDescription =
+        (description?.trim().isEmpty ?? true) ? null : description!.trim();
 
     developer.log(
       'createGroupWithProfiles() name="$cleanName", '
