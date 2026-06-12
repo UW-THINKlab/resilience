@@ -223,8 +223,7 @@ depends-on = ["install-flutter"]
 "TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_neighborhood" = "Laurelhurst"
 "TF_VAR_stage" = "dev"
-#"TF_VAR_account_id" = "503561456208"
-"TF_VAR_account_id" = "871683513797"
+"TF_VAR_account_id" = "503561456208"
 "TF_VAR_ops_group_name" = "ssec-eng"
 "TF_VAR_github_repo" = "resilience"
 "TF_VAR_github_organization" = "UW-THINKlab"
@@ -240,12 +239,8 @@ awscli = ">=2.4.0"
 aws-session-manager-plugin = ">=1.2.0"
 
 # OpenTofu tasks
-[feature.cloud.tasks.show-identity]
-cmd = "aws sts get-caller-identity"
-cwd = "deployment/cloud/aws/account"
-
 [feature.cloud.tasks.cloud-deploy]
-cmd = "TF_LOG=DEBUG tofu fmt -recursive && tofu apply"
+cmd = "tofu fmt -recursive && tofu apply"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-init]
@@ -261,7 +256,7 @@ cmd = "tofu destroy"
 cwd = "deployment/cloud/aws/infrastructure"
 
 [feature.cloud.tasks.cloud-account-deploy]
-cmd = "TF_LOG=DEBUG tofu fmt -recursive && tofu apply"
+cmd = "tofu fmt -recursive && tofu apply"
 cwd = "deployment/cloud/aws/account"
 depends-on = ["cloud-account-setup"]
 
