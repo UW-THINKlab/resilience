@@ -231,7 +231,7 @@ resource "aws_lb_listener" "this" {
   }
 }
 
-resource "aws_lb_listener" "htttps-listener" {
+resource "aws_lb_listener" "https-listener" {
   load_balancer_arn = aws_lb.this.arn
   port              = 443
   protocol          = "HTTPS"
@@ -250,6 +250,6 @@ resource "aws_autoscaling_attachment" "this" {
 }
 
 resource "aws_acm_certificate" "this" {
-  domain_name       = "laurelhurst.supportsphere.acmerocket.com"
+  domain_name       = "laurelhurst.supportsphere.localconnectivitylab.org"
   validation_method = "DNS"
 }
