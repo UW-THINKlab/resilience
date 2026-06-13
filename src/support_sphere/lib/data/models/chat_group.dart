@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 
 class ChatGroup extends Equatable {
   final String id;
@@ -7,7 +8,8 @@ class ChatGroup extends Equatable {
   final int unreadCount;
   final String? lastMessage;
   final DateTime? lastMessageTime;
-  final List<String> members; // User IDs in group
+  final List<String> members;
+  final GROUP_CHAT_TYPE type;
 
   const ChatGroup({
     required this.id,
@@ -17,6 +19,7 @@ class ChatGroup extends Equatable {
     this.lastMessageTime,
     required this.members,
     required this.unreadCount,
+    required this.type,
   });
 
   factory ChatGroup.from(
@@ -27,6 +30,7 @@ class ChatGroup extends Equatable {
     String? description,
     String? lastMessage,
     DateTime? lastMessageTime,
+    GROUP_CHAT_TYPE type = GROUP_CHAT_TYPE.chat,
   }) {
     return ChatGroup(
       id: id,
@@ -36,6 +40,7 @@ class ChatGroup extends Equatable {
       lastMessageTime: lastMessageTime,
       unreadCount: unreadCount,
       members: members,
+      type: type,
     );
   }
 

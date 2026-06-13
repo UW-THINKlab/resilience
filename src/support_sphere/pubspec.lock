@@ -405,6 +405,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.0"
+  geobase:
+    dependency: "direct main"
+    description:
+      name: geobase
+      sha256: "3a4e2eb17a7ab452dda78fb45ee498a3ab02469ded749a5f4a9abea21fc95919"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.0"
   geoclue:
     dependency: transitive
     description:

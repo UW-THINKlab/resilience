@@ -1,0 +1,14 @@
+enums:
+  group_chat_type: [request, chat]
+  operational_status: [emergency, test, normal]
+  sharing_scopes: [cluster, neighborhood, everyone]
+  priority: [low, medium, high]
+  reservation_status: [pending, accepted, rejected, released, expired]
+  messageurgency: [normal, important, urgent, emergency]
+  message_type: [resource_request, text]
+  app_permissions: [operational_event_read, operational_event_create]
+  app_roles: [user, subcom_agent, com_admin, admin]
+  request_scope: [nearby, neighbors]
+
+output: lib/data/models/
+postGIS: true
