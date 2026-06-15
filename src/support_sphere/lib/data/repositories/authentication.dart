@@ -59,6 +59,7 @@ class AuthenticationRepository {
   }
 
   MyAuthUser _parseUser(supabase_flutter.User? user, String userRole) {
+    log.finer("_parseUser: $user, role=$userRole");
     return user == null
         ? MyAuthUser.empty
         : MyAuthUser(
@@ -74,7 +75,7 @@ class AuthenticationRepository {
       String token = session.accessToken;
       Map<String, dynamic> decodedToken = Jwtdecode(token);
       String userRole = decodedToken['user_role'] ?? defaultReturn;
-      log.fine("User role: $userRole");
+      log.fine("User role: $userRole, token: $decodedToken");
       return userRole;
     }
     return defaultReturn;
