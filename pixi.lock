@@ -1971,6 +1971,16 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/84/47/07046e0acedc12fe2bae79cf6c73ad67f51ae9d67df64d06b0f3eac73d36/pytest_html-4.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9a/81/7e4e08678a1f98521201c3079f77db69fb552acd56067661f8c2f534a718/markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl
+  supabase:
+    channels:
+    - url: https://conda.anaconda.org/conda-forge/
+    packages:
+      linux-64:
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.13.1-hfc2019e_1.conda
+      osx-64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/go-sops-3.13.1-h5839d16_1.conda
+      osx-arm64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/go-sops-3.13.1-hf76c51c_1.conda
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
   sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
@@ -2609,6 +2619,7 @@ packages:
   license: MPL-2.0
   license_family: MOZILLA
   purls: []
+  run_exports: {}
   size: 29815936
   timestamp: 1779212581258
 - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
@@ -7719,6 +7730,7 @@ packages:
   license: MPL-2.0
   license_family: MOZILLA
   purls: []
+  run_exports: {}
   size: 31341807
   timestamp: 1779212715824
 - conda: https://conda.anaconda.org/conda-forge/osx-64/icu-75.1-h120a0e1_0.conda
@@ -10205,6 +10217,7 @@ packages:
   license: MPL-2.0
   license_family: MOZILLA
   purls: []
+  run_exports: {}
   size: 29237000
   timestamp: 1779212624289
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-75.1-hfee45f7_0.conda

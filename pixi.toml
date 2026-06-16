@@ -12,6 +12,7 @@ backend = ["backend", "db"]
 deployment = ["cloud", "backup-secret"]
 data-analysis = ["data-analysis", "db"]
 selenium = ["selenium", "frontend"]
+supabase = ["supabase"]
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -306,23 +307,39 @@ gnupg = ">=2.4.5"
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --import /root/private.pgp"
 
-[tasks.install-supabase]
+### New supabase CLI env ###
+
+[feature.supabase.tasks.install]
 cmd = "curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install | bash"
+#outputs = ["**/bin/supabase"]
 
-[tasks.supabase]
-cmd = ["~/.supabase/bin/supabase", "start"]
+[feature.supabase.tasks.install.env]
+SUPABASE_INSTALL_DIR = "$CONDA_PREFIX/bin"
 
-[tasks.supabase-status]
-cmd = ["~/.supabase/bin/supabase", "status", "-o", "env"]
+[feature.supabase.tasks.start]
+cmd = ["supabase", "start"]
+depends-on = ["install"]
 
-[tasks.reset-supabase]
-cmd = ["~/.supabase/bin/supabase", "db", "reset", "--local"]
+[feature.supabase.tasks.stop]
+cmd = ["supabase", "stop"]
+depends-on = ["install"]
 
-[tasks.dump-supabase]
+[feature.supabase.tasks.status]
+cmd = ["supabase", "status", "-o", "env"]
+depends-on = ["install"]
+
+[feature.supabase.tasks.reset]
+cmd = ["supabase", "db", "reset", "--local"]
+depends-on = ["install"]
+
+[feature.supabase.tasks.dump]
 cmd = "scripts/db-dump.sh"
+depends-on = ["install"]
 
-[tasks.load-supabase]
+[feature.supabase.tasks.load]
 cmd = "scripts/db-load.sh"
+depends-on = ["install"]
+
 
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
