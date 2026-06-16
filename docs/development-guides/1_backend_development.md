@@ -17,7 +17,7 @@ Setting up the backend:
 Now, the choice is to load data, either the Laurelhurst test data or a backup.
 
 To load Laurelhurst test data:
-    
+
     pixi run -e backend setup-db-data-via-k8s-job
 
 To load from a backup file named `backup-Laurelhurst-2026-02-17-1133.sql.gz`:
@@ -25,7 +25,7 @@ To load from a backup file named `backup-Laurelhurst-2026-02-17-1133.sql.gz`:
     pixi run -e backend db-restore backup-Laurelhurst-2026-02-17-1133.sql.gz
 
 To create a backup from the current instance:
-    
+
     pixi run -e backend db-backup
 
 Which will create a backup file with the neighborhood name and timestamp: `backup-Laurelhurst-2026-02-17-1133.sql.gz`
@@ -38,6 +38,46 @@ Full backup in the cloud:
     pixi run db-backup
 
 Note: `/opt/resilience/` is created by `root` in the automated instance create process. It's a git repo, and should be managed as the creating user.
+
+
+## supabase tl;dr
+```
+# 0. Prerequisites: Install pixi and clone project
+curl -fsSL https://pixi.sh/install.sh | sh
+git clone https://github.com/UW-THINKlab/resilience
+cd resilience
+git checkout messages
+
+# 1. Install supabase:
+pixi run install-supabase
+
+# 2. Start supabase:
+pixi run supabase
+
+# 3. Load data in ./data.sql.gz
+pixi run load-supabase
+
+# 4. Get auth details from supabase
+pixi run supabase-status | grep -e "API_URL" -e "PUBLISHABLE_KEY"
+
+# 5. Update your .env
+vi .env
+--
+SUPABASE_URL='<API_URL>'
+SUPABASE_PUBLISHABLE_KEY='<PUBLISHABLE_KEY>'
+--
+
+# 6. Run the local client
+pixi run -e frontend run
+```
+
+To create a backup that can be used in the db-load process:
+```
+pixi run dump-supabase
+```
+Using default options, this will create a DB dump in file named `data.sql.gz`
+
+*NOTE*: The `supabase` cluster is run with persisted volumes and will recover from normal shutdowns and hiccups. The `load-supabase` command should only be used for new systems or for catastrophic DB failure. `pixi load-supabase` will **reset** the local database and load a fresh copy from the backup.
 
 
 ## Introduction

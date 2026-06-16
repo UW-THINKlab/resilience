@@ -2,11 +2,8 @@
 
 # uses supabase CLI - https://supabase.com/docs/guides/local-development/cli/getting-started
 
-CLI="supabase"
-
 # Source - https://stackoverflow.com/a/677212
-# Posted by lhunath, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-06-15, License - CC BY-SA 4.0
+CLI="supabase"
 
 if ! command -v $CLI >/dev/null 2>&1
 then

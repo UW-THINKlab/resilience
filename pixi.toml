@@ -306,8 +306,23 @@ gnupg = ">=2.4.5"
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --import /root/private.pgp"
 
+[tasks.install-supabase]
+cmd = "curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install | bash"
+
 [tasks.supabase]
-cmd = ["supabase", "start"]
+cmd = ["~/.supabase/bin/supabase", "start"]
+
+[tasks.supabase-status]
+cmd = ["~/.supabase/bin/supabase", "status", "-o", "env"]
+
+[tasks.reset-supabase]
+cmd = ["~/.supabase/bin/supabase", "db", "reset", "--local"]
+
+[tasks.dump-supabase]
+cmd = "scripts/db-dump.sh"
+
+[tasks.load-supabase]
+cmd = "scripts/db-load.sh"
 
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
