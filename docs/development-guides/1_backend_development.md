@@ -41,41 +41,103 @@ Note: `/opt/resilience/` is created by `root` in the automated instance create p
 
 
 ## supabase tl;dr
+To checkout and run a dev supabase server, from scratch:
 ```
-# 0. Prerequisites: Install pixi and clone project
 curl -fsSL https://pixi.sh/install.sh | sh
 git clone https://github.com/UW-THINKlab/resilience
 cd resilience
 git checkout messages
 
-# 1. Install supabase:
-pixi run -e supabase install
-
-# 2. Start supabase:
 pixi run -e supabase start
-
-# 3. Load data in ./data.sql.gz
 pixi run -e supabase load
+```
 
-# 4. Get auth details from supabase
+To run the frontend:
+```
 pixi run -e supabase status | grep -e "API_URL" -e "PUBLISHABLE_KEY"
-
-# 5. Update your .env
 vi .env
 --
 SUPABASE_URL='<API_URL>'
 SUPABASE_PUBLISHABLE_KEY='<PUBLISHABLE_KEY>'
---
+---
 
-# 6. Run the local client
 pixi run -e frontend run
 ```
 
+### 0. Prerequisites: Install pixi and clone project
+Current development work is committed on the `messages` branch.
+
+To get started, clone the GitHub project and checkout the messages branch:
+```
+curl -fsSL https://pixi.sh/install.sh | sh
+git clone https://github.com/UW-THINKlab/resilience
+cd resilience
+git checkout messages
+```
+
+### 1. Start supabase
+Once the code is ready, start the supabase env locally:
+```
+pixi run -e supabase start
+```
+
+This will start a clean database with the resilience project schema loaded.
+
+### 2. Load data in ./data.sql.gz
+If you've got a database backup, named by default `data.sql.gz`, you can load it:
+```
+pixi run -e supabase load
+
+pixi run -e supabase load backup-Laurelhurst-2026-04-01-1338.sql.gz
+```
+
+### 3. Get auth details from supabase
+To do frontend development against the new development server, you need to net environment variables for the URL and supabase publishable key.
+
+To get those values from the running instance:
+```
+pixi run -e supabase status | grep -e "API_URL" -e "PUBLISHABLE_KEY"
+```
+
+These values can be used to update an .env file or your IDE:
+```
+SUPABASE_URL='<API_URL>'
+SUPABASE_PUBLISHABLE_KEY='<PUBLISHABLE_KEY>'
+```
+
+### 4. Update your .env and run
+```
+vi .env
+```
+
+Add the following env vars, substituting <API_URL> and <PUBLISHABLE_KEY> with the values from step 3.
+```
+SUPABASE_URL='<API_URL>'
+SUPABASE_PUBLISHABLE_KEY='<PUBLISHABLE_KEY>'
+```
+
+### 5. Run the frontend
+```
+pixi run -e frontend run
+```
+
+### 6. Create a backup
 To create a backup that can be used in the db-load process:
 ```
 pixi run -e supabase dump
+
+pixi run -e supabase dump <a-backup-filename>.sql
 ```
-Using default options, this will create a DB dump in file named `data.sql.gz`
+Using default options, this will create a DB dump in file named `data.sql.gz`.
+
+### 7. Load a backup
+To load a running supabase system from a backup file (created with dump):
+```
+pixi run -e supabase load
+
+pixi run -e supabase dump <a-backup-filename>.sql.gz
+```
+Using default options, this will load DB dump in file named `data.sql.gz` into the local supabase instance.
 
 *NOTE*: The `supabase` cluster is run with persisted volumes and will recover from normal shutdowns and hiccups. The `load-supabase` command should only be used for new systems or for catastrophic DB failure. `pixi load-supabase` will **reset** the local database and load a fresh copy from the backup.
 
