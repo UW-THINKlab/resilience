@@ -49,16 +49,16 @@ cd resilience
 git checkout messages
 
 # 1. Install supabase:
-pixi run install-supabase
+pixi run -e supabase install
 
 # 2. Start supabase:
-pixi run supabase
+pixi run -e supabase start
 
 # 3. Load data in ./data.sql.gz
-pixi run load-supabase
+pixi run -e supabase load
 
 # 4. Get auth details from supabase
-pixi run supabase-status | grep -e "API_URL" -e "PUBLISHABLE_KEY"
+pixi run -e supabase status | grep -e "API_URL" -e "PUBLISHABLE_KEY"
 
 # 5. Update your .env
 vi .env
@@ -73,7 +73,7 @@ pixi run -e frontend run
 
 To create a backup that can be used in the db-load process:
 ```
-pixi run dump-supabase
+pixi run -e supabase dump
 ```
 Using default options, this will create a DB dump in file named `data.sql.gz`
 
