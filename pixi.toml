@@ -304,7 +304,7 @@ gnupg = ">=2.4.5"
 "GPG_TTY" = "$(tty)"
 
 [feature.backup-secret.tasks.import-gpg-key]
-cmd = "gpg --pinentry-mode loopback --output - keys.asc | gpg --import"
+cmd = "gpg --import /root/private.pgp"
 
 [tasks.supabase]
 cmd = ["supabase", "start"]
