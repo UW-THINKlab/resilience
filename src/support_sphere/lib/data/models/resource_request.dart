@@ -1,11 +1,11 @@
-import 'package:support_sphere/data/models/messages.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 
 class ResourceRequest {
   final String resourceId;
   final String resourceName;
   final int quantity;
   final String requestScope;
-  final MessageUrgency urgency;
+  final MESSAGEURGENCY urgency;
   final String? notes;
   final double? lon;
   final double? lat;
@@ -18,6 +18,6 @@ class ResourceRequest {
     required this.notes,
     required this.lon,
     required this.lat,
-    this.urgency = MessageUrgency.normal,
+    this.urgency = MESSAGEURGENCY.normal,
   });
 }
