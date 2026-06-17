@@ -108,30 +108,13 @@ class InboxView extends StatelessWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (group.lastMessage != null)
-                          Text(
-                            group.lastMessage!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: group.unreadCount > 0
-                                  ? Colors.black
-                                  : Colors.grey,
-                            ),
-                          ),
                         Text(
-                          _formatTime(group.lastMessageTime),
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
+                          group.lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
-                    trailing: group.unreadCount > 0
-                        ? Badge(
-                            label: Text(group.unreadCount.toString()),
-                            child: const Icon(Icons.circle),
-                          )
-                        : null,
                     onTap: () => _navigateToChat(context, group),
                   ),
                 ),
@@ -145,15 +128,6 @@ class InboxView extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  String _formatTime(DateTime? time) {
-    if (time == null) return '';
-    final now = DateTime.now();
-    if (now.difference(time).inDays == 0) {
-      return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
-    }
-    return '${time.day}/${time.month}';
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) async {

@@ -33,14 +33,11 @@ class MessagesRepository {
     return data.length;
   }
 
-  Future<String> lastUnreadMessage(
-      String userId, String groupId, String time) async {
+  Future<String> lastUnreadMessage(String groupId) async {
     final response = await supabase
         .from('messages')
         .select()
         .eq('to_id', groupId)
-        .neq('from_id', userId)
-        .gte('sent_on', time)
         .order('sent_on', ascending: false)
         .limit(1)
         .maybeSingle();

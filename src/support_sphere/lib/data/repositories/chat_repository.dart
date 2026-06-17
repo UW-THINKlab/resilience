@@ -3,7 +3,6 @@ import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 
 class ChatRepository {
@@ -12,8 +11,6 @@ class ChatRepository {
       'getUserChatGroups() called for userId=$userId',
       name: 'ChatRepository',
     );
-    final prefs = await SharedPreferences.getInstance();
-    final MessagesRepository messageRepo = MessagesRepository();
 
     final response = await supabase.from('groups').select('''
       id,
@@ -23,78 +20,48 @@ class ChatRepository {
       group_members(
         profile_id,
         user_profiles(
-          id,
           people(
-            given_name
+            given_name,
+            user_profile_id
           )
         )
       )
-    ''');
+    ''').withConverter(
+      (resp) => resp.map((element) {
+        List<Map<String, dynamic>> members = (element['group_members'] as List)
+            .map((e) => (e as Map<String, dynamic>)['user_profiles']['people']
+                as Map<String, dynamic>)
+            .toList();
+        return (Groups.fromJson(element), People.converter(members));
+      }).toList(),
+    );
     log.fine('Got response: $response');
 
-    final groups = <ChatGroup>[];
-    for (Map<String, dynamic> item in response) {
-      final groupJson = item['groups'] ?? item;
-      final membersJson = item['group_members'] as List<dynamic>;
-      /**
-       * This is pretty icky, and the groups should filter based on the query.
-       * Because there is no direct relation between profile and group,
-       *   I couldn't figure out how to make the query filter the groups for us.
-       * However, the fact that this works reveals a security problem,
-       *   a user's authentication token should be sufficient to query database
-       *   items that are relevant to that query only.
-       * The query above should fail altogether or at the very least not return
-       *   chat groups that our user shouldn't have access to.
-       */
-      if (!membersJson.map((m) => m['profile_id'] ?? '').contains(userId)) {
-        continue;
-      }
-      final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
-      final id = groupJson['id'] as String;
-      final lastMessageTime = DateTime.parse(
-        prefs.getString(id) ?? epoch.toString(),
-      );
-      final unreadCount = await messageRepo.unreadCount(
-        id,
-        lastMessageTime.toString(),
-      );
-      final lastMessage = await messageRepo.lastUnreadMessage(
-        userId,
-        id,
-        lastMessageTime.toString(),
-      );
-      final String name;
-      if (groupJson.containsKey('name') && groupJson['name'].isNotEmpty) {
-        name = groupJson['name'];
-      } else {
-        name = membersJson
-            .where((m) => m['profile_id'] != userId)
-            .map((m) => m['user_profiles']['people']['given_name'])
-            .join('-');
-      }
+    return response
+        .where((item) => isUserIdInList(userId, item.$2))
+        .map(responseToChatGroup)
+        .wait;
+  }
 
-      final group = ChatGroup.from(
-        id,
-        name,
-        description: groupJson['description'],
-        lastMessageTime: lastMessageTime,
-        unreadCount: unreadCount,
-        lastMessage: lastMessage,
-        members: membersJson.map((m) => m['profile_id'] as String).toList(),
-        type: GROUP_CHAT_TYPE.values.firstWhere(
-          (e) =>
-              e.toString().split('.')[1].toUpperCase() ==
-              groupJson['type'].toUpperCase(),
-        ),
-      );
-      groups.add(group);
-    }
+  // TODO: remove this method after confirming supabase will return valid chats only
+  //  And/or modifying the query to include chats that belong to current user only.
+  bool isUserIdInList(String uid, List<People> list) {
+    return list.any((p) => p.userProfileId == uid);
+  }
 
-    developer.log(
-      'getUserChatGroups() parsed ${groups.length} groups',
-      name: 'ChatRepository',
+  Future<ChatGroup> responseToChatGroup((Groups, List<People>) response) async {
+    final MessagesRepository messageRepo = MessagesRepository();
+    final group = response.$1;
+    final members = response.$2;
+    final lastMessage = await messageRepo.lastUnreadMessage(group.id);
+    return ChatGroup.from(
+      group.id,
+      group.name,
+      description: group.description,
+      type: group.type,
+      lastMessage: lastMessage,
+      members: members.map((e) => e.givenName ?? '').toList(),
     );
-    return groups;
   }
 
 // Create new chat group with member profile IDs. Returns new group ID.
