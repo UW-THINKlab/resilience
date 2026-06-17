@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # uses supabase CLI - https://supabase.com/docs/guides/local-development/cli/getting-started
 
 # Source - https://stackoverflow.com/a/677212
@@ -23,5 +25,11 @@ else
   backup_file=$1
 fi
 
-$CLI --workdir $project_dir db dump --local --use-copy --data-only | gzip > "$backup_file".gz
-echo Completed $CLI db dump to $backup_file.gz
+# dump schema
+$CLI --workdir $project_dir db dump --local > "$backup_file"
+
+# dump data
+$CLI --workdir $project_dir db dump --local --use-copy --data-only >> "$backup_file"
+
+# zip it
+gzip "$backup_file"
