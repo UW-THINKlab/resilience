@@ -5,7 +5,7 @@
 # Backup the resilience DB
 
 script_dir=$(dirname "$0")
-backup_script='backup-on-db.sh'
+backup_script='backup-on-db2.sh'
 
 #echo backup script: $script_dir/$backup_script
 
