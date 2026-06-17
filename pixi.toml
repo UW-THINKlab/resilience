@@ -332,7 +332,7 @@ depends-on = ["install"]
 
 [feature.supabase.tasks.reset]
 cmd = ["supabase", "db", "reset", "--local"]
-depends-on = ["install"]
+depends-on = ["start"]
 
 [feature.supabase.tasks.dump]
 cmd = "scripts/db-dump.sh"
@@ -340,7 +340,7 @@ depends-on = ["install"]
 
 [feature.supabase.tasks.load]
 cmd = "scripts/db-load.sh"
-depends-on = ["install"]
+depends-on = ["reset"]
 
 
 [tasks.execute-sql]

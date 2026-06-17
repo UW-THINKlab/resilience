@@ -28,6 +28,9 @@ fi
 
 export PGUSER=${PGUSER:-supabase_admin}
 
-supabase db reset --local
+# NOTE: reset is needed to load a fresh backup.
+# In the current version, that dependency has been moved to the
+# pixi.toml.
+#supabase db reset --local
 
 gunzip -c $sql_file | docker exec -i $container_name bash -c "psql -U $PGUSER postgres"
