@@ -8,6 +8,7 @@ import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
+import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/location_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:uuid/v4.dart';
@@ -23,6 +24,7 @@ class RequestResourceFormData extends Equatable {
     this.currentLatitude,
     this.currentLongitude,
     this.resourceName,
+    this.resourceTypeName,
   });
   final String? resourceId;
   final int? quantity;
@@ -32,6 +34,7 @@ class RequestResourceFormData extends Equatable {
   final double? currentLatitude;
   final double? currentLongitude;
   final String? resourceName;
+  final String? resourceTypeName;
 
   @override
   List<Object?> get props => [
@@ -43,6 +46,7 @@ class RequestResourceFormData extends Equatable {
         currentLatitude,
         currentLongitude,
         resourceName,
+        resourceTypeName,
       ];
 
   RequestResourceFormData copyWith({
@@ -54,6 +58,7 @@ class RequestResourceFormData extends Equatable {
     double? currentLatitude,
     double? currentLongitude,
     String? resourceName,
+    String? resourceTypeName,
   }) {
     return RequestResourceFormData(
         resourceId: resourceId ?? this.resourceId,
@@ -63,7 +68,8 @@ class RequestResourceFormData extends Equatable {
         requestScope: requestScope ?? this.requestScope,
         currentLatitude: currentLatitude ?? this.currentLatitude,
         currentLongitude: currentLongitude ?? this.currentLongitude,
-        resourceName: resourceName ?? this.resourceName);
+        resourceName: resourceName ?? this.resourceName,
+        resourceTypeName: resourceTypeName ?? this.resourceTypeName);
   }
 
   Map<String, dynamic> toJson() {
@@ -79,6 +85,7 @@ class RequestResourceFormData extends Equatable {
       'current_longitude': currentLongitude ?? this.currentLongitude,
       'created_at': now,
       'resource_name': resourceName,
+      'resource_type_name': resourceTypeName,
       // 'updated_at': now,
     };
   }
@@ -105,6 +112,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
     _formData = _formData.copyWith(
       resourceId: resource.id,
       resourceName: resource.name,
+      resourceTypeName: resource.resourceType.name,
     );
 
     if (_formData.requestScope == 'nearby') {

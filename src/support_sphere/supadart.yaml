@@ -1,5 +1,5 @@
 enums:
-  group_chat_type: [request, chat]
+  group_chat_type: [chat, request_consumable, request_durable, request_skill]
   operational_status: [emergency, test, normal]
   sharing_scopes: [cluster, neighborhood, everyone]
   priority: [low, medium, high]

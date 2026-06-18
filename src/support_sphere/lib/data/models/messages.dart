@@ -1,13 +1,4 @@
-enum MessageUrgency {
-  normal(name: 'normal'),
-  important(name: 'important'),
-  urgent(name: 'urgent'),
-  emergency(name: 'emergency');
-
-  final String name;
-
-  const MessageUrgency({required this.name});
-}
+import 'package:support_sphere/data/models/generated_classes.dart';
 
 class Message {
   Message({
@@ -34,7 +25,7 @@ class Message {
   /// Date and time when the message was created
   final DateTime sentOn;
 
-  final String urgency;
+  final MESSAGEURGENCY urgency;
 
   Message.fromJson({
     required Map<String, dynamic> json,
@@ -42,7 +33,7 @@ class Message {
         fromId = json['from_id'],
         toId = json['to_id'],
         content = json['content'],
-        urgency = json['urgency'],
+        urgency = MESSAGEURGENCY.values.byName(json['urgency']),
         sentOn = DateTime.parse(json['sent_on']);
 
   static List<Message> fromList(List<dynamic> stuff) {

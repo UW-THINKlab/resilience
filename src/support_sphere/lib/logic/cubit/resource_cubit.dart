@@ -93,6 +93,7 @@ class ResourceCubit extends Cubit<ResourceState> {
     final ResourceRequest resourceRequest = ResourceRequest(
       resourceId: requestData['resource_id'],
       resourceName: requestData['resource_name'],
+      resourceTypeName: requestData['resource_type_name'],
       quantity: requestData['quantity'],
       requestScope: requestData['request_scope'],
       notes: requestData['notes'],
