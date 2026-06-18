@@ -39,7 +39,7 @@ class ChatRepository {
 
     return response
         .where((item) => isUserIdInList(userId, item.$2))
-        .map(responseToChatGroup)
+        .map((res) => responseToChatGroup(res, userId))
         .wait;
   }
 
@@ -49,11 +49,13 @@ class ChatRepository {
     return list.any((p) => p.userProfileId == uid);
   }
 
-  Future<ChatGroup> responseToChatGroup((Groups, List<People>) response) async {
+  Future<ChatGroup> responseToChatGroup(
+      (Groups, List<People>) response, String uid) async {
     final MessagesRepository messageRepo = MessagesRepository();
     final group = response.$1;
     final members = response.$2;
     final lastMessage = await messageRepo.lastUnreadMessage(group.id);
+    final unreadCount = await messageRepo.unreadCount(group.id, uid);
     return ChatGroup.from(
       group.id,
       group.name,
@@ -61,6 +63,7 @@ class ChatRepository {
       type: group.type,
       lastMessage: lastMessage,
       members: members.map((e) => e.givenName ?? '').toList(),
+      unreadCount: unreadCount,
     );
   }
 

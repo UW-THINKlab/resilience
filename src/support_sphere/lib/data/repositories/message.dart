@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart' show UuidV4;
@@ -24,13 +25,24 @@ class MessagesRepository {
         .map((maps) => maps.map((map) => Message.fromJson(json: map)).toList());
   }
 
-  Future<int> unreadCount(String groupId, String time) async {
-    final List<dynamic> data = await supabase
-        .from('messages')
-        .select('id')
-        .eq('to_id', groupId)
-        .gte('sent_on', time);
-    return data.length;
+  Future<int> unreadCount(String groupId, String userId) {
+    return supabase.rpc(
+      'get_unread_count',
+      params: {'p_profile_id': userId, 'p_group_id': groupId},
+    );
+  }
+
+  Future<void> markMessagesRead(String groupId, String userId) async {
+    final msgs = await supabase.messages
+        .select()
+        .eq(Messages.c_toId, groupId)
+        .withConverter(Messages.converter);
+    for (Messages msg in msgs) {
+      await supabase.message_reads.upsert(MessageReads.insert(
+        messageId: msg.id,
+        profileId: userId,
+      ));
+    }
   }
 
   Future<String> lastUnreadMessage(String groupId) async {

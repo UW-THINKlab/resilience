@@ -60,6 +60,8 @@ class MessagesState extends State<MessagesPage> {
     log.fine("MY GROUP ID: $widget.groupId");
     final allUsers = await userRepo.getAllMembers();
     profileCache.addAll(allUsers);
+    // mark all messages read
+    await messageRepo.markMessagesRead(widget.groupId, myUserId);
     if (!mounted) return;
     setState(() => {});
   }
