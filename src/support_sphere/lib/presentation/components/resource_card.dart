@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
+import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 

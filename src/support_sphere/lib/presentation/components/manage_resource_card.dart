@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/resource.dart';
+import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 
 class ManageResourceCard extends StatefulWidget {
@@ -15,8 +16,6 @@ class ManageResourceCard extends StatefulWidget {
 }
 
 class _ResourceCardState extends State<ManageResourceCard> {
-
-
   @override
   Widget build(BuildContext context) {
     final resourceDescription = widget.resource.description ?? '';
@@ -110,12 +109,17 @@ class _ResourceCardState extends State<ManageResourceCard> {
                 // ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent),
-                  ),
-                  onPressed: () {
-                  context.read<ManageResourceCubit>().deleteResource(widget.resource.id);
-                }, child: Text("Delete", style: TextStyle(color: Colors.white)))
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStateProperty.all<Color>(Colors.redAccent),
+                    ),
+                    onPressed: () {
+                      context
+                          .read<ManageResourceCubit>()
+                          .deleteResource(widget.resource.id);
+                    },
+                    child:
+                        Text("Delete", style: TextStyle(color: Colors.white)))
               ],
             ),
           ),

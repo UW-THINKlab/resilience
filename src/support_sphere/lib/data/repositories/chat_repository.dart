@@ -159,13 +159,14 @@ class ChatRepository {
     String? description,
     required String createdByProfileId,
     required String otherProfileId,
+    required GROUP_CHAT_TYPE type,
   }) async {
     return createGroupWithProfiles(
       name: await _getNextGroupName(baseName: name),
       description: description,
       createdByProfileId: createdByProfileId,
       memberProfileIds: [otherProfileId],
-      type: GROUP_CHAT_TYPE.request,
+      type: type,
     );
   }
 

@@ -15,6 +15,7 @@ import 'package:support_sphere/presentation/components/manage_resource_card.dart
 import 'package:support_sphere/presentation/components/resource_card.dart';
 import 'package:support_sphere/presentation/components/resource_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
+import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/add_to_inventory_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/resource/request_resource_form.dart';
 

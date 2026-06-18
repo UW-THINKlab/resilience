@@ -9,6 +9,7 @@ import 'package:support_sphere/data/models/supplier_candidate.dart';
 import 'package:support_sphere/data/services/resource_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/data/repositories/message.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 
@@ -120,6 +121,12 @@ class ResourceRepository {
           ? remaining
           : candidate.availableQuantity;
 
+      final groupType = switch (resourceRequest.resourceTypeName) {
+        'Consumable' => GROUP_CHAT_TYPE.request_consumable,
+        'Durable'    => GROUP_CHAT_TYPE.request_durable,
+        'Skill'      => GROUP_CHAT_TYPE.request_skill,
+        _            => GROUP_CHAT_TYPE.request_consumable,
+      };
       final groupId = await _chatRepository.createDirectRequestGroup(
         name: await _groupNameForRequest(
           candidate,
@@ -129,6 +136,7 @@ class ResourceRepository {
         createdByProfileId: requesterProfileId,
         description: 'DM for resource request',
         otherProfileId: candidate.profileId,
+        type: groupType,
       );
 
       final requestRow = await _resourceService.reserveRequestCandidate(
