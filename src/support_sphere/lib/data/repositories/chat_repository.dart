@@ -62,7 +62,7 @@ class ChatRepository {
       description: group.description,
       type: group.type,
       lastMessage: lastMessage,
-      members: members.map((e) => e.givenName ?? '').toList(),
+      members: members.map((e) => e.userProfileId ?? '').toList(),
       unreadCount: unreadCount,
     );
   }
