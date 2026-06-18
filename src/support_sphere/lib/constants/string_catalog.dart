@@ -121,7 +121,7 @@ class ResourceStrings {
   static const String selectResourceType = 'Select a resource type';
   static const String noResourcesFound = 'No resources found';
   static const String allResources = 'All Resources';
-  static const String addResource = 'Add New Resource or Skill';
+  static const String addResource = 'New Resource';
   static const String manageResources = 'Manage Resources';
   static const String resourcesInventory = 'Resources Inventory';
   static const String noUserResources = 'You have not added any resources yet';
@@ -204,7 +204,7 @@ class NavRouteLabels {
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
   static const String adminCluster = 'Cluster Admin';
-  static const String adminNeighborhood = 'Neighbothood Admin';
+  static const String adminNeighborhood = 'Neighborhood Admin';
 }
 
 class ClusterAdminStrings {
@@ -219,14 +219,15 @@ class ClusterAdminStrings {
 }
 
 class NeighborhoodStrings {
-  static const String addCluster = 'Add cluster';
+  static const String addCluster = 'New cluster';
   static const String selectFilter = 'Filter clusters';
   static const String clusterFilterAll = "All clusters";
   static const String clusterFilterNeedCaptain = "Needs captain";
   static const String clusterFilterParticipate = "Low participation";
   static const String searchClusters = "Search clusters";
   static const String noClustersFound = 'No Cluster found';
+  static const String captainNeeded = 'Captain needed';
 
   static const String manageNeighborhood =
-      "Manage Laurenhurst"; // FIXME - neighborhood name
+      "Manage Laurelhurst"; // FIXME - neighborhood name
 }

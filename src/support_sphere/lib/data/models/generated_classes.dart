@@ -40,6 +40,8 @@ extension SupadartClient on SupabaseClient {
   SupabaseQueryBuilder get point_of_interests => from('point_of_interests');
   SupabaseQueryBuilder get user_resources => from('user_resources');
   SupabaseQueryBuilder get resource_tags => from('resource_tags');
+  SupabaseQueryBuilder get cluster_captains_view =>
+      from('cluster_captains_view');
   SupabaseQueryBuilder get checklists => from('checklists');
   SupabaseQueryBuilder get resource_types => from('resource_types');
   SupabaseQueryBuilder get resource_subtype_tags =>
@@ -669,6 +671,181 @@ class ResourceTags implements SupadartClass<ResourceTags> {
       resourceSubtypeTagId: resourceSubtypeTagId == _unset
           ? this.resourceSubtypeTagId
           : resourceSubtypeTagId as String?,
+    );
+  }
+}
+
+class ClusterCaptainsView implements SupadartClass<ClusterCaptainsView> {
+  final String? clusterId;
+  final String? clusterName;
+  final APP_ROLES? userRole;
+  final String? userProfileId;
+  final String? givenName;
+  final String? familyName;
+  final String? nickname;
+
+  const ClusterCaptainsView({
+    this.clusterId,
+    this.clusterName,
+    this.userRole,
+    this.userProfileId,
+    this.givenName,
+    this.familyName,
+    this.nickname,
+  });
+
+  static String get table_name => 'cluster_captains_view';
+  static String get c_clusterId => 'cluster_id';
+  static String get c_clusterName => 'cluster_name';
+  static String get c_userRole => 'user_role';
+  static String get c_userProfileId => 'user_profile_id';
+  static String get c_givenName => 'given_name';
+  static String get c_familyName => 'family_name';
+  static String get c_nickname => 'nickname';
+
+  static List<ClusterCaptainsView> converter(List<Map<String, dynamic>> data) {
+    return data.map(ClusterCaptainsView.fromJson).toList();
+  }
+
+  static ClusterCaptainsView converterSingle(Map<String, dynamic> data) {
+    return ClusterCaptainsView.fromJson(data);
+  }
+
+  static Map<String, dynamic> _generateMap({
+    String? clusterId,
+    String? clusterName,
+    APP_ROLES? userRole,
+    String? userProfileId,
+    String? givenName,
+    String? familyName,
+    String? nickname,
+  }) {
+    return {
+      if (clusterId != null) 'cluster_id': clusterId,
+      if (clusterName != null) 'cluster_name': clusterName,
+      if (userRole != null) 'user_role': userRole.toString().split('.').last,
+      if (userProfileId != null) 'user_profile_id': userProfileId,
+      if (givenName != null) 'given_name': givenName,
+      if (familyName != null) 'family_name': familyName,
+      if (nickname != null) 'nickname': nickname,
+    };
+  }
+
+  static Map<String, dynamic> insert({
+    String? clusterId,
+    String? clusterName,
+    APP_ROLES? userRole,
+    String? userProfileId,
+    String? givenName,
+    String? familyName,
+    String? nickname,
+  }) {
+    return _generateMap(
+      clusterId: clusterId,
+      clusterName: clusterName,
+      userRole: userRole,
+      userProfileId: userProfileId,
+      givenName: givenName,
+      familyName: familyName,
+      nickname: nickname,
+    );
+  }
+
+  static Map<String, dynamic> update({
+    String? clusterId,
+    String? clusterName,
+    APP_ROLES? userRole,
+    String? userProfileId,
+    String? givenName,
+    String? familyName,
+    String? nickname,
+  }) {
+    return _generateMap(
+      clusterId: clusterId,
+      clusterName: clusterName,
+      userRole: userRole,
+      userProfileId: userProfileId,
+      givenName: givenName,
+      familyName: familyName,
+      nickname: nickname,
+    );
+  }
+
+  factory ClusterCaptainsView.fromJson(Map<String, dynamic> jsonn) {
+    return ClusterCaptainsView(
+      clusterId:
+          jsonn['cluster_id'] != null ? jsonn['cluster_id'].toString() : null,
+      clusterName: jsonn['cluster_name'] != null
+          ? jsonn['cluster_name'].toString()
+          : null,
+      userRole: jsonn['user_role'] != null
+          ? APP_ROLES.values.byName(jsonn['user_role'].toString())
+          : APP_ROLES.values.first,
+      userProfileId: jsonn['user_profile_id'] != null
+          ? jsonn['user_profile_id'].toString()
+          : null,
+      givenName:
+          jsonn['given_name'] != null ? jsonn['given_name'].toString() : null,
+      familyName:
+          jsonn['family_name'] != null ? jsonn['family_name'].toString() : null,
+      nickname: jsonn['nickname'] != null ? jsonn['nickname'].toString() : null,
+    );
+  }
+
+  static Object New({
+    String? clusterId,
+    String? clusterName,
+    APP_ROLES? userRole,
+    String? userProfileId,
+    String? givenName,
+    String? familyName,
+    String? nickname,
+  }) {
+    return {
+      if (clusterId != null) 'cluster_id': clusterId,
+      if (clusterName != null) 'cluster_name': clusterName,
+      if (userRole != null) 'user_role': userRole,
+      if (userProfileId != null) 'user_profile_id': userProfileId,
+      if (givenName != null) 'given_name': givenName,
+      if (familyName != null) 'family_name': familyName,
+      if (nickname != null) 'nickname': nickname,
+    };
+  }
+
+  Map<String, dynamic> toJson() {
+    return _generateMap(
+      clusterId: clusterId,
+      clusterName: clusterName,
+      userRole: userRole,
+      userProfileId: userProfileId,
+      givenName: givenName,
+      familyName: familyName,
+      nickname: nickname,
+    );
+  }
+
+  static const _unset = Object();
+  ClusterCaptainsView copyWith({
+    Object? clusterId = _unset,
+    Object? clusterName = _unset,
+    Object? userRole = _unset,
+    Object? userProfileId = _unset,
+    Object? givenName = _unset,
+    Object? familyName = _unset,
+    Object? nickname = _unset,
+  }) {
+    return ClusterCaptainsView(
+      clusterId: clusterId == _unset ? this.clusterId : clusterId as String?,
+      clusterName:
+          clusterName == _unset ? this.clusterName : clusterName as String?,
+      userRole: userRole == _unset ? this.userRole : userRole as APP_ROLES?,
+      userProfileId: userProfileId == _unset
+          ? this.userProfileId
+          : userProfileId as String?,
+      givenName: givenName == _unset ? this.givenName : givenName as String?,
+      familyName:
+          familyName == _unset ? this.familyName : familyName as String?,
+      nickname: nickname == _unset ? this.nickname : nickname as String?,
     );
   }
 }

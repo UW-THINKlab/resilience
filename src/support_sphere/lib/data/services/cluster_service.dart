@@ -134,4 +134,11 @@ class ClusterService {
   Future<void> deleteCluster(String clusterId) async {
     await supabase.from('clusters').delete().eq('id', clusterId);
   }
+
+  Future<PostgrestList?> getCaptainsViewByClusterId(String clusterId) async {
+    return await supabase
+        .from('cluster_captains_view')
+        .select('*')
+        .eq('cluster_id', clusterId);
+  }
 }

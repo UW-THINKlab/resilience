@@ -136,46 +136,38 @@ class PersonSelectListState extends State<PersonSelectList> {
   }
 }
 
-class PersonSelectedField extends StatefulWidget {
-  const PersonSelectedField({super.key, required this.people, required this.onConfirm});
-  // TODO: Need a way to pre-select!
+class PersonSelectorField extends StatefulWidget {
+  const PersonSelectorField({
+    super.key,
+    required this.people,
+    required this.onConfirm,
+    this.initialValue = const [],
+    this.title,
+    this.buttonText,
+  });
+
   final List<Person> people;
   final Function(List<Person>) onConfirm;
+  final List<Person> initialValue;
+  final Text? title;
+  final Text? buttonText;
 
   @override
-  PersonSelectFieldState createState() => PersonSelectFieldState();
+  PersonSelectorFieldState createState() => PersonSelectorFieldState();
 }
 
-class PersonSelectFieldState extends State<PersonSelectedField> {
+class PersonSelectorFieldState extends State<PersonSelectorField> {
   @override
   Widget build(BuildContext context) {
-    final items = widget.people.map((person) => MultiSelectItem<Person>(person, person.name())).toList();
-    // TODO cluster captains should already be selected and sorted to the top.
-    // selecting a new captain puts it in the top part of the list
-    return MultiSelectDialogField(
+    final items = widget.people
+        .map((person) => MultiSelectItem<Person>(person, person.name()))
+        .toList();
+    return MultiSelectDialogField<Person>(
       items: items,
-      //title: Text("Cluster Members"), // FIXME text - PASS IN? "title"
-      //selectedColor: Colors.blue,
-      // decoration: BoxDecoration(
-      //   color: Colors.blue.shade100,
-      //   borderRadius: BorderRadius.all(Radius.circular(40)),
-      //   border: Border.all(
-      //     color: Colors.blue,
-      //     width: 2,
-      //   ),
-      // ),
-      // buttonIcon: Icon(
-      //   Icons.person_3_rounded,
-      //   color: Colors.blue,
-      // ),
-      //buttonText: Text("Cluster Captains", // FIXME text - PASS IN "buttonText"
-        //style: TextStyle(
-        //  color: Colors.blue.shade800,
-        //  fontSize: 16,
-      //),
-      onConfirm: (results) {
-        widget.onConfirm(results);
-      },
+      initialValue: widget.initialValue,
+      title: widget.title,
+      buttonText: widget.buttonText,
+      onConfirm: (results) => widget.onConfirm(results.cast<Person>()),
     );
   }
 }

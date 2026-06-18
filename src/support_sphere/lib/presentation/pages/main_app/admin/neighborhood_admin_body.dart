@@ -7,6 +7,7 @@ import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_fo
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
 
@@ -203,9 +204,10 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(width: 16),
-                ElevatedButton(
-                    onPressed: widget.addClusterOnPressed,
-                    child: Text(NeighborhoodStrings.addCluster)),
+                AddItemButton(
+                  label: NeighborhoodStrings.addCluster,
+                  onPressed: widget.addClusterOnPressed,
+                ),
                 Expanded(child: ClusterSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: NeighborhoodFilter(

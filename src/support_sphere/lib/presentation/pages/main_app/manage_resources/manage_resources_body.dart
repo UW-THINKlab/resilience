@@ -6,6 +6,7 @@ import 'package:support_sphere/presentation/components/manage_resource_card.dart
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 import 'package:support_sphere/presentation/components/resource_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
 
 class ManageResourcesBody extends StatelessWidget {
@@ -190,9 +191,10 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(width: 16),
-                ElevatedButton(
-                    onPressed: widget.addResourceOnPressed,
-                    child: Text(ResourceStrings.addResource)),
+                AddItemButton(
+                  label: ResourceStrings.addResource,
+                  onPressed: widget.addResourceOnPressed,
+                ),
                 Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: ResourceTypeFilter(

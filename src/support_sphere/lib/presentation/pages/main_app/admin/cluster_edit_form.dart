@@ -1,7 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/clusters.dart' hide log;
+import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/repositories/cluster.dart' hide log;
+import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/presentation/components/people_select_list.dart'
+    show PersonSelectorField;
 
 // FORMZ: derive from col/attr list, props from entity...
 class EditClusterFormData extends Equatable {
@@ -26,14 +31,12 @@ class EditClusterFormData extends Equatable {
     );
   }
 
-
   @override
   List<Object?> get props => [
         name,
         meetingPlace,
         notes,
       ];
-
 
   EditClusterFormData copyWith({
     String? name,
@@ -47,7 +50,7 @@ class EditClusterFormData extends Equatable {
     );
   }
 
-  Map<String,dynamic> toUpsert(Cluster? old) {
+  Map<String, dynamic> toUpsert(Cluster? old) {
     log.fine("UPSERT --- $old");
     // copy over the values from the form
     // TODO: Could check against old for actual changes
@@ -55,7 +58,7 @@ class EditClusterFormData extends Equatable {
     // There is no way of doing this (currently) other than hard-coded maps
     // Design notes: Sometimes objects/classes get in the way. Nothing supports them in flutter.
     // No ORM, just boilerblate with opportunity for typos.
-    final Map<String,dynamic> upsertParams = {
+    final Map<String, dynamic> upsertParams = {
       'name': name,
       'meeting_place': meetingPlace,
       'notes': notes,
@@ -69,12 +72,14 @@ class EditClusterFormData extends Equatable {
   }
 }
 
-
 class ClusterEditForm extends StatefulWidget {
-  const ClusterEditForm({super.key, this.cluster, required void Function(Map<String,dynamic>) this.updateCluster});
+  const ClusterEditForm(
+      {super.key,
+      this.cluster,
+      required void Function(Map<String, dynamic>) this.updateCluster});
 
   final Cluster? cluster;
-  final Function(Map<String,dynamic>) updateCluster;
+  final Function(Map<String, dynamic>) updateCluster;
 
   @override
   State<ClusterEditForm> createState() => ClusterEditFormState();
@@ -82,8 +87,45 @@ class ClusterEditForm extends StatefulWidget {
 
 class ClusterEditFormState extends State<ClusterEditForm> {
   final _formKey = GlobalKey<FormState>();
-  late EditClusterFormData _formData = EditClusterFormData.fromCluster(widget.cluster);
-  late String addButtonLabel = widget.cluster != null ? "Update Cluster" : "Add Cluster";
+  late EditClusterFormData _formData =
+      EditClusterFormData.fromCluster(widget.cluster);
+  late String addButtonLabel =
+      widget.cluster != null ? "Update Cluster" : "Add Cluster";
+
+  List<Person> _allPeople = [];
+  List<Person> _selectedCaptains = [];
+  bool _isLoadingPeople = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initPeopleAndCaptains();
+  }
+
+  Future<void> _initPeopleAndCaptains() async {
+    final membersMap = await UserRepository().getAllMembers();
+    final allPeople = membersMap.values.toList();
+
+    List<Person> currentCaptains = [];
+    if (widget.cluster != null) {
+      final rows = await ClusterRepository()
+          .getCaptainsViewByClusterId(widget.cluster!.id);
+      final captainProfileIds =
+          rows.map((r) => r.userProfileId).whereType<String>().toSet();
+      currentCaptains = captainProfileIds
+          .map((id) => membersMap[id])
+          .whereType<Person>()
+          .toList();
+    }
+
+    if (mounted) {
+      setState(() {
+        _allPeople = allPeople;
+        _selectedCaptains = currentCaptains;
+        _isLoadingPeople = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,102 +134,112 @@ class ClusterEditFormState extends State<ClusterEditForm> {
     // if cluster set, load from
     return Card(
         child: Container(
-          margin: const EdgeInsets.all(15.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Center(
-                    child: Text(addButtonLabel, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                )),
-                // Name of Cluster and Cluster Type
-                const SizedBox(height: 10),
-                TextFormField(
-                  initialValue: widget.cluster?.name,
-                  key: const Key('ClusterEditForm_name'),
-                  onSaved: (value) => _formData = _formData.copyWith(name: value),
-                  decoration: InputDecoration(
-                    labelText: "Cluster name", // FIXME strings
-                    //helperText: 'Name of the cluster',
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)
+            margin: const EdgeInsets.all(15.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Center(
+                      child: Text(
+                    addButtonLabel,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  )),
+                  // Name of Cluster and Cluster Type
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue: widget.cluster?.name,
+                    key: const Key('ClusterEditForm_name'),
+                    onSaved: (value) =>
+                        _formData = _formData.copyWith(name: value),
+                    decoration: InputDecoration(
+                        labelText: "Cluster name", // FIXME strings
+                        //helperText: 'Name of the cluster',
+                        border: border(context),
+                        enabledBorder: border(context),
+                        focusedBorder: focusBorder(context)),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  initialValue: widget.cluster?.meetingPlace,
-                  key: const Key('ClusterEditForm_meetingPlace'),
-                  onSaved: (value) => _formData = _formData.copyWith(meetingPlace: value),
-                  decoration: InputDecoration(
-                    labelText: "Meeting place",
-                    //helperText: 'Description of the cluster meeting place.',
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  key: const Key('ClusterEditForm_notes'),
-                  onSaved: (value) => _formData = _formData.copyWith(notes: value),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                      labelText: "Notes",
-                      //helperText: 'Notes about the cluster',
-                      border: border(context),
-                      enabledBorder: border(context),
-                      focusedBorder: focusBorder(context)),
-                ),
-                // cluster captains
-                Row(children: [
-                  Text(
-                    'Cluster captains:',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue: widget.cluster?.meetingPlace,
+                    key: const Key('ClusterEditForm_meetingPlace'),
+                    onSaved: (value) =>
+                        _formData = _formData.copyWith(meetingPlace: value),
+                    decoration: InputDecoration(
+                        labelText: "Meeting place",
+                        //helperText: 'Description of the cluster meeting place.',
+                        border: border(context),
+                        enabledBorder: border(context),
+                        focusedBorder: focusBorder(context)),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    key: const Key('ClusterEditForm_notes'),
+                    onSaved: (value) =>
+                        _formData = _formData.copyWith(notes: value),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(
+                        labelText: "Notes",
+                        //helperText: 'Notes about the cluster',
+                        border: border(context),
+                        enabledBorder: border(context),
+                        focusedBorder: focusBorder(context)),
+                  ),
+                  // cluster captains
+                  Row(children: [
+                    Text(
+                      'Cluster captains:',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${widget.cluster?.captains}',
-                    style: TextStyle(
-                      fontSize: 15,
+                    const SizedBox(width: 8),
+                    _isLoadingPeople
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Expanded(
+                            child: PersonSelectorField(
+                              people: _allPeople,
+                              initialValue: _selectedCaptains,
+                              title: const Text('Select Cluster Captains'),
+                              buttonText: const Text('Select captains'),
+                              onConfirm: (captains) =>
+                                  setState(() => _selectedCaptains = captains),
+                            ),
+                          ),
+                  ]),
+                  const SizedBox(height: 50),
+                  // Buttons to Add Item or Cancel
+                  Row(children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _formKey.currentState!.save();
+                        if (_formKey.currentState!.validate()) {
+                          log.finer(
+                              "Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
+                          final clusterUpsert =
+                              _formData.toUpsert(widget.cluster);
+                          clusterUpsert['captains'] = _selectedCaptains;
+                          log.finer("Updating cluster: $clusterUpsert");
+                          widget.updateCluster(clusterUpsert);
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Text(addButtonLabel),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // FIXME: Implement user multiselect dialog
-                      //final updatedCaptains = [];
-                      //widget.cluster!.captains?.people = updatedCaptains;
-                    },
-                    child: Text('Add cluster captains')
-                  ),
-                ]),
-                const SizedBox(height: 50),
-                // Buttons to Add Item or Cancel
-                Row(children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _formKey.currentState!.save();
-                      if (_formKey.currentState!.validate()) {
-                        log.finer("Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
-                        final clusterUpsert = _formData.toUpsert(widget.cluster);
-                        log.finer("Updating cluster: $clusterUpsert");
-                        widget.updateCluster(clusterUpsert);
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
                         Navigator.pop(context);
-                      }
-                    },
-                    child: Text(addButtonLabel),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () { Navigator.pop(context); },
-                    child: const Text('Cancel'),
-                  ),
-                ]),
-              ],
-            ),
-          )
-        )
-    );
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ]),
+                ],
+              ),
+            )));
   }
 }

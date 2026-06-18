@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/constants/string_catalog.dart'
+    show NeighborhoodStrings;
 import 'package:support_sphere/data/models/person.dart' show Person;
-import 'package:support_sphere/presentation/components/people_select_list.dart'
-    show PersonSelectedField;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart'
     show ClusterEditForm;
 
@@ -99,33 +99,9 @@ class ClusterCardState extends State<ClusterViewCard> {
                   children: [
                     Row(
                       children: [
-                        Text('Captains: ${widget.cluster.captains}'),
-                        PersonSelectedField(
-                          people: widget.members,
-                          onConfirm: (List<Person> updatedCaptains) {
-                            widget.updateCluster({
-                              'id': widget.cluster.id,
-                              'captains': updatedCaptains
-                            });
-                          },
+                        Text(
+                          'Captains: ${widget.cluster.captains?.people.whereType<Person>().map((p) => p.name()).join(', ') ?? NeighborhoodStrings.captainNeeded}',
                         ),
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                        //   onPressed: () => showDialog<String>(
-                        //     context: context,
-                        //     builder: (BuildContext context) => Dialog.fullscreen(
-                        //       child: PersonSelectList(
-                        //         people: widget.members,
-                        //         onConfirm: (List<Person> updatedCaptains) {
-                        //           widget.updateCluster({
-                        //             'id': widget.cluster.id,
-                        //             'captains': updatedCaptains
-                        //           });
-                        //         })
-                        //     ),
-                        //   ),
-                        //   child: Text("Manage Captains", style: const TextStyle(color: Colors.white)),
-                        // ),
                       ],
                     ),
                   ],

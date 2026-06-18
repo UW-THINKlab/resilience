@@ -1,6 +1,7 @@
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
@@ -87,6 +88,13 @@ class ClusterRepository {
 
   Future<void> deleteCluster(String clusterId) async {
     return _clusterService.deleteCluster(clusterId);
+  }
+
+  Future<List<ClusterCaptainsView>> getCaptainsViewByClusterId(
+      String clusterId) async {
+    final data = await _clusterService.getCaptainsViewByClusterId(clusterId);
+    if (data == null) return [];
+    return ClusterCaptainsView.converter(data);
   }
 
   Future<void> addClusterCaptain(String clusterId, Person? person) async {

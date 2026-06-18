@@ -98,9 +98,9 @@ class InboxView extends StatelessWidget {
                 child: Card(
                   color: switch (group.type) {
                     GROUP_CHAT_TYPE.request_consumable => Colors.blue[50],
-                    GROUP_CHAT_TYPE.request_durable    => Colors.yellow[50],
-                    GROUP_CHAT_TYPE.request_skill      => Colors.green[50],
-                    GROUP_CHAT_TYPE.chat               => null,
+                    GROUP_CHAT_TYPE.request_durable => Colors.yellow[50],
+                    GROUP_CHAT_TYPE.request_skill => Colors.green[50],
+                    GROUP_CHAT_TYPE.chat => null,
                   },
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -108,18 +108,21 @@ class InboxView extends StatelessWidget {
                     leading: switch (group.type) {
                       GROUP_CHAT_TYPE.request_consumable => CircleAvatar(
                           backgroundColor: Colors.blue[300],
-                          child: const FaIcon(FontAwesomeIcons.glassWater, color: Colors.white),
+                          child: const FaIcon(FontAwesomeIcons.glassWater,
+                              color: Colors.white),
                         ),
                       GROUP_CHAT_TYPE.request_durable => CircleAvatar(
                           backgroundColor: Colors.yellow[600],
-                          child: const FaIcon(FontAwesomeIcons.wrench, color: Colors.white),
+                          child: const FaIcon(FontAwesomeIcons.wrench,
+                              color: Colors.white),
                         ),
                       GROUP_CHAT_TYPE.request_skill => CircleAvatar(
                           backgroundColor: Colors.green[400],
-                          child: const FaIcon(FontAwesomeIcons.helmetSafety, color: Colors.white),
+                          child: const FaIcon(FontAwesomeIcons.helmetSafety,
+                              color: Colors.white),
                         ),
                       GROUP_CHAT_TYPE.chat => CircleAvatar(
-                          child: Text(group.name[0].toUpperCase()),
+                          child: Text(chatAvatarText(group)),
                         ),
                     },
                     title: Text(group.name),
@@ -152,6 +155,11 @@ class InboxView extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  String chatAvatarText(ChatGroup group) {
+    if (group.name.isEmpty) return '[]';
+    return group.name[0].toUpperCase();
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) async {
