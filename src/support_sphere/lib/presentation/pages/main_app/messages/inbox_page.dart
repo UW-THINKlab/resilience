@@ -115,6 +115,12 @@ class InboxView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    trailing: group.unreadCount > 0
+                        ? Badge(
+                            label: Text(group.unreadCount.toString()),
+                            child: const Icon(Icons.circle),
+                          )
+                        : null,
                     onTap: () => _navigateToChat(context, group),
                   ),
                 ),
@@ -132,19 +138,17 @@ class InboxView extends StatelessWidget {
 
   void _navigateToChat(BuildContext context, ChatGroup group) async {
     log.fine('🧭 Navigating to: ${group.id}'); // ✅ Verify source
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(group.id, DateTime.now().toString());
-    if (context.mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MessagesPage(
-            groupId: group.id,
-            groupName: group.name,
-          ),
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MessagesPage(
+          groupId: group.id,
+          groupName: group.name,
         ),
-      );
-    }
+      ),
+    );
+    if (!context.mounted) return;
+    await context.read<InboxCubit>().fetchGroups();
   }
 
   Future<void> _openCreateGroupSheet(BuildContext context) async {
@@ -167,9 +171,6 @@ class InboxView extends StatelessWidget {
     if (result != null && context.mounted) {
       await context.read<InboxCubit>().fetchGroups();
       final (groupId, groupName) = result;
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString(groupId, DateTime.now().toString());
-
       if (context.mounted) {
         Navigator.push(
           context,

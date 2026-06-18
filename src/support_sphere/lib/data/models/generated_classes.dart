@@ -46,6 +46,7 @@ extension SupadartClient on SupabaseClient {
       from('resource_subtype_tags');
   SupabaseQueryBuilder get user_captain_clusters =>
       from('user_captain_clusters');
+  SupabaseQueryBuilder get message_reads => from('message_reads');
   SupabaseQueryBuilder get resources => from('resources');
   SupabaseQueryBuilder get groups => from('groups');
   SupabaseQueryBuilder get resource_reservations =>
@@ -1129,6 +1130,112 @@ class UserCaptainClusters implements SupadartClass<UserCaptainClusters> {
       id: id == _unset ? this.id : id as String,
       clusterId: clusterId == _unset ? this.clusterId : clusterId as String,
       userRoleId: userRoleId == _unset ? this.userRoleId : userRoleId as String,
+    );
+  }
+}
+
+class MessageReads implements SupadartClass<MessageReads> {
+  final String messageId;
+  final String profileId;
+  final DateTime readAt;
+
+  const MessageReads({
+    required this.messageId,
+    required this.profileId,
+    required this.readAt,
+  });
+
+  static String get table_name => 'message_reads';
+  static String get c_messageId => 'message_id';
+  static String get c_profileId => 'profile_id';
+  static String get c_readAt => 'read_at';
+
+  static List<MessageReads> converter(List<Map<String, dynamic>> data) {
+    return data.map(MessageReads.fromJson).toList();
+  }
+
+  static MessageReads converterSingle(Map<String, dynamic> data) {
+    return MessageReads.fromJson(data);
+  }
+
+  static Map<String, dynamic> _generateMap({
+    String? messageId,
+    String? profileId,
+    DateTime? readAt,
+  }) {
+    return {
+      if (messageId != null) 'message_id': messageId,
+      if (profileId != null) 'profile_id': profileId,
+      if (readAt != null) 'read_at': readAt.toIso8601String(),
+    };
+  }
+
+  static Map<String, dynamic> insert({
+    String? messageId,
+    String? profileId,
+    DateTime? readAt,
+  }) {
+    return _generateMap(
+      messageId: messageId,
+      profileId: profileId,
+      readAt: readAt,
+    );
+  }
+
+  static Map<String, dynamic> update({
+    String? messageId,
+    String? profileId,
+    DateTime? readAt,
+  }) {
+    return _generateMap(
+      messageId: messageId,
+      profileId: profileId,
+      readAt: readAt,
+    );
+  }
+
+  factory MessageReads.fromJson(Map<String, dynamic> jsonn) {
+    return MessageReads(
+      messageId:
+          jsonn['message_id'] != null ? jsonn['message_id'].toString() : '',
+      profileId:
+          jsonn['profile_id'] != null ? jsonn['profile_id'].toString() : '',
+      readAt: jsonn['read_at'] != null
+          ? DateTime.parse(jsonn['read_at'].toString())
+          : DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  static Object New({
+    String? messageId,
+    String? profileId,
+    DateTime? readAt,
+  }) {
+    return {
+      if (messageId != null) 'message_id': messageId,
+      if (profileId != null) 'profile_id': profileId,
+      if (readAt != null) 'read_at': readAt,
+    };
+  }
+
+  Map<String, dynamic> toJson() {
+    return _generateMap(
+      messageId: messageId,
+      profileId: profileId,
+      readAt: readAt,
+    );
+  }
+
+  static const _unset = Object();
+  MessageReads copyWith({
+    Object? messageId = _unset,
+    Object? profileId = _unset,
+    Object? readAt = _unset,
+  }) {
+    return MessageReads(
+      messageId: messageId == _unset ? this.messageId : messageId as String,
+      profileId: profileId == _unset ? this.profileId : profileId as String,
+      readAt: readAt == _unset ? this.readAt : readAt as DateTime,
     );
   }
 }

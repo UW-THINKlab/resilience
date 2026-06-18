@@ -8,6 +8,7 @@ class ChatGroup extends Equatable {
   final String? description;
   final List<String> members;
   final GROUP_CHAT_TYPE type;
+  final int unreadCount;
 
   const ChatGroup({
     required this.id,
@@ -16,6 +17,7 @@ class ChatGroup extends Equatable {
     this.description,
     required this.members,
     required this.type,
+    required this.unreadCount,
   });
 
   factory ChatGroup.from(
@@ -25,6 +27,7 @@ class ChatGroup extends Equatable {
     String? description,
     String lastMessage = '',
     GROUP_CHAT_TYPE type = GROUP_CHAT_TYPE.chat,
+    int unreadCount = 0,
   }) {
     return ChatGroup(
       id: id,
@@ -33,6 +36,7 @@ class ChatGroup extends Equatable {
       description: description,
       members: members,
       type: type,
+      unreadCount: unreadCount,
     );
   }
 
