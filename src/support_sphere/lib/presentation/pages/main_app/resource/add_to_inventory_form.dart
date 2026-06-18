@@ -6,6 +6,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
+import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:uuid/v4.dart';

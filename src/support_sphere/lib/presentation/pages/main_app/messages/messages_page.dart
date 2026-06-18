@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -224,11 +225,9 @@ class _MessageBubble extends StatelessWidget {
     List<Widget> chatContents = [
       if (message.fromId != myUserId)
         CircleAvatar(
-            child: Center(
-                child: Icon(
-          urgencyIcons[message.urgency],
-          color: urgencyColors[message.urgency],
-        ))),
+            child: Text(profile?.givenName.isNotEmpty == true
+                ? profile!.givenName[0].toUpperCase()
+                : '?')),
       const SizedBox(width: 12),
       Expanded(
         child: Container(
@@ -262,17 +261,10 @@ class _MessageBubble extends StatelessWidget {
   }
 
   static const urgencyColors = {
-    MessageUrgency.emergency: Colors.red,
-    MessageUrgency.urgent: Colors.purpleAccent,
-    MessageUrgency.important: Colors.orange,
-    MessageUrgency.normal: Colors.blue,
+    MESSAGEURGENCY.emergency: Colors.red,
+    MESSAGEURGENCY.urgent: Colors.purpleAccent,
+    MESSAGEURGENCY.important: Colors.orange,
+    MESSAGEURGENCY.normal: Colors.blue,
     "default": Colors.grey,
-  };
-
-  static const urgencyIcons = {
-    MessageUrgency.emergency: Icons.emergency,
-    MessageUrgency.urgent: Icons.explicit_sharp,
-    MessageUrgency.important: Icons.label_important,
-    MessageUrgency.normal: Icons.mail_rounded,
   };
 }

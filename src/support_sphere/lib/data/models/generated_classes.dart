@@ -79,7 +79,12 @@ extension SupadartClient on SupabaseClient {
 extension SupadartStorageClient on SupabaseStorageClient {}
 
 // Enums
-enum GROUP_CHAT_TYPE { request, chat }
+enum GROUP_CHAT_TYPE {
+  chat,
+  request_consumable,
+  request_durable,
+  request_skill
+}
 
 enum OPERATIONAL_STATUS { emergency, test, normal }
 

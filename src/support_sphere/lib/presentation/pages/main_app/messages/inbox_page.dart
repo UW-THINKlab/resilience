@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logging/logging.dart' show Logger;
@@ -95,15 +96,32 @@ class InboxView extends StatelessWidget {
                   ],
                 ),
                 child: Card(
-                  color: group.type == GROUP_CHAT_TYPE.request
-                      ? Colors.amberAccent
-                      : null,
+                  color: switch (group.type) {
+                    GROUP_CHAT_TYPE.request_consumable => Colors.blue[50],
+                    GROUP_CHAT_TYPE.request_durable    => Colors.yellow[50],
+                    GROUP_CHAT_TYPE.request_skill      => Colors.green[50],
+                    GROUP_CHAT_TYPE.chat               => null,
+                  },
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text(group.name[0].toUpperCase()),
-                    ),
+                    leading: switch (group.type) {
+                      GROUP_CHAT_TYPE.request_consumable => CircleAvatar(
+                          backgroundColor: Colors.blue[300],
+                          child: const FaIcon(FontAwesomeIcons.glassWater, color: Colors.white),
+                        ),
+                      GROUP_CHAT_TYPE.request_durable => CircleAvatar(
+                          backgroundColor: Colors.yellow[600],
+                          child: const FaIcon(FontAwesomeIcons.wrench, color: Colors.white),
+                        ),
+                      GROUP_CHAT_TYPE.request_skill => CircleAvatar(
+                          backgroundColor: Colors.green[400],
+                          child: const FaIcon(FontAwesomeIcons.helmetSafety, color: Colors.white),
+                        ),
+                      GROUP_CHAT_TYPE.chat => CircleAvatar(
+                          child: Text(group.name[0].toUpperCase()),
+                        ),
+                    },
                     title: Text(group.name),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

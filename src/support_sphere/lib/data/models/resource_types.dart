@@ -1,22 +1,11 @@
-import 'package:equatable/equatable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 
-class ResourceTypes extends Equatable {
-  const ResourceTypes({
-    required this.id,
-    required this.name,
-    this.description = '',
-  });
+export 'package:support_sphere/data/models/generated_classes.dart'
+    show ResourceTypes;
 
-  final String id;
-  final String name;
-  final String? description;
-
-  @override
-  List<Object?> get props => [id, name, description];
-
+extension ResourceTypeIcon on ResourceTypes {
   FaIconData get icon {
-    // Get the icon based on the resource type
     switch (name) {
       case 'Durable':
         return FontAwesomeIcons.wrench;
@@ -27,25 +16,5 @@ class ResourceTypes extends Equatable {
       default:
         return FontAwesomeIcons.question;
     }
-  }
-
-  static ResourceTypes fromJson(Map<String, dynamic> json) {
-    return ResourceTypes(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-    );
-  }
-
-  ResourceTypes copyWith({
-    String? id,
-    String? name,
-    String? description,
-  }) {
-    return ResourceTypes(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-    );
   }
 }
