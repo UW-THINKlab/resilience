@@ -95,6 +95,7 @@ class ClusterEditFormState extends State<ClusterEditForm> {
   List<Person> _allPeople = [];
   List<Person> _selectedCaptains = [];
   bool _isLoadingPeople = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -103,27 +104,32 @@ class ClusterEditFormState extends State<ClusterEditForm> {
   }
 
   Future<void> _initPeopleAndCaptains() async {
-    final membersMap = await UserRepository().getAllMembers();
-    final allPeople = membersMap.values.toList();
+    try {
+      final membersMap = await UserRepository().getAllMembers();
+      final allPeople = membersMap.values.toList();
 
-    List<Person> currentCaptains = [];
-    if (widget.cluster != null) {
-      final rows = await ClusterRepository()
-          .getCaptainsViewByClusterId(widget.cluster!.id);
-      final captainProfileIds =
-          rows.map((r) => r.userProfileId).whereType<String>().toSet();
-      currentCaptains = captainProfileIds
-          .map((id) => membersMap[id])
-          .whereType<Person>()
-          .toList();
-    }
+      List<Person> currentCaptains = [];
+      if (widget.cluster != null) {
+        final rows = await ClusterRepository()
+            .getCaptainsViewByClusterId(widget.cluster!.id);
+        final captainProfileIds =
+            rows.map((r) => r.userProfileId).whereType<String>().toSet();
+        currentCaptains = captainProfileIds
+            .map((id) => membersMap[id])
+            .whereType<Person>()
+            .toList();
+      }
 
-    if (mounted) {
-      setState(() {
-        _allPeople = allPeople;
-        _selectedCaptains = currentCaptains;
-        _isLoadingPeople = false;
-      });
+      if (mounted) {
+        setState(() {
+          _allPeople = allPeople;
+          _selectedCaptains = currentCaptains;
+          _isLoadingPeople = false;
+        });
+      }
+    } catch (e, stack) {
+      debugPrint('Failed to load people and captains: $e\n$stack');
+      if (mounted) setState(() => _isLoadingPeople = false);
     }
   }
 
@@ -215,20 +221,29 @@ class ClusterEditFormState extends State<ClusterEditForm> {
                   // Buttons to Add Item or Cancel
                   Row(children: [
                     ElevatedButton(
-                      onPressed: () {
-                        _formKey.currentState!.save();
-                        if (_formKey.currentState!.validate()) {
-                          log.finer(
-                              "Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
-                          final clusterUpsert =
-                              _formData.toUpsert(widget.cluster);
-                          clusterUpsert['captains'] = _selectedCaptains;
-                          log.finer("Updating cluster: $clusterUpsert");
-                          widget.updateCluster(clusterUpsert);
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text(addButtonLabel),
+                      onPressed: _isSaving
+                          ? null
+                          : () async {
+                              _formKey.currentState!.save();
+                              if (_formKey.currentState!.validate()) {
+                                log.finer(
+                                    "Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
+                                final clusterUpsert =
+                                    _formData.toUpsert(widget.cluster);
+                                clusterUpsert['captains'] = _selectedCaptains;
+                                log.finer("Updating cluster: $clusterUpsert");
+                                setState(() => _isSaving = true);
+                                await widget.updateCluster(clusterUpsert);
+                                if (mounted) Navigator.pop(context);
+                              }
+                            },
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(addButtonLabel),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(

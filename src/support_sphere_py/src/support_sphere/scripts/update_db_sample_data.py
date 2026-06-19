@@ -111,7 +111,7 @@ def populate_user_details():
                     profile = UserProfile(user=user)
                     user_profile = UserProfileRepository.add(profile)
 
-                    user_role = UserRole(user_profile=user_profile, role=AppRoles.USER)
+                    user_role = UserRole(user_profile=user_profile, role=AppRoles.user)
                     BaseRepository.add(user_role)
 
             # Create People Entry
@@ -247,11 +247,11 @@ def authenticate_user_signup_signin_signout_via_supabase():
 
 
 def update_user_permissions_roles_by_cluster():
-    role_1 = RolePermission(role=AppRoles.ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_READ)
-    role_2 = RolePermission(role=AppRoles.ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
-    role_3 = RolePermission(role=AppRoles.COM_ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
-    role_4 = RolePermission(role=AppRoles.COM_ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_READ)
-    role_5 = RolePermission(role=AppRoles.SUBCOM_AGENT, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_1 = RolePermission(role=AppRoles.admin, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_2 = RolePermission(role=AppRoles.admin, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
+    role_3 = RolePermission(role=AppRoles.com_admin, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
+    role_4 = RolePermission(role=AppRoles.com_admin, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_5 = RolePermission(role=AppRoles.subcom_agent, permission=AppPermissions.OPERATIONAL_EVENT_READ)
 
     BaseRepository.add(role_1)
     BaseRepository.add(role_2)
@@ -261,7 +261,7 @@ def update_user_permissions_roles_by_cluster():
 
     user = UserRepository.find_by_email('adam.abacus@example.com')
     user_role = UserRoleRepository.find_by_user_profile_id(user.id)
-    user_role.role = AppRoles.SUBCOM_AGENT
+    user_role.role = AppRoles.subcom_agent
     BaseRepository.add(user_role)
 
     all_clusters = BaseRepository.select_all(Cluster)
@@ -270,7 +270,7 @@ def update_user_permissions_roles_by_cluster():
 
     user = UserRepository.find_by_email('beth.bodmas@example.com')
     user_role = UserRoleRepository.find_by_user_profile_id(user.id)
-    user_role.role = AppRoles.COM_ADMIN
+    user_role.role = AppRoles.com_admin
     BaseRepository.add(user_role)
 
 

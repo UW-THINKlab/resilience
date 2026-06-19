@@ -856,8 +856,8 @@ class Checklists implements SupadartClass<Checklists> {
   final String? description;
   final String? notes;
   final DateTime updatedAt;
-  final PRIORITY priority;
   final String? frequencyId;
+  final PRIORITY priority;
 
   const Checklists({
     required this.id,
@@ -865,8 +865,8 @@ class Checklists implements SupadartClass<Checklists> {
     this.description,
     this.notes,
     required this.updatedAt,
-    required this.priority,
     this.frequencyId,
+    required this.priority,
   });
 
   static String get table_name => 'checklists';
@@ -875,8 +875,8 @@ class Checklists implements SupadartClass<Checklists> {
   static String get c_description => 'description';
   static String get c_notes => 'notes';
   static String get c_updatedAt => 'updated_at';
-  static String get c_priority => 'priority';
   static String get c_frequencyId => 'frequency_id';
+  static String get c_priority => 'priority';
 
   static List<Checklists> converter(List<Map<String, dynamic>> data) {
     return data.map(Checklists.fromJson).toList();
@@ -892,8 +892,8 @@ class Checklists implements SupadartClass<Checklists> {
     String? description,
     String? notes,
     DateTime? updatedAt,
-    PRIORITY? priority,
     String? frequencyId,
+    PRIORITY? priority,
   }) {
     return {
       if (id != null) 'id': id,
@@ -901,8 +901,8 @@ class Checklists implements SupadartClass<Checklists> {
       if (description != null) 'description': description,
       if (notes != null) 'notes': notes,
       if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
-      if (priority != null) 'priority': priority.toString().split('.').last,
       if (frequencyId != null) 'frequency_id': frequencyId,
+      if (priority != null) 'priority': priority.toString().split('.').last,
     };
   }
 
@@ -912,8 +912,8 @@ class Checklists implements SupadartClass<Checklists> {
     String? description,
     String? notes,
     required DateTime updatedAt,
-    required PRIORITY priority,
     String? frequencyId,
+    PRIORITY? priority,
   }) {
     return _generateMap(
       id: id,
@@ -921,8 +921,8 @@ class Checklists implements SupadartClass<Checklists> {
       description: description,
       notes: notes,
       updatedAt: updatedAt,
-      priority: priority,
       frequencyId: frequencyId,
+      priority: priority,
     );
   }
 
@@ -932,8 +932,8 @@ class Checklists implements SupadartClass<Checklists> {
     String? description,
     String? notes,
     DateTime? updatedAt,
-    PRIORITY? priority,
     String? frequencyId,
+    PRIORITY? priority,
   }) {
     return _generateMap(
       id: id,
@@ -941,8 +941,8 @@ class Checklists implements SupadartClass<Checklists> {
       description: description,
       notes: notes,
       updatedAt: updatedAt,
-      priority: priority,
       frequencyId: frequencyId,
+      priority: priority,
     );
   }
 
@@ -956,12 +956,12 @@ class Checklists implements SupadartClass<Checklists> {
       updatedAt: jsonn['updated_at'] != null
           ? DateTime.parse(jsonn['updated_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
-      priority: jsonn['priority'] != null
-          ? PRIORITY.values.byName(jsonn['priority'].toString())
-          : PRIORITY.values.first,
       frequencyId: jsonn['frequency_id'] != null
           ? jsonn['frequency_id'].toString()
           : null,
+      priority: jsonn['priority'] != null
+          ? PRIORITY.values.byName(jsonn['priority'].toString())
+          : PRIORITY.values.first,
     );
   }
 
@@ -971,8 +971,8 @@ class Checklists implements SupadartClass<Checklists> {
     String? description,
     String? notes,
     DateTime? updatedAt,
-    PRIORITY? priority,
     String? frequencyId,
+    PRIORITY? priority,
   }) {
     return {
       if (id != null) 'id': id,
@@ -980,8 +980,8 @@ class Checklists implements SupadartClass<Checklists> {
       if (description != null) 'description': description,
       if (notes != null) 'notes': notes,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (priority != null) 'priority': priority,
       if (frequencyId != null) 'frequency_id': frequencyId,
+      if (priority != null) 'priority': priority,
     };
   }
 
@@ -992,8 +992,8 @@ class Checklists implements SupadartClass<Checklists> {
       description: description,
       notes: notes,
       updatedAt: updatedAt,
-      priority: priority,
       frequencyId: frequencyId,
+      priority: priority,
     );
   }
 
@@ -1004,8 +1004,8 @@ class Checklists implements SupadartClass<Checklists> {
     Object? description = _unset,
     Object? notes = _unset,
     Object? updatedAt = _unset,
-    Object? priority = _unset,
     Object? frequencyId = _unset,
+    Object? priority = _unset,
   }) {
     return Checklists(
       id: id == _unset ? this.id : id as String,
@@ -1014,9 +1014,9 @@ class Checklists implements SupadartClass<Checklists> {
           description == _unset ? this.description : description as String?,
       notes: notes == _unset ? this.notes : notes as String?,
       updatedAt: updatedAt == _unset ? this.updatedAt : updatedAt as DateTime,
-      priority: priority == _unset ? this.priority : priority as PRIORITY,
       frequencyId:
           frequencyId == _unset ? this.frequencyId : frequencyId as String?,
+      priority: priority == _unset ? this.priority : priority as PRIORITY,
     );
   }
 }
@@ -2396,8 +2396,8 @@ class RolePermissions implements SupadartClass<RolePermissions> {
 
   static Map<String, dynamic> insert({
     String? id,
-    required APP_ROLES role,
-    required APP_PERMISSIONS permission,
+    APP_ROLES? role,
+    APP_PERMISSIONS? permission,
   }) {
     return _generateMap(
       id: id,
@@ -2779,7 +2779,7 @@ class UserRoles implements SupadartClass<UserRoles> {
   static Map<String, dynamic> insert({
     String? id,
     required String userProfileId,
-    required APP_ROLES role,
+    APP_ROLES? role,
   }) {
     return _generateMap(
       id: id,

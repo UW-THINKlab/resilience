@@ -167,6 +167,8 @@ class PersonSelectorFieldState extends State<PersonSelectorField> {
       initialValue: widget.initialValue,
       title: widget.title,
       buttonText: widget.buttonText,
+      searchable: true,
+      searchHint: 'Search people...',
       onConfirm: (results) => widget.onConfirm(results.cast<Person>()),
     );
   }

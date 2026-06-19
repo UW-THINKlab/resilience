@@ -1,37 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 
-class ClusterSearchBar extends StatefulWidget {
-  final void Function(String)? onQueryChanged;
-
+class ClusterSearchBar extends StatelessWidget {
   const ClusterSearchBar({super.key, this.onQueryChanged});
 
-  @override
-  ClusterBarState createState() => ClusterBarState();
-}
-
-class ClusterBarState extends State<ClusterSearchBar> {
-  String query = '';
-
-  void _defaultOnQueryChanged(String newQuery) {
-    setState(() {
-      query = newQuery;
-    });
-  }
+  final void Function(String)? onQueryChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: TextField(
-        onChanged: widget.onQueryChanged ?? _defaultOnQueryChanged,
-        decoration: InputDecoration(
-          labelText: NeighborhoodStrings.searchClusters,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FilterSearchBar(
+        labelText: NeighborhoodStrings.searchClusters,
+        onQueryChanged: onQueryChanged,
+      );
 }

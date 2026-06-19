@@ -189,10 +189,10 @@ class AppModes {
 }
 
 class AppRoles {
-  static const String user = 'USER';
-  static const String subcommunityAgent = 'SUBCOM_AGENT';
-  static const String communityAdmin = 'COM_ADMIN';
-  static const String admin = 'ADMIN';
+  static const String user = 'user';
+  static const String subcommunityAgent = 'subcom_agent';
+  static const String communityAdmin = 'com_admin';
+  static const String admin = 'admin';
 }
 
 class NavRouteLabels {

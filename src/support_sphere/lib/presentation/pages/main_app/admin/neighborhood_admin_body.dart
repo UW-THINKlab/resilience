@@ -114,9 +114,9 @@ class EditClusterView extends StatelessWidget {
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
                         child: ClusterEditForm(
-                          updateCluster: (clusterData) {
+                          updateCluster: (clusterData) async {
                             final cubit = context.read<ManageNeighborhoodCubit>();
-                            cubit.upsertCluster(clusterData);
+                            await cubit.upsertCluster(clusterData);
                           }
                         ),
                       ),
@@ -252,9 +252,9 @@ class _NeighborhoodViewSection extends StatelessWidget {
 
                       return ClusterViewCard(
                         cluster: cluster,
-                        updateCluster: (clusterData) {
+                        updateCluster: (clusterData) async {
                           final cubit = context.read<ManageNeighborhoodCubit>();
-                          cubit.upsertCluster(clusterData);
+                          await cubit.upsertCluster(clusterData);
                         },
                       );
                     },
