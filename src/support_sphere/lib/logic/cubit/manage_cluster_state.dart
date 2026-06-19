@@ -119,7 +119,7 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     fetchHouseholds();
   }
 
-  void upsertCluster(Map<String, dynamic> clusterData) async {
+  Future<void> upsertCluster(Map<String, dynamic> clusterData) async {
     log.fine("Updating cluster: $clusterData");
     String clusterId = clusterData['id'];
     await _clusterRepo.upsertCluster(clusterData);
