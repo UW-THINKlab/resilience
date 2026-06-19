@@ -71,7 +71,7 @@ class ManageNeighborhoodView extends StatelessWidget {
     return Column(
       children: [
         ManageNeighborhoodCard(),
-        _NeighborhoodsBody(addClusterOnPressed: addClusterOnPressed),
+        Expanded(child: _NeighborhoodsBody(addClusterOnPressed: addClusterOnPressed)),
       ],
     );
   }
@@ -215,13 +215,15 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
                 )),
               ],
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: _NeighborhoodViewSection(
-                      searchResults: _searchResults ?? state.clusters),
-                ),
-              ],
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _NeighborhoodViewSection(
+                        searchResults: _searchResults ?? state.clusters),
+                  ),
+                ],
+              ),
             ),
           ],
         );
@@ -240,7 +242,6 @@ class _NeighborhoodViewSection extends StatelessWidget {
     return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       builder: (context, state) {
         return Container(
-            height: MediaQuery.of(context).size.height * 0.65,
             padding: const EdgeInsets.all(16),
             // TODO: Add pagination at some point
             child: (searchResults.isNotEmpty)
