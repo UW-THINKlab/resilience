@@ -7,6 +7,7 @@ import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_fo
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
 
 
@@ -70,7 +71,7 @@ class ManageNeighborhoodView extends StatelessWidget {
     return Column(
       children: [
         ManageNeighborhoodCard(),
-        _NeighborhoodsBody(addClusterOnPressed: addClusterOnPressed),
+        Expanded(child: _NeighborhoodsBody(addClusterOnPressed: addClusterOnPressed)),
       ],
     );
   }
@@ -113,9 +114,9 @@ class EditClusterView extends StatelessWidget {
                       child: Container(
                         margin: const EdgeInsets.all(15.0),
                         child: ClusterEditForm(
-                          updateCluster: (clusterData) {
+                          updateCluster: (clusterData) async {
                             final cubit = context.read<ManageNeighborhoodCubit>();
-                            cubit.upsertCluster(clusterData);
+                            await cubit.upsertCluster(clusterData);
                           }
                         ),
                       ),
@@ -203,9 +204,10 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(width: 16),
-                ElevatedButton(
-                    onPressed: widget.addClusterOnPressed,
-                    child: Text(NeighborhoodStrings.addCluster)),
+                AddItemButton(
+                  label: NeighborhoodStrings.addCluster,
+                  onPressed: widget.addClusterOnPressed,
+                ),
                 Expanded(child: ClusterSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: NeighborhoodFilter(
@@ -213,13 +215,15 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
                 )),
               ],
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: _NeighborhoodViewSection(
-                      searchResults: _searchResults ?? state.clusters),
-                ),
-              ],
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _NeighborhoodViewSection(
+                        searchResults: _searchResults ?? state.clusters),
+                  ),
+                ],
+              ),
             ),
           ],
         );
@@ -238,7 +242,6 @@ class _NeighborhoodViewSection extends StatelessWidget {
     return BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
       builder: (context, state) {
         return Container(
-            height: MediaQuery.of(context).size.height * 0.65,
             padding: const EdgeInsets.all(16),
             // TODO: Add pagination at some point
             child: (searchResults.isNotEmpty)
@@ -249,9 +252,9 @@ class _NeighborhoodViewSection extends StatelessWidget {
 
                       return ClusterViewCard(
                         cluster: cluster,
-                        updateCluster: (clusterData) {
+                        updateCluster: (clusterData) async {
                           final cubit = context.read<ManageNeighborhoodCubit>();
-                          cubit.upsertCluster(clusterData);
+                          await cubit.upsertCluster(clusterData);
                         },
                       );
                     },

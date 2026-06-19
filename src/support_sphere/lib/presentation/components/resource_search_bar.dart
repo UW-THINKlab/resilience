@@ -1,37 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 
-class ResourceSearchBar extends StatefulWidget {
-  final void Function(String)? onQueryChanged;
-
+class ResourceSearchBar extends StatelessWidget {
   const ResourceSearchBar({super.key, this.onQueryChanged});
 
-  @override
-  _SearchBarState createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<ResourceSearchBar> {
-  String query = '';
-
-  void _defaultOnQueryChanged(String newQuery) {
-    setState(() {
-      query = newQuery;
-    });
-  }
+  final void Function(String)? onQueryChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: TextField(
-        onChanged: widget.onQueryChanged ?? _defaultOnQueryChanged,
-        decoration: InputDecoration(
-          labelText: ResourceStrings.searchResources,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FilterSearchBar(
+        labelText: ResourceStrings.searchResources,
+        onQueryChanged: onQueryChanged,
+      );
 }

@@ -9,6 +9,7 @@ import 'package:support_sphere/presentation/pages/main_app/admin/add_household_f
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/household_search_bar.dart' show HouseholdSearchBar;
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
 
 class ClusterAdminBody extends StatelessWidget {
@@ -129,12 +130,12 @@ class ManageClusterView extends StatelessWidget {
               ClusterViewCard(
                 cluster: state.cluster!,
                 members: state.members,
-                updateCluster: (clusterData) {
+                updateCluster: (clusterData) async {
                   final cubit = context.read<ManageClusterCubit>();
-                  cubit.upsertCluster(clusterData);
+                  await cubit.upsertCluster(clusterData);
                 },
               ) : Text(""),// EMPTY VIEW???
-            _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed),
+            Expanded(child: _ClusterAdminBody(addHouseholdOnPressed: addHouseholdOnPressed)),
           ],
         );
       }
@@ -268,9 +269,9 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(width: 16),
-                ElevatedButton(
-                    onPressed: widget.addHouseholdOnPressed,
-                    child: Text(ClusterAdminStrings.addHousehold)),
+                AddItemButton(
+                    label: ClusterAdminStrings.addHousehold,
+                    onPressed: widget.addHouseholdOnPressed),
                 Expanded(child: HouseholdSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                   child: HouseholdFilter(
@@ -278,13 +279,15 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
                 )),
               ],
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: _ClusterViewSection(
-                      searchResults: _searchResults ?? state.households),
-                ),
-              ],
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _ClusterViewSection(
+                        searchResults: _searchResults ?? state.households),
+                  ),
+                ],
+              ),
             ),
           ],
         );
@@ -303,7 +306,6 @@ class _ClusterViewSection extends StatelessWidget {
     return BlocBuilder<ManageClusterCubit, ManageClusterState>(
       builder: (context, state) {
         return Container(
-            height: MediaQuery.of(context).size.height * 0.65,
             padding: const EdgeInsets.all(16),
             // TODO: Add pagination at some point
             child: (searchResults.isNotEmpty)

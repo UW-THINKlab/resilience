@@ -20,27 +20,27 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
         children: [
           // Card Header
           Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                // TODO: Implement Checkbox for selection
-                // Checkbox(
-                //   value: _isSelected,
-                //   onChanged: (value) => _toggleSelection(value),
-                // ),
-                SizedBox(
-                  width: 200,
-                  child: Text(
-                    "Laurelhurst Neighborhood", // FIXME - store 'hood name somewhere
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  // TODO: Implement Checkbox for selection
+                  // Checkbox(
+                  //   value: _isSelected,
+                  //   onChanged: (value) => _toggleSelection(value),
+                  // ),
+                  SizedBox(
+                    width: 200,
+                    child: Text(
+                      "Laurelhurst Neighborhood", // FIXME - store 'hood name somewhere
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                )
-              ],
-            )),
+                  )
+                ],
+              )),
           Container(
               padding: const EdgeInsets.all(8),
               child: Row(
@@ -55,7 +55,7 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
                       Text('''
                         Households: 2025
                         Clusters: 100
-                        Clusters without capatins: 26
+                        Clusters without captains: 26
                         '''),
                     ],
                   ),

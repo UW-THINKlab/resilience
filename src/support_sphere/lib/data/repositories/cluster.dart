@@ -1,6 +1,8 @@
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart'
+    show ClusterCaptainsView, APP_ROLES;
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
@@ -78,64 +80,65 @@ class ClusterRepository {
     // checking captains
     if (clusterUpdate.containsKey('captains')) {
       final captains = clusterUpdate.remove('captains');
-      updateCaptains(clusterId, captains);
+      await updateCaptains(clusterId, captains);
     }
     // TODO any geometry will also need special case
 
-    _clusterService.upsertCluster(clusterUpdate);
+    await _clusterService.upsertCluster(clusterUpdate);
   }
 
   Future<void> deleteCluster(String clusterId) async {
     return _clusterService.deleteCluster(clusterId);
   }
 
-  Future<void> addClusterCaptain(String clusterId, Person? person) async {
-    log.fine("IMPLEMENT adding ${person?.name()} as captain for cluster id: $clusterId");
-
-    // FIXME
-    // check if they're already a captain: role
-    // add the new captain role in user_role, get id
-    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
-  }
-
-  Future<void> removeClusterCaptain(String clusterId, Person? person) async {
-    log.fine("IMPLEMENT removing ${person?.name()} as captain of cluster id: $clusterId");
-
-    // check if they're already a captain: role
-    // add the new captain role in user_role, get id
-    // use that ID=user_role_id to add new user_cluser_captain, with cluster_id and new UUID
-    // FIXME -
-    // delete user_role, or just user_captain_clusters row?
-    // BOTH!!!!
-    // HOW????
-    // supabase.from('user_captain_clusters')
-    //   .delete()
-    //   .eq('user_role_id', 'id:user_role(user_profile_id=${person?.profile?.id})') // FIXME SYNTAX?
-    //   .eq('cluster_id', clusterId);
+  Future<List<ClusterCaptainsView>> getCaptainsViewByClusterId(
+      String clusterId) async {
+    final data = await _clusterService.getCaptainsViewByClusterId(clusterId);
+    if (data == null) return [];
+    return ClusterCaptainsView.converter(data);
   }
 
   Future<void> updateCaptains(String clusterId, List<Person> captains) async {
-    // index by id, for easy find
-    final newCaptains = { for (var c in captains) c.id: c };
+    final newIds = captains
+        .map((c) => c.profile?.id)
+        .whereType<String>()
+        .toSet();
 
-    // get existing captains, and iterate
-    final currentCaptains = await getCaptainsByClusterId(clusterId);
-    if (currentCaptains != null) {
-      for (var captain in currentCaptains.people) {
-        // - if in new list - remove from new list, continue
-        if (newCaptains.containsKey(captain?.id)) {
-          newCaptains.remove(captain?.id);
-          // newCaptains contains only new captains, not existing
-        }
-        // - if not - remove existing captain
-        else {
-          removeClusterCaptain(clusterId, captain);
-        }
-      }
+    final currentRows = await getCaptainsViewByClusterId(clusterId);
+    final currentIds = currentRows
+        .map((r) => r.userProfileId)
+        .whereType<String>()
+        .toSet();
+
+    for (final id in newIds.difference(currentIds)) {
+      await _addClusterCaptain(clusterId, id);
     }
+    for (final id in currentIds.difference(newIds)) {
+      await _removeClusterCaptain(clusterId, id);
+    }
+  }
 
-    for (var captain in newCaptains.values) {
-      addClusterCaptain(clusterId, captain);
+  Future<void> _addClusterCaptain(
+      String clusterId, String userProfileId) async {
+    final roleRow = await _clusterService.upsertUserRole(
+        userProfileId, APP_ROLES.subcom_agent);
+    await _clusterService.insertUserCaptainCluster(
+        clusterId, roleRow['id'] as String);
+  }
+
+  Future<void> _removeClusterCaptain(
+      String clusterId, String userProfileId) async {
+    final roleRow = await _clusterService.getUserRoleByProfileId(
+        userProfileId, APP_ROLES.subcom_agent);
+    if (roleRow == null) return;
+    final userRoleId = roleRow['id'] as String;
+
+    await _clusterService.deleteUserCaptainCluster(clusterId, userRoleId);
+
+    final remaining =
+        await _clusterService.getUserCaptainClustersByRoleId(userRoleId);
+    if (remaining.isEmpty) {
+      await _clusterService.deleteUserRole(userRoleId);
     }
   }
 

@@ -49,7 +49,7 @@ class ManageNeighborhoodCubit extends Cubit<ManageNeighborhoodState> {
     neighborhoodChanged(clusters, info);
   }
 
-  void upsertCluster(Map<String, dynamic> cluster) async {
+  Future<void> upsertCluster(Map<String, dynamic> cluster) async {
     await _clusterRepo.upsertCluster(cluster);
     fetchNeighborhood();
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/constants/string_catalog.dart'
+    show NeighborhoodStrings;
 import 'package:support_sphere/data/models/person.dart' show Person;
-import 'package:support_sphere/presentation/components/people_select_list.dart'
-    show PersonSelectedField;
+import 'package:support_sphere/data/repositories/cluster.dart'
+    show ClusterRepository;
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart'
     show ClusterEditForm;
 
@@ -25,17 +27,45 @@ class ClusterViewCard extends StatefulWidget {
 }
 
 class ClusterCardState extends State<ClusterViewCard> {
+  List<String> _captainNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCaptains();
+  }
+
+  Future<void> _fetchCaptains() async {
+    try {
+      final rows = await ClusterRepository()
+          .getCaptainsViewByClusterId(widget.cluster.id);
+      if (mounted) {
+        setState(() {
+          _captainNames = rows.map((r) {
+            final nick = r.nickname;
+            if (nick != null && nick.isNotEmpty) return nick;
+            return '${r.givenName ?? ''} ${r.familyName ?? ''}'.trim();
+          }).toList();
+        });
+      }
+    } catch (e, st) {
+      debugPrint(
+          'Failed to load captains for cluster ${widget.cluster.id}: $e\n$st');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         // detect the card has been clicked on, open the
         // details panel
         onTap: () => showDialog(
-            context: context,
-            builder: (BuildContext context) => Dialog(
-                child: ClusterEditForm(
-                    cluster: widget.cluster,
-                    updateCluster: widget.updateCluster))),
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                    child: ClusterEditForm(
+                        cluster: widget.cluster,
+                        updateCluster: widget.updateCluster)))
+            .then((_) => _fetchCaptains()),
         child: Card(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -45,11 +75,6 @@ class ClusterCardState extends State<ClusterViewCard> {
                 padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    // TODO: Implement Checkbox for selection
-                    // Checkbox(
-                    //   value: _isSelected,
-                    //   onChanged: (value) => _toggleSelection(value),
-                    // ),
                     SizedBox(
                       width: 200,
                       child: Row(
@@ -99,33 +124,9 @@ class ClusterCardState extends State<ClusterViewCard> {
                   children: [
                     Row(
                       children: [
-                        Text('Captains: ${widget.cluster.captains}'),
-                        PersonSelectedField(
-                          people: widget.members,
-                          onConfirm: (List<Person> updatedCaptains) {
-                            widget.updateCluster({
-                              'id': widget.cluster.id,
-                              'captains': updatedCaptains
-                            });
-                          },
+                        Text(
+                          'Captains: ${_captainNames.isEmpty ? NeighborhoodStrings.captainNeeded : _captainNames.join(', ')}',
                         ),
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                        //   onPressed: () => showDialog<String>(
-                        //     context: context,
-                        //     builder: (BuildContext context) => Dialog.fullscreen(
-                        //       child: PersonSelectList(
-                        //         people: widget.members,
-                        //         onConfirm: (List<Person> updatedCaptains) {
-                        //           widget.updateCluster({
-                        //             'id': widget.cluster.id,
-                        //             'captains': updatedCaptains
-                        //           });
-                        //         })
-                        //     ),
-                        //   ),
-                        //   child: Text("Manage Captains", style: const TextStyle(color: Colors.white)),
-                        // ),
                       ],
                     ),
                   ],
