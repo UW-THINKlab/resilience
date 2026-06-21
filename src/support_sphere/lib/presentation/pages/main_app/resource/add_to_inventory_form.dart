@@ -113,25 +113,26 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               const SizedBox(height: 8),
               Text(resource.description ?? ''),
               const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('AddToInventoryForm_quantity_textFormField'),
-                initialValue: '1',
-                keyboardType: TextInputType.number,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                onSaved: (value) => _formData =
-                    _formData.copyWith(quantity: int.tryParse(value ?? '0')),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(),
-                  FormBuilderValidators.numeric(),
-                  FormBuilderValidators.min(1)
-                ]),
-                decoration: InputDecoration(
-                    labelText: AddResourceInventoryFormStrings.howManyAdding,
-                    helperText: '',
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)),
-              ),
+              if (resource.resourceType.quantifiable)
+                TextFormField(
+                  key: const Key('AddToInventoryForm_quantity_textFormField'),
+                  initialValue: '1',
+                  keyboardType: TextInputType.number,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onSaved: (value) => _formData =
+                      _formData.copyWith(quantity: int.tryParse(value ?? '0')),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric(),
+                    FormBuilderValidators.min(1)
+                  ]),
+                  decoration: InputDecoration(
+                      labelText: AddResourceInventoryFormStrings.howManyAdding,
+                      helperText: '',
+                      border: border(context),
+                      enabledBorder: border(context),
+                      focusedBorder: focusBorder(context)),
+                ),
               FormField<SharingScopes?>(
                 initialValue: null,
                 validator: (value) => value == null
