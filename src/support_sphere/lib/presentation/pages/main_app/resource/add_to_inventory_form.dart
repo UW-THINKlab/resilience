@@ -15,15 +15,12 @@ class AddToInventoryFormData extends Equatable {
   const AddToInventoryFormData({
     this.resourceId,
     this.quantity,
-    // TODO: Implement Subtype
-    // this.subtype,
     this.notes,
     this.sharingScope,
     this.sharingScopeEmergency,
   });
   final String? resourceId;
   final int? quantity;
-  // final String? subtype;
   final String? notes;
   final String? sharingScope;
   final String? sharingScopeEmergency;
@@ -41,7 +38,6 @@ class AddToInventoryFormData extends Equatable {
   AddToInventoryFormData copyWith({
     String? resourceId,
     int? quantity,
-    // String? subtype,
     String? notes,
     String? sharingScope,
     String? sharingScopeEmergency,
@@ -49,7 +45,6 @@ class AddToInventoryFormData extends Equatable {
     return AddToInventoryFormData(
         resourceId: resourceId ?? this.resourceId,
         quantity: quantity ?? this.quantity,
-        // subtype: subtype ?? this.subtype,
         notes: notes ?? this.notes,
         sharingScope: sharingScope ?? this.sharingScope,
         sharingScopeEmergency:
@@ -62,7 +57,6 @@ class AddToInventoryFormData extends Equatable {
       'id': const UuidV4().generate(),
       'resource_id': resourceId,
       'quantity': quantity,
-      // 'subtype': subtype,
       'notes': notes,
       'sharing_scope': sharingScope,
       'sharing_scope_emergency': sharingScopeEmergency,
@@ -84,9 +78,6 @@ class AddToInventoryForm extends StatefulWidget {
 class _AddToInventoryFormState extends State<AddToInventoryForm> {
   final _formKey = GlobalKey<FormState>();
   AddToInventoryFormData _formData = AddToInventoryFormData();
-  // state variables for sharing scopes radio buttons
-  SharingScopes? _sharingScope;
-  SharingScopes? _sharingScopeEmergency;
 
   @override
   Widget build(BuildContext context) {
@@ -113,25 +104,26 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               const SizedBox(height: 8),
               Text(resource.description ?? ''),
               const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('AddToInventoryForm_quantity_textFormField'),
-                initialValue: '1',
-                keyboardType: TextInputType.number,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                onSaved: (value) => _formData =
-                    _formData.copyWith(quantity: int.tryParse(value ?? '0')),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(),
-                  FormBuilderValidators.numeric(),
-                  FormBuilderValidators.min(1)
-                ]),
-                decoration: InputDecoration(
-                    labelText: AddResourceInventoryFormStrings.howManyAdding,
-                    helperText: '',
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)),
-              ),
+              if (resource.resourceType.quantifiable)
+                TextFormField(
+                  key: const Key('AddToInventoryForm_quantity_textFormField'),
+                  initialValue: '1',
+                  keyboardType: TextInputType.number,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onSaved: (value) => _formData =
+                      _formData.copyWith(quantity: int.tryParse(value ?? '0')),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric(),
+                    FormBuilderValidators.min(1)
+                  ]),
+                  decoration: InputDecoration(
+                      labelText: AddResourceInventoryFormStrings.howManyAdding,
+                      helperText: '',
+                      border: border(context),
+                      enabledBorder: border(context),
+                      focusedBorder: focusBorder(context)),
+                ),
               FormField<SharingScopes?>(
                 initialValue: null,
                 validator: (value) => value == null
@@ -146,9 +138,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                     if (field.hasError)
                       Text(field.errorText!,
                           style: TextStyle(color: Colors.red)),
-                    Text(
-                        AddResourceInventoryFormStrings.setSharingScopeNormal ??
-                            ''),
+                    Text(AddResourceInventoryFormStrings.setSharingScopeNormal),
                     RadioButtonGroup<SharingScopes>(
                       value: field.value,
                       onChanged: field.didChange,
@@ -174,8 +164,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                       Text(field.errorText!,
                           style: TextStyle(color: Colors.red)),
                     Text(AddResourceInventoryFormStrings
-                            .setSharingScopeEmergency ??
-                        ''),
+                        .setSharingScopeEmergency),
                     RadioButtonGroup<SharingScopes>(
                       value: field.value,
                       onChanged: field.didChange,
