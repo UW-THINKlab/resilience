@@ -8,6 +8,8 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
+import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:timeago/timeago.dart';
 
@@ -74,7 +76,19 @@ class MessagesState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.groupName)),
+      appBar: AppBar(
+        title: Text(widget.groupName),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              if (await ReauthDialog(context).perform(AuthService())) {
+                // perform block action
+              }
+            },
+            child: Text('Block'),
+          ),
+        ],
+      ),
       body: StreamBuilder<List<Message>>(
         stream:
             messageRepo.messagesFor(supabase.auth.currentUser!, widget.groupId),
