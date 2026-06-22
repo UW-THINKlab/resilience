@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/repositories/resource.dart';
+import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
@@ -137,24 +139,44 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
         currentLongitude: userLocation.longitude,
       );
     }
+    _submitResourceRequest();
+  }
 
+  Future<void> _submitResourceRequest() async {
     try {
       await context.read<ResourceCubit>().submitResourceRequest(
             requestData: _formData.toJson(),
+            confirmation: (SuggestedResourceRequest req) async {
+              final res = await ConfirmationDialog(
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text('cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('yes'),
+                  ),
+                ],
+                content: Text(
+                  'Confirming will send a request to ${req.supplierCandidate.givenName} who currently has ${req.availableQty} available',
+                ),
+              ).show<bool>(context);
+              return res ?? false;
+            },
           );
-
       if (!mounted) return;
-
       showSuccessSnackBar(context, 'Request sent.');
-
       context.read<ResourceCubit>().currentNavChanged(
             ResourceNav.savedRequest,
           );
     } catch (e) {
       if (!mounted) return;
-
       final message = e.toString().toLowerCase();
-
       showErrorSnackBar(
         context,
         message.contains('not enough available inventory')
