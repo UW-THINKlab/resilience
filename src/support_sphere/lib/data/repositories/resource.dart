@@ -2,9 +2,7 @@ import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_request.dart';
-import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
-// import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/models/supplier_candidate.dart';
 import 'package:support_sphere/data/services/resource_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
@@ -12,6 +10,16 @@ import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/data/repositories/user.dart';
+
+class SuggestedResourceRequest {
+  final SupplierCandidate supplierCandidate;
+  final int availableQty;
+
+  SuggestedResourceRequest({
+    required this.supplierCandidate,
+    required this.availableQty,
+  });
+}
 
 class ResourceRepository {
   ResourceRepository({
@@ -100,6 +108,7 @@ class ResourceRepository {
   Future<void> submitResourceRequestAndNotify({
     required ResourceRequest resourceRequest,
     required String requesterProfileId,
+    required Future<bool> Function(SuggestedResourceRequest) confirmation,
   }) async {
     final candidates = await _getCandidates(
       requesterProfileId: requesterProfileId,
@@ -114,6 +123,13 @@ class ResourceRepository {
     log.fine('candidates in repository: $candidates');
 
     for (final candidate in candidates) {
+      final suggestion = SuggestedResourceRequest(
+        availableQty: candidate.availableQuantity,
+        supplierCandidate: candidate,
+      );
+      if (!await confirmation(suggestion)) {
+        continue;
+      }
       if (remaining <= 0) break;
       if (candidate.availableQuantity <= 0) continue;
 
@@ -123,9 +139,9 @@ class ResourceRepository {
 
       final groupType = switch (resourceRequest.resourceTypeName) {
         'Consumable' => GROUP_CHAT_TYPE.request_consumable,
-        'Durable'    => GROUP_CHAT_TYPE.request_durable,
-        'Skill'      => GROUP_CHAT_TYPE.request_skill,
-        _            => GROUP_CHAT_TYPE.request_consumable,
+        'Durable' => GROUP_CHAT_TYPE.request_durable,
+        'Skill' => GROUP_CHAT_TYPE.request_skill,
+        _ => GROUP_CHAT_TYPE.request_consumable,
       };
       final groupId = await _chatRepository.createDirectRequestGroup(
         name: await _groupNameForRequest(

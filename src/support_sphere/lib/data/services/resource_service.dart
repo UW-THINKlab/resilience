@@ -171,13 +171,6 @@ class ResourceService {
     return rows.map(SupplierCandidate.fromJson).toList();
   }
 
-  // Future<Map<String, dynamic>> createResourceRequest(
-  //     Map<String, dynamic> data) async {
-  //   final row =
-  //       await _supabaseClient.from('requests').insert(data).select().single();
-
-  //   return Map<String, dynamic>.from(row);
-  // }
   Future<Map<String, dynamic>> reserveRequestCandidate({
     required String resourceId,
     required int quantity,
