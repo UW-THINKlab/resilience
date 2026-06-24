@@ -78,15 +78,21 @@ class _CreateChatGroupSheetState extends State<CreateChatGroupSheet> {
     setState(() => _isSaving = true);
 
     try {
-      final groupId = await widget.repo.createGroupWithProfiles(
+      final groupChat = await widget.repo.createGroupWithProfiles(
         name: _nameController.text,
         description: _descriptionController.text,
         createdByProfileId: widget.myProfileId,
         memberProfileIds: _selectedProfileIds.toList(),
       );
+      if (groupChat == null) {
+        throw Exception(
+          'failed to create a group chat',
+        );
+      }
 
       if (!mounted) return;
-      Navigator.of(context).pop((groupId, _nameController.text));
+      // ignore: unnecessary_non_null_assertion
+      Navigator.of(context).pop(groupChat!);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);

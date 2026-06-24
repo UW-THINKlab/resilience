@@ -69,6 +69,7 @@ extension SupadartClient on SupabaseClient {
   SupabaseQueryBuilder get user_profiles => from('user_profiles');
   SupabaseQueryBuilder get user_checklists => from('user_checklists');
   SupabaseQueryBuilder get group_members => from('group_members');
+  SupabaseQueryBuilder get blocks => from('blocks');
   SupabaseQueryBuilder get user_resources_view => from('user_resources_view');
   SupabaseQueryBuilder get requests => from('requests');
   SupabaseQueryBuilder get clusters => from('clusters');
@@ -3480,6 +3481,110 @@ class GroupMembers implements SupadartClass<GroupMembers> {
     return GroupMembers(
       groupId: groupId == _unset ? this.groupId : groupId as String,
       profileId: profileId == _unset ? this.profileId : profileId as String,
+    );
+  }
+}
+
+class Blocks implements SupadartClass<Blocks> {
+  final String blocker;
+  final String blockee;
+  final DateTime createdAt;
+
+  const Blocks({
+    required this.blocker,
+    required this.blockee,
+    required this.createdAt,
+  });
+
+  static String get table_name => 'blocks';
+  static String get c_blocker => 'blocker';
+  static String get c_blockee => 'blockee';
+  static String get c_createdAt => 'created_at';
+
+  static List<Blocks> converter(List<Map<String, dynamic>> data) {
+    return data.map(Blocks.fromJson).toList();
+  }
+
+  static Blocks converterSingle(Map<String, dynamic> data) {
+    return Blocks.fromJson(data);
+  }
+
+  static Map<String, dynamic> _generateMap({
+    String? blocker,
+    String? blockee,
+    DateTime? createdAt,
+  }) {
+    return {
+      if (blocker != null) 'blocker': blocker,
+      if (blockee != null) 'blockee': blockee,
+      if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
+    };
+  }
+
+  static Map<String, dynamic> insert({
+    String? blocker,
+    String? blockee,
+    DateTime? createdAt,
+  }) {
+    return _generateMap(
+      blocker: blocker,
+      blockee: blockee,
+      createdAt: createdAt,
+    );
+  }
+
+  static Map<String, dynamic> update({
+    String? blocker,
+    String? blockee,
+    DateTime? createdAt,
+  }) {
+    return _generateMap(
+      blocker: blocker,
+      blockee: blockee,
+      createdAt: createdAt,
+    );
+  }
+
+  factory Blocks.fromJson(Map<String, dynamic> jsonn) {
+    return Blocks(
+      blocker: jsonn['blocker'] != null ? jsonn['blocker'].toString() : '',
+      blockee: jsonn['blockee'] != null ? jsonn['blockee'].toString() : '',
+      createdAt: jsonn['created_at'] != null
+          ? DateTime.parse(jsonn['created_at'].toString())
+          : DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  static Object New({
+    String? blocker,
+    String? blockee,
+    DateTime? createdAt,
+  }) {
+    return {
+      if (blocker != null) 'blocker': blocker,
+      if (blockee != null) 'blockee': blockee,
+      if (createdAt != null) 'created_at': createdAt,
+    };
+  }
+
+  Map<String, dynamic> toJson() {
+    return _generateMap(
+      blocker: blocker,
+      blockee: blockee,
+      createdAt: createdAt,
+    );
+  }
+
+  static const _unset = Object();
+  Blocks copyWith({
+    Object? blocker = _unset,
+    Object? blockee = _unset,
+    Object? createdAt = _unset,
+  }) {
+    return Blocks(
+      blocker: blocker == _unset ? this.blocker : blocker as String,
+      blockee: blockee == _unset ? this.blockee : blockee as String,
+      createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
   }
 }

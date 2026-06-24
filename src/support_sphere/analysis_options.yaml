@@ -1,3 +1,8 @@
+analyzer:
+  errors:
+    no_logic_in_create_state: ignore
+  exclude:
+    - lib/data/models/generated_classes.dart
 include: package:flutter_lints/flutter.yaml
 
 linter:

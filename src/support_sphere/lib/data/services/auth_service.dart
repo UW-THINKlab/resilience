@@ -8,7 +8,7 @@ import 'package:uuid/v4.dart' show UuidV4;
 
 final _log = Logger('AuthService');
 
-class AuthService extends Equatable{
+class AuthService extends Equatable {
   static final GoTrueClient _supabaseAuth = supabase.auth;
   final SupabaseClient _supabaseClient = supabase;
 
@@ -16,16 +16,25 @@ class AuthService extends Equatable{
   Session? getUserSession() => _supabaseAuth.currentSession;
 
   Future<Map<String, dynamic>?> isSignupCodeValid(String code) async {
-    return await _supabaseClient.from('signup_codes').select().eq('code', code).maybeSingle();
+    return await _supabaseClient
+        .from('signup_codes')
+        .select()
+        .eq('code', code)
+        .maybeSingle();
   }
 
   Future<String?> getSignUpCodeForHousehold(String householdId) async {
-    PostgrestMap? result = await _supabaseClient.from('signup_codes').select().eq('household_id', householdId).maybeSingle();
+    PostgrestMap? result = await _supabaseClient
+        .from('signup_codes')
+        .select()
+        .eq('household_id', householdId)
+        .maybeSingle();
     _log.finer("get SIGNUP CODE for $householdId: $result");
     return result?['code'];
   }
 
-  Future<void> logUseOfSignupCode(String email, String householdId, String code) async {
+  Future<void> logUseOfSignupCode(
+      String email, String householdId, String code) async {
     // add log to table
     await _supabaseClient.from('signup_logs').insert({
       'id': const UuidV4().generate(),
@@ -38,34 +47,47 @@ class AuthService extends Equatable{
   }
 
   Future<void> invalidateSignupCode(String code) async {
-    await _supabaseClient.rpc('invalidate_signup_code', params: {'input_code': code});
+    await _supabaseClient
+        .rpc('invalidate_signup_code', params: {'input_code': code});
   }
 
   // Delete the users account
-  Future <void> deleteMyAccount() async {
+  Future<void> deleteMyAccount() async {
     String? userId = _supabaseAuth.currentUser?.id;
     await _supabaseClient.rpc('delete_user', params: {'user_id': userId});
   }
 
   // Delete an account
-  Future <void> deleteUser(String userId) async {
+  Future<void> deleteUser(String userId) async {
     await _supabaseClient.rpc('delete_user', params: {'user_id': userId});
   }
 
-  Future<AuthResponse> signUpWithEmailAndPassword(String email, String password) async {
+  Future<AuthResponse> signUpWithEmailAndPassword(
+      String email, String password) async {
     // TODO: Add email verification in the future
-    final response = await _supabaseAuth.signUp(email: email, password: password);
+    final response =
+        await _supabaseAuth.signUp(email: email, password: password);
     return response;
   }
 
-  Future<AuthResponse> signInWithEmailAndPassword(String email, String password) async {
+  Future<AuthResponse> signInWithEmailAndPassword(
+      String email, String password) async {
     _log.fine("login: $email, $_supabaseAuth");
-    final response = await _supabaseAuth.signInWithPassword(email: email, password: password);
+    final response = await _supabaseAuth.signInWithPassword(
+        email: email, password: password);
     _log.fine("login response: $response");
     return response;
   }
 
-  Stream<Session?> getCurrentSession() => _supabaseAuth.onAuthStateChange.map((data) => data.session);
+  Future<User?> reauthSignedInUser(String password) async {
+    String? email = _supabaseAuth.currentUser?.email;
+    if (email == null || email.isEmpty) throw 'failed to get the email';
+    final response = await signInWithEmailAndPassword(email, password);
+    return response.user;
+  }
+
+  Stream<Session?> getCurrentSession() =>
+      _supabaseAuth.onAuthStateChange.map((data) => data.session);
 
   Future<void> signOut() async => await _supabaseAuth.signOut();
 
@@ -83,7 +105,8 @@ class AuthService extends Equatable{
 
       // RPC Workaround:
       // await _supabaseClient.rpc('clear_user_phone', params: { 'user_id': _supabaseAuth.currentUser?.id });
-      return Future.value(UserResponse.fromJson(_supabaseAuth.currentUser?.toJson() ?? {}));
+      return Future.value(
+          UserResponse.fromJson(_supabaseAuth.currentUser?.toJson() ?? {}));
     } else {
       return await _supabaseAuth.updateUser(
         UserAttributes(

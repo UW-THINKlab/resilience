@@ -13,7 +13,6 @@ import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/create_chat_group_sheet.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/data/repositories/message.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 ///TODO- make sure preloader is the same across all pages, potentially move to a shared widget?
 const preloader =
@@ -167,10 +166,7 @@ class InboxView extends StatelessWidget {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MessagesPage(
-          groupId: group.id,
-          groupName: group.name,
-        ),
+        builder: (context) => MessagesPage(group: group),
       ),
     );
     if (!context.mounted) return;
@@ -184,7 +180,7 @@ class InboxView extends StatelessWidget {
     final myProfileId = context.read<AuthenticationBloc>().state.user.uuid;
     final chatRepo = ChatRepository();
 
-    final result = await showModalBottomSheet<(String, String)>(
+    final chatGroup = await showModalBottomSheet<ChatGroup>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -194,15 +190,13 @@ class InboxView extends StatelessWidget {
       ),
     );
 
-    if (result != null && context.mounted) {
+    if (chatGroup != null && context.mounted) {
       await context.read<InboxCubit>().fetchGroups();
-      final (groupId, groupName) = result;
       if (context.mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) =>
-                MessagesPage(groupId: groupId, groupName: groupName),
+            builder: (_) => MessagesPage(group: chatGroup),
           ),
         );
       }

@@ -68,7 +68,7 @@ class ChatRepository {
   }
 
 // Create new chat group with member profile IDs. Returns new group ID.
-  Future<String> createGroupWithProfiles(
+  Future<ChatGroup?> createGroupWithProfiles(
       {required String name,
       String? description,
       required String createdByProfileId,
@@ -96,7 +96,7 @@ class ChatRepository {
         return true;
       }).firstOrNull;
       if (existing != null) {
-        return existing.id;
+        return existing;
       }
     }
     final cleanDescription =
@@ -141,7 +141,7 @@ class ChatRepository {
 
     await supabase.from('group_members').insert(memberRows);
 
-    return groupId;
+    return getGroup(groupId, createdByProfileId);
   }
 
   Future<String> _getNextGroupName({
@@ -157,7 +157,7 @@ class ChatRepository {
     return result as String;
   }
 
-  Future<String> createDirectRequestGroup({
+  Future<ChatGroup?> createDirectRequestGroup({
     required String name,
     String? description,
     required String createdByProfileId,
@@ -212,5 +212,34 @@ class ChatRepository {
   Future<void> deleteGroup(String id) async {
     await supabase.from('messages').delete().eq('to_id', id);
     await supabase.from('groups').delete().eq('id', id);
+  }
+
+  Future<ChatGroup?> getGroup(String id, String currentUid) async {
+    final response = await supabase.groups.select('''
+      id,
+      name,
+      description,
+      type,
+      group_members(
+        profile_id,
+        user_profiles(
+          people(
+            given_name,
+            user_profile_id
+          )
+        )
+      )
+    ''').eq(Groups.c_id, id).maybeSingle().withConverter(
+          (resp) {
+            if (resp == null) return null;
+            List<Map<String, dynamic>> members = (resp['group_members'] as List)
+                .map((e) => (e as Map<String, dynamic>)['user_profiles']
+                    ['people'] as Map<String, dynamic>)
+                .toList();
+            return (Groups.fromJson(resp), People.converter(members));
+          },
+        );
+    if (response == null) return null;
+    return responseToChatGroup(response, currentUid);
   }
 }

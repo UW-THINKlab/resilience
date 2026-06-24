@@ -143,7 +143,7 @@ class ResourceRepository {
         'Skill' => GROUP_CHAT_TYPE.request_skill,
         _ => GROUP_CHAT_TYPE.request_consumable,
       };
-      final groupId = await _chatRepository.createDirectRequestGroup(
+      final groupChat = await _chatRepository.createDirectRequestGroup(
         name: await _groupNameForRequest(
           candidate,
           allocated,
@@ -154,6 +154,12 @@ class ResourceRepository {
         otherProfileId: candidate.profileId,
         type: groupType,
       );
+
+      if (groupChat == null) {
+        throw Exception(
+          'failed to create a chat with the person to request from',
+        );
+      }
 
       final requestRow = await _resourceService.reserveRequestCandidate(
         resourceId: resourceRequest.resourceId,
@@ -176,7 +182,7 @@ class ResourceRepository {
 
       await _messagesRepository.sendMessage(
         fromProfileId: requesterProfileId,
-        groupId: groupId,
+        groupId: groupChat.id,
         text: buf.toString(),
         messageType: 'resource_request',
         requestId: requestRow['id'] as String,
