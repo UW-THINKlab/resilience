@@ -194,4 +194,14 @@ class UserRepository {
       return null;
     }
   }
+
+  Future<void> blockUser({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await _userService.blockPerson(
+      blockerId: blockerId,
+      blockeeId: blockeeId,
+    );
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
@@ -31,7 +32,8 @@ class UserService {
   }
 
   /// Retrieves the household members by household id.
-  Future<PostgrestList?> getHouseholdMembersByHouseholdId(String householdId) async {
+  Future<PostgrestList?> getHouseholdMembersByHouseholdId(
+      String householdId) async {
     log.fine("getting household members for household id=$householdId");
     return await supabase.from('people_groups').select('''
       people(
@@ -45,7 +47,6 @@ class UserService {
       )
     ''').eq('household_id', householdId);
   }
-
 
   Future<PostgrestList> getClusterMembers(String clusterId) async {
     return await supabase.from('people_groups').select('''
@@ -138,7 +139,9 @@ class UserService {
 
     if (address != null) payload['address'] = address;
     if (pets != null) payload['pets'] = pets;
-    if (accessibilityNeeds != null) payload['accessibility_needs'] = accessibilityNeeds;
+    if (accessibilityNeeds != null) {
+      payload['accessibility_needs'] = accessibilityNeeds;
+    }
     if (notes != null) payload['notes'] = notes;
 
     await supabase.from('households').update(payload).eq('id', id);
@@ -154,5 +157,15 @@ class UserService {
       'people_id': personId,
       'household_id': householdId,
     });
+  }
+
+  Future<void> blockPerson({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await supabase.blocks.insert(Blocks.insert(
+      blocker: blockerId,
+      blockee: blockeeId,
+    ));
   }
 }
