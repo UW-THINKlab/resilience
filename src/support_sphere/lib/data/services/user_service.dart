@@ -168,4 +168,16 @@ class UserService {
       blockee: blockeeId,
     ));
   }
+
+  Future<bool> isUser1BlockingUser2({
+    required String user1Id,
+    required String user2Id,
+  }) async {
+    final blocks = await supabase.blocks
+        .select()
+        .eq(Blocks.c_blocker, user1Id)
+        .eq(Blocks.c_blockee, user2Id)
+        .withConverter(Blocks.converter);
+    return blocks.isNotEmpty;
+  }
 }

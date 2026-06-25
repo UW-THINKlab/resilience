@@ -45,6 +45,7 @@ class MessagesState extends State<MessagesPage> {
   late final Stream<Person?> profileStream;
   final Map<String, Person> profileCache = {};
   late final String myUserId;
+  late final Future<bool> blockedCommunication;
 
   MessagesState({required this.group});
 
@@ -56,6 +57,12 @@ class MessagesState extends State<MessagesPage> {
     myUserId = supabase.auth.currentUser!.id;
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
+    blockedCommunication = group.members.length == 2
+        ? userRepo.isEitherUserBlocked(
+            user1Id: myUserId,
+            user2Id: getOtherUserId(),
+          )
+        : Future.value(false);
     _loadInitialData();
   }
 
@@ -79,6 +86,12 @@ class MessagesState extends State<MessagesPage> {
     return person;
   }
 
+  String getOtherUserId() {
+    return group.members.first != myUserId
+        ? group.members.first
+        : group.members.last;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,9 +104,7 @@ class MessagesState extends State<MessagesPage> {
                 if (await ReauthDialog(context).perform(AuthService())) {
                   userRepo.blockUser(
                     blockerId: myUserId,
-                    blockeeId: group.members.first != myUserId
-                        ? group.members.first
-                        : group.members.last,
+                    blockeeId: getOtherUserId(),
                   );
                 }
               },
@@ -125,7 +136,17 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                MessageBar(groupId: group.id),
+                FutureBuilder(
+                    future: blockedCommunication,
+                    builder: (ctx, snapshot) {
+                      if (snapshot.hasData) {
+                        return snapshot.data!
+                            ? Text("You can't send messages to this chat")
+                            : MessageBar(groupId: group.id);
+                      } else {
+                        return Text("");
+                      }
+                    }),
               ],
             );
           } else {

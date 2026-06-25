@@ -204,4 +204,18 @@ class UserRepository {
       blockeeId: blockeeId,
     );
   }
+
+  Future<bool> isEitherUserBlocked({
+    required String user1Id,
+    required String user2Id,
+  }) async {
+    return await _userService.isUser1BlockingUser2(
+          user1Id: user1Id,
+          user2Id: user2Id,
+        ) ||
+        await _userService.isUser1BlockingUser2(
+          user1Id: user2Id,
+          user2Id: user1Id,
+        );
+  }
 }
