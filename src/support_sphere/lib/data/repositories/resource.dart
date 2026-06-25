@@ -123,6 +123,12 @@ class ResourceRepository {
     log.fine('candidates in repository: $candidates');
 
     for (final candidate in candidates) {
+      if (await _userRepository.isEitherUserBlocked(
+        user1Id: requesterProfileId,
+        user2Id: candidate.profileId,
+      )) {
+        continue;
+      }
       final suggestion = SuggestedResourceRequest(
         availableQty: candidate.availableQuantity,
         supplierCandidate: candidate,
