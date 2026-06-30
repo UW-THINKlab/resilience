@@ -221,8 +221,9 @@ depends-on = ["install-flutter"]
 
 # ==== Deployment environment ====
 [feature.cloud.activation.env]
-"TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_neighborhood" = "Laurelhurst"
+"TF_VAR_domain_name" = "laurelhurst.supportsphere.acmerocket.com"
+"TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_stage" = "dev"
 "TF_VAR_account_id" = "503561456208"
 "TF_VAR_ops_group_name" = "ssec-eng"
@@ -309,6 +310,9 @@ cmd = "gpg --import /root/private.pgp"
 
 ### New supabase CLI env ###
 
+[feature.supabase.dependencies]
+python = ">=3.10"
+
 [feature.supabase.tasks.install.env]
 # install in pixi env
 SUPABASE_INSTALL_DIR = "$CONDA_PREFIX/bin"
@@ -342,6 +346,11 @@ depends-on = ["install"]
 cmd = "scripts/db-load.sh"
 depends-on = ["reset"]
 
+[feature.supabase.tasks.init]
+cmd = "scripts/db-init.sh"
+
+[feature.supabase.tasks.appconfig]
+cmd = "python scripts/appconfig.py"
 
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]

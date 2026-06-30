@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
+import 'package:support_sphere/constants/appconfig.dart' show AppConfig;
 
 /// Strings used in the app
 class AppStrings {
-  static const String appName =
-      'Resilience - Laurelhurst'; // FIXME - determine from url/metadata/server somehow
-  static const String signUpWelcome =
+  static final String appName = 'Resilience - ${AppConfig.neighborhood}';
+  static final String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
   static const String testEmergencyBannerText = "This is a test emergency.";
 }
@@ -228,6 +228,5 @@ class NeighborhoodStrings {
   static const String noClustersFound = 'No Cluster found';
   static const String captainNeeded = 'Captain needed';
 
-  static const String manageNeighborhood =
-      "Manage Laurelhurst"; // FIXME - neighborhood name
+  static final String manageNeighborhood = "Manage ${AppConfig.neighborhood}";
 }

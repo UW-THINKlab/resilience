@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:support_sphere/constants/appconfig.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 
 class ManageNeighborhoodCard extends StatefulWidget {
@@ -32,7 +33,7 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
                   SizedBox(
                     width: 200,
                     child: Text(
-                      "Laurelhurst Neighborhood", // FIXME - store 'hood name somewhere
+                      AppConfig.neighborhood,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

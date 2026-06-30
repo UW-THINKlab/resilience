@@ -42,9 +42,6 @@ dependencies = [
     "geopy>=2.4.1",
 ]
 
-[project.license]
-file = "LICENSE"
-
 [tool.hatch.build.targets.sdist]
 exclude = ["/tests"]
 

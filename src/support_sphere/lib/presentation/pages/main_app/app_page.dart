@@ -75,7 +75,7 @@ class AppPage extends StatelessWidget {
                       ? Theme.of(context).colorScheme.primaryContainer
                       : Colors.red,
                   // TODO: Add "Emergency Declared" title during emergency mode
-                  title: const Text(
+                  title: Text(
                     AppStrings.appName,
                     style: TextStyle(color: Colors.white),
                   ),
