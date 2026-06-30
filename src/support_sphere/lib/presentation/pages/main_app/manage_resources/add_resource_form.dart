@@ -7,6 +7,8 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
 import 'package:uuid/v4.dart';
@@ -267,7 +269,13 @@ class _AddResourceFormState extends State<AddResourceForm> {
           const SizedBox(height: 10),
           // Buttons to Add Item or Cancel
           Row(children: [
-            ElevatedButton(
+            CancelButton(
+              label: 'Cancel',
+              onPressed: widget.onCancel,
+            ),
+            const SizedBox(width: 8),
+            ConfirmButton(
+              label: 'Add Item',
               onPressed: () {
                 _formKey.currentState!.save();
                 if (_formKey.currentState!.validate()) {
@@ -277,12 +285,6 @@ class _AddResourceFormState extends State<AddResourceForm> {
                   widget.onCancel!();
                 }
               },
-              child: const Text('Add Item'),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: widget.onCancel,
-              child: const Text('Cancel'),
             ),
           ]),
         ],

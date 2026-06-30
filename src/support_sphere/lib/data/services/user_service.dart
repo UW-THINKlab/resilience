@@ -169,6 +169,16 @@ class UserService {
     ));
   }
 
+  Future<void> unblockPerson({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await supabase.blocks
+        .delete()
+        .eq(Blocks.c_blocker, blockerId)
+        .eq(Blocks.c_blockee, blockeeId);
+  }
+
   Future<bool> isUser1BlockingUser2({
     required String user1Id,
     required String user2Id,

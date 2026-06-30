@@ -7,6 +7,8 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart' show ManageClusterCubit;
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:uuid/v4.dart';
 
@@ -257,7 +259,13 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
           const SizedBox(height: 10),
           // Buttons to Add Item or Cancel
           Row(children: [
-            ElevatedButton(
+            CancelButton(
+              label: 'Cancel',
+              onPressed: widget.onCancel,
+            ),
+            const SizedBox(width: 8),
+            ConfirmButton(
+              label: 'Add Item',
               onPressed: () {
                 _formKey.currentState!.save();
                 if (_formKey.currentState!.validate()) {
@@ -267,12 +275,6 @@ class _AddHouseholdFormState extends State<AddHouseholdForm> {
                   widget.onCancel!();
                 }
               },
-              child: const Text('Add Item'),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: widget.onCancel,
-              child: const Text('Cancel'),
             ),
           ]),
         ],

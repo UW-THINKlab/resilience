@@ -231,3 +231,9 @@ class NeighborhoodStrings {
   static const String manageNeighborhood =
       "Manage Laurelhurst"; // FIXME - neighborhood name
 }
+
+class MessagesStrings {
+  static const String blockedCommunication = "Chat disabled with this user.";
+  static const String block = 'Block User';
+  static const String unblock = 'Unblock User';
+}
