@@ -10,7 +10,10 @@ import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/constants/constants.dart';
+import 'package:support_sphere/presentation/components/discreet_button.dart';
 import 'package:support_sphere/presentation/components/reauth_dialog.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:timeago/timeago.dart';
 
@@ -45,7 +48,8 @@ class MessagesState extends State<MessagesPage> {
   late final Stream<Person?> profileStream;
   final Map<String, Person> profileCache = {};
   late final String myUserId;
-  late final Future<bool> blockedCommunication;
+  bool? _isCommunicationBlocked;
+  bool? _isBlockedByMe;
 
   MessagesState({required this.group});
 
@@ -57,13 +61,32 @@ class MessagesState extends State<MessagesPage> {
     myUserId = supabase.auth.currentUser!.id;
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
-    blockedCommunication = group.members.length == 2
-        ? userRepo.isEitherUserBlocked(
-            user1Id: myUserId,
-            user2Id: getOtherUserId(),
-          )
-        : Future.value(false);
+    _loadBlockState();
     _loadInitialData();
+  }
+
+  Future<void> _loadBlockState() async {
+    if (group.members.length != 2) {
+      setState(() {
+        _isCommunicationBlocked = false;
+        _isBlockedByMe = false;
+      });
+      return;
+    }
+    final otherUserId = getOtherUserId();
+    final iBlockedOther = await userRepo.isUserBlocking(
+      blockerId: myUserId,
+      blockeeId: otherUserId,
+    );
+    final otherBlockedMe = await userRepo.isUserBlocking(
+      blockerId: otherUserId,
+      blockeeId: myUserId,
+    );
+    if (!mounted) return;
+    setState(() {
+      _isBlockedByMe = iBlockedOther;
+      _isCommunicationBlocked = iBlockedOther || otherBlockedMe;
+    });
   }
 
   Future<void> _loadInitialData() async {
@@ -98,17 +121,36 @@ class MessagesState extends State<MessagesPage> {
       appBar: AppBar(
         title: Text(group.name),
         actions: [
-          if (group.members.length == 2)
-            TextButton(
+          if (group.members.length == 2 && _isBlockedByMe != null)
+            DiscreetButton(
+              label: _isBlockedByMe!
+                  ? MessagesStrings.unblock
+                  : MessagesStrings.block,
               onPressed: () async {
                 if (await ReauthDialog(context).perform(AuthService())) {
-                  userRepo.blockUser(
-                    blockerId: myUserId,
-                    blockeeId: getOtherUserId(),
-                  );
+                  if (_isBlockedByMe!) {
+                    await userRepo.unblockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = false;
+                      _isCommunicationBlocked = false;
+                    });
+                  } else {
+                    await userRepo.blockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = true;
+                      _isCommunicationBlocked = true;
+                    });
+                  }
                 }
               },
-              child: Text('Block'),
             ),
         ],
       ),
@@ -136,17 +178,10 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                FutureBuilder(
-                    future: blockedCommunication,
-                    builder: (ctx, snapshot) {
-                      if (snapshot.hasData) {
-                        return snapshot.data!
-                            ? Text("You can't send messages to this chat")
-                            : MessageBar(groupId: group.id);
-                      } else {
-                        return Text("");
-                      }
-                    }),
+                if (_isCommunicationBlocked == true)
+                  Text(MessagesStrings.blockedCommunication)
+                else if (_isCommunicationBlocked == false)
+                  MessageBar(groupId: group.id),
               ],
             );
           } else {
@@ -206,9 +241,10 @@ class _MessageBarState extends State<MessageBar> {
                       _submitMessage(context, widget.groupId),
                 ),
               ),
-              ElevatedButton(
+              ConfirmButton(
+                label: 'Send',
+                icon: const Icon(Icons.chat),
                 onPressed: () => _submitMessage(context, widget.groupId),
-                child: const Text('Send'), // FIXME formatting, text
               ),
             ],
           ),

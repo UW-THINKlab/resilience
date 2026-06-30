@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
@@ -211,18 +213,18 @@ class HomeMap extends StatelessWidget {
                 ),
               ),
               actions: [
-                ElevatedButton(
-                    child: Text("Save"),
+                CancelButton(
+                    label: 'Cancel',
+                    onPressed: () {
+                      cubit.cancelMeetingPlace();
+                      Navigator.pop(context);
+                    }),
+                ConfirmButton(
+                    label: 'Save',
                     onPressed: () {
                       // FIXME: get description from form!
                       final description = "";
                       cubit.saveMeetingPlace(description);
-                      Navigator.pop(context);
-                    }),
-                ElevatedButton(
-                    child: Text("Cancel"),
-                    onPressed: () {
-                      cubit.cancelMeetingPlace();
                       Navigator.pop(context);
                     }),
               ],

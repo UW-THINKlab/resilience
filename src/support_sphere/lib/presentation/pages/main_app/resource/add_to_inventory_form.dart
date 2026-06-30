@@ -9,6 +9,8 @@ import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:uuid/v4.dart';
 
 class AddToInventoryFormData extends Equatable {
@@ -196,7 +198,16 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ElevatedButton(
+                  CancelButton(
+                      label: 'Cancel',
+                      onPressed: () {
+                        context
+                            .read<ResourceCubit>()
+                            .currentNavChanged(ResourceNav.showAllResources);
+                      }),
+                  const SizedBox(width: 4),
+                  ConfirmButton(
+                      label: 'Save Item',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
@@ -208,16 +219,7 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                           context.read<ResourceCubit>().currentNavChanged(
                               ResourceNav.savedResourceInventory);
                         }
-                      },
-                      child: Text("Save Item")),
-                  const SizedBox(width: 4),
-                  ElevatedButton(
-                      onPressed: () {
-                        context
-                            .read<ResourceCubit>()
-                            .currentNavChanged((ResourceNav.showAllResources));
-                      },
-                      child: Text("Cancel")),
+                      }),
                 ],
               ),
             ],

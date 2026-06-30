@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
@@ -149,17 +151,17 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
             confirmation: (SuggestedResourceRequest req) async {
               final res = await ConfirmationDialog(
                 actions: [
-                  TextButton(
+                  CancelButton(
+                    label: 'Cancel',
                     onPressed: () {
                       Navigator.of(context).pop(false);
                     },
-                    child: Text('cancel'),
                   ),
-                  TextButton(
+                  ConfirmButton(
+                    label: 'Yes',
                     onPressed: () {
                       Navigator.of(context).pop(true);
                     },
-                    child: Text('yes'),
                   ),
                 ],
                 content: Text(
@@ -275,20 +277,17 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent),
-                      onPressed: () => _handleSubmit(resource),
-                      child: Text("Request",
-                          style: const TextStyle(color: Colors.white))),
-                  const SizedBox(width: 4),
-                  ElevatedButton(
+                  CancelButton(
+                      label: 'Cancel',
                       onPressed: () {
                         context
                             .read<ResourceCubit>()
-                            .currentNavChanged((ResourceNav.showAllResources));
-                      },
-                      child: Text("Cancel")),
+                            .currentNavChanged(ResourceNav.showAllResources);
+                      }),
+                  const SizedBox(width: 4),
+                  ConfirmButton(
+                      label: 'Request',
+                      onPressed: () => _handleSubmit(resource)),
                 ],
               ),
             ],

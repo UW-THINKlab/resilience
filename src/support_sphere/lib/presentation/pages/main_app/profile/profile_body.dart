@@ -5,12 +5,16 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
+import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
+import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/constants.dart';
 
 String _initials(String? given, String? family) {
   final first = (given?.isNotEmpty ?? false) ? given![0].toUpperCase() : '';
@@ -57,7 +61,8 @@ class _ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
       buildWhen: (prev, curr) =>
-          prev.userProfile != curr.userProfile || prev.authUser != curr.authUser,
+          prev.userProfile != curr.userProfile ||
+          prev.authUser != curr.authUser,
       builder: (context, state) {
         final givenName = state.userProfile?.givenName ?? '';
         final familyName = state.userProfile?.familyName ?? '';
@@ -67,7 +72,10 @@ class _ProfileHeader extends StatelessWidget {
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.35),
+          color: Theme.of(context)
+              .colorScheme
+              .primaryContainer
+              .withValues(alpha: 0.35),
           child: Row(
             children: [
               CircleAvatar(
@@ -101,6 +109,19 @@ class _ProfileHeader extends StatelessWidget {
                       ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 12),
+              ConfirmButton(
+                label: LoginStrings.logout,
+                color: Colors.white,
+                icon: const Icon(Icons.logout),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                child: const Text(LoginStrings.logout,
+                    style: TextStyle(fontSize: 16)),
+                onPressed: () => context
+                    .read<AuthenticationBloc>()
+                    .add(AuthOnLogoutRequested()),
               ),
             ],
           ),
@@ -339,8 +360,7 @@ class _HouseholdInformation extends StatelessWidget {
     final formKey = GlobalKey<FormBuilderState>();
 
     return BlocBuilder<ProfileCubit, ProfileState>(
-      buildWhen: (previous, current) =>
-          previous.household != current.household,
+      buildWhen: (previous, current) => previous.household != current.household,
       builder: (context, state) {
         Household? household = state.household;
         final inviteCode = state.inviteCode ?? '';
@@ -368,8 +388,8 @@ class _HouseholdInformation extends StatelessWidget {
                 const SizedBox(height: 4),
                 FormBuilderTextField(
                   name: 'pets',
-                  decoration: const InputDecoration(
-                      labelText: UserProfileStrings.pets),
+                  decoration:
+                      const InputDecoration(labelText: UserProfileStrings.pets),
                   initialValue: pets,
                 ),
                 const SizedBox(height: 4),
@@ -400,7 +420,8 @@ class _HouseholdInformation extends StatelessWidget {
                               householdId: household.id,
                               address: formData['address'],
                               pets: formData['pets'],
-                              accessibilityNeeds: formData['accessibilityNeeds'],
+                              accessibilityNeeds:
+                                  formData['accessibilityNeeds'],
                               notes: formData['notes'],
                             );
                         Navigator.of(context).pop();
@@ -421,8 +442,8 @@ class _HouseholdInformation extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child:
-                        Icon(Icons.key_outlined, size: 18, color: Colors.grey[600]),
+                    child: Icon(Icons.key_outlined,
+                        size: 18, color: Colors.grey[600]),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -514,8 +535,8 @@ class _HouseholdInformation extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: Icon(Icons.article,
-                        size: 18, color: Colors.grey[600]),
+                    child:
+                        Icon(Icons.article, size: 18, color: Colors.grey[600]),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -590,9 +611,14 @@ class _ClusterInformation extends StatelessWidget {
   }
 }
 
-class _ActionButtons extends StatelessWidget {
+class _ActionButtons extends StatefulWidget {
   const _ActionButtons();
 
+  @override
+  State<_ActionButtons> createState() => _ActionButtonsState();
+}
+
+class _ActionButtonsState extends State<_ActionButtons> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -602,48 +628,50 @@ class _ActionButtons extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              OutlinedButton.icon(
-                onPressed: () => context
-                    .read<AuthenticationBloc>()
-                    .add(AuthOnLogoutRequested()),
-                icon: const Icon(Icons.logout_outlined),
-                label: const Text(LoginStrings.logout),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (BuildContext ctx) {
-                    return AlertDialog(
-                      title: const Text(UserProfileStrings.confirmPrompt),
-                      content:
-                          const Text(UserProfileStrings.confirmAccountDelete),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            context
-                                .read<AuthenticationBloc>()
-                                .add(AuthDeleteMyUserRequested());
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                              EmergencyAlertDialogStrings.buttonYes),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child:
-                              const Text(EmergencyAlertDialogStrings.buttonNo),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                icon: const Icon(Icons.delete_outline),
-                label: const Text(UserProfileStrings.deleteMyAccount),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[700],
-                  foregroundColor: Colors.white,
-                ),
+              ProfileSection(
+                title: UserProfileStrings.destructiveActions,
+                readOnly: true,
+                children: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      if (!await ReauthDialog(context).perform(AuthService()))
+                        return;
+                      if (!mounted) return;
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext ctx) {
+                          return AlertDialog(
+                            title: const Text(UserProfileStrings.confirmPrompt),
+                            content: const Text(
+                                UserProfileStrings.confirmAccountDelete),
+                            actions: [
+                              CancelButton(
+                                label: UserProfileStrings.deleteAccountCancel,
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                              ),
+                              ConfirmButton(
+                                label: UserProfileStrings.deleteAccountConfirm,
+                                color: ColorConstants.dangerRed,
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (confirmed == true && mounted) {
+                        context
+                            .read<AuthenticationBloc>()
+                            .add(AuthDeleteMyUserRequested());
+                      }
+                    },
+                    icon: const Icon(Icons.delete_outline,
+                        size: 16, color: Colors.red),
+                    label: const Text(
+                      UserProfileStrings.deleteMyAccount,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

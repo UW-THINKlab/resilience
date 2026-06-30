@@ -205,6 +205,26 @@ class UserRepository {
     );
   }
 
+  Future<void> unblockUser({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await _userService.unblockPerson(
+      blockerId: blockerId,
+      blockeeId: blockeeId,
+    );
+  }
+
+  Future<bool> isUserBlocking({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    return await _userService.isUser1BlockingUser2(
+      user1Id: blockerId,
+      user2Id: blockeeId,
+    );
+  }
+
   Future<bool> isEitherUserBlocked({
     required String user1Id,
     required String user2Id,
