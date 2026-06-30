@@ -8,17 +8,22 @@ class ConfirmButton extends StatelessWidget {
     required this.onPressed,
     this.child,
     this.icon,
+    this.color,
+    this.padding,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final Widget? child;
   final Widget? icon;
+  final Color? color;
+  final EdgeInsetsGeometry? padding;
 
   ButtonStyle get _style => ElevatedButton.styleFrom(
-        backgroundColor: ColorConstants.confirmGreen,
+        backgroundColor: color ?? ColorConstants.confirmGreen,
         foregroundColor: Colors.black87,
         elevation: 2,
+        padding: padding,
         // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         shape: const StadiumBorder(),
       );

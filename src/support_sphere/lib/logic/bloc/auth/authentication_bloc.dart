@@ -41,9 +41,10 @@ class AuthenticationBloc
     unawaited(_authRepository.logOut());
   }
 
-  void _onDeleteMyUserRequested(
-      AuthDeleteMyUserRequested event, Emitter<AuthenticationState> emit) {
-    unawaited(_authRepository.deleteMyAccount());
+  Future<void> _onDeleteMyUserRequested(
+      AuthDeleteMyUserRequested event, Emitter<AuthenticationState> emit) async {
+    await _authRepository.deleteMyAccount();
+    await _authRepository.logOut();
   }
 
   @override

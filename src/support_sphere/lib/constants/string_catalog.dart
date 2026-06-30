@@ -70,6 +70,9 @@ class UserProfileStrings {
   static const String confirmPrompt = 'Please Confirm';
   static const String confirmAccountDelete =
       'Are you sure you want to delete your account?';
+  static const String destructiveActions = 'Destructive Actions';
+  static const String deleteAccountConfirm = 'Delete Account';
+  static const String deleteAccountCancel = 'Cancel';
 }
 
 /// Checklist messages
