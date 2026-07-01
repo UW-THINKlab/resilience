@@ -5,16 +5,14 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
-import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
-import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
-import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/constants.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/action_buttons.dart';
 
 String _initials(String? given, String? family) {
   final first = (given?.isNotEmpty ?? false) ? given![0].toUpperCase() : '';
@@ -44,7 +42,7 @@ class ProfileBody extends StatelessWidget {
                 _PersonalInformation(),
                 _HouseholdInformation(),
                 _ClusterInformation(),
-                _ActionButtons(),
+                ActionButtons(),
               ],
             ),
           ),
@@ -605,76 +603,6 @@ class _ClusterInformation extends StatelessWidget {
               icon: Icons.gpp_good_outlined,
             ),
           ],
-        );
-      },
-    );
-  }
-}
-
-class _ActionButtons extends StatefulWidget {
-  const _ActionButtons();
-
-  @override
-  State<_ActionButtons> createState() => _ActionButtonsState();
-}
-
-class _ActionButtonsState extends State<_ActionButtons> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ProfileSection(
-                title: UserProfileStrings.destructiveActions,
-                readOnly: true,
-                children: [
-                  TextButton.icon(
-                    onPressed: () async {
-                      if (!await ReauthDialog(context).perform(AuthService()))
-                        return;
-                      if (!mounted) return;
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext ctx) {
-                          return AlertDialog(
-                            title: const Text(UserProfileStrings.confirmPrompt),
-                            content: const Text(
-                                UserProfileStrings.confirmAccountDelete),
-                            actions: [
-                              CancelButton(
-                                label: UserProfileStrings.deleteAccountCancel,
-                                onPressed: () => Navigator.of(ctx).pop(false),
-                              ),
-                              ConfirmButton(
-                                label: UserProfileStrings.deleteAccountConfirm,
-                                color: ColorConstants.dangerRed,
-                                onPressed: () => Navigator.of(ctx).pop(true),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      if (confirmed == true && mounted) {
-                        context
-                            .read<AuthenticationBloc>()
-                            .add(AuthDeleteMyUserRequested());
-                      }
-                    },
-                    icon: const Icon(Icons.delete_outline,
-                        size: 16, color: Colors.red),
-                    label: const Text(
-                      UserProfileStrings.deleteMyAccount,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
         );
       },
     );

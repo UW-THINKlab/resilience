@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
@@ -189,5 +191,28 @@ class UserService {
         .eq(Blocks.c_blockee, user2Id)
         .withConverter(Blocks.converter);
     return blocks.isNotEmpty;
+  }
+
+  Stream<List<People>> blockedUsersStream(String userId) {
+    return supabase.blocks
+        .stream(primaryKey: [Blocks.c_blocker, Blocks.c_blockee])
+        .eq(Blocks.c_blocker, userId)
+        .order(Blocks.c_createdAt)
+        .map(Blocks.converter)
+        .asyncMap((List<Blocks> blocks) async {
+          List<People> res = [];
+          for (Blocks b in blocks) {
+            res.add(await personByProfileId(b.blockee));
+          }
+          return res;
+        });
+  }
+
+  Future<People> personByProfileId(String profileId) {
+    return supabase.people
+        .select()
+        .eq(People.c_userProfileId, profileId)
+        .single()
+        .withConverter(People.converterSingle);
   }
 }
