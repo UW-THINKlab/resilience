@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
@@ -136,6 +137,7 @@ class UserService {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     final payload = <String, dynamic>{};
 
@@ -145,6 +147,9 @@ class UserService {
       payload['accessibility_needs'] = accessibilityNeeds;
     }
     if (notes != null) payload['notes'] = notes;
+    for (Person p in membersToRemove ?? []) {
+      await removePersonFromHousehold(personId: p.id, householdId: id);
+    }
 
     await supabase.from('households').update(payload).eq('id', id);
   }
@@ -159,6 +164,16 @@ class UserService {
       'people_id': personId,
       'household_id': householdId,
     });
+  }
+
+  Future<void> removePersonFromHousehold({
+    required String personId,
+    required String householdId,
+  }) async {
+    await supabase.people_groups
+        .delete()
+        .eq(PeopleGroups.c_peopleId, personId)
+        .eq(PeopleGroups.c_householdId, householdId);
   }
 
   Future<void> blockPerson({

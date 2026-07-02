@@ -40,7 +40,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> fetchProfile() async {
     try {
       /// Get the user profile by user id
-      final Person? userProfile = await _userRepository.getPersonProfileByUserId(
+      final Person? userProfile =
+          await _userRepository.getPersonProfileByUserId(
         userId: authUser.uuid,
       );
       profileChanged(userProfile);
@@ -53,10 +54,12 @@ class ProfileCubit extends Cubit<ProfileState> {
         userProfile.id,
       );
       if (household != null) {
-        final inviteCode = await _authRepository.getSignUpCodeForHousehold(household.id);
+        final inviteCode =
+            await _authRepository.getSignUpCodeForHousehold(household.id);
 
         /// Get the household members of the household
-        final HouseHoldMembers? houseHoldMembers = await _userRepository.getHouseholdMembersByHouseholdId(household.id);
+        final HouseHoldMembers? houseHoldMembers = await _userRepository
+            .getHouseholdMembersByHouseholdId(household.id);
 
         if (houseHoldMembers != null) {
           household = household.copyWith(houseHoldMembers: houseHoldMembers);
@@ -69,12 +72,13 @@ class ProfileCubit extends Cubit<ProfileState> {
       /// Get the cluster and its captains information
       // ignore: unnecessary_null_comparison
       Cluster? cluster = household == null
-        ? null
-        : await clusterRepo.getCluster(household.clusterId);
+          ? null
+          : await clusterRepo.getCluster(household.clusterId);
 
       if (cluster != null) {
         /// Get the captains of the cluster
-        final Captains? captains = await _userRepository.getCaptainsByClusterId(cluster.id);
+        final Captains? captains =
+            await _userRepository.getCaptainsByClusterId(cluster.id);
 
         if (captains != null) {
           cluster = cluster.copyWith(captains: captains);
@@ -120,6 +124,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     try {
       await _userRepository.updateHousehold(
@@ -128,6 +133,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         pets: pets,
         accessibilityNeeds: accessibilityNeeds,
         notes: notes,
+        membersToRemove: membersToRemove,
       );
       // TODO: Consider optimizing this to perform a partial update from the API result instead of fetching the entire profile
       await fetchProfile();

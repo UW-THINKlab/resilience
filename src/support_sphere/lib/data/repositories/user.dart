@@ -147,6 +147,7 @@ class UserRepository {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     await _userService.updateHousehold(
       id: householdId,
@@ -154,6 +155,7 @@ class UserRepository {
       pets: pets,
       accessibilityNeeds: accessibilityNeeds,
       notes: notes,
+      membersToRemove: membersToRemove,
     );
   }
 
