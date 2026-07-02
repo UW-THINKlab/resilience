@@ -4,6 +4,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -237,5 +238,9 @@ class UserRepository {
           user1Id: user2Id,
           user2Id: user1Id,
         );
+  }
+
+  Stream<List<People>> blockedUsersStream(String userId) {
+    return _userService.blockedUsersStream(userId);
   }
 }
