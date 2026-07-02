@@ -101,8 +101,8 @@ class _ActionButtonsState extends State<ActionButtons> {
                   Visibility(
                     visible: _blockListUnlocked,
                     child: StreamBuilder(
-                      stream: _userService
-                          .blockedUsersStream(state.userProfile!.profile!.id),
+                      stream: _userService.blockedUsersStream(
+                          state.userProfile?.profile?.id ?? ""),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return SizedBox.shrink();
@@ -118,8 +118,9 @@ class _ActionButtonsState extends State<ActionButtons> {
                                 if (await ReauthDialog(context)
                                     .perform(_authService)) {
                                   await _userService.unblockPerson(
-                                    blockerId: state.userProfile!.profile!.id,
-                                    blockeeId: data[indx].userProfileId!,
+                                    blockerId:
+                                        state.userProfile?.profile?.id ?? "",
+                                    blockeeId: data[indx].userProfileId ?? "",
                                   );
                                   setState(() {});
                                 }
