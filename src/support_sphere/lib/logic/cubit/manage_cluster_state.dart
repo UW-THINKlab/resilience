@@ -6,13 +6,12 @@ import 'package:support_sphere/data/models/person.dart' show Person;
 import 'package:support_sphere/data/repositories/cluster.dart' hide log;
 import 'package:support_sphere/data/repositories/user.dart' hide log;
 
-
 class ManageClusterState extends Equatable {
   const ManageClusterState({
     //this.clusterId,
     this.households = const [],
     this.members = const [],
-    this.cluster = null,
+    this.cluster,
   });
 
   //final String? clusterId;
@@ -45,8 +44,7 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
   ManageClusterCubit(String? clusterId) : super(ManageClusterState()) {
     if (clusterId != null && clusterId != "") {
       fetchClusterId(clusterId);
-    }
-    else {
+    } else {
       fetchMyCluster();
     }
   }
@@ -58,7 +56,8 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
     emit(state.copyWith(households: households));
   }
 
-  void allChanged(Cluster cluster, List<Household> households, List<Person> members) {
+  void allChanged(
+      Cluster cluster, List<Household> households, List<Person> members) {
     emit(state.copyWith(
       cluster: cluster,
       households: households,
@@ -94,7 +93,8 @@ class ManageClusterCubit extends Cubit<ManageClusterState> {
   }
 
   void fetchHouseholds() async {
-    List<Household> households = await _clusterRepo.getHouseholds(state.cluster!.id);
+    List<Household> households =
+        await _clusterRepo.getHouseholds(state.cluster!.id);
     householdsChanged(households);
   }
 
