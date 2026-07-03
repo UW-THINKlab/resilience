@@ -141,4 +141,24 @@ class ProfileCubit extends Cubit<ProfileState> {
       // TODO: Handle error
     }
   }
+
+  Future<void> addPeopleToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    await _userRepository.addToHousehold(peopleToAdd, householdId);
+    await fetchProfile();
+  }
+
+  Future<void> newPersonInHousehold(
+      {required String householdId,
+      required familyName,
+      required givenName}) async {
+    await _userRepository.createPerson(
+      householdId: householdId,
+      familyName: familyName,
+      givenName: givenName,
+    );
+    await fetchProfile();
+  }
 }

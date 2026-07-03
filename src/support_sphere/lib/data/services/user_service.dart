@@ -92,7 +92,7 @@ class UserService {
 
   /// Creates a person with the given user id, given name, and family name.
   Future<void> createPerson({
-    required String userId,
+    String? userId,
     required String givenName,
     required String familyName,
     required String householdId,
@@ -229,5 +229,14 @@ class UserService {
         .eq(People.c_userProfileId, profileId)
         .single()
         .withConverter(People.converterSingle);
+  }
+
+  Future<void> addToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    for (final p in peopleToAdd) {
+      await linkPersonToHousehold(personId: p.id, householdId: householdId);
+    }
   }
 }

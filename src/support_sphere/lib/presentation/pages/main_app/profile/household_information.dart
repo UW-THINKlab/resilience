@@ -8,6 +8,7 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
 import 'package:support_sphere/presentation/components/people_select_list.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/add_house_hold_members_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/info_row.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/person_chips_row.dart';
 
@@ -50,7 +51,6 @@ class HouseholdInformation extends StatelessWidget {
                         labelText: UserProfileStrings.address),
                     initialValue: address,
                   ),
-                  //const SizedBox(height: 4),
                   FormBuilderTextField(
                     name: 'pets',
                     decoration: const InputDecoration(
@@ -190,6 +190,10 @@ class HouseholdInformation extends StatelessWidget {
               people: householdMembers,
               label: UserProfileStrings.householdMembers,
               icon: Icons.people_outline,
+            ),
+            AddHouseHoldMembersButton(
+              currentHouseholdMembers: householdMembers,
+              householdId: household?.id ?? '',
             ),
             InfoRow(
               icon: Icons.location_searching_outlined,

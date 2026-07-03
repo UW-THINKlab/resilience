@@ -129,6 +129,18 @@ class UserRepository {
         email, data["household_id"], data["code"]);
   }
 
+  Future<void> createPerson({
+    required String householdId,
+    required String familyName,
+    required String givenName,
+  }) async {
+    await _userService.createPerson(
+      givenName: givenName,
+      familyName: familyName,
+      householdId: householdId,
+    );
+  }
+
   Future<void> updateUserName({
     required String personId,
     String? givenName,
@@ -244,5 +256,12 @@ class UserRepository {
 
   Stream<List<People>> blockedUsersStream(String userId) {
     return _userService.blockedUsersStream(userId);
+  }
+
+  Future<void> addToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    return _userService.addToHousehold(peopleToAdd, householdId);
   }
 }
