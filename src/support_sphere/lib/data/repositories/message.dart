@@ -60,8 +60,8 @@ class MessagesRepository {
     required String fromProfileId,
     required String groupId,
     required String text,
+    required MESSAGEURGENCY urgency,
     String? requestId,
-    String urgency = 'normal',
     String messageType = 'text',
     Map<String, dynamic>? metadata,
   }) async {
@@ -71,7 +71,7 @@ class MessagesRepository {
       'from_id': fromProfileId,
       'to_id': groupId,
       'request_id': requestId,
-      'urgency': urgency,
+      'urgency': urgency.name,
       'content': text,
       'sent_on': DateTime.now().toIso8601String(),
       'message_type': messageType,
