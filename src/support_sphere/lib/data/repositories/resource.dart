@@ -201,6 +201,7 @@ class ResourceRepository {
           'distance_meters': candidate.distanceMeters,
           'urgency': resourceRequest.urgency.name,
         },
+        urgency: MESSAGEURGENCY.normal,
       );
 
       remaining -= allocated;

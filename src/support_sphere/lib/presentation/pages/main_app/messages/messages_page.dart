@@ -22,9 +22,6 @@ const preloader =
 
 final log = Logger('MessagesPage');
 
-///TODO- display chat group name at the top of the messages pane
-///TODO- add ability to send "urgent" messages (red highlight, icon) for cluster captains
-
 class MessagesPage extends StatefulWidget {
   final ChatGroup group;
 
@@ -207,8 +204,24 @@ class MessageBar extends StatefulWidget {
   State<MessageBar> createState() => _MessageBarState();
 }
 
+extension on MESSAGEURGENCY {
+  Color get color {
+    switch (this) {
+      case MESSAGEURGENCY.normal:
+        return Colors.blue;
+      case MESSAGEURGENCY.important:
+        return Colors.orange;
+      case MESSAGEURGENCY.urgent:
+        return Colors.purpleAccent;
+      case MESSAGEURGENCY.emergency:
+        return Colors.red;
+    }
+  }
+}
+
 class _MessageBarState extends State<MessageBar> {
   late final TextEditingController _textController;
+  MESSAGEURGENCY urgency = MESSAGEURGENCY.normal;
 
   @override
   void initState() {
@@ -237,15 +250,43 @@ class _MessageBarState extends State<MessageBar> {
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
-                  onFieldSubmitted: (value) =>
-                      _submitMessage(context, widget.groupId),
+                  onFieldSubmitted: (value) => _submitMessage(
+                    context,
+                    widget.groupId,
+                    urgency,
+                  ),
                 ),
               ),
               ConfirmButton(
                 label: 'Send',
                 icon: const Icon(Icons.chat),
-                onPressed: () => _submitMessage(context, widget.groupId),
+                onPressed: () => _submitMessage(
+                  context,
+                  widget.groupId,
+                  urgency,
+                ),
               ),
+              PopupMenuButton<MESSAGEURGENCY>(
+                initialValue: urgency,
+                onSelected: (v) => setState(() {
+                  urgency = v;
+                }),
+                itemBuilder: (ctx) => MESSAGEURGENCY.values
+                    .map(
+                      (v) => PopupMenuItem(
+                        value: v,
+                        child: Text(
+                          v.name,
+                          style: TextStyle(color: v.color),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                child: Container(
+                  color: urgency.color,
+                  child: Icon(Icons.alarm),
+                ),
+              )
             ],
           ),
         ),
@@ -259,7 +300,11 @@ class _MessageBarState extends State<MessageBar> {
     super.dispose();
   }
 
-  void _submitMessage(BuildContext context, String toId) async {
+  void _submitMessage(
+    BuildContext context,
+    String toId,
+    MESSAGEURGENCY urgency,
+  ) async {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
     log.fine('✅ Group ID: ${widget.groupId}');
@@ -279,6 +324,7 @@ class _MessageBarState extends State<MessageBar> {
         fromProfileId: myUserId,
         groupId: widget.groupId,
         text: text,
+        urgency: urgency,
       );
       log.fine('Message sent: $text');
     } on Exception catch (error) {
@@ -321,9 +367,7 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: amSender
-                ? urgencyColors["default"]
-                : urgencyColors[message.urgency],
+            color: amSender ? Colors.grey : message.urgency.color,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(message.content, style: TextStyle(color: Colors.white)),
@@ -344,12 +388,4 @@ class _MessageBubble extends StatelessWidget {
       ),
     );
   }
-
-  static const urgencyColors = {
-    MESSAGEURGENCY.emergency: Colors.red,
-    MESSAGEURGENCY.urgent: Colors.purpleAccent,
-    MESSAGEURGENCY.important: Colors.orange,
-    MESSAGEURGENCY.normal: Colors.blue,
-    "default": Colors.grey,
-  };
 }
