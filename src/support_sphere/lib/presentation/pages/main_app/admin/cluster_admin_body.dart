@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:support_sphere/constants/environment.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/households.dart';
-import 'package:support_sphere/data/repositories/user.dart' show UserRepository;
+import 'package:support_sphere/data/repositories/user.dart' show UserRepository, log;
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;

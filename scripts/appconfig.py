@@ -61,14 +61,12 @@ def main() -> int:
 
     if args.dart:
       output = emit_dart_code(config)
-      print(f"type:{type(output)}, value:{output}")
     else:
       output = json.dumps(config, indent=4)
-      print(f"type:{type(output)}, value:{output}")
 
     if args.output:
-      #with open(args.output, 'w') as output:
-      #  f.write(str(output))
+      with open(args.output, 'w') as outfile:
+        outfile.write(output)
       print(f"Generated dart output to {args.output}")
     else:
       print(output)
