@@ -20,8 +20,8 @@ cat <<EOF > neighborhood.json
 }
 EOF
 
-pixi run -r supabase initialize
-pixi run -r frontend run
+pixi run -e supabase initialize neighborhood.json
+pixi run -e frontend run
 ```
 
 ## 0. Preconditions
@@ -41,7 +41,7 @@ pixi run -e supabase status
 ```
 
 ## 2. Configure Neighborhood
-Create a JSON file for your neighborhood. "Westport" will be used in this example, and `westpost.json` contains:
+Create a JSON file for your neighborhood. "Westport" will be used in this example, and `westport.json` contains:
 ```json
 {
     "neighborhood": "Westport",
@@ -85,7 +85,7 @@ PUBLISHABLE_KEY="sb_publishable_fDFGERFYEHdbfBEbefdFdsBD_3BJgxAaH"
 
 ### 3. Initialize Database
 ```
-pixi run -r supabase initialize
+pixi run -e supabase initialize westport.json
 ```
 This will:
 - Generate offline map tiles for the configured area.
@@ -103,7 +103,7 @@ Running the `initialize` step will create the resources needed to compile and de
 
 To test locally:
 ```
-pixi run -r frontend run
+pixi run -e frontend run
 ```
 
 #### 4.1 Web

@@ -346,8 +346,8 @@ depends-on = ["install"]
 cmd = "scripts/db-load.sh"
 depends-on = ["reset"]
 
-[feature.supabase.tasks.init]
-cmd = "scripts/db-init.sh"
+[feature.supabase.tasks.initialize]
+cmd = "python scripts/initialize-db.py"
 
 [feature.supabase.tasks.config]
 cmd = "python scripts/appconfig.py --dart -o src/support_sphere/lib/constants/appconfig.dart"
