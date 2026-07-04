@@ -349,8 +349,8 @@ depends-on = ["reset"]
 [feature.supabase.tasks.init]
 cmd = "scripts/db-init.sh"
 
-[feature.supabase.tasks.appconfig]
-cmd = "python scripts/appconfig.py"
+[feature.supabase.tasks.config]
+cmd = "python scripts/appconfig.py --dart -o src/support_sphere/lib/constants/appconfig.dart"
 
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
