@@ -1,6 +1,0 @@
-{
-  "neighborhood": "Laurelhurst",
-  "location": [47.658, -122.277],
-  "supabaseUrl": "http://laurelhurst.supportsphere.acmerocket.com",
-  "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzI2NTU2NDAwLAogICJleHAiOiAxODg0MzIyODAwCn0.mAQE_wTdAytVXk6DKkm2tPFXRGmNrMw72sldwdXZGEo"
-}
