@@ -85,7 +85,7 @@ class ChatRepository {
      * This is only triggered when a name is empty, chats without name are
      *   identified by their group members.
      */
-    if (cleanName.isEmpty) {
+    if (cleanName.isEmpty && type == GROUP_CHAT_TYPE.chat) {
       final existing = (await getUserChatGroups(createdByProfileId)).where((g) {
         if (g.members.length != allProfileIds.length) return false;
         for (final m in g.members) {
