@@ -197,4 +197,30 @@ class ResourceService {
 
     return Map<String, dynamic>.from(row as Map);
   }
+
+  Future<List<Map<String, dynamic>>> getPendingReservationForChat({
+    required String requesterProfileId,
+    required String supplierProfileId,
+  }) async {
+    return await _supabaseClient
+        .from('resource_reservations')
+        .select('*, user_resources!inner(user_id)')
+        .eq('requester_profile_id', requesterProfileId)
+        .eq('user_resources.user_id', supplierProfileId)
+        .order('created_at', ascending: false)
+        .limit(1);
+  }
+
+  Future<void> updateReservation({
+    required String reservationId,
+    required String status,
+    int? quantity,
+  }) async {
+    final updates = <String, dynamic>{'status': status};
+    if (quantity != null) updates['quantity'] = quantity;
+    await _supabaseClient
+        .from('resource_reservations')
+        .update(updates)
+        .eq('id', reservationId);
+  }
 }

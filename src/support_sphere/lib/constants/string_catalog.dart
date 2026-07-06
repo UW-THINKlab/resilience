@@ -240,4 +240,19 @@ class MessagesStrings {
   static const String blockedCommunication = "Chat disabled with this user.";
   static const String block = 'Block User';
   static const String unblock = 'Unblock User';
+  static const String acceptRequest = 'Accept';
+  static const String rejectRequest = 'Reject';
+  static const String tentativeAccept = 'Tentative';
+  static const String statusPending = 'Pending';
+  static const String statusTentative = 'Tentative';
+  static const String statusAccepted = 'Accepted';
+  static const String statusRejected = 'Rejected';
+  static const String statusReleased = 'Released';
+  static const String statusExpired = 'Expired';
+  static String partialAccept(int accepted, int total) =>
+      'Accepted $accepted of $total requested item(s). '
+      'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String partialTentativeAccept(int accepted, int total) =>
+      'Tentatively accepting $accepted of $total requested item(s). '
+      'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
 }

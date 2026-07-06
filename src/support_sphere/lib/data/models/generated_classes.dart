@@ -95,7 +95,14 @@ enum SHARING_SCOPES { cluster, neighborhood, everyone }
 
 enum PRIORITY { low, medium, high }
 
-enum RESERVATION_STATUS { pending, accepted, rejected, released, expired }
+enum RESERVATION_STATUS {
+  pending,
+  accepted,
+  rejected,
+  released,
+  expired,
+  tentative
+}
 
 enum MESSAGEURGENCY { normal, important, urgent, emergency }
 

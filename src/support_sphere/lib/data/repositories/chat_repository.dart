@@ -209,6 +209,13 @@ class ChatRepository {
     return list;
   }
 
+  Future<void> updateGroupName({
+    required String groupId,
+    required String name,
+  }) async {
+    await supabase.from('groups').update({'name': name}).eq('id', groupId);
+  }
+
   Future<void> deleteGroup(String id) async {
     await supabase.from('messages').delete().eq('to_id', id);
     await supabase.from('groups').delete().eq('id', id);
