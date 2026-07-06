@@ -199,15 +199,23 @@ class ResourceService {
   }
 
   Future<List<Map<String, dynamic>>> getPendingReservationForChat({
-    required String requesterProfileId,
-    required String supplierProfileId,
+    required String groupId,
   }) async {
+    final message = await _supabaseClient
+        .from('messages')
+        .select('request_id')
+        .eq('to_id', groupId)
+        .not('request_id', 'is', null)
+        .order('sent_on', ascending: true)
+        .limit(1)
+        .maybeSingle();
+    final requestId = message?['request_id'] as String?;
+    if (requestId == null) return [];
+
     return await _supabaseClient
         .from('resource_reservations')
-        .select('*, user_resources!inner(user_id)')
-        .eq('requester_profile_id', requesterProfileId)
-        .eq('user_resources.user_id', supplierProfileId)
-        .order('created_at', ascending: false)
+        .select()
+        .eq('request_id', requestId)
         .limit(1);
   }
 

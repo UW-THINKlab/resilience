@@ -99,10 +99,8 @@ class MessagesState extends State<MessagesPage> {
 
   Future<void> _loadPendingReservation() async {
     if (group.members.length != 2 || group.type == GROUP_CHAT_TYPE.chat) return;
-    final otherUserId = getOtherUserId();
     final reservation = await resourceRepo.getPendingReservationForChat(
-      requesterProfileId: otherUserId,
-      supplierProfileId: myUserId,
+      groupId: group.id,
     );
     if (!mounted) return;
     setState(() {

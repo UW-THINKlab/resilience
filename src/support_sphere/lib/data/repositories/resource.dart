@@ -106,12 +106,10 @@ class ResourceRepository {
   }
 
   Future<ResourceReservations?> getPendingReservationForChat({
-    required String requesterProfileId,
-    required String supplierProfileId,
+    required String groupId,
   }) async {
     final results = await _resourceService.getPendingReservationForChat(
-      requesterProfileId: requesterProfileId,
-      supplierProfileId: supplierProfileId,
+      groupId: groupId,
     );
     if (results.isEmpty) return null;
     return ResourceReservations.fromJson(results.first);
