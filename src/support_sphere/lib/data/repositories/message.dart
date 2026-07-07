@@ -56,6 +56,18 @@ class MessagesRepository {
     return response?['content'] ?? ' ';
   }
 
+  Future<DateTime?> lastMessageSentAt(String groupId) async {
+    final response = await supabase
+        .from('messages')
+        .select('sent_on')
+        .eq('to_id', groupId)
+        .order('sent_on', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    if (response == null) return null;
+    return DateTime.parse(response['sent_on'] as String);
+  }
+
   Future<void> sendMessage({
     required String fromProfileId,
     required String groupId,
