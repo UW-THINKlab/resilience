@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-//import 'package:searchfield/searchfield.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/resource.dart';
-import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
@@ -22,8 +20,6 @@ class AddResourceFormData extends Equatable {
     this.totalNumberNeeded,
     this.numberAvailable,
     this.description,
-    // TODO: Implement Subtype
-    // this.subtype,
     this.notes,
   });
 
@@ -31,7 +27,6 @@ class AddResourceFormData extends Equatable {
   final int? totalNumberNeeded;
   final int? numberAvailable;
   final String? description;
-  // final String? subtype;
   final String? notes;
   final ResourceTypes? resourceType;
 
@@ -41,9 +36,8 @@ class AddResourceFormData extends Equatable {
         totalNumberNeeded,
         numberAvailable,
         description,
-        // subtype,
         notes,
-        resourceType
+        resourceType,
       ];
 
   AddResourceFormData copyWith({
@@ -51,54 +45,71 @@ class AddResourceFormData extends Equatable {
     int? totalNumberNeeded,
     int? numberAvailable,
     String? description,
-    // String? subtype,
     String? notes,
     ResourceTypes? resourceType,
+    ResourcesCv? resourceCv,
   }) {
     return AddResourceFormData(
       nameOfResource: nameOfResource ?? this.nameOfResource,
       totalNumberNeeded: totalNumberNeeded ?? this.totalNumberNeeded,
       numberAvailable: numberAvailable ?? this.numberAvailable,
       description: description ?? this.description,
-      // subtype: subtype ?? this.subtype,
       notes: notes ?? this.notes,
       resourceType: resourceType ?? this.resourceType,
     );
   }
 
   Resource toResource() {
-    return Resource(
+    if (nameOfResource == null) throw 'resoucrce name is missing';
+    if (resourceType == null) throw 'resoucrce type is missing';
+    final resourceCv = ResourcesCv(
       id: const UuidV4().generate(),
+      name: nameOfResource!,
+      unit: UNIT.Unknown,
+    );
+    return Resource(
+      id: resourceCv.id,
       name: nameOfResource!,
       description: description,
       notes: notes,
       qtyNeeded: totalNumberNeeded!,
       qtyAvailable: numberAvailable!,
       resourceType: resourceType!,
+      resourceCv: resourceCv,
     );
   }
 }
 
 class AddResourceForm extends StatefulWidget {
-  const AddResourceForm(
-      {super.key, this.resourceTypes, this.resources, this.onCancel});
+  const AddResourceForm({
+    super.key,
+    required this.resourceTypes,
+    this.resources,
+    this.onCancel,
+  });
 
-  final List<ResourceTypes>? resourceTypes;
+  final List<ResourceTypes> resourceTypes;
   final List<Resource>? resources;
   final VoidCallback? onCancel;
 
   @override
-  State<AddResourceForm> createState() => _AddResourceFormState();
+  State<AddResourceForm> createState() => _AddResourceFormState(
+        resourceTypes: resourceTypes,
+      );
 }
 
 class _AddResourceFormState extends State<AddResourceForm> {
+  final List<ResourceTypes> resourceTypes;
   final _formKey = GlobalKey<FormState>();
-  AddResourceFormData _formData = AddResourceFormData();
+  AddResourceFormData _formData;
+
+  _AddResourceFormState({required this.resourceTypes})
+      : _formData = AddResourceFormData(
+          resourceType: resourceTypes.first,
+        );
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the form data
-    _formData = _formData.copyWith(resourceType: widget.resourceTypes!.first);
     return Form(
       key: _formKey,
       child: Column(
@@ -110,76 +121,34 @@ class _AddResourceFormState extends State<AddResourceForm> {
           )),
           // Name of Resource and Resource Type
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // FIXME broken search form
-              // Expanded(
-              //   child: SearchField<Resource>(
-              //     key: const Key('AddResourceForm_nameOfResource_searchField'),
-              //     onSaved: (value) {
-              //       _formData = _formData.copyWith(nameOfResource: value);
-              //     },
-              //     autovalidateMode: AutovalidateMode.always,
-              //     searchInputDecoration: SearchInputDecoration(
-              //         labelText: AddResourceFormStrings.nameOfResource,
-              //         helperText: '',
-              //         border: border(context),
-              //         enabledBorder: border(context),
-              //         focusedBorder: focusBorder(context)),
-              //     validator: FormBuilderValidators.compose([
-              //       FormBuilderValidators.required(),
-              //       FormBuilderValidators.singleLine(),
-              //       (value) {
-              //         if (value != null) {
-              //           bool resourceExists = widget.resources!.any((element) =>
-              //               element.name.toLowerCase().trim() ==
-              //               value.toLowerCase().trim());
-              //           return resourceExists
-              //               ? 'Resource already exists'
-              //               : null;
-              //         }
-
-              //         return null;
-              //       }
-              //     ]),
-              //     suggestions: widget.resources!
-              //         .map(
-              //           (e) => SearchFieldListItem<Resource>(
-              //             e.name,
-              //             item: e,
-              //             // Use child to show Custom Widgets in the suggestions
-              //             // defaults to Text widget
-              //             child: Padding(
-              //               padding: const EdgeInsets.all(8.0),
-              //               child: Row(
-              //                 children: [
-              //                   FaIcon(e.resourceType.icon),
-              //                   const SizedBox(width: 10),
-              //                   Text(e.name),
-              //                 ],
-              //               ),
-              //             ),
-              //           ),
-              //         )
-              //         .toList(),
-              //   ),
-              // ),
               Expanded(
                 child: ResourceTypeFilter(
                     key: const Key('AddResourceForm_resourceTypeFilter'),
-                    resourceTypes: widget.resourceTypes!,
+                    resourceTypes: widget.resourceTypes,
                     onSelected: (value) {
                       _formData = _formData.copyWith(
-                          resourceType: widget.resourceTypes!
+                          resourceType: widget.resourceTypes
                               .firstWhere((element) => element.name == value));
                     },
                     includeAll: false),
               ),
+              Expanded(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    label: Text('name'),
+                    hint: Text('name'),
+                  ),
+                  onSaved: (newValue) {
+                    _formData = _formData.copyWith(nameOfResource: newValue);
+                  },
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
-          // Total Number Needed and Number Available
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: TextFormField(
@@ -223,7 +192,6 @@ class _AddResourceFormState extends State<AddResourceForm> {
             ),
           ]),
           const SizedBox(height: 10),
-          // Resource Description (FOR EVERYONE)
           TextFormField(
             key: const Key('AddResourceForm_description_textFormField'),
             onSaved: (value) =>
@@ -237,21 +205,7 @@ class _AddResourceFormState extends State<AddResourceForm> {
                 focusedBorder: focusBorder(context)),
           ),
           const SizedBox(height: 10),
-          // Resource Subtype
-          // TODO: Update to become tags for subtypes
-          // TextFormField(
-          //   key: const Key('AddResourceForm_subtype_textFormField'),
-          //   onSaved: (value) => _formData = _formData.copyWith(subtype: value),
-          //   autovalidateMode: AutovalidateMode.onUserInteraction,
-          //   decoration: InputDecoration(
-          //       labelText: AddResourceFormStrings.subtype,
-          //       helperText: '',
-          //       border: border(context),
-          //       enabledBorder: border(context),
-          //       focusedBorder: focusBorder(context)),
-          // ),
           const SizedBox(height: 10),
-          // Resource Notes (ONLY FOR Neighborhood Manager)
           TextFormField(
             key: const Key('AddResourceForm_notes_textFormField'),
             onSaved: (value) => _formData = _formData.copyWith(notes: value),

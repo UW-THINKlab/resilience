@@ -4,13 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
-import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/location_cubit.dart';
@@ -21,8 +21,6 @@ class RequestResourceFormData extends Equatable {
   const RequestResourceFormData({
     this.resourceId,
     this.quantity,
-    // TODO: Implement Subtype
-    // this.subtype,
     this.notes,
     this.requestScope,
     this.currentLatitude,
@@ -32,7 +30,6 @@ class RequestResourceFormData extends Equatable {
   });
   final String? resourceId;
   final int? quantity;
-  // final String? subtype;
   final String? notes;
   final String? requestScope;
   final double? currentLatitude;
@@ -44,7 +41,6 @@ class RequestResourceFormData extends Equatable {
   List<Object?> get props => [
         resourceId,
         quantity,
-        // subtype,
         notes,
         requestScope,
         currentLatitude,
@@ -56,7 +52,6 @@ class RequestResourceFormData extends Equatable {
   RequestResourceFormData copyWith({
     String? resourceId,
     int? quantity,
-    // String? subtype,
     String? notes,
     String? requestScope,
     double? currentLatitude,
@@ -67,7 +62,6 @@ class RequestResourceFormData extends Equatable {
     return RequestResourceFormData(
         resourceId: resourceId ?? this.resourceId,
         quantity: quantity ?? this.quantity,
-        // subtype: subtype ?? this.subtype,
         notes: notes ?? this.notes,
         requestScope: requestScope ?? this.requestScope,
         currentLatitude: currentLatitude ?? this.currentLatitude,
@@ -82,7 +76,6 @@ class RequestResourceFormData extends Equatable {
       'id': const UuidV4().generate(),
       'resource_id': resourceId,
       'quantity': quantity,
-      // 'subtype': subtype,
       'notes': notes,
       'request_scope': requestScope,
       'current_latitude': currentLatitude,
@@ -90,33 +83,47 @@ class RequestResourceFormData extends Equatable {
       'created_at': now,
       'resource_name': resourceName,
       'resource_type_name': resourceTypeName,
-      // 'updated_at': now,
     };
   }
 }
 
 class RequestResourceForm extends StatefulWidget {
-  const RequestResourceForm({super.key, required this.resource});
+  final ResourcesCv resourceCv;
+  final ResourceTypes resourceType;
 
-  final Resource resource;
+  const RequestResourceForm({
+    super.key,
+    required this.resourceCv,
+    required this.resourceType,
+  });
 
   @override
-  State<RequestResourceForm> createState() => _RequestResourceFormState();
+  State<RequestResourceForm> createState() => _RequestResourceFormState(
+        resourceCv: resourceCv,
+        resourceType: resourceType,
+      );
 }
 
 class _RequestResourceFormState extends State<RequestResourceForm> {
   final _formKey = GlobalKey<FormState>();
+  final ResourcesCv resourceCv;
+  final ResourceTypes resourceType;
   RequestResourceFormData _formData = RequestResourceFormData();
 
-  Future<void> _handleSubmit(Resource resource) async {
+  _RequestResourceFormState({
+    required this.resourceCv,
+    required this.resourceType,
+  });
+
+  Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
     _formKey.currentState!.save();
 
     _formData = _formData.copyWith(
-      resourceId: resource.id,
-      resourceName: resource.name,
-      resourceTypeName: resource.resourceType.name,
+      resourceId: resourceCv.id,
+      resourceName: resourceCv.name,
+      resourceTypeName: resourceType.name,
     );
 
     if (_formData.requestScope == 'nearby') {
@@ -190,7 +197,6 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
 
   @override
   Widget build(BuildContext context) {
-    final resource = widget.resource;
     return BlocProvider.value(
       value: BlocProvider.of<ResourceCubit>(context),
       child: SingleChildScrollView(
@@ -198,20 +204,20 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
           key: _formKey,
           child: Column(
             children: [
-              Text(RequestResourceFormStrings.reqTitle(resource.name),
+              Text(RequestResourceFormStrings.reqTitle(resourceCv.name),
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FaIcon(resource.resourceType.icon, size: 15),
+                  FaIcon(resourceType.icon, size: 15),
                   const SizedBox(width: 4),
-                  Text(resource.resourceType.name),
+                  Text(resourceType.name),
                 ],
               ),
               const SizedBox(height: 8),
-              Text(resource.description ?? ''),
+              Text(resourceCv.description ?? ''),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('RequestResourceForm_quantity_textFormField'),
@@ -286,8 +292,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                       }),
                   const SizedBox(width: 4),
                   ConfirmButton(
-                      label: 'Request',
-                      onPressed: () => _handleSubmit(resource)),
+                      label: 'Request', onPressed: () => _handleSubmit()),
                 ],
               ),
             ],

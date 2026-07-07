@@ -107,6 +107,8 @@ enum APP_ROLES { user, subcom_agent, com_admin, admin }
 
 enum REQUEST_SCOPE { nearby, neighbors }
 
+enum UNIT { Gallons, People, Unknown }
+
 // Utils
 class OperationalEvents implements SupadartClass<OperationalEvents> {
   final String id;
@@ -2129,17 +2131,20 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
   final String id;
   final String name;
   final String? description;
+  final UNIT unit;
 
   const ResourcesCv({
     required this.id,
     required this.name,
     this.description,
+    required this.unit,
   });
 
   static String get table_name => 'resources_cv';
   static String get c_id => 'id';
   static String get c_name => 'name';
   static String get c_description => 'description';
+  static String get c_unit => 'unit';
 
   static List<ResourcesCv> converter(List<Map<String, dynamic>> data) {
     return data.map(ResourcesCv.fromJson).toList();
@@ -2153,11 +2158,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (unit != null) 'unit': unit.toString().split('.').last,
     };
   }
 
@@ -2165,11 +2172,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     required String name,
     String? description,
+    UNIT? unit,
   }) {
     return _generateMap(
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2177,11 +2186,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return _generateMap(
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2191,6 +2202,9 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
       description:
           jsonn['description'] != null ? jsonn['description'].toString() : null,
+      unit: jsonn['unit'] != null
+          ? UNIT.values.byName(jsonn['unit'].toString())
+          : UNIT.values.first,
     );
   }
 
@@ -2198,11 +2212,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (unit != null) 'unit': unit,
     };
   }
 
@@ -2211,6 +2227,7 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2219,12 +2236,14 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     Object? id = _unset,
     Object? name = _unset,
     Object? description = _unset,
+    Object? unit = _unset,
   }) {
     return ResourcesCv(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String,
       description:
           description == _unset ? this.description : description as String?,
+      unit: unit == _unset ? this.unit : unit as UNIT,
     );
   }
 }
