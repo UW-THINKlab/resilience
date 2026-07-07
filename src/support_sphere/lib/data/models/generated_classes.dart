@@ -1580,6 +1580,7 @@ class Groups implements SupadartClass<Groups> {
   final String name;
   final String? description;
   final GROUP_CHAT_TYPE type;
+  final DateTime createdAt;
 
   const Groups({
     required this.id,
@@ -1587,6 +1588,7 @@ class Groups implements SupadartClass<Groups> {
     required this.name,
     this.description,
     required this.type,
+    required this.createdAt,
   });
 
   static String get table_name => 'groups';
@@ -1595,6 +1597,7 @@ class Groups implements SupadartClass<Groups> {
   static String get c_name => 'name';
   static String get c_description => 'description';
   static String get c_type => 'type';
+  static String get c_createdAt => 'created_at';
 
   static List<Groups> converter(List<Map<String, dynamic>> data) {
     return data.map(Groups.fromJson).toList();
@@ -1610,6 +1613,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return {
       if (id != null) 'id': id,
@@ -1617,6 +1621,7 @@ class Groups implements SupadartClass<Groups> {
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (type != null) 'type': type.toString().split('.').last,
+      if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
     };
   }
 
@@ -1626,6 +1631,7 @@ class Groups implements SupadartClass<Groups> {
     required String name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return _generateMap(
       id: id,
@@ -1633,6 +1639,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1642,6 +1649,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return _generateMap(
       id: id,
@@ -1649,6 +1657,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1664,6 +1673,9 @@ class Groups implements SupadartClass<Groups> {
       type: jsonn['type'] != null
           ? GROUP_CHAT_TYPE.values.byName(jsonn['type'].toString())
           : GROUP_CHAT_TYPE.values.first,
+      createdAt: jsonn['created_at'] != null
+          ? DateTime.parse(jsonn['created_at'].toString())
+          : DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
@@ -1673,6 +1685,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return {
       if (id != null) 'id': id,
@@ -1680,6 +1693,7 @@ class Groups implements SupadartClass<Groups> {
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (type != null) 'type': type,
+      if (createdAt != null) 'created_at': createdAt,
     };
   }
 
@@ -1690,6 +1704,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1700,6 +1715,7 @@ class Groups implements SupadartClass<Groups> {
     Object? name = _unset,
     Object? description = _unset,
     Object? type = _unset,
+    Object? createdAt = _unset,
   }) {
     return Groups(
       id: id == _unset ? this.id : id as String,
@@ -1709,6 +1725,7 @@ class Groups implements SupadartClass<Groups> {
       description:
           description == _unset ? this.description : description as String?,
       type: type == _unset ? this.type : type as GROUP_CHAT_TYPE,
+      createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
   }
 }
@@ -2136,17 +2153,20 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
   final String id;
   final String name;
   final String? description;
+  final UNIT unit;
 
   const ResourcesCv({
     required this.id,
     required this.name,
     this.description,
+    required this.unit,
   });
 
   static String get table_name => 'resources_cv';
   static String get c_id => 'id';
   static String get c_name => 'name';
   static String get c_description => 'description';
+  static String get c_unit => 'unit';
 
   static List<ResourcesCv> converter(List<Map<String, dynamic>> data) {
     return data.map(ResourcesCv.fromJson).toList();
@@ -2160,11 +2180,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (unit != null) 'unit': unit.toString().split('.').last,
     };
   }
 
@@ -2172,11 +2194,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     required String name,
     String? description,
+    UNIT? unit,
   }) {
     return _generateMap(
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2184,11 +2208,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return _generateMap(
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2198,6 +2224,9 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
       description:
           jsonn['description'] != null ? jsonn['description'].toString() : null,
+      unit: jsonn['unit'] != null
+          ? UNIT.values.byName(jsonn['unit'].toString())
+          : UNIT.values.first,
     );
   }
 
@@ -2205,11 +2234,13 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     String? id,
     String? name,
     String? description,
+    UNIT? unit,
   }) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (unit != null) 'unit': unit,
     };
   }
 
@@ -2218,6 +2249,7 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
       id: id,
       name: name,
       description: description,
+      unit: unit,
     );
   }
 
@@ -2226,12 +2258,14 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     Object? id = _unset,
     Object? name = _unset,
     Object? description = _unset,
+    Object? unit = _unset,
   }) {
     return ResourcesCv(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String,
       description:
           description == _unset ? this.description : description as String?,
+      unit: unit == _unset ? this.unit : unit as UNIT,
     );
   }
 }

@@ -249,10 +249,15 @@ class MessagesStrings {
   static const String statusRejected = 'Rejected';
   static const String statusReleased = 'Released';
   static const String statusExpired = 'Expired';
-  static String partialAccept(int accepted, int total) =>
-      'Accepted $accepted of $total requested item(s). '
-      'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
-  static String partialTentativeAccept(int accepted, int total) =>
-      'Tentatively accepting $accepted of $total requested item(s). '
-      'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String acceptMessage(int accepted, int total) => accepted == total
+      ? 'Accepted all $total requested item(s).'
+      : 'Accepted $accepted of $total requested item(s). '
+          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String tentativeAcceptMessage(int accepted, int total) => accepted ==
+          total
+      ? 'Tentatively accepting all $total requested item(s).'
+      : 'Tentatively accepting $accepted of $total requested item(s). '
+          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String rejectMessage(int total) =>
+      'Rejected the request for $total item(s).';
 }

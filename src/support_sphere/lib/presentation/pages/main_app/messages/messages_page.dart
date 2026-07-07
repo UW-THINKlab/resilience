@@ -209,6 +209,13 @@ class MessagesState extends State<MessagesPage> {
                         groupId: group.id,
                         name: _groupNameWithStatus(RESERVATION_STATUS.rejected),
                       );
+                      await messageRepo.sendMessage(
+                        fromProfileId: myUserId,
+                        groupId: group.id,
+                        text: MessagesStrings.rejectMessage(
+                            _pendingReservation!.quantity),
+                        urgency: MESSAGEURGENCY.normal,
+                      );
                       if (!mounted) return;
                       setState(() {
                         _pendingReservation = _pendingReservation!.copyWith(
@@ -235,15 +242,13 @@ class MessagesState extends State<MessagesPage> {
                           groupId: group.id,
                           name: _groupNameWithStatus(RESERVATION_STATUS.tentative),
                         );
-                        if (_acceptQuantity < originalQty) {
-                          await messageRepo.sendMessage(
-                            fromProfileId: myUserId,
-                            groupId: group.id,
-                            text: MessagesStrings.partialTentativeAccept(
-                                _acceptQuantity, originalQty),
-                            urgency: MESSAGEURGENCY.normal,
-                          );
-                        }
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.tentativeAcceptMessage(
+                              _acceptQuantity, originalQty),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
                         if (!mounted) return;
                         setState(() {
                           _pendingReservation = _pendingReservation!.copyWith(
@@ -271,15 +276,13 @@ class MessagesState extends State<MessagesPage> {
                           groupId: group.id,
                           name: _groupNameWithStatus(RESERVATION_STATUS.accepted),
                         );
-                        if (_acceptQuantity < originalQty) {
-                          await messageRepo.sendMessage(
-                            fromProfileId: myUserId,
-                            groupId: group.id,
-                            text: MessagesStrings.partialAccept(
-                                _acceptQuantity, originalQty),
-                            urgency: MESSAGEURGENCY.normal,
-                          );
-                        }
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.acceptMessage(
+                              _acceptQuantity, originalQty),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
                         if (!mounted) return;
                         setState(() {
                           _pendingReservation = _pendingReservation!.copyWith(
