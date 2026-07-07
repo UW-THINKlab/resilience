@@ -123,6 +123,8 @@ class ResourceRepository {
     log.fine('candidates in repository: $candidates');
 
     for (final candidate in candidates) {
+      if (remaining <= 0) break;
+      if (candidate.availableQuantity <= 0) continue;
       if (await _userRepository.isEitherUserBlocked(
         user1Id: requesterProfileId,
         user2Id: candidate.profileId,
@@ -136,8 +138,6 @@ class ResourceRepository {
       if (!await confirmation(suggestion)) {
         continue;
       }
-      if (remaining <= 0) break;
-      if (candidate.availableQuantity <= 0) continue;
 
       final allocated = candidate.availableQuantity >= remaining
           ? remaining
