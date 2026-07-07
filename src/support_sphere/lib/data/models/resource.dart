@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
-import 'package:support_sphere/data/models/resource_types.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 
 class Resource extends Equatable {
   const Resource({
     required this.id,
     required this.name,
     required this.resourceType,
+    required this.resourceCv,
     this.notes,
     this.description = '',
     this.qtyNeeded = 0,
@@ -25,6 +26,7 @@ class Resource extends Equatable {
   final int qtyAvailable;
   final int userQuantity;
   final ResourceTypes resourceType;
+  final ResourcesCv resourceCv;
 
   @override
   List<Object?> get props => [id, name, description];
@@ -34,18 +36,17 @@ class Resource extends Equatable {
     var resourcesCvJson = json['resources_cv'];
     var userQuantity = 0;
     if (json['user_resources'].length > 0) {
-      userQuantity = json['user_resources'].map((userResource) => userResource['quantity']).reduce((a, b) => a + b);
+      userQuantity = json['user_resources']
+          .map((userResource) => userResource['quantity'])
+          .reduce((a, b) => a + b);
     }
     var neededQuantity = json['qty_needed'] - userQuantity;
     return Resource(
       id: resourcesCvJson['id'],
       name: resourcesCvJson['name'],
       description: resourcesCvJson['description'],
-      resourceType: ResourceTypes(
-        id: resourceTypesJson['id'],
-        name: resourceTypesJson['name'],
-        description: resourceTypesJson['description']
-      ),
+      resourceType: ResourceTypes.fromJson(resourceTypesJson),
+      resourceCv: ResourcesCv.fromJson(resourcesCvJson),
       notes: json['notes'],
       sharingScope: json['sharing_scope'],
       sharingScopeEmergency: json['sharing_scope_emergency'],
@@ -65,15 +66,18 @@ class Resource extends Equatable {
     int? qtyAvailable,
     int? userQuantity,
     ResourceTypes? resourceType,
+    ResourcesCv? resourceCv,
   }) {
     return Resource(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
       resourceType: resourceType ?? this.resourceType,
+      resourceCv: resourceCv ?? this.resourceCv,
       notes: notes ?? this.notes,
       sharingScope: sharingScope ?? this.sharingScope,
-      sharingScopeEmergency: sharingScopeEmergency ?? this.sharingScopeEmergency,
+      sharingScopeEmergency:
+          sharingScopeEmergency ?? this.sharingScopeEmergency,
       userQuantity: userQuantity ?? this.userQuantity,
       qtyNeeded: qtyNeeded ?? this.qtyNeeded,
       qtyAvailable: qtyAvailable ?? this.qtyAvailable,

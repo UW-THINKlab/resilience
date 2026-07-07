@@ -65,17 +65,16 @@ class ResourceRepository {
   }
 
   Future<void> addNewResource(Resource resource) async {
-    // TODO: Add error handling
     await _resourceService.createResourceCV({
-      'id': resource.id,
-      'name': resource.name,
-      'description': resource.description,
+      'id': resource.resourceCv.id,
+      'name': resource.resourceCv.name,
+      'description': resource.resourceCv.description,
     });
     await _resourceService.createResource({
       'notes': resource.notes,
       'qty_needed': resource.qtyNeeded,
       'qty_available': resource.qtyAvailable,
-      'resource_cv_id': resource.id,
+      'resource_cv_id': resource.resourceCv.id,
       'resource_type_id': resource.resourceType.id,
     });
   }
