@@ -104,6 +104,28 @@ class ResourceRepository {
     await _resourceService.markUpToDate(id, updatedAt);
   }
 
+  Future<ResourceReservations?> getPendingReservationForChat({
+    required String groupId,
+  }) async {
+    final results = await _resourceService.getPendingReservationForChat(
+      groupId: groupId,
+    );
+    if (results.isEmpty) return null;
+    return ResourceReservations.fromJson(results.first);
+  }
+
+  Future<void> updateReservation({
+    required String reservationId,
+    required RESERVATION_STATUS status,
+    int? quantity,
+  }) async {
+    await _resourceService.updateReservation(
+      reservationId: reservationId,
+      status: status.name,
+      quantity: quantity,
+    );
+  }
+
   Future<void> submitResourceRequestAndNotify({
     required ResourceRequest resourceRequest,
     required String requesterProfileId,

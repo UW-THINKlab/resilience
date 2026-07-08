@@ -95,7 +95,14 @@ enum SHARING_SCOPES { cluster, neighborhood, everyone }
 
 enum PRIORITY { low, medium, high }
 
-enum RESERVATION_STATUS { pending, accepted, rejected, released, expired }
+enum RESERVATION_STATUS {
+  pending,
+  accepted,
+  rejected,
+  released,
+  expired,
+  tentative
+}
 
 enum MESSAGEURGENCY { normal, important, urgent, emergency }
 
@@ -1575,6 +1582,7 @@ class Groups implements SupadartClass<Groups> {
   final String name;
   final String? description;
   final GROUP_CHAT_TYPE type;
+  final DateTime createdAt;
 
   const Groups({
     required this.id,
@@ -1582,6 +1590,7 @@ class Groups implements SupadartClass<Groups> {
     required this.name,
     this.description,
     required this.type,
+    required this.createdAt,
   });
 
   static String get table_name => 'groups';
@@ -1590,6 +1599,7 @@ class Groups implements SupadartClass<Groups> {
   static String get c_name => 'name';
   static String get c_description => 'description';
   static String get c_type => 'type';
+  static String get c_createdAt => 'created_at';
 
   static List<Groups> converter(List<Map<String, dynamic>> data) {
     return data.map(Groups.fromJson).toList();
@@ -1605,6 +1615,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return {
       if (id != null) 'id': id,
@@ -1612,6 +1623,7 @@ class Groups implements SupadartClass<Groups> {
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (type != null) 'type': type.toString().split('.').last,
+      if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
     };
   }
 
@@ -1621,6 +1633,7 @@ class Groups implements SupadartClass<Groups> {
     required String name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return _generateMap(
       id: id,
@@ -1628,6 +1641,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1637,6 +1651,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return _generateMap(
       id: id,
@@ -1644,6 +1659,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1659,6 +1675,9 @@ class Groups implements SupadartClass<Groups> {
       type: jsonn['type'] != null
           ? GROUP_CHAT_TYPE.values.byName(jsonn['type'].toString())
           : GROUP_CHAT_TYPE.values.first,
+      createdAt: jsonn['created_at'] != null
+          ? DateTime.parse(jsonn['created_at'].toString())
+          : DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
@@ -1668,6 +1687,7 @@ class Groups implements SupadartClass<Groups> {
     String? name,
     String? description,
     GROUP_CHAT_TYPE? type,
+    DateTime? createdAt,
   }) {
     return {
       if (id != null) 'id': id,
@@ -1675,6 +1695,7 @@ class Groups implements SupadartClass<Groups> {
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (type != null) 'type': type,
+      if (createdAt != null) 'created_at': createdAt,
     };
   }
 
@@ -1685,6 +1706,7 @@ class Groups implements SupadartClass<Groups> {
       name: name,
       description: description,
       type: type,
+      createdAt: createdAt,
     );
   }
 
@@ -1695,6 +1717,7 @@ class Groups implements SupadartClass<Groups> {
     Object? name = _unset,
     Object? description = _unset,
     Object? type = _unset,
+    Object? createdAt = _unset,
   }) {
     return Groups(
       id: id == _unset ? this.id : id as String,
@@ -1704,6 +1727,7 @@ class Groups implements SupadartClass<Groups> {
       description:
           description == _unset ? this.description : description as String?,
       type: type == _unset ? this.type : type as GROUP_CHAT_TYPE,
+      createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
   }
 }
