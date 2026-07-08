@@ -22,11 +22,11 @@ class ManageResourceBodyController extends StatefulWidget {
   const ManageResourceBodyController({super.key});
 
   @override
-  _ManageResourceBodyControllerState createState() =>
-      _ManageResourceBodyControllerState();
+  ManageResourceBodyControllerState createState() =>
+      ManageResourceBodyControllerState();
 }
 
-class _ManageResourceBodyControllerState
+class ManageResourceBodyControllerState
     extends State<ManageResourceBodyController> {
   bool _showingAddResource = false;
 
@@ -54,17 +54,19 @@ class ManageResourceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(12),
-          child: Center(
-            child: Text(ResourceStrings.manageResources,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Center(
+              child: Text(ResourceStrings.manageResources,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
           ),
-        ),
-        _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
-      ],
+          _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
+        ],
+      ),
     );
   }
 }
@@ -195,7 +197,8 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
                   label: ResourceStrings.addResource,
                   onPressed: widget.addResourceOnPressed,
                 ),
-                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
+                Expanded(
+                    child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: ResourceTypeFilter(
                   resourceTypes: state.resourceTypes,

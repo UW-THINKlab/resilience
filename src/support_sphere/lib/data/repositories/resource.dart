@@ -65,17 +65,16 @@ class ResourceRepository {
   }
 
   Future<void> addNewResource(Resource resource) async {
-    // TODO: Add error handling
     await _resourceService.createResourceCV({
-      'id': resource.id,
-      'name': resource.name,
-      'description': resource.description,
+      'id': resource.resourceCv.id,
+      'name': resource.resourceCv.name,
+      'description': resource.resourceCv.description,
     });
     await _resourceService.createResource({
       'notes': resource.notes,
       'qty_needed': resource.qtyNeeded,
       'qty_available': resource.qtyAvailable,
-      'resource_cv_id': resource.id,
+      'resource_cv_id': resource.resourceCv.id,
       'resource_type_id': resource.resourceType.id,
     });
   }
@@ -105,6 +104,28 @@ class ResourceRepository {
     await _resourceService.markUpToDate(id, updatedAt);
   }
 
+  Future<ResourceReservations?> getPendingReservationForChat({
+    required String groupId,
+  }) async {
+    final results = await _resourceService.getPendingReservationForChat(
+      groupId: groupId,
+    );
+    if (results.isEmpty) return null;
+    return ResourceReservations.fromJson(results.first);
+  }
+
+  Future<void> updateReservation({
+    required String reservationId,
+    required RESERVATION_STATUS status,
+    int? quantity,
+  }) async {
+    await _resourceService.updateReservation(
+      reservationId: reservationId,
+      status: status.name,
+      quantity: quantity,
+    );
+  }
+
   Future<void> submitResourceRequestAndNotify({
     required ResourceRequest resourceRequest,
     required String requesterProfileId,
@@ -123,6 +144,8 @@ class ResourceRepository {
     log.fine('candidates in repository: $candidates');
 
     for (final candidate in candidates) {
+      if (remaining <= 0) break;
+      if (candidate.availableQuantity <= 0) continue;
       if (await _userRepository.isEitherUserBlocked(
         user1Id: requesterProfileId,
         user2Id: candidate.profileId,
@@ -136,8 +159,6 @@ class ResourceRepository {
       if (!await confirmation(suggestion)) {
         continue;
       }
-      if (remaining <= 0) break;
-      if (candidate.availableQuantity <= 0) continue;
 
       final allocated = candidate.availableQuantity >= remaining
           ? remaining
@@ -201,6 +222,7 @@ class ResourceRepository {
           'distance_meters': candidate.distanceMeters,
           'urgency': resourceRequest.urgency.name,
         },
+        urgency: MESSAGEURGENCY.normal,
       );
 
       remaining -= allocated;

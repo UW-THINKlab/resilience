@@ -17,6 +17,7 @@ class ChatRepository {
       name,
       description,
       type,
+      created_at,
       group_members(
         profile_id,
         user_profiles(
@@ -32,15 +33,31 @@ class ChatRepository {
             .map((e) => (e as Map<String, dynamic>)['user_profiles']['people']
                 as Map<String, dynamic>)
             .toList();
-        return (Groups.fromJson(element), People.converter(members));
+        return (
+          group: Groups.fromJson(element),
+          members: People.converter(members),
+          createdAt: DateTime.parse(element['created_at'] as String),
+        );
       }).toList(),
     );
     log.fine('Got response: $response');
 
-    return response
-        .where((item) => isUserIdInList(userId, item.$2))
-        .map((res) => responseToChatGroup(res, userId))
+    final messageRepo = MessagesRepository();
+    final groupsWithTimestamps = await response
+        .where((row) => isUserIdInList(userId, row.members))
+        .map((row) async {
+          final chatGroupFuture = responseToChatGroup(
+              (group: row.group, members: row.members), userId);
+          final lastMessageAtFuture = messageRepo.lastMessageSentAt(row.group.id);
+          final chatGroup = await chatGroupFuture;
+          final lastMessageAt = await lastMessageAtFuture;
+          return (chatGroup: chatGroup, sortKey: lastMessageAt ?? row.createdAt);
+        })
         .wait;
+
+    groupsWithTimestamps.sort((a, b) => b.sortKey.compareTo(a.sortKey));
+
+    return groupsWithTimestamps.map((row) => row.chatGroup).toList();
   }
 
   // TODO: remove this method after confirming supabase will return valid chats only
@@ -50,10 +67,10 @@ class ChatRepository {
   }
 
   Future<ChatGroup> responseToChatGroup(
-      (Groups, List<People>) response, String uid) async {
+      ({Groups group, List<People> members}) response, String uid) async {
     final MessagesRepository messageRepo = MessagesRepository();
-    final group = response.$1;
-    final members = response.$2;
+    final group = response.group;
+    final members = response.members;
     final lastMessage = await messageRepo.lastUnreadMessage(group.id);
     final unreadCount = await messageRepo.unreadCount(group.id, uid);
     return ChatGroup.from(
@@ -85,7 +102,7 @@ class ChatRepository {
      * This is only triggered when a name is empty, chats without name are
      *   identified by their group members.
      */
-    if (cleanName.isEmpty) {
+    if (cleanName.isEmpty && type == GROUP_CHAT_TYPE.chat) {
       final existing = (await getUserChatGroups(createdByProfileId)).where((g) {
         if (g.members.length != allProfileIds.length) return false;
         for (final m in g.members) {
@@ -209,6 +226,13 @@ class ChatRepository {
     return list;
   }
 
+  Future<void> updateGroupName({
+    required String groupId,
+    required String name,
+  }) async {
+    await supabase.from('groups').update({'name': name}).eq('id', groupId);
+  }
+
   Future<void> deleteGroup(String id) async {
     await supabase.from('messages').delete().eq('to_id', id);
     await supabase.from('groups').delete().eq('id', id);
@@ -236,7 +260,10 @@ class ChatRepository {
                 .map((e) => (e as Map<String, dynamic>)['user_profiles']
                     ['people'] as Map<String, dynamic>)
                 .toList();
-            return (Groups.fromJson(resp), People.converter(members));
+            return (
+              group: Groups.fromJson(resp),
+              members: People.converter(members),
+            );
           },
         );
     if (response == null) return null;

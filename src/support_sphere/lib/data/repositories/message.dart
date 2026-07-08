@@ -56,12 +56,24 @@ class MessagesRepository {
     return response?['content'] ?? ' ';
   }
 
+  Future<DateTime?> lastMessageSentAt(String groupId) async {
+    final response = await supabase
+        .from('messages')
+        .select('sent_on')
+        .eq('to_id', groupId)
+        .order('sent_on', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    if (response == null) return null;
+    return DateTime.parse(response['sent_on'] as String);
+  }
+
   Future<void> sendMessage({
     required String fromProfileId,
     required String groupId,
     required String text,
+    required MESSAGEURGENCY urgency,
     String? requestId,
-    String urgency = 'normal',
     String messageType = 'text',
     Map<String, dynamic>? metadata,
   }) async {
@@ -71,7 +83,7 @@ class MessagesRepository {
       'from_id': fromProfileId,
       'to_id': groupId,
       'request_id': requestId,
-      'urgency': urgency,
+      'urgency': urgency.name,
       'content': text,
       'sent_on': DateTime.now().toIso8601String(),
       'message_type': messageType,

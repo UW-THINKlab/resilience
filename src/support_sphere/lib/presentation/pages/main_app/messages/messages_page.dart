@@ -10,7 +10,13 @@ import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/constants/constants.dart';
+import 'package:support_sphere/presentation/components/discreet_button.dart';
 import 'package:support_sphere/presentation/components/reauth_dialog.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
+import 'package:support_sphere/data/repositories/resource.dart';
+import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:timeago/timeago.dart';
 
@@ -18,9 +24,6 @@ const preloader =
     Center(child: CircularProgressIndicator(color: Colors.blueGrey));
 
 final log = Logger('MessagesPage');
-
-///TODO- display chat group name at the top of the messages pane
-///TODO- add ability to send "urgent" messages (red highlight, icon) for cluster captains
 
 class MessagesPage extends StatefulWidget {
   final ChatGroup group;
@@ -45,7 +48,13 @@ class MessagesState extends State<MessagesPage> {
   late final Stream<Person?> profileStream;
   final Map<String, Person> profileCache = {};
   late final String myUserId;
-  late final Future<bool> blockedCommunication;
+  bool? _isCommunicationBlocked;
+  bool? _isBlockedByMe;
+  ResourceReservations? _pendingReservation;
+  int _acceptQuantity = 1;
+  final ResourceRepository resourceRepo = ResourceRepository();
+  late final String _baseGroupName;
+  final ChatRepository chatRepo = ChatRepository();
 
   MessagesState({required this.group});
 
@@ -55,15 +64,49 @@ class MessagesState extends State<MessagesPage> {
     super.initState();
 
     myUserId = supabase.auth.currentUser!.id;
+    _baseGroupName = group.name.replaceFirst(
+        RegExp(r' \((Pending|Accepted|Tentative|Rejected|Released|Expired)\)$'), '');
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
-    blockedCommunication = group.members.length == 2
-        ? userRepo.isEitherUserBlocked(
-            user1Id: myUserId,
-            user2Id: getOtherUserId(),
-          )
-        : Future.value(false);
+    _loadBlockState();
+    _loadPendingReservation();
     _loadInitialData();
+  }
+
+  Future<void> _loadBlockState() async {
+    if (group.members.length != 2) {
+      setState(() {
+        _isCommunicationBlocked = false;
+        _isBlockedByMe = false;
+      });
+      return;
+    }
+    final otherUserId = getOtherUserId();
+    final iBlockedOther = await userRepo.isUserBlocking(
+      blockerId: myUserId,
+      blockeeId: otherUserId,
+    );
+    final otherBlockedMe = await userRepo.isUserBlocking(
+      blockerId: otherUserId,
+      blockeeId: myUserId,
+    );
+    if (!mounted) return;
+    setState(() {
+      _isBlockedByMe = iBlockedOther;
+      _isCommunicationBlocked = iBlockedOther || otherBlockedMe;
+    });
+  }
+
+  Future<void> _loadPendingReservation() async {
+    if (group.members.length != 2 || group.type == GROUP_CHAT_TYPE.chat) return;
+    final reservation = await resourceRepo.getPendingReservationForChat(
+      groupId: group.id,
+    );
+    if (!mounted) return;
+    setState(() {
+      _pendingReservation = reservation;
+      _acceptQuantity = reservation?.quantity ?? 1;
+    });
   }
 
   Future<void> _loadInitialData() async {
@@ -92,23 +135,197 @@ class MessagesState extends State<MessagesPage> {
         : group.members.last;
   }
 
+  Color get _appBarColor {
+    return switch (_pendingReservation?.status) {
+      RESERVATION_STATUS.tentative => ColorConstants.tentativeGreen,
+      RESERVATION_STATUS.accepted => ColorConstants.confirmGreen,
+      RESERVATION_STATUS.rejected => ColorConstants.rejectedGray,
+      RESERVATION_STATUS.released => ColorConstants.cancelGray,
+      RESERVATION_STATUS.expired => ColorConstants.cancelGray,
+      _ => Colors.white,
+    };
+  }
+
+  String _groupNameWithStatus(RESERVATION_STATUS? status) {
+    if (status == null) return _baseGroupName;
+    final suffix = switch (status) {
+      RESERVATION_STATUS.pending   => MessagesStrings.statusPending,
+      RESERVATION_STATUS.tentative => MessagesStrings.statusTentative,
+      RESERVATION_STATUS.accepted  => MessagesStrings.statusAccepted,
+      RESERVATION_STATUS.rejected  => MessagesStrings.statusRejected,
+      RESERVATION_STATUS.released  => MessagesStrings.statusReleased,
+      RESERVATION_STATUS.expired   => MessagesStrings.statusExpired,
+    };
+    return '$_baseGroupName ($suffix)';
+  }
+
+  String get _groupTitle => _groupNameWithStatus(_pendingReservation?.status);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(group.name),
+        backgroundColor: _appBarColor,
+        title: Text(_groupTitle),
         actions: [
-          if (group.members.length == 2)
-            TextButton(
+          if (_pendingReservation != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.accepted) ...[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: _acceptQuantity > 1
+                              ? () => setState(() => _acceptQuantity--)
+                              : null,
+                        ),
+                        Text('$_acceptQuantity',
+                            style: const TextStyle(fontSize: 16)),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed:
+                              _acceptQuantity < _pendingReservation!.quantity
+                                  ? () => setState(() => _acceptQuantity++)
+                                  : null,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  CancelButton(
+                    label: MessagesStrings.rejectRequest,
+                    onPressed: () async {
+                      await resourceRepo.updateReservation(
+                        reservationId: _pendingReservation!.id,
+                        status: RESERVATION_STATUS.rejected,
+                      );
+                      await chatRepo.updateGroupName(
+                        groupId: group.id,
+                        name: _groupNameWithStatus(RESERVATION_STATUS.rejected),
+                      );
+                      await messageRepo.sendMessage(
+                        fromProfileId: myUserId,
+                        groupId: group.id,
+                        text: MessagesStrings.rejectMessage(
+                            _pendingReservation!.quantity),
+                        urgency: MESSAGEURGENCY.normal,
+                      );
+                      if (!mounted) return;
+                      setState(() {
+                        _pendingReservation = _pendingReservation!.copyWith(
+                          status: RESERVATION_STATUS.rejected,
+                        );
+                      });
+                    },
+                  ),
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.tentative) ...[
+                    const SizedBox(width: 8),
+                    ConfirmButton(
+                      label: MessagesStrings.tentativeAccept,
+                      color: ColorConstants.tentativeGreen,
+                      onPressed: () async {
+                        final originalQty = _pendingReservation!.quantity;
+                        final reservationId = _pendingReservation!.id;
+                        await resourceRepo.updateReservation(
+                          reservationId: reservationId,
+                          status: RESERVATION_STATUS.tentative,
+                          quantity: _acceptQuantity,
+                        );
+                        await chatRepo.updateGroupName(
+                          groupId: group.id,
+                          name: _groupNameWithStatus(RESERVATION_STATUS.tentative),
+                        );
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.tentativeAcceptMessage(
+                              _acceptQuantity, originalQty),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
+                        if (!mounted) return;
+                        setState(() {
+                          _pendingReservation = _pendingReservation!.copyWith(
+                            status: RESERVATION_STATUS.tentative,
+                            quantity: _acceptQuantity,
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.accepted) ...[
+                    const SizedBox(width: 8),
+                    ConfirmButton(
+                      label: MessagesStrings.acceptRequest,
+                      onPressed: () async {
+                        final originalQty = _pendingReservation!.quantity;
+                        final reservationId = _pendingReservation!.id;
+                        await resourceRepo.updateReservation(
+                          reservationId: reservationId,
+                          status: RESERVATION_STATUS.accepted,
+                          quantity: _acceptQuantity,
+                        );
+                        await chatRepo.updateGroupName(
+                          groupId: group.id,
+                          name: _groupNameWithStatus(RESERVATION_STATUS.accepted),
+                        );
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.acceptMessage(
+                              _acceptQuantity, originalQty),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
+                        if (!mounted) return;
+                        setState(() {
+                          _pendingReservation = _pendingReservation!.copyWith(
+                            status: RESERVATION_STATUS.accepted,
+                            quantity: _acceptQuantity,
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          if (group.members.length == 2 && _isBlockedByMe != null)
+            DiscreetButton(
+              label: _isBlockedByMe!
+                  ? MessagesStrings.unblock
+                  : MessagesStrings.block,
               onPressed: () async {
                 if (await ReauthDialog(context).perform(AuthService())) {
-                  userRepo.blockUser(
-                    blockerId: myUserId,
-                    blockeeId: getOtherUserId(),
-                  );
+                  if (_isBlockedByMe!) {
+                    await userRepo.unblockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = false;
+                      _isCommunicationBlocked = false;
+                    });
+                  } else {
+                    await userRepo.blockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = true;
+                      _isCommunicationBlocked = true;
+                    });
+                  }
                 }
               },
-              child: Text('Block'),
             ),
         ],
       ),
@@ -136,17 +353,10 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                FutureBuilder(
-                    future: blockedCommunication,
-                    builder: (ctx, snapshot) {
-                      if (snapshot.hasData) {
-                        return snapshot.data!
-                            ? Text("You can't send messages to this chat")
-                            : MessageBar(groupId: group.id);
-                      } else {
-                        return Text("");
-                      }
-                    }),
+                if (_isCommunicationBlocked == true)
+                  Text(MessagesStrings.blockedCommunication)
+                else if (_isCommunicationBlocked == false)
+                  MessageBar(groupId: group.id),
               ],
             );
           } else {
@@ -172,8 +382,24 @@ class MessageBar extends StatefulWidget {
   State<MessageBar> createState() => _MessageBarState();
 }
 
+extension on MESSAGEURGENCY {
+  Color get color {
+    switch (this) {
+      case MESSAGEURGENCY.normal:
+        return Colors.blue;
+      case MESSAGEURGENCY.important:
+        return Colors.orange;
+      case MESSAGEURGENCY.urgent:
+        return Colors.purpleAccent;
+      case MESSAGEURGENCY.emergency:
+        return Colors.red;
+    }
+  }
+}
+
 class _MessageBarState extends State<MessageBar> {
   late final TextEditingController _textController;
+  MESSAGEURGENCY urgency = MESSAGEURGENCY.normal;
 
   @override
   void initState() {
@@ -202,14 +428,43 @@ class _MessageBarState extends State<MessageBar> {
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
-                  onFieldSubmitted: (value) =>
-                      _submitMessage(context, widget.groupId),
+                  onFieldSubmitted: (value) => _submitMessage(
+                    context,
+                    widget.groupId,
+                    urgency,
+                  ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => _submitMessage(context, widget.groupId),
-                child: const Text('Send'), // FIXME formatting, text
+              ConfirmButton(
+                label: 'Send',
+                icon: const Icon(Icons.chat),
+                onPressed: () => _submitMessage(
+                  context,
+                  widget.groupId,
+                  urgency,
+                ),
               ),
+              PopupMenuButton<MESSAGEURGENCY>(
+                initialValue: urgency,
+                onSelected: (v) => setState(() {
+                  urgency = v;
+                }),
+                itemBuilder: (ctx) => MESSAGEURGENCY.values
+                    .map(
+                      (v) => PopupMenuItem(
+                        value: v,
+                        child: Text(
+                          v.name,
+                          style: TextStyle(color: v.color),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                child: Container(
+                  color: urgency.color,
+                  child: Icon(Icons.alarm),
+                ),
+              )
             ],
           ),
         ),
@@ -223,7 +478,11 @@ class _MessageBarState extends State<MessageBar> {
     super.dispose();
   }
 
-  void _submitMessage(BuildContext context, String toId) async {
+  void _submitMessage(
+    BuildContext context,
+    String toId,
+    MESSAGEURGENCY urgency,
+  ) async {
     final text = _textController.text;
     final myUserId = supabase.auth.currentUser!.id;
     log.fine('✅ Group ID: ${widget.groupId}');
@@ -243,6 +502,7 @@ class _MessageBarState extends State<MessageBar> {
         fromProfileId: myUserId,
         groupId: widget.groupId,
         text: text,
+        urgency: urgency,
       );
       log.fine('Message sent: $text');
     } on Exception catch (error) {
@@ -285,9 +545,7 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: amSender
-                ? urgencyColors["default"]
-                : urgencyColors[message.urgency],
+            color: amSender ? Colors.grey : message.urgency.color,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(message.content, style: TextStyle(color: Colors.white)),
@@ -308,12 +566,4 @@ class _MessageBubble extends StatelessWidget {
       ),
     );
   }
-
-  static const urgencyColors = {
-    MESSAGEURGENCY.emergency: Colors.red,
-    MESSAGEURGENCY.urgent: Colors.purpleAccent,
-    MESSAGEURGENCY.important: Colors.orange,
-    MESSAGEURGENCY.normal: Colors.blue,
-    "default": Colors.grey,
-  };
 }

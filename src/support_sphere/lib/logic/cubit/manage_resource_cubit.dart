@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
@@ -23,7 +24,8 @@ class ManageResourceCubit extends Cubit<ManageResourceState> {
   }
 
   void fetchResourceTypes() async {
-    List<ResourceTypes> resourceTypes = await _resourceRepository.getResourceTypes();
+    List<ResourceTypes> resourceTypes =
+        await _resourceRepository.getResourceTypes();
     resourceTypesChanged(resourceTypes);
   }
 

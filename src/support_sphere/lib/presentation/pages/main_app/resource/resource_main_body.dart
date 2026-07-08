@@ -310,7 +310,10 @@ class RequestResourceView extends StatelessWidget {
                     const AllResourcesButton(),
                     Expanded(
                       child: ContainerCard(
-                        child: RequestResourceForm(resource: resource),
+                        child: RequestResourceForm(
+                          resourceCv: resource.resourceCv,
+                          resourceType: resource.resourceType,
+                        ),
                       ),
                     ),
                   ],
@@ -383,9 +386,6 @@ class UserResourcesTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text("Quantity: ${userResource.qtyAvailable}"),
-                  // TODO: Implement Subtype
-                  // const SizedBox(height: 8),
-                  // Text("Subtype: None"),
                   const SizedBox(height: 8),
                   Text("Notes: ${userResource.notes}"),
                   const SizedBox(height: 8),

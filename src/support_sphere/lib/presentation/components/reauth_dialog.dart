@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 
 class ReauthDialog {
@@ -9,19 +11,20 @@ class ReauthDialog {
   ReauthDialog(this._context) {
     _confirmationDialog = ConfirmationDialog(
       actions: [
-        TextButton(
+        CancelButton(
+          label: 'Cancel',
           onPressed: () => Navigator.pop(_context),
-          child: const Text('Cancel'),
         ),
-        ElevatedButton(
+        ConfirmButton(
+          label: 'Continue',
           onPressed: () => Navigator.pop(_context, controller.text),
-          child: const Text('Continue'),
         ),
       ],
       title: Text('Confirm your password'),
       content: TextField(
         controller: controller,
         obscureText: true,
+        onSubmitted: (_) => Navigator.pop(_context, controller.text),
         decoration: const InputDecoration(labelText: 'Current password'),
       ),
     );

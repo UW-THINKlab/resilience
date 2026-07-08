@@ -4,6 +4,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -128,6 +129,18 @@ class UserRepository {
         email, data["household_id"], data["code"]);
   }
 
+  Future<void> createPerson({
+    required String householdId,
+    required String familyName,
+    required String givenName,
+  }) async {
+    await _userService.createPerson(
+      givenName: givenName,
+      familyName: familyName,
+      householdId: householdId,
+    );
+  }
+
   Future<void> updateUserName({
     required String personId,
     String? givenName,
@@ -146,6 +159,7 @@ class UserRepository {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     await _userService.updateHousehold(
       id: householdId,
@@ -153,6 +167,7 @@ class UserRepository {
       pets: pets,
       accessibilityNeeds: accessibilityNeeds,
       notes: notes,
+      membersToRemove: membersToRemove,
     );
   }
 
@@ -205,6 +220,26 @@ class UserRepository {
     );
   }
 
+  Future<void> unblockUser({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await _userService.unblockPerson(
+      blockerId: blockerId,
+      blockeeId: blockeeId,
+    );
+  }
+
+  Future<bool> isUserBlocking({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    return await _userService.isUser1BlockingUser2(
+      user1Id: blockerId,
+      user2Id: blockeeId,
+    );
+  }
+
   Future<bool> isEitherUserBlocked({
     required String user1Id,
     required String user2Id,
@@ -217,5 +252,16 @@ class UserRepository {
           user1Id: user2Id,
           user2Id: user1Id,
         );
+  }
+
+  Stream<List<People>> blockedUsersStream(String userId) {
+    return _userService.blockedUsersStream(userId);
+  }
+
+  Future<void> addToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    return _userService.addToHousehold(peopleToAdd, householdId);
   }
 }

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:uuid/v4.dart';
 
@@ -89,7 +92,7 @@ class UserService {
 
   /// Creates a person with the given user id, given name, and family name.
   Future<void> createPerson({
-    required String userId,
+    String? userId,
     required String givenName,
     required String familyName,
     required String householdId,
@@ -134,6 +137,7 @@ class UserService {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     final payload = <String, dynamic>{};
 
@@ -143,6 +147,9 @@ class UserService {
       payload['accessibility_needs'] = accessibilityNeeds;
     }
     if (notes != null) payload['notes'] = notes;
+    for (Person p in membersToRemove ?? []) {
+      await removePersonFromHousehold(personId: p.id, householdId: id);
+    }
 
     await supabase.from('households').update(payload).eq('id', id);
   }
@@ -159,6 +166,16 @@ class UserService {
     });
   }
 
+  Future<void> removePersonFromHousehold({
+    required String personId,
+    required String householdId,
+  }) async {
+    await supabase.people_groups
+        .delete()
+        .eq(PeopleGroups.c_peopleId, personId)
+        .eq(PeopleGroups.c_householdId, householdId);
+  }
+
   Future<void> blockPerson({
     required String blockerId,
     required String blockeeId,
@@ -167,6 +184,16 @@ class UserService {
       blocker: blockerId,
       blockee: blockeeId,
     ));
+  }
+
+  Future<void> unblockPerson({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await supabase.blocks
+        .delete()
+        .eq(Blocks.c_blocker, blockerId)
+        .eq(Blocks.c_blockee, blockeeId);
   }
 
   Future<bool> isUser1BlockingUser2({
@@ -179,5 +206,37 @@ class UserService {
         .eq(Blocks.c_blockee, user2Id)
         .withConverter(Blocks.converter);
     return blocks.isNotEmpty;
+  }
+
+  Stream<List<People>> blockedUsersStream(String userId) {
+    return supabase.blocks
+        .stream(primaryKey: [Blocks.c_blocker, Blocks.c_blockee])
+        .eq(Blocks.c_blocker, userId)
+        .order(Blocks.c_createdAt)
+        .map(Blocks.converter)
+        .asyncMap((List<Blocks> blocks) async {
+          List<People> res = [];
+          for (Blocks b in blocks) {
+            res.add(await personByProfileId(b.blockee));
+          }
+          return res;
+        });
+  }
+
+  Future<People> personByProfileId(String profileId) {
+    return supabase.people
+        .select()
+        .eq(People.c_userProfileId, profileId)
+        .single()
+        .withConverter(People.converterSingle);
+  }
+
+  Future<void> addToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    for (final p in peopleToAdd) {
+      await linkPersonToHousehold(personId: p.id, householdId: householdId);
+    }
   }
 }

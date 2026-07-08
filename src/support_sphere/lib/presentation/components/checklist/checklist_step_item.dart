@@ -14,7 +14,7 @@ class UserChecklistStepItem extends StatelessWidget {
   });
 
   Color _completedTextColor(BuildContext context) =>
-      Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.6);
+      Theme.of(context).textTheme.bodyLarge!.color!.withValues(alpha: 0.6);
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +75,17 @@ class UserChecklistStepItem extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 4),
                               child: Text(
                                 step.label ?? '',
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  decoration: isCompletedStylesEnabled
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  color: isCompletedStylesEnabled
-                                      ? _completedTextColor(context)
-                                      : null,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      decoration: isCompletedStylesEnabled
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: isCompletedStylesEnabled
+                                          ? _completedTextColor(context)
+                                          : null,
+                                    ),
                               ),
                             ),
                           ),

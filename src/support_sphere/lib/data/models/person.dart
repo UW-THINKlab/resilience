@@ -71,6 +71,12 @@ class Person extends Equatable {
         ? nickname!
         : "$givenName $familyName";
   }
+
+  String initials() {
+    final first = givenName.isNotEmpty ? givenName[0].toUpperCase() : '';
+    final last = familyName.isNotEmpty ? familyName[0].toUpperCase() : '';
+    return '$first$last';
+  }
 }
 
 /// A class representing a user's profile.

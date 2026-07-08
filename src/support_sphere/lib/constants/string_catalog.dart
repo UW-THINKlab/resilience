@@ -67,9 +67,13 @@ class UserProfileStrings {
   static const String captains = 'Captain(s)';
   static const String submit = 'Submit';
   static const String deleteMyAccount = 'Delete My Account';
+  static const String manageBlockedUsers = 'Manage Block List';
   static const String confirmPrompt = 'Please Confirm';
   static const String confirmAccountDelete =
       'Are you sure you want to delete your account?';
+  static const String destructiveActions = 'Destructive Actions';
+  static const String deleteAccountConfirm = 'Delete Account';
+  static const String deleteAccountCancel = 'Cancel';
 }
 
 /// Checklist messages
@@ -229,4 +233,30 @@ class NeighborhoodStrings {
   static const String captainNeeded = 'Captain needed';
 
   static final String manageNeighborhood = "Manage ${AppConfig.neighborhood}";
+}
+
+class MessagesStrings {
+  static const String blockedCommunication = "Chat disabled with this user.";
+  static const String block = 'Block User';
+  static const String unblock = 'Unblock User';
+  static const String acceptRequest = 'Accept';
+  static const String rejectRequest = 'Reject';
+  static const String tentativeAccept = 'Tentative';
+  static const String statusPending = 'Pending';
+  static const String statusTentative = 'Tentative';
+  static const String statusAccepted = 'Accepted';
+  static const String statusRejected = 'Rejected';
+  static const String statusReleased = 'Released';
+  static const String statusExpired = 'Expired';
+  static String acceptMessage(int accepted, int total) => accepted == total
+      ? 'Accepted all $total requested item(s).'
+      : 'Accepted $accepted of $total requested item(s). '
+          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String tentativeAcceptMessage(int accepted, int total) => accepted ==
+          total
+      ? 'Tentatively accepting all $total requested item(s).'
+      : 'Tentatively accepting $accepted of $total requested item(s). '
+          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String rejectMessage(int total) =>
+      'Rejected the request for $total item(s).';
 }

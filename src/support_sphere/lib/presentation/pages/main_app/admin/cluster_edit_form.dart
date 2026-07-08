@@ -5,6 +5,8 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart' hide log;
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
+import 'package:support_sphere/presentation/components/cancel_button.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/people_select_list.dart'
     show PersonSelectorField;
 
@@ -220,7 +222,15 @@ class ClusterEditFormState extends State<ClusterEditForm> {
                   const SizedBox(height: 50),
                   // Buttons to Add Item or Cancel
                   Row(children: [
-                    ElevatedButton(
+                    CancelButton(
+                      label: 'Cancel',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    ConfirmButton(
+                      label: addButtonLabel,
                       onPressed: _isSaving
                           ? null
                           : () async {
@@ -243,14 +253,7 @@ class ClusterEditFormState extends State<ClusterEditForm> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text(addButtonLabel),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Cancel'),
+                          : null,
                     ),
                   ]),
                 ],
