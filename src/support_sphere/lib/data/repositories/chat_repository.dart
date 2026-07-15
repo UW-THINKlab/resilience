@@ -4,6 +4,7 @@ import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/data/repositories/message.dart';
+import 'package:support_sphere/data/services/resource_service.dart';
 
 class ChatRepository {
   Future<List<ChatGroup>> getUserChatGroups(String userId) async {
@@ -43,15 +44,31 @@ class ChatRepository {
     log.fine('Got response: $response');
 
     final messageRepo = MessagesRepository();
+    final resourceService = ResourceService();
     final groupsWithTimestamps = await response
         .where((row) => isUserIdInList(userId, row.members))
         .map((row) async {
           final chatGroupFuture = responseToChatGroup(
               (group: row.group, members: row.members), userId);
           final lastMessageAtFuture = messageRepo.lastMessageSentAt(row.group.id);
+          final reservationFuture = row.group.type == GROUP_CHAT_TYPE.chat
+              ? Future<List<Map<String, dynamic>>>.value(const [])
+              : resourceService.getPendingReservationForChat(
+                  groupId: row.group.id);
           final chatGroup = await chatGroupFuture;
           final lastMessageAt = await lastMessageAtFuture;
-          return (chatGroup: chatGroup, sortKey: lastMessageAt ?? row.createdAt);
+          final reservationRows = await reservationFuture;
+          final reservation = reservationRows.isEmpty
+              ? null
+              : ResourceReservations.fromJson(reservationRows.first);
+          final chatGroupWithStatus = chatGroup.copyWith(
+            reservationStatus: reservation?.status,
+            isRequester: reservation?.requesterProfileId == userId,
+          );
+          return (
+            chatGroup: chatGroupWithStatus,
+            sortKey: lastMessageAt ?? row.createdAt
+          );
         })
         .wait;
 

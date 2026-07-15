@@ -9,6 +9,8 @@ class ChatGroup extends Equatable {
   final List<String> members;
   final GROUP_CHAT_TYPE type;
   final int unreadCount;
+  final RESERVATION_STATUS? reservationStatus;
+  final bool isRequester;
 
   const ChatGroup({
     required this.id,
@@ -18,6 +20,8 @@ class ChatGroup extends Equatable {
     required this.members,
     required this.type,
     required this.unreadCount,
+    this.reservationStatus,
+    this.isRequester = false,
   });
 
   factory ChatGroup.from(
@@ -28,6 +32,8 @@ class ChatGroup extends Equatable {
     String lastMessage = '',
     GROUP_CHAT_TYPE type = GROUP_CHAT_TYPE.chat,
     int unreadCount = 0,
+    RESERVATION_STATUS? reservationStatus,
+    bool isRequester = false,
   }) {
     return ChatGroup(
       id: id,
@@ -37,9 +43,28 @@ class ChatGroup extends Equatable {
       members: members,
       type: type,
       unreadCount: unreadCount,
+      reservationStatus: reservationStatus,
+      isRequester: isRequester,
+    );
+  }
+
+  ChatGroup copyWith({
+    RESERVATION_STATUS? reservationStatus,
+    bool? isRequester,
+  }) {
+    return ChatGroup(
+      id: id,
+      name: name,
+      lastMessage: lastMessage,
+      description: description,
+      members: members,
+      type: type,
+      unreadCount: unreadCount,
+      reservationStatus: reservationStatus ?? this.reservationStatus,
+      isRequester: isRequester ?? this.isRequester,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, members];
+  List<Object?> get props => [id, name, members, reservationStatus, isRequester];
 }
