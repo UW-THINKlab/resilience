@@ -168,7 +168,9 @@ class MessagesState extends State<MessagesPage> {
         title: Text(_groupTitle),
         actions: [
           if (_pendingReservation != null &&
-              myUserId != _pendingReservation!.requesterProfileId)
+              myUserId != _pendingReservation!.requesterProfileId &&
+              _pendingReservation!.status != RESERVATION_STATUS.released &&
+              _pendingReservation!.status != RESERVATION_STATUS.expired)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Row(
