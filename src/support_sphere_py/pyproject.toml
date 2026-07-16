@@ -40,6 +40,7 @@ dependencies = [
     "lxml>=6.0.1",
     "shapely>=2.1.1",
     "geopy>=2.4.1",
+    "arcgis>=2.4.3",
 ]
 
 [project.license]
