@@ -109,6 +109,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
   final ResourcesCv resourceCv;
   final ResourceTypes resourceType;
   RequestResourceFormData _formData = RequestResourceFormData();
+  bool _isProcessing = false;
 
   _RequestResourceFormState({
     required this.resourceCv,
@@ -152,10 +153,12 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
   }
 
   Future<void> _submitResourceRequest() async {
+    setState(() => _isProcessing = true);
     try {
       await context.read<ResourceCubit>().submitResourceRequest(
             requestData: _formData.toJson(),
             confirmation: (SuggestedResourceRequest req) async {
+              setState(() => _isProcessing = false);
               final res = await ConfirmationDialog(
                 actions: [
                   CancelButton(
@@ -175,6 +178,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   'Confirming will send a request to ${req.supplierCandidate.givenName} who currently has ${req.availableQty} available',
                 ),
               ).show<bool>(context);
+              if (mounted) setState(() => _isProcessing = true);
               return res ?? false;
             },
           );
@@ -192,6 +196,8 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
             ? 'Not enough inventory to fulfill this request.'
             : 'Failed to save request: $e',
       );
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
@@ -280,6 +286,11 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                     focusedBorder: focusBorder(context)),
               ),
               const SizedBox(height: 16),
+              if (_isProcessing) ...[
+                const Text('Requesting...',
+                    style: TextStyle(fontStyle: FontStyle.italic)),
+                const SizedBox(height: 8),
+              ],
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -292,7 +303,9 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                       }),
                   const SizedBox(width: 4),
                   ConfirmButton(
-                      label: 'Request', onPressed: () => _handleSubmit()),
+                      label: 'Request',
+                      onPressed:
+                          _isProcessing ? null : () => _handleSubmit()),
                 ],
               ),
             ],

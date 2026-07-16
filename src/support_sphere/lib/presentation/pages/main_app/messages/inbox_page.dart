@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/utils/reservation_status_colors.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/messages_page.dart';
@@ -95,12 +96,7 @@ class InboxView extends StatelessWidget {
                   ],
                 ),
                 child: Card(
-                  color: switch (group.type) {
-                    GROUP_CHAT_TYPE.request_consumable => Colors.blue[50],
-                    GROUP_CHAT_TYPE.request_durable => Colors.yellow[50],
-                    GROUP_CHAT_TYPE.request_skill => Colors.green[50],
-                    GROUP_CHAT_TYPE.chat => null,
-                  },
+                  color: _cardColor(group),
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: ListTile(
@@ -161,6 +157,19 @@ class InboxView extends StatelessWidget {
     return group.name[0].toUpperCase();
   }
 
+  Color? _cardColor(ChatGroup group) {
+    final baseColor = group.type.baseColor;
+    if (baseColor == null) return null;
+
+    final isNewRequest = group.reservationStatus == null ||
+        group.reservationStatus == RESERVATION_STATUS.pending;
+    if (isNewRequest) {
+      return group.isRequester ? baseColor[100] : baseColor[50];
+    }
+
+    return group.reservationStatus!.statusColor(isRequester: group.isRequester);
+  }
+
   void _navigateToChat(BuildContext context, ChatGroup group) async {
     log.fine('🧭 Navigating to: ${group.id}'); // ✅ Verify source
     await Navigator.push(
@@ -202,4 +211,15 @@ class InboxView extends StatelessWidget {
       }
     }
   }
+}
+
+extension _GroupChatTypeColor on GROUP_CHAT_TYPE {
+  static const Map<GROUP_CHAT_TYPE, MaterialColor?> _baseColors = {
+    GROUP_CHAT_TYPE.request_consumable: Colors.blue,
+    GROUP_CHAT_TYPE.request_durable: Colors.yellow,
+    GROUP_CHAT_TYPE.request_skill: Colors.green,
+    GROUP_CHAT_TYPE.chat: null,
+  };
+
+  MaterialColor? get baseColor => _baseColors[this];
 }
