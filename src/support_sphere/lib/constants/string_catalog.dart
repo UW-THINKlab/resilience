@@ -6,7 +6,9 @@ class AppStrings {
       'Resilience - Laurelhurst'; // FIXME - determine from url/metadata/server somehow
   static const String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
-  static const String testEmergencyBannerText = "This is a test emergency.";
+  static const String testEmergencyBannerText =
+      "This is a test of emergency mode.";
+  static const String emergencyBannerText = "Emergency mode declared.";
 }
 
 class EmergencyAlertDialogStrings {
@@ -170,6 +172,11 @@ class RequestResourceFormStrings {
   static const String notes =
       'Details or special notes on this request (optional)';
   static String reqTitle(String resourceName) => "Request $resourceName";
+  static const String requestCancelled = 'Request canceled';
+  static String insufficientInventoryWarning(
+          int totalAvailable, int requested) =>
+      'Insufficient Quantity: $totalAvailable of the $requested requested unit(s) are '
+      'currently available to request. Continue anyway?';
   static const String requestScope = 'Who to ask for this item?';
 }
 
@@ -260,4 +267,7 @@ class MessagesStrings {
           'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
   static String rejectMessage(int total) =>
       'Rejected the request for $total item(s).';
+  static const String cancelRequest = 'Cancel Request';
+  static String cancelRequestMessage(int total) =>
+      'Canceled the request for $total item(s).';
 }

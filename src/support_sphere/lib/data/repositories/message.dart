@@ -77,9 +77,10 @@ class MessagesRepository {
     String messageType = 'text',
     Map<String, dynamic>? metadata,
   }) async {
+    final messageId = const UuidV4().generate();
     log.fine("Sending message from:$fromProfileId, to:$groupId: $text");
     await supabase.from('messages').insert({
-      'id': const UuidV4().generate(),
+      'id': messageId,
       'from_id': fromProfileId,
       'to_id': groupId,
       'request_id': requestId,
@@ -89,5 +90,9 @@ class MessagesRepository {
       'message_type': messageType,
       'metadata': metadata,
     });
+    await supabase.message_reads.upsert(MessageReads.insert(
+      messageId: messageId,
+      profileId: fromProfileId,
+    ));
   }
 }

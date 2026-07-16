@@ -11,6 +11,7 @@ import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 import 'package:support_sphere/presentation/components/snackbars.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
+import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/location_cubit.dart';
@@ -155,8 +156,31 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
   Future<void> _submitResourceRequest() async {
     setState(() => _isProcessing = true);
     try {
+      final mode = context.read<AppBloc>().state.mode;
+      final isEmergency =
+          mode == AppModes.emergency || mode == AppModes.testEmergency;
       await context.read<ResourceCubit>().submitResourceRequest(
             requestData: _formData.toJson(),
+            isEmergency: isEmergency,
+            onInsufficientInventory: (totalAvailable, requested) async {
+              final res = await ConfirmationDialog(
+                actions: [
+                  CancelButton(
+                    label: 'Cancel',
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  ConfirmButton(
+                    label: 'Continue',
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+                content: Text(
+                  RequestResourceFormStrings.insufficientInventoryWarning(
+                      totalAvailable, requested),
+                ),
+              ).show<bool>(context);
+              return res ?? false;
+            },
             confirmation: (SuggestedResourceRequest req) async {
               setState(() => _isProcessing = false);
               final res = await ConfirmationDialog(
@@ -175,7 +199,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   ),
                 ],
                 content: Text(
-                  'Confirming will send a request to ${req.supplierCandidate.givenName} who currently has ${req.availableQty} available',
+                  'Confirming will send a request to ${req.supplierCandidate.givenName} for ${req.requestedQty} unit(s)',
                 ),
               ).show<bool>(context);
               if (mounted) setState(() => _isProcessing = true);
@@ -189,6 +213,10 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
           );
     } catch (e) {
       if (!mounted) return;
+      if (e is ResourceRequestCancelled) {
+        showInfoSnackBar(context, RequestResourceFormStrings.requestCancelled);
+        return;
+      }
       final message = e.toString().toLowerCase();
       showErrorSnackBar(
         context,

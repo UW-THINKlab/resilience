@@ -16,7 +16,6 @@ import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
-import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/utils/reservation_status_colors.dart';
 import 'package:timeago/timeago.dart';
@@ -199,8 +198,9 @@ class MessagesState extends State<MessagesPage> {
                     ),
                     const SizedBox(width: 8),
                   ],
-                  CancelButton(
+                  ConfirmButton(
                     label: MessagesStrings.rejectRequest,
+                    color: ColorConstants.cancelGray,
                     onPressed: () async {
                       await resourceRepo.updateReservation(
                         reservationId: _pendingReservation!.id,
@@ -295,6 +295,41 @@ class MessagesState extends State<MessagesPage> {
                     ),
                   ],
                 ],
+              ),
+            ),
+          if (_pendingReservation != null &&
+              myUserId == _pendingReservation!.requesterProfileId &&
+              _pendingReservation!.status != RESERVATION_STATUS.rejected &&
+              _pendingReservation!.status != RESERVATION_STATUS.released &&
+              _pendingReservation!.status != RESERVATION_STATUS.expired)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ConfirmButton(
+                label: MessagesStrings.cancelRequest,
+                color: ColorConstants.cancelGray,
+                onPressed: () async {
+                  await resourceRepo.updateReservation(
+                    reservationId: _pendingReservation!.id,
+                    status: RESERVATION_STATUS.released,
+                  );
+                  await chatRepo.updateGroupName(
+                    groupId: group.id,
+                    name: _groupNameWithStatus(RESERVATION_STATUS.released),
+                  );
+                  await messageRepo.sendMessage(
+                    fromProfileId: myUserId,
+                    groupId: group.id,
+                    text: MessagesStrings.cancelRequestMessage(
+                        _pendingReservation!.quantity),
+                    urgency: MESSAGEURGENCY.normal,
+                  );
+                  if (!mounted) return;
+                  setState(() {
+                    _pendingReservation = _pendingReservation!.copyWith(
+                      status: RESERVATION_STATUS.released,
+                    );
+                  });
+                },
               ),
             ),
           if (group.members.length == 2 && _isBlockedByMe != null)
@@ -546,10 +581,13 @@ class _MessageBubble extends StatelessWidget {
             horizontal: 12,
           ),
           decoration: BoxDecoration(
-            color: amSender ? Colors.grey : message.urgency.color,
+            color: amSender ? Colors.grey[200] : message.urgency.color,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(message.content, style: TextStyle(color: Colors.white)),
+          child: Text(
+            message.content,
+            style: TextStyle(color: amSender ? Colors.black : Colors.white),
+          ),
         ),
       ),
       const SizedBox(width: 12),
