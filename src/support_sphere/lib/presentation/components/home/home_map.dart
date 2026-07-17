@@ -34,14 +34,13 @@ class HomeMap extends StatelessWidget {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
-        // FIXME on fresh map
         initialCenter: state.initMapCentroid,
         initialZoom: state.initZoomLevel,
         onMapReady: onMapReady,
         onTap: (_, latLng) {
           if (state.status == HomeStatus.editMeetingPlace) {
-            final point = mapController.camera.latLngToScreenOffset(latLng);
-            final offset = Offset(point.dx, point.dy);
+            final point = mapController.camera.latLngToScreenPoint(latLng);
+            final offset = Offset(point.x, point.y);
             cubit.setMeetingPlace(latLng, offset);
             // FIXME - popup dialog for description
             //cubit.saveMeetingPlace(); // TODO move to dialog popup
@@ -121,9 +120,14 @@ class HomeMap extends StatelessWidget {
       return [];
     } else {
       var value = [for (var p in state.pointsOfInterest!) p.marker()];
-      //dev.log(value.toString());
-      //print.fine(value);
-      //log.fine(value.toString());
+
+      // Append geojson points
+      if (state.geojson != null) {
+        for (final layer in state.geojson!) {
+          value.addAll(layer.markers);
+        }
+      }
+
       return value;
     }
   }
@@ -146,9 +150,10 @@ class HomeMap extends StatelessWidget {
     );
   }
 
-  //late var _polygonsRaw = generatePolygons();
   List<Polygon> _generatePolygons() {
     List<Polygon> polygons = [];
+
+    log.fine("generating polygons: ${state.geojson}");
 
     if (state.allClusters != null && state.allClusters!.isNotEmpty) {
       for (var cluster in state.allClusters!) {
@@ -156,6 +161,15 @@ class HomeMap extends StatelessWidget {
         if (poly != null) {
           polygons.add(poly);
         }
+      }
+    }
+
+    // Add geojson polygons
+    if (state.geojson != null) {
+      for (final layer in state.geojson!) {
+        // TODO: Add check for if layer is visible.
+        polygons.addAll(layer.polygons);
+        log.fine("adding geojson polygons: ${layer.polygons}");
       }
     }
 

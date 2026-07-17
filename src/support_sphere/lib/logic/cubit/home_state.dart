@@ -1,6 +1,7 @@
 import 'dart:ui' show Offset;
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter_map_geojson/flutter_map_geojson.dart' show GeoJsonParser;
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/constants/appconfig.dart' show AppConfig;
 import 'package:support_sphere/data/models/captain_marker.dart';
@@ -45,6 +46,7 @@ class HomeState extends Equatable {
   final Offset? pickedOffset;
   final String? meetingPlace; // description of the pick meeting point
 
+  final List<GeoJsonParser>? geojson; // geojson layers
 
   @override
   List<Object?> get props => [
@@ -59,6 +61,7 @@ class HomeState extends Equatable {
         pickedLocation,
         pickedOffset,
         meetingPlace,
+        geojson,
       ];
 
   HomeState copyWith({
@@ -73,6 +76,7 @@ class HomeState extends Equatable {
     LatLng? pickedLocation,
     Offset? pickedOffset,
     String? meetingPlace,
+    List<GeoJsonParser>? geojson,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -86,6 +90,7 @@ class HomeState extends Equatable {
       pickedLocation: pickedLocation ?? this.pickedLocation,
       pickedOffset: pickedOffset ?? this.pickedOffset,
       meetingPlace: meetingPlace ?? this.meetingPlace,
+      geojson: geojson ?? this.geojson,
     );
   }
 }
