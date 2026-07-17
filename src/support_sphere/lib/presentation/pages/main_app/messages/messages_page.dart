@@ -51,6 +51,7 @@ class MessagesState extends State<MessagesPage> {
   bool? _isCommunicationBlocked;
   bool? _isBlockedByMe;
   ResourceReservations? _pendingReservation;
+  bool _resourceRemoved = false;
   int _acceptQuantity = 1;
   final ResourceRepository resourceRepo = ResourceRepository();
   late final String _baseGroupName;
@@ -102,10 +103,15 @@ class MessagesState extends State<MessagesPage> {
     final reservation = await resourceRepo.getPendingReservationForChat(
       groupId: group.id,
     );
+    var resourceRemoved = false;
+    if (reservation == null) {
+      resourceRemoved = await messageRepo.hasResourceRemovedMessage(group.id);
+    }
     if (!mounted) return;
     setState(() {
       _pendingReservation = reservation;
       _acceptQuantity = reservation?.quantity ?? 1;
+      _resourceRemoved = resourceRemoved;
     });
   }
 
@@ -137,8 +143,10 @@ class MessagesState extends State<MessagesPage> {
 
   Color get _appBarColor {
     final reservation = _pendingReservation;
-    if (reservation == null ||
-        reservation.status == RESERVATION_STATUS.pending) {
+    if (reservation == null) {
+      return _resourceRemoved ? ColorConstants.cancelGray : Colors.white;
+    }
+    if (reservation.status == RESERVATION_STATUS.pending) {
       return Colors.white;
     }
     final isRequester = myUserId == reservation.requesterProfileId;

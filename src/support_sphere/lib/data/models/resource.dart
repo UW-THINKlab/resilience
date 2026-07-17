@@ -29,7 +29,8 @@ class Resource extends Equatable {
   final ResourcesCv resourceCv;
 
   @override
-  List<Object?> get props => [id, name, description];
+  List<Object?> get props =>
+      [id, name, description, qtyNeeded, qtyAvailable];
 
   static Resource fromJson(Map<String, dynamic> json) {
     var resourceTypesJson = json['resource_types'];

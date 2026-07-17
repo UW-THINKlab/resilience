@@ -4,7 +4,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
-import 'package:support_sphere/presentation/components/resource_search_bar.dart';
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
@@ -198,7 +198,9 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
                   onPressed: widget.addResourceOnPressed,
                 ),
                 Expanded(
-                    child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
+                    child: FilterSearchBar(
+                        labelText: ResourceStrings.searchResources,
+                        onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: ResourceTypeFilter(
                   resourceTypes: state.resourceTypes,

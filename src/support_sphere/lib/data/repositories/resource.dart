@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_request.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
@@ -67,7 +68,15 @@ class ResourceRepository {
   Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
     PostgrestList? results =
         await _resourceService.getUserResourcesByUserId(userId);
-    return results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
+    final rows =
+        results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
+    rows.sort((a, b) {
+      final nameComparison =
+          a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      if (nameComparison != 0) return nameComparison;
+      return b.addedDate!.compareTo(a.addedDate!);
+    });
+    return rows;
   }
 
   Future<void> addNewResource(Resource resource) async {
@@ -106,8 +115,49 @@ class ResourceRepository {
     await _resourceService.deleteUserResource(id);
   }
 
-  Future<void> markUpToDate(String id, DateTime updatedAt) async {
-    await _resourceService.markUpToDate(id, updatedAt);
+  Future<void> updateUserResource({
+    required String id,
+    required int quantity,
+    String? notes,
+    required SHARING_SCOPES sharingScope,
+    required SHARING_SCOPES sharingScopeEmergency,
+  }) async {
+    await _resourceService.updateUserResource(
+      id: id,
+      quantity: quantity,
+      notes: notes,
+      sharingScope: sharingScope,
+      sharingScopeEmergency: sharingScopeEmergency,
+    );
+  }
+
+  Future<List<String>> getUserResourceIdsWithReservations(
+      List<String> ids) async {
+    final rows = await _resourceService.getReservationsForUserResources(ids);
+    return (rows ?? [])
+        .map((r) => r['user_resource_id'] as String)
+        .toSet()
+        .toList();
+  }
+
+  Future<void> notifyReservationsRemoved(List<String> userResourceIds) async {
+    if (userResourceIds.isEmpty) return;
+    final rows = await _resourceService
+        .getReservationsForUserResources(userResourceIds);
+    final fromProfileId = _authService.getSignedInUser()!.id;
+    final notifiedGroupIds = <String>{};
+    for (final row in rows ?? []) {
+      final requestId = row['request_id'] as String;
+      final groupId = await _resourceService.getGroupIdForRequest(requestId);
+      if (groupId == null || !notifiedGroupIds.add(groupId)) continue;
+      await _messagesRepository.sendMessage(
+        fromProfileId: fromProfileId,
+        groupId: groupId,
+        text: ResourceStrings.resourceRemovedMessage,
+        messageType: 'resource_removed',
+        urgency: MESSAGEURGENCY.normal,
+      );
+    }
   }
 
   Future<ResourceReservations?> getPendingReservationForChat({

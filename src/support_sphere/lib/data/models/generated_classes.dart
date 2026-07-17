@@ -106,7 +106,7 @@ enum RESERVATION_STATUS {
 
 enum MESSAGEURGENCY { normal, important, urgent, emergency }
 
-enum MESSAGE_TYPE { resource_request, text }
+enum MESSAGE_TYPE { resource_request, text, resource_removed }
 
 enum APP_PERMISSIONS { operational_event_read, operational_event_create }
 
