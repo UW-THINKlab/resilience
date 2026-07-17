@@ -14,12 +14,18 @@ import 'package:support_sphere/data/repositories/user.dart';
 class SuggestedResourceRequest {
   final SupplierCandidate supplierCandidate;
   final int availableQty;
+  final int requestedQty;
 
   SuggestedResourceRequest({
     required this.supplierCandidate,
     required this.availableQty,
+    required this.requestedQty,
   });
 }
+
+/// Thrown when the user declines to continue past the
+/// insufficient-total-inventory warning.
+class ResourceRequestCancelled implements Exception {}
 
 class ResourceRepository {
   ResourceRepository({
@@ -130,6 +136,9 @@ class ResourceRepository {
     required ResourceRequest resourceRequest,
     required String requesterProfileId,
     required Future<bool> Function(SuggestedResourceRequest) confirmation,
+    required bool isEmergency,
+    required Future<bool> Function(int totalAvailable, int requested)
+        onInsufficientInventory,
   }) async {
     final candidates = await _getCandidates(
       requesterProfileId: requesterProfileId,
@@ -137,7 +146,22 @@ class ResourceRepository {
       requestScope: resourceRequest.requestScope,
       currentLatitude: resourceRequest.lat,
       currentLongitude: resourceRequest.lon,
+      isEmergency: isEmergency,
     );
+
+    final totalAvailable = candidates.fold<int>(
+      0,
+      (sum, candidate) => sum + candidate.availableQuantity,
+    );
+    if (totalAvailable < resourceRequest.quantity) {
+      final proceed = await onInsufficientInventory(
+        totalAvailable,
+        resourceRequest.quantity,
+      );
+      if (!proceed) {
+        throw ResourceRequestCancelled();
+      }
+    }
 
     var remaining = resourceRequest.quantity;
     log.fine('requestData in repository: $resourceRequest');
@@ -152,17 +176,37 @@ class ResourceRepository {
       )) {
         continue;
       }
+      final requestedQuantity = candidate.availableQuantity >= remaining
+          ? remaining
+          : candidate.availableQuantity;
       final suggestion = SuggestedResourceRequest(
         availableQty: candidate.availableQuantity,
+        requestedQty: requestedQuantity,
         supplierCandidate: candidate,
       );
       if (!await confirmation(suggestion)) {
         continue;
       }
 
-      final allocated = candidate.availableQuantity >= remaining
-          ? remaining
-          : candidate.availableQuantity;
+      late final Map<String, dynamic> requestRow;
+      try {
+        requestRow = await _resourceService.reserveRequestCandidate(
+          resourceId: resourceRequest.resourceId,
+          quantity: requestedQuantity,
+          notes: resourceRequest.notes,
+          requestScope: resourceRequest.requestScope,
+          requesterProfileId: requesterProfileId,
+          supplierProfileId: candidate.profileId,
+          userResourceId: candidate.userResourceId,
+          distanceMeters: candidate.distanceMeters,
+        );
+      } catch (e) {
+        log.fine(
+          'reserveRequestCandidate failed for candidate ${candidate.profileId}, skipping: $e',
+        );
+        continue;
+      }
+      final grantedQuantity = (requestRow['quantity'] as num).toInt();
 
       final groupType = switch (resourceRequest.resourceTypeName) {
         'Consumable' => GROUP_CHAT_TYPE.request_consumable,
@@ -173,7 +217,7 @@ class ResourceRepository {
       final groupChat = await _chatRepository.createDirectRequestGroup(
         name: await _groupNameForRequest(
           candidate,
-          allocated,
+          grantedQuantity,
           resourceRequest.resourceName,
         ),
         createdByProfileId: requesterProfileId,
@@ -188,19 +232,9 @@ class ResourceRepository {
         );
       }
 
-      final requestRow = await _resourceService.reserveRequestCandidate(
-        resourceId: resourceRequest.resourceId,
-        quantity: allocated,
-        notes: resourceRequest.notes,
-        requestScope: resourceRequest.requestScope,
-        requesterProfileId: requesterProfileId,
-        supplierProfileId: candidate.profileId,
-        userResourceId: candidate.userResourceId,
-        distanceMeters: candidate.distanceMeters,
-      );
       final buf = StringBuffer();
       buf.writeln(
-        'Request for $allocated unit(s) of  ${resourceRequest.resourceName}.',
+        'Request for $grantedQuantity unit(s) of  ${resourceRequest.resourceName}.',
       );
       buf.writeln('Urgency: ${resourceRequest.urgency.name}.');
       buf.writeln(
@@ -215,7 +249,7 @@ class ResourceRepository {
         requestId: requestRow['id'] as String,
         metadata: {
           'resource_id': resourceRequest.resourceId,
-          'quantity': allocated,
+          'quantity': grantedQuantity,
           'request_scope': resourceRequest.requestScope,
           'requester_profile_id': requesterProfileId,
           'supplier_profile_id': candidate.profileId,
@@ -225,7 +259,7 @@ class ResourceRepository {
         urgency: MESSAGEURGENCY.normal,
       );
 
-      remaining -= allocated;
+      remaining -= grantedQuantity;
     }
 
     if (remaining > 0) {
@@ -241,6 +275,7 @@ class ResourceRepository {
     required String requestScope,
     required double? currentLatitude,
     required double? currentLongitude,
+    required bool isEmergency,
   }) async {
     log.fine(
       'Getting Candidates with requesterProfileId=$requesterProfileId, resourceId=$resourceId, requestScope=$requestScope, currentLatitude=$currentLatitude, currentLongitude=$currentLongitude',
@@ -250,6 +285,7 @@ class ResourceRepository {
         return _resourceService.getNearestSuppliersByHousehold(
           requesterProfileId: requesterProfileId,
           resourceId: resourceId,
+          isEmergency: isEmergency,
         );
       case 'nearby':
         if (currentLatitude == null || currentLongitude == null) {
@@ -262,6 +298,7 @@ class ResourceRepository {
           resourceId: resourceId,
           currentLatitude: currentLatitude,
           currentLongitude: currentLongitude,
+          isEmergency: isEmergency,
         );
       default:
         throw Exception('Invalid request_scope: $requestScope');

@@ -16,7 +16,7 @@ class AppRepository {
       'id': const UuidV4().generate(),
       'created_by': _supabaseClient.auth.currentUser!.id,
       'created_at': DateTime.now().toIso8601String(),
-      // FIXME removed during debugging 'status': operationalStatus,
+      'status': operationalStatus,
     });
   }
 

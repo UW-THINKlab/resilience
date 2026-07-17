@@ -135,12 +135,14 @@ class ResourceService {
   Future<List<SupplierCandidate>> getNearestSuppliersByHousehold({
     required String requesterProfileId,
     required String resourceId,
+    required bool isEmergency,
   }) async {
     final result = await _supabaseClient.rpc(
       'get_nearest_resource_suppliers_by_household',
       params: {
         'p_requester_profile_id': requesterProfileId,
         'p_resource_id': resourceId,
+        'p_is_emergency': isEmergency,
       },
     );
     log.fine('RPC raw data: $result');
@@ -154,6 +156,7 @@ class ResourceService {
     required String resourceId,
     required double currentLatitude,
     required double currentLongitude,
+    required bool isEmergency,
   }) async {
     final result = await _supabaseClient.rpc(
       'get_nearest_resource_suppliers_by_current_location',
@@ -162,6 +165,7 @@ class ResourceService {
         'p_resource_id': resourceId,
         'p_latitude': currentLatitude,
         'p_longitude': currentLongitude,
+        'p_is_emergency': isEmergency,
       },
     );
     debugPrint('RPC GEOM: $currentLatitude, $currentLongitude');

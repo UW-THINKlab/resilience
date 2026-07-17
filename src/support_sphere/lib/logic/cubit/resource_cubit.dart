@@ -84,6 +84,9 @@ class ResourceCubit extends Cubit<ResourceState> {
   Future<void> submitResourceRequest({
     required Map<String, dynamic> requestData,
     required Future<bool> Function(SuggestedResourceRequest) confirmation,
+    required bool isEmergency,
+    required Future<bool> Function(int totalAvailable, int requested)
+        onInsufficientInventory,
   }) async {
     if (isClosed) return;
     final ResourceRequest resourceRequest = ResourceRequest(
@@ -100,6 +103,8 @@ class ResourceCubit extends Cubit<ResourceState> {
       resourceRequest: resourceRequest,
       requesterProfileId: authUser.uuid,
       confirmation: confirmation,
+      isEmergency: isEmergency,
+      onInsufficientInventory: onInsufficientInventory,
     );
   }
 }
