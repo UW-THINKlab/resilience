@@ -18,6 +18,7 @@ import 'package:support_sphere/data/repositories/resource.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:support_sphere/utils/reservation_status_colors.dart';
 import 'package:timeago/timeago.dart';
 
 const preloader =
@@ -136,14 +137,13 @@ class MessagesState extends State<MessagesPage> {
   }
 
   Color get _appBarColor {
-    return switch (_pendingReservation?.status) {
-      RESERVATION_STATUS.tentative => ColorConstants.tentativeGreen,
-      RESERVATION_STATUS.accepted => ColorConstants.confirmGreen,
-      RESERVATION_STATUS.rejected => ColorConstants.rejectedGray,
-      RESERVATION_STATUS.released => ColorConstants.cancelGray,
-      RESERVATION_STATUS.expired => ColorConstants.cancelGray,
-      _ => Colors.white,
-    };
+    final reservation = _pendingReservation;
+    if (reservation == null ||
+        reservation.status == RESERVATION_STATUS.pending) {
+      return Colors.white;
+    }
+    final isRequester = myUserId == reservation.requesterProfileId;
+    return reservation.status.statusColor(isRequester: isRequester);
   }
 
   String _groupNameWithStatus(RESERVATION_STATUS? status) {
@@ -168,7 +168,8 @@ class MessagesState extends State<MessagesPage> {
         backgroundColor: _appBarColor,
         title: Text(_groupTitle),
         actions: [
-          if (_pendingReservation != null)
+          if (_pendingReservation != null &&
+              myUserId != _pendingReservation!.requesterProfileId)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Row(
@@ -229,7 +230,7 @@ class MessagesState extends State<MessagesPage> {
                     const SizedBox(width: 8),
                     ConfirmButton(
                       label: MessagesStrings.tentativeAccept,
-                      color: ColorConstants.tentativeGreen,
+                      color: ColorConstants.tentativeLime,
                       onPressed: () async {
                         final originalQty = _pendingReservation!.quantity;
                         final reservationId = _pendingReservation!.id;
