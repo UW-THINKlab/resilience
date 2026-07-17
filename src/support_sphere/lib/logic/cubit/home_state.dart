@@ -29,6 +29,7 @@ class HomeState extends Equatable {
     this.pickedLocation,
     this.pickedOffset,
     this.meetingPlace,
+    this.geojson, // Map layers loaded from assets/geojson
   });
 
   final HomeStatus status;
