@@ -13,6 +13,7 @@ import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:flutter_map_geojson/flutter_map_geojson.dart';
+import 'package:support_sphere/utils/geojson.dart' show GeoJson;
 
 final log = Logger('HomeCubit');
 
@@ -173,46 +174,10 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   // emit a new state with the geojson assets loaded
-  // geojson stored in assets/geojson/*.geojson
   Future<void> loadGeojson() async {
-    // Load everything under assets/geojson
-    final assetLocation = "assets/geojson/";
-    final assetExt = ".geojson";
-    final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    log.fine("Loaded manifest: ${assetManifest.listAssets()}");
-
-    final geojsonFiles = assetManifest.listAssets()
-        .where((key) => key.startsWith(assetLocation))
-        .where((key) => key.endsWith(assetExt))
-        .toList();
-
-    final Map<String, GeoJsonParser> layers = {};
-
-    for (final fileName in geojsonFiles) {
-      // Load geojson
-      final String jsonStr = await loadAsset(fileName);
-      if (jsonStr.isEmpty) {
-        throw Error();
-      }
-      final layerName = fileName.substring(assetLocation.length, fileName.indexOf(assetExt));
-      log.fine("Loaded asset: $layerName");
-
-      // parse
-      GeoJsonParser geoJson = GeoJsonParser();
-      geoJson.parseGeoJsonAsString(jsonStr);
-      //log.fine("Parsed geoJson: $geoJson");
-      layers[layerName] =  geoJson;
-    }
-    log.fine("Loaded layers: ${layers.keys}");
-
-    // emit
+    final layers = await GeoJson.loadLayers();
     emit(state.copyWith(
       geojson: layers,
     ));
-  }
-
-  static Future<String> loadAsset(String assetPath) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    return await rootBundle.loadString(assetPath);
   }
 }

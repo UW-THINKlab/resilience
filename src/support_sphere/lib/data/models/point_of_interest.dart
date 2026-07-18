@@ -7,7 +7,7 @@ import 'package:logging/logging.dart' show Logger;
 
 final log = Logger('MessagesPage');
 
-const double default_icon_size = 40;
+const default_icon_size = 40.0;
 
 // Need a lookup map for icon colors
 const Map<String, Color> colorStringToColor = {

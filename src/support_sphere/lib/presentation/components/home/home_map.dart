@@ -156,7 +156,7 @@ class HomeMap extends StatelessWidget {
   List<Polygon> _generatePolygons() {
     List<Polygon> polygons = [];
 
-    log.fine("generating polygons: ${state.geojson}");
+    //log.fine("generating polygons: ${state.geojson}");
 
     if (state.allClusters != null && state.allClusters!.isNotEmpty) {
       for (var cluster in state.allClusters!) {
