@@ -68,6 +68,17 @@ class MessagesRepository {
     return DateTime.parse(response['sent_on'] as String);
   }
 
+  Future<bool> hasResourceRemovedMessage(String groupId) async {
+    final row = await supabase
+        .from('messages')
+        .select('id')
+        .eq('to_id', groupId)
+        .eq('message_type', 'resource_removed')
+        .limit(1)
+        .maybeSingle();
+    return row != null;
+  }
+
   Future<void> sendMessage({
     required String fromProfileId,
     required String groupId,

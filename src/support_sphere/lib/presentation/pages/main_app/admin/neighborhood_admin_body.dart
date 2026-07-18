@@ -4,7 +4,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/cluster_search_bar.dart' show ClusterSearchBar;
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
@@ -208,7 +208,10 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
                   label: NeighborhoodStrings.addCluster,
                   onPressed: widget.addClusterOnPressed,
                 ),
-                Expanded(child: ClusterSearchBar(onQueryChanged: onQueryChanged)),
+                Expanded(
+                    child: FilterSearchBar(
+                        labelText: NeighborhoodStrings.searchClusters,
+                        onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: NeighborhoodFilter(
                   onSelected: onSelected,

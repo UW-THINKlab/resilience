@@ -1,6 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/widgets.dart'; //debugPrint
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/data/models/supplier_candidate.dart';
 
@@ -26,6 +27,8 @@ class ResourceService {
       ),
       quantity,
       notes,
+      sharing_scope,
+      sharing_scope_emergency,
       created_at,
       updated_at
     ''').eq('user_id', userId);
@@ -110,10 +113,20 @@ class ResourceService {
     await _supabaseClient.from('user_resources').delete().eq('id', id);
   }
 
-  Future<void> markUpToDate(String id, DateTime updatedAt) async {
-    await _supabaseClient
-        .from('user_resources')
-        .update({'updated_at': updatedAt.toIso8601String()}).eq('id', id);
+  Future<void> updateUserResource({
+    required String id,
+    required int quantity,
+    String? notes,
+    required SHARING_SCOPES sharingScope,
+    required SHARING_SCOPES sharingScopeEmergency,
+  }) async {
+    await _supabaseClient.from('user_resources').update({
+      'quantity': quantity,
+      'notes': notes,
+      'sharing_scope': sharingScope.name,
+      'sharing_scope_emergency': sharingScopeEmergency.name,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', id);
   }
 
   Future<void> createResourceCV(Map<String, dynamic> data) async {
@@ -234,5 +247,24 @@ class ResourceService {
         .from('resource_reservations')
         .update(updates)
         .eq('id', reservationId);
+  }
+
+  Future<PostgrestList?> getReservationsForUserResources(
+      List<String> userResourceIds) async {
+    if (userResourceIds.isEmpty) return [];
+    return await _supabaseClient
+        .from('resource_reservations')
+        .select('id, user_resource_id, request_id')
+        .inFilter('user_resource_id', userResourceIds);
+  }
+
+  Future<String?> getGroupIdForRequest(String requestId) async {
+    final row = await _supabaseClient
+        .from('messages')
+        .select('to_id')
+        .eq('request_id', requestId)
+        .limit(1)
+        .maybeSingle();
+    return row?['to_id'] as String?;
   }
 }

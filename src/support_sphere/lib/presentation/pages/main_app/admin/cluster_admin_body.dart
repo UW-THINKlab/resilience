@@ -8,7 +8,7 @@ import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/add_household_form.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/household_search_bar.dart' show HouseholdSearchBar;
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
 
@@ -272,7 +272,10 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
                 AddItemButton(
                     label: ClusterAdminStrings.addHousehold,
                     onPressed: widget.addHouseholdOnPressed),
-                Expanded(child: HouseholdSearchBar(onQueryChanged: onQueryChanged)),
+                Expanded(
+                    child: FilterSearchBar(
+                        labelText: ClusterAdminStrings.searchHouseholds,
+                        onQueryChanged: onQueryChanged)),
                 Expanded(
                   child: HouseholdFilter(
                     onSelected: onSelected,
