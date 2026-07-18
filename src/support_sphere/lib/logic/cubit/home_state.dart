@@ -46,7 +46,7 @@ class HomeState extends Equatable {
   final Offset? pickedOffset;
   final String? meetingPlace; // description of the pick meeting point
 
-  final List<GeoJsonParser>? geojson; // geojson layers
+  final Map<String,GeoJsonParser>? geojson; // geojson layers
 
   @override
   List<Object?> get props => [
@@ -76,7 +76,7 @@ class HomeState extends Equatable {
     LatLng? pickedLocation,
     Offset? pickedOffset,
     String? meetingPlace,
-    List<GeoJsonParser>? geojson,
+    Map<String,GeoJsonParser>? geojson,
   }) {
     return HomeState(
       status: status ?? this.status,

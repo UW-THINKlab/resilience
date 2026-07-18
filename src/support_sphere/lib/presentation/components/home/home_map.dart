@@ -123,8 +123,11 @@ class HomeMap extends StatelessWidget {
 
       // Append geojson points
       if (state.geojson != null) {
-        for (final layer in state.geojson!) {
-          value.addAll(layer.markers);
+        for (final entry in state.geojson!.entries) {
+          if (entry.key != null ) {
+            // FIXME check if layer is enabled
+            value.addAll(entry.value.markers);
+          }
         }
       }
 
@@ -166,10 +169,12 @@ class HomeMap extends StatelessWidget {
 
     // Add geojson polygons
     if (state.geojson != null) {
-      for (final layer in state.geojson!) {
-        // TODO: Add check for if layer is visible.
-        polygons.addAll(layer.polygons);
-        log.fine("adding geojson polygons: ${layer.polygons}");
+      for (final entry in state.geojson!.entries) {
+        if (entry.key != null ) {
+          // TODO: Add check for if layer is visible.
+          polygons.addAll(entry.value.polygons);
+          log.fine("adding geojson polygon layer: ${entry.key}");
+        }
       }
     }
 

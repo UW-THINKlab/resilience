@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' show WidgetsFlutterBinding;
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
@@ -173,27 +173,37 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   // emit a new state with the geojson assets loaded
+  // geojson stored in assets/geojson/*.geojson
   Future<void> loadGeojson() async {
-    // TODO: Load everything under assets/geojson
-    const fileName = "geojson/test_clusters.geojson";
+    // Load everything under assets/geojson
+    final assetLocation = "assets/geojson/";
+    final assetExt = ".geojson";
+    final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    log.fine("Loaded manifest: ${assetManifest.listAssets()}");
 
-    // Load geojson
-    final String jsonStr = await loadAsset(fileName);
-    if (jsonStr.isEmpty) {
-      throw Error();
+    final geojsonFiles = assetManifest.listAssets()
+        .where((key) => key.startsWith(assetLocation))
+        .where((key) => key.endsWith(assetExt))
+        .toList();
+
+    final Map<String, GeoJsonParser> layers = {};
+
+    for (final fileName in geojsonFiles) {
+      // Load geojson
+      final String jsonStr = await loadAsset(fileName);
+      if (jsonStr.isEmpty) {
+        throw Error();
+      }
+      final layerName = fileName.substring(assetLocation.length, fileName.indexOf(assetExt));
+      log.fine("Loaded asset: $layerName");
+
+      // parse
+      GeoJsonParser geoJson = GeoJsonParser();
+      geoJson.parseGeoJsonAsString(jsonStr);
+      //log.fine("Parsed geoJson: $geoJson");
+      layers[layerName] =  geoJson;
     }
-    log.fine("Loaded asset: $fileName");
-
-    // parse
-    GeoJsonParser geoJson = GeoJsonParser();
-    geoJson.parseGeoJsonAsString(jsonStr);
-
-    log.fine("Parsed geoJson: $geoJson");
-
-    // organize
-    // TODO: handle mutple files overlaid
-
-    var layers = [geoJson];
+    log.fine("Loaded layers: ${layers.keys}");
 
     // emit
     emit(state.copyWith(
