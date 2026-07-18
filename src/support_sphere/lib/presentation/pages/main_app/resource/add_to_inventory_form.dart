@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
@@ -24,8 +25,8 @@ class AddToInventoryFormData extends Equatable {
   final String? resourceId;
   final int? quantity;
   final String? notes;
-  final String? sharingScope;
-  final String? sharingScopeEmergency;
+  final SHARING_SCOPES? sharingScope;
+  final SHARING_SCOPES? sharingScopeEmergency;
 
   @override
   List<Object?> get props => [
@@ -41,8 +42,8 @@ class AddToInventoryFormData extends Equatable {
     String? resourceId,
     int? quantity,
     String? notes,
-    String? sharingScope,
-    String? sharingScopeEmergency,
+    SHARING_SCOPES? sharingScope,
+    SHARING_SCOPES? sharingScopeEmergency,
   }) {
     return AddToInventoryFormData(
         resourceId: resourceId ?? this.resourceId,
@@ -60,8 +61,8 @@ class AddToInventoryFormData extends Equatable {
       'resource_id': resourceId,
       'quantity': quantity,
       'notes': notes,
-      'sharing_scope': sharingScope,
-      'sharing_scope_emergency': sharingScopeEmergency,
+      'sharing_scope': sharingScope?.name,
+      'sharing_scope_emergency': sharingScopeEmergency?.name,
       'created_at': now,
       'updated_at': now,
     };
@@ -126,13 +127,13 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                       enabledBorder: border(context),
                       focusedBorder: focusBorder(context)),
                 ),
-              FormField<SharingScopes?>(
+              FormField<SHARING_SCOPES?>(
                 initialValue: null,
                 validator: (value) => value == null
                     ? 'Please choose who can request this item.'
                     : null,
                 onSaved: (value) => _formData = _formData.copyWith(
-                  sharingScope: value!.dbValue, // value is guaranteed non-null
+                  sharingScope: value, // value is guaranteed non-null
                 ),
                 builder: (field) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,23 +142,22 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                       Text(field.errorText!,
                           style: TextStyle(color: Colors.red)),
                     Text(AddResourceInventoryFormStrings.setSharingScopeNormal),
-                    RadioButtonGroup<SharingScopes>(
+                    RadioButtonGroup<SHARING_SCOPES>(
                       value: field.value,
                       onChanged: field.didChange,
-                      options: SharingScopes.values,
+                      options: SHARING_SCOPES.values,
                       labelBuilder: (scope) => scope.displayName,
                     ),
                   ],
                 ),
               ),
-              FormField<SharingScopes?>(
+              FormField<SHARING_SCOPES?>(
                 initialValue: null,
                 validator: (value) => value == null
                     ? 'Please choose who can request this in an emergency.'
                     : null,
                 onSaved: (value) => _formData = _formData.copyWith(
-                  sharingScopeEmergency:
-                      value!.dbValue, // value is guaranteed non-null
+                  sharingScopeEmergency: value, // value is guaranteed non-null
                 ),
                 builder: (field) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,10 +167,10 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
                           style: TextStyle(color: Colors.red)),
                     Text(AddResourceInventoryFormStrings
                         .setSharingScopeEmergency),
-                    RadioButtonGroup<SharingScopes>(
+                    RadioButtonGroup<SHARING_SCOPES>(
                       value: field.value,
                       onChanged: field.didChange,
-                      options: SharingScopes.values,
+                      options: SHARING_SCOPES.values,
                       labelBuilder: (scope) => scope.displayName,
                     ),
                   ],
@@ -230,18 +230,11 @@ class _AddToInventoryFormState extends State<AddToInventoryForm> {
   }
 }
 
-enum SharingScopes { cluster, neighborhood, everyone }
-
-extension SharingScopesExtension on SharingScopes {
+extension SharingScopeDisplay on SHARING_SCOPES {
   String get displayName => switch (this) {
-        SharingScopes.cluster => 'My Cluster Only',
-        SharingScopes.neighborhood => 'All Clusters in Neighborhood',
-        SharingScopes.everyone => 'Everyone',
-      };
-  String get dbValue => switch (this) {
-        SharingScopes.cluster => 'cluster',
-        SharingScopes.neighborhood => 'neighborhood',
-        SharingScopes.everyone => 'everyone',
+        SHARING_SCOPES.cluster => SharingScopeStrings.clusterOnly,
+        SHARING_SCOPES.neighborhood => SharingScopeStrings.neighborhood,
+        SHARING_SCOPES.everyone => SharingScopeStrings.everyone,
       };
 }
 

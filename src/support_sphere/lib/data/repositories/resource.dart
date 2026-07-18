@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_request.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
@@ -14,12 +15,18 @@ import 'package:support_sphere/data/repositories/user.dart';
 class SuggestedResourceRequest {
   final SupplierCandidate supplierCandidate;
   final int availableQty;
+  final int requestedQty;
 
   SuggestedResourceRequest({
     required this.supplierCandidate,
     required this.availableQty,
+    required this.requestedQty,
   });
 }
+
+/// Thrown when the user declines to continue past the
+/// insufficient-total-inventory warning.
+class ResourceRequestCancelled implements Exception {}
 
 class ResourceRepository {
   ResourceRepository({
@@ -61,7 +68,15 @@ class ResourceRepository {
   Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
     PostgrestList? results =
         await _resourceService.getUserResourcesByUserId(userId);
-    return results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
+    final rows =
+        results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
+    rows.sort((a, b) {
+      final nameComparison =
+          a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      if (nameComparison != 0) return nameComparison;
+      return b.addedDate!.compareTo(a.addedDate!);
+    });
+    return rows;
   }
 
   Future<void> addNewResource(Resource resource) async {
@@ -100,8 +115,49 @@ class ResourceRepository {
     await _resourceService.deleteUserResource(id);
   }
 
-  Future<void> markUpToDate(String id, DateTime updatedAt) async {
-    await _resourceService.markUpToDate(id, updatedAt);
+  Future<void> updateUserResource({
+    required String id,
+    required int quantity,
+    String? notes,
+    required SHARING_SCOPES sharingScope,
+    required SHARING_SCOPES sharingScopeEmergency,
+  }) async {
+    await _resourceService.updateUserResource(
+      id: id,
+      quantity: quantity,
+      notes: notes,
+      sharingScope: sharingScope,
+      sharingScopeEmergency: sharingScopeEmergency,
+    );
+  }
+
+  Future<List<String>> getUserResourceIdsWithReservations(
+      List<String> ids) async {
+    final rows = await _resourceService.getReservationsForUserResources(ids);
+    return (rows ?? [])
+        .map((r) => r['user_resource_id'] as String)
+        .toSet()
+        .toList();
+  }
+
+  Future<void> notifyReservationsRemoved(List<String> userResourceIds) async {
+    if (userResourceIds.isEmpty) return;
+    final rows = await _resourceService
+        .getReservationsForUserResources(userResourceIds);
+    final fromProfileId = _authService.getSignedInUser()!.id;
+    final notifiedGroupIds = <String>{};
+    for (final row in rows ?? []) {
+      final requestId = row['request_id'] as String;
+      final groupId = await _resourceService.getGroupIdForRequest(requestId);
+      if (groupId == null || !notifiedGroupIds.add(groupId)) continue;
+      await _messagesRepository.sendMessage(
+        fromProfileId: fromProfileId,
+        groupId: groupId,
+        text: ResourceStrings.resourceRemovedMessage,
+        messageType: 'resource_removed',
+        urgency: MESSAGEURGENCY.normal,
+      );
+    }
   }
 
   Future<ResourceReservations?> getPendingReservationForChat({
@@ -130,6 +186,9 @@ class ResourceRepository {
     required ResourceRequest resourceRequest,
     required String requesterProfileId,
     required Future<bool> Function(SuggestedResourceRequest) confirmation,
+    required bool isEmergency,
+    required Future<bool> Function(int totalAvailable, int requested)
+        onInsufficientInventory,
   }) async {
     final candidates = await _getCandidates(
       requesterProfileId: requesterProfileId,
@@ -137,7 +196,22 @@ class ResourceRepository {
       requestScope: resourceRequest.requestScope,
       currentLatitude: resourceRequest.lat,
       currentLongitude: resourceRequest.lon,
+      isEmergency: isEmergency,
     );
+
+    final totalAvailable = candidates.fold<int>(
+      0,
+      (sum, candidate) => sum + candidate.availableQuantity,
+    );
+    if (totalAvailable < resourceRequest.quantity) {
+      final proceed = await onInsufficientInventory(
+        totalAvailable,
+        resourceRequest.quantity,
+      );
+      if (!proceed) {
+        throw ResourceRequestCancelled();
+      }
+    }
 
     var remaining = resourceRequest.quantity;
     log.fine('requestData in repository: $resourceRequest');
@@ -152,17 +226,37 @@ class ResourceRepository {
       )) {
         continue;
       }
+      final requestedQuantity = candidate.availableQuantity >= remaining
+          ? remaining
+          : candidate.availableQuantity;
       final suggestion = SuggestedResourceRequest(
         availableQty: candidate.availableQuantity,
+        requestedQty: requestedQuantity,
         supplierCandidate: candidate,
       );
       if (!await confirmation(suggestion)) {
         continue;
       }
 
-      final allocated = candidate.availableQuantity >= remaining
-          ? remaining
-          : candidate.availableQuantity;
+      late final Map<String, dynamic> requestRow;
+      try {
+        requestRow = await _resourceService.reserveRequestCandidate(
+          resourceId: resourceRequest.resourceId,
+          quantity: requestedQuantity,
+          notes: resourceRequest.notes,
+          requestScope: resourceRequest.requestScope,
+          requesterProfileId: requesterProfileId,
+          supplierProfileId: candidate.profileId,
+          userResourceId: candidate.userResourceId,
+          distanceMeters: candidate.distanceMeters,
+        );
+      } catch (e) {
+        log.fine(
+          'reserveRequestCandidate failed for candidate ${candidate.profileId}, skipping: $e',
+        );
+        continue;
+      }
+      final grantedQuantity = (requestRow['quantity'] as num).toInt();
 
       final groupType = switch (resourceRequest.resourceTypeName) {
         'Consumable' => GROUP_CHAT_TYPE.request_consumable,
@@ -173,7 +267,7 @@ class ResourceRepository {
       final groupChat = await _chatRepository.createDirectRequestGroup(
         name: await _groupNameForRequest(
           candidate,
-          allocated,
+          grantedQuantity,
           resourceRequest.resourceName,
         ),
         createdByProfileId: requesterProfileId,
@@ -188,19 +282,9 @@ class ResourceRepository {
         );
       }
 
-      final requestRow = await _resourceService.reserveRequestCandidate(
-        resourceId: resourceRequest.resourceId,
-        quantity: allocated,
-        notes: resourceRequest.notes,
-        requestScope: resourceRequest.requestScope,
-        requesterProfileId: requesterProfileId,
-        supplierProfileId: candidate.profileId,
-        userResourceId: candidate.userResourceId,
-        distanceMeters: candidate.distanceMeters,
-      );
       final buf = StringBuffer();
       buf.writeln(
-        'Request for $allocated unit(s) of  ${resourceRequest.resourceName}.',
+        'Request for $grantedQuantity unit(s) of  ${resourceRequest.resourceName}.',
       );
       buf.writeln('Urgency: ${resourceRequest.urgency.name}.');
       buf.writeln(
@@ -215,7 +299,7 @@ class ResourceRepository {
         requestId: requestRow['id'] as String,
         metadata: {
           'resource_id': resourceRequest.resourceId,
-          'quantity': allocated,
+          'quantity': grantedQuantity,
           'request_scope': resourceRequest.requestScope,
           'requester_profile_id': requesterProfileId,
           'supplier_profile_id': candidate.profileId,
@@ -225,7 +309,7 @@ class ResourceRepository {
         urgency: MESSAGEURGENCY.normal,
       );
 
-      remaining -= allocated;
+      remaining -= grantedQuantity;
     }
 
     if (remaining > 0) {
@@ -241,6 +325,7 @@ class ResourceRepository {
     required String requestScope,
     required double? currentLatitude,
     required double? currentLongitude,
+    required bool isEmergency,
   }) async {
     log.fine(
       'Getting Candidates with requesterProfileId=$requesterProfileId, resourceId=$resourceId, requestScope=$requestScope, currentLatitude=$currentLatitude, currentLongitude=$currentLongitude',
@@ -250,6 +335,7 @@ class ResourceRepository {
         return _resourceService.getNearestSuppliersByHousehold(
           requesterProfileId: requesterProfileId,
           resourceId: resourceId,
+          isEmergency: isEmergency,
         );
       case 'nearby':
         if (currentLatitude == null || currentLongitude == null) {
@@ -262,6 +348,7 @@ class ResourceRepository {
           resourceId: resourceId,
           currentLatitude: currentLatitude,
           currentLongitude: currentLongitude,
+          isEmergency: isEmergency,
         );
       default:
         throw Exception('Invalid request_scope: $requestScope');

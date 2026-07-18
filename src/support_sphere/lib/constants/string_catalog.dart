@@ -6,7 +6,9 @@ class AppStrings {
   static final String appName = 'Resilience - ${AppConfig.neighborhood}';
   static final String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
-  static const String testEmergencyBannerText = "This is a test emergency.";
+  static const String testEmergencyBannerText =
+      "This is a test of emergency mode.";
+  static const String emergencyBannerText = "Emergency mode declared.";
 }
 
 class EmergencyAlertDialogStrings {
@@ -132,7 +134,46 @@ class ResourceStrings {
   static String addedOnDate(DateTime date) =>
       "Added on ${DateFormat.yMMMd('en').format(date)}";
   static const String markUpToDate = 'Up-to-date';
-  static const String delete = 'Delete item';
+  static const String delete = 'Delete';
+  static const String quantity = 'Quantity';
+  static const String notes = 'Notes';
+  static const String update = 'Update';
+  static const String whoCanRequestLabel = 'Who can request:';
+  static const String whoCanRequestEmergencyLabel = 'In an emergency:';
+  static const String updateSuccess = 'Item updated successfully';
+  static String bulkUpdateSuccess(int count) =>
+      '$count item(s) updated successfully';
+  static const String deleteSuccess = 'Item deleted successfully';
+  static String bulkDeleteSuccess(int count) =>
+      '$count item(s) deleted successfully';
+  static const String resourceRemovedMessage =
+      'This resource has been removed.';
+  static String itemLabel(int number) => '$number)';
+  static String deleteConfirm(List<int> itemNumbers) {
+    return itemNumbers.length == 1
+        ? 'Delete Item ${itemNumbers.first}?'
+        : 'Delete ${itemNumbers.length} items?';
+  }
+
+  static String deleteConfirmWithReservations(
+      List<int> itemNumbersWithReservations) {
+    final itemsText = itemNumbersWithReservations.length == 1
+        ? 'Item ${itemNumbersWithReservations.first} has a reservation on it.'
+        : 'Items ${itemNumbersWithReservations.join(', ')} have reservations on them.';
+    return '$itemsText Still delete?';
+  }
+}
+
+class SharingScopeStrings {
+  static const String clusterOnly = 'My Cluster Only';
+  static const String neighborhood = 'All Clusters in Neighborhood';
+  static const String everyone = 'Everyone';
+}
+
+class SelectionToolbarStrings {
+  static const String select = 'Select';
+  static const String delete = 'Delete';
+  static String selectedCount(int count) => '$count selected';
 }
 
 class AddResourceInventoryFormStrings {
@@ -170,6 +211,11 @@ class RequestResourceFormStrings {
   static const String notes =
       'Details or special notes on this request (optional)';
   static String reqTitle(String resourceName) => "Request $resourceName";
+  static const String requestCancelled = 'Request canceled';
+  static String insufficientInventoryWarning(
+          int totalAvailable, int requested) =>
+      'Insufficient Quantity: $totalAvailable of the $requested requested unit(s) are '
+      'currently available to request. Continue anyway?';
   static const String requestScope = 'Who to ask for this item?';
 }
 
@@ -259,4 +305,7 @@ class MessagesStrings {
           'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
   static String rejectMessage(int total) =>
       'Rejected the request for $total item(s).';
+  static const String cancelRequest = 'Cancel Request';
+  static String cancelRequestMessage(int total) =>
+      'Canceled the request for $total item(s).';
 }

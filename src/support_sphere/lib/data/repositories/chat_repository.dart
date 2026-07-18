@@ -61,9 +61,25 @@ class ChatRepository {
           final reservation = reservationRows.isEmpty
               ? null
               : ResourceReservations.fromJson(reservationRows.first);
+          RESERVATION_STATUS? effectiveStatus;
+          bool isRequester;
+          if (reservation != null) {
+            effectiveStatus = reservation.status;
+            isRequester = reservation.requesterProfileId == userId;
+          } else if (row.group.type != GROUP_CHAT_TYPE.chat &&
+              await messageRepo.hasResourceRemovedMessage(row.group.id)) {
+            // Reservation was cascade-deleted along with its user_resource;
+            // treat the group the same as a released request so it colors
+            // and hides action buttons the same way.
+            effectiveStatus = RESERVATION_STATUS.released;
+            isRequester = true;
+          } else {
+            effectiveStatus = null;
+            isRequester = false;
+          }
           final chatGroupWithStatus = chatGroup.copyWith(
-            reservationStatus: reservation?.status,
-            isRequester: reservation?.requesterProfileId == userId,
+            reservationStatus: effectiveStatus,
+            isRequester: isRequester,
           );
           return (
             chatGroup: chatGroupWithStatus,

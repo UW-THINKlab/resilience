@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/color.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,12 +22,12 @@ class AppPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => AppBloc(appRepository: AppRepository()),
       child: BlocListener<AppBloc, AppState>(
+        listenWhen: (previous, current) => previous.mode != current.mode,
         listener: (context, state) {
           /// Show a banner if the app is in test emergency mode
           /// This is to help users understand that the emergency
           /// is not real and is only a test
 
-          // TODO: Fix this... still buggy
           if (state.mode == AppModes.testEmergency) {
             ScaffoldMessenger.of(context).showMaterialBanner(
               const MaterialBanner(
@@ -35,6 +36,26 @@ class AppPage extends StatelessWidget {
                 leading: Icon(Icons.warning_sharp),
                 backgroundColor: Colors.yellow,
                 actions: [SizedBox()],
+              ),
+            );
+          } else if (state.mode == AppModes.emergency) {
+            ScaffoldMessenger.of(context).showMaterialBanner(
+              MaterialBanner(
+                padding: const EdgeInsets.all(5),
+                content: const Text(
+                  AppStrings.emergencyBannerText,
+                  style: TextStyle(color: Colors.white),
+                ),
+                leading: const Icon(Icons.warning_sharp, color: Colors.white),
+                backgroundColor: ColorConstants.dangerRed,
+                actions: [
+                  TextButton(
+                    onPressed: () => ScaffoldMessenger.of(context)
+                        .hideCurrentMaterialBanner(),
+                    child: const Text('Dismiss',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ],
               ),
             );
           } else {

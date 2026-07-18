@@ -5,7 +5,6 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/enums/resource_nav.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_types.dart';
-import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:support_sphere/logic/cubit/resource_cubit.dart';
 
 class ResourceCard extends StatelessWidget {
@@ -99,21 +98,15 @@ class _INeedThisButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-      builder: (context, state) {
-        void onPressed() {
-          context.read<ResourceCubit>().selectedResourceChanged(resource);
-          context
-              .read<ResourceCubit>()
-              .currentNavChanged(ResourceNav.requestResource);
-        }
-
-        return ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-          onPressed: (state.mode == AppModes.normal) ? onPressed : null,
-          child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
-        );
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+      onPressed: () {
+        context.read<ResourceCubit>().selectedResourceChanged(resource);
+        context
+            .read<ResourceCubit>()
+            .currentNavChanged(ResourceNav.requestResource);
       },
+      child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
     );
   }
 }
@@ -126,21 +119,15 @@ class _IHaveThisButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-      builder: (context, state) {
-        void onPressed() {
-          context.read<ResourceCubit>().selectedResourceChanged(resource);
-          context
-              .read<ResourceCubit>()
-              .currentNavChanged(ResourceNav.addToResourceInventory);
-        }
-
-        return ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-          onPressed: (state.mode == AppModes.normal) ? onPressed : null,
-          child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
-        );
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+      onPressed: () {
+        context.read<ResourceCubit>().selectedResourceChanged(resource);
+        context
+            .read<ResourceCubit>()
+            .currentNavChanged(ResourceNav.addToResourceInventory);
       },
+      child: Text(_buttonText, style: const TextStyle(color: Colors.white)),
     );
   }
 }
