@@ -218,6 +218,10 @@ depends-on = ["install-flutter"]
 cmd = "flutter doctor --android-licenses"
 depends-on = ["install-flutter"]
 
+[feature.frontend.tasks.build]
+cmd = "flutter clean; flutter build web --debug"
+cwd = "src/support_sphere"
+
 
 # ==== Deployment environment ====
 [feature.cloud.activation.env]
