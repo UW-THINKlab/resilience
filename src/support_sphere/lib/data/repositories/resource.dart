@@ -142,8 +142,8 @@ class ResourceRepository {
 
   Future<void> notifyReservationsRemoved(List<String> userResourceIds) async {
     if (userResourceIds.isEmpty) return;
-    final rows = await _resourceService
-        .getReservationsForUserResources(userResourceIds);
+    final rows =
+        await _resourceService.getReservationsForUserResources(userResourceIds);
     final fromProfileId = _authService.getSignedInUser()!.id;
     final notifiedGroupIds = <String>{};
     for (final row in rows ?? []) {
@@ -249,6 +249,7 @@ class ResourceRepository {
           supplierProfileId: candidate.profileId,
           userResourceId: candidate.userResourceId,
           distanceMeters: candidate.distanceMeters,
+          expiresAt: resourceRequest.expiresAt,
         );
       } catch (e) {
         log.fine(

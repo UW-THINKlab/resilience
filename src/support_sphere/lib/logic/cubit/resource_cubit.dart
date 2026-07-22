@@ -163,6 +163,7 @@ class ResourceCubit extends Cubit<ResourceState> {
     required bool isEmergency,
     required Future<bool> Function(int totalAvailable, int requested)
         onInsufficientInventory,
+    required DateTime expiresAt,
   }) async {
     if (isClosed) return;
     final ResourceRequest resourceRequest = ResourceRequest(
@@ -174,6 +175,7 @@ class ResourceCubit extends Cubit<ResourceState> {
       notes: requestData['notes'],
       lon: requestData['current_longitude'],
       lat: requestData['current_latitude'],
+      expiresAt: expiresAt,
     );
     await _resourceRepository.submitResourceRequestAndNotify(
       resourceRequest: resourceRequest,
