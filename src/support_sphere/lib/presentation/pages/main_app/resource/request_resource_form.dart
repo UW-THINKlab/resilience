@@ -111,6 +111,8 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
   final ResourceTypes resourceType;
   RequestResourceFormData _formData = RequestResourceFormData();
   bool _isProcessing = false;
+  final TextEditingController _expiryDateController = TextEditingController();
+  DateTime _expiryDate = DateTime.now().add(Duration(days: 10));
 
   _RequestResourceFormState({
     required this.resourceCv,
@@ -205,6 +207,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
               if (mounted) setState(() => _isProcessing = true);
               return res ?? false;
             },
+            expiresAt: _expiryDate,
           );
       if (!mounted) return;
       showSuccessSnackBar(context, 'Request sent.');
@@ -226,6 +229,19 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
       );
     } finally {
       if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 1),
+      initialDate: _expiryDate,
+    );
+    if (pickedDate != null) {
+      _expiryDate = pickedDate;
+      _expiryDateController.text = pickedDate.toString().split(" ")[0];
     }
   }
 
@@ -296,6 +312,24 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 16,
+              ),
+              TextFormField(
+                controller: _expiryDateController,
+                decoration: InputDecoration(
+                  labelText: 'Expires at',
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                  enabledBorder:
+                      OutlineInputBorder(borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                ),
+                readOnly: true,
+                onTap: _selectDate,
+              ),
               const SizedBox(height: 16),
               // Resource Notes (Only user and cluster captains can see)
               TextFormField(
@@ -332,8 +366,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   const SizedBox(width: 4),
                   ConfirmButton(
                       label: 'Request',
-                      onPressed:
-                          _isProcessing ? null : () => _handleSubmit()),
+                      onPressed: _isProcessing ? null : () => _handleSubmit()),
                 ],
               ),
             ],

@@ -197,9 +197,10 @@ class ResourceService {
     required String supplierProfileId,
     required String userResourceId,
     double? distanceMeters,
+    required DateTime expiresAt,
   }) async {
     final row = await _supabaseClient.rpc(
-      'reserve_request_candidate',
+      'reserve_request_candidate_v2',
       params: {
         'p_resource_id': resourceId,
         'p_quantity': quantity,
@@ -209,6 +210,7 @@ class ResourceService {
         'p_user_resource_id': userResourceId,
         'p_notes': notes,
         'p_distance_meters': distanceMeters,
+        'p_expires_at': expiresAt.toIso8601String(),
       },
     );
 
