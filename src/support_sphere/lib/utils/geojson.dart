@@ -19,6 +19,8 @@ class GeoJson {
         .where((key) => key.endsWith(assetExt))
         .toList();
 
+    log.fine("Loading geojson files: $geojsonFiles");
+
     final Map<String, GeoJsonParser> layers = {};
 
     for (final fileName in geojsonFiles) {
@@ -29,12 +31,22 @@ class GeoJson {
       }
       final layerName = fileName.substring(assetLocation.length, fileName.indexOf(assetExt));
       log.fine("Loaded layer: $layerName");
+      //log.finer("XXXXX JSON: $jsonStr");
 
       // parse
-      GeoJsonParser geoJson = GeoJsonParser();
-      geoJson.parseGeoJsonAsString(jsonStr);
-      //log.fine("Parsed geoJson: $geoJson");
-      layers[layerName] =  geoJson;
+      try {
+        log.finer("XXXXX A");
+        GeoJsonParser geoJson = GeoJsonParser();
+        log.finer("XXXXX B");
+        geoJson.parseGeoJsonAsString(jsonStr);
+        //log.finer("XXXXX C: $jsonStr");
+        log.fine("Parsed geoJson: $geoJson");
+        layers[layerName] =  geoJson;
+        log.fine("created layer: $layerName");
+      } catch (e, s) {
+        print('Exception details:\n $e');
+        print('Stack trace:\n $s');
+      }
     }
     log.fine("Loaded layers: ${layers.keys}");
     return layers;
