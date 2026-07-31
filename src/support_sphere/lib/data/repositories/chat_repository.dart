@@ -48,45 +48,45 @@ class ChatRepository {
     final groupsWithTimestamps = await response
         .where((row) => isUserIdInList(userId, row.members))
         .map((row) async {
-          final chatGroupFuture = responseToChatGroup(
-              (group: row.group, members: row.members), userId);
-          final lastMessageAtFuture = messageRepo.lastMessageSentAt(row.group.id);
-          final reservationFuture = row.group.type == GROUP_CHAT_TYPE.chat
-              ? Future<List<Map<String, dynamic>>>.value(const [])
-              : resourceService.getPendingReservationForChat(
-                  groupId: row.group.id);
-          final chatGroup = await chatGroupFuture;
-          final lastMessageAt = await lastMessageAtFuture;
-          final reservationRows = await reservationFuture;
-          final reservation = reservationRows.isEmpty
-              ? null
-              : ResourceReservations.fromJson(reservationRows.first);
-          RESERVATION_STATUS? effectiveStatus;
-          bool isRequester;
-          if (reservation != null) {
-            effectiveStatus = reservation.status;
-            isRequester = reservation.requesterProfileId == userId;
-          } else if (row.group.type != GROUP_CHAT_TYPE.chat &&
-              await messageRepo.hasResourceRemovedMessage(row.group.id)) {
-            // Reservation was cascade-deleted along with its user_resource;
-            // treat the group the same as a released request so it colors
-            // and hides action buttons the same way.
-            effectiveStatus = RESERVATION_STATUS.released;
-            isRequester = true;
-          } else {
-            effectiveStatus = null;
-            isRequester = false;
-          }
-          final chatGroupWithStatus = chatGroup.copyWith(
-            reservationStatus: effectiveStatus,
-            isRequester: isRequester,
-          );
-          return (
-            chatGroup: chatGroupWithStatus,
-            sortKey: lastMessageAt ?? row.createdAt
-          );
-        })
-        .wait;
+      final chatGroupFuture =
+          responseToChatGroup((group: row.group, members: row.members), userId);
+      final lastMessageAtFuture = messageRepo.lastMessageSentAt(row.group.id);
+      final reservationFuture =
+          resourceService.getPendingReservationForChat(groupId: row.group.id);
+      final chatGroup = await chatGroupFuture;
+      final lastMessageAt = await lastMessageAtFuture;
+      final reservationRows = await reservationFuture;
+      final reservation = reservationRows.isEmpty
+          ? null
+          : ResourceReservations.fromJson(reservationRows.first);
+      RESERVATION_STATUS? effectiveStatus;
+      bool isRequester;
+      if (reservation != null) {
+        effectiveStatus = reservation.status;
+        if (reservation.expiresAt?.isBefore(DateTime.now()) ?? false) {
+          effectiveStatus = RESERVATION_STATUS.expired;
+        }
+        isRequester = reservation.requesterProfileId == userId;
+      } else if (row.group.type != GROUP_CHAT_TYPE.chat &&
+          await messageRepo.hasResourceRemovedMessage(row.group.id)) {
+        // Reservation was cascade-deleted along with its user_resource;
+        // treat the group the same as a released request so it colors
+        // and hides action buttons the same way.
+        effectiveStatus = RESERVATION_STATUS.released;
+        isRequester = true;
+      } else {
+        effectiveStatus = null;
+        isRequester = false;
+      }
+      final chatGroupWithStatus = chatGroup.copyWith(
+        reservationStatus: effectiveStatus,
+        isRequester: isRequester,
+      );
+      return (
+        chatGroup: chatGroupWithStatus,
+        sortKey: lastMessageAt ?? row.createdAt
+      );
+    }).wait;
 
     groupsWithTimestamps.sort((a, b) => b.sortKey.compareTo(a.sortKey));
 
@@ -263,7 +263,9 @@ class ChatRepository {
     required String groupId,
     required String name,
   }) async {
-    await supabase.groups.update(Groups.update(name: name)).eq(Groups.c_id, groupId);
+    await supabase.groups
+        .update(Groups.update(name: name))
+        .eq(Groups.c_id, groupId);
   }
 
   Future<void> deleteGroup(String id) async {
