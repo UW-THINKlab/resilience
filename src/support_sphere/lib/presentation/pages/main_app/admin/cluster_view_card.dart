@@ -49,7 +49,7 @@ class ClusterCardState extends State<ClusterViewCard> {
         });
       }
     } catch (e, st) {
-      debugPrint(
+      log.warning(
           'Failed to load captains for cluster ${widget.cluster.id}: $e\n$st');
     }
   }

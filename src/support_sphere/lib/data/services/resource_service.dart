@@ -75,7 +75,8 @@ class ResourceService {
       resources_cv (
         id,
         name,
-        description
+        description,
+        unit
       ),
       resource_types (
         id,
@@ -181,9 +182,9 @@ class ResourceService {
         'p_is_emergency': isEmergency,
       },
     );
-    debugPrint('RPC GEOM: $currentLatitude, $currentLongitude');
-    debugPrint('RPC raw data: $result');
-    debugPrint('RPC type: ${result.runtimeType}');
+    log.fine('RPC GEOM: $currentLatitude, $currentLongitude');
+    log.fine('RPC raw data: $result');
+    log.fine('RPC type: ${result.runtimeType}');
     final rows = List<Map<String, dynamic>>.from(result as List);
     return rows.map(SupplierCandidate.fromJson).toList();
   }
