@@ -12,7 +12,12 @@ backend = ["backend", "db"]
 deployment = ["cloud", "backup-secret"]
 data-analysis = ["data-analysis", "db"]
 selenium = ["selenium", "frontend"]
-supabase = ["supabase"]
+
+[environments.supabase]
+features = ["supabase"]
+
+[environments.supabase.dependencies]
+python-dotenv = ">=1.2.2,<2"
 
 [dependencies]
 go-sops = ">=3.9.0"

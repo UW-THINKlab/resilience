@@ -19,7 +19,7 @@ _dart_template = """
 // WARNING - This is a generated file. Do not edit. Do not commit to source control.
 // Generate this file with:
 //
-//     pixi run -e supabase config <neighborhood.json>
+//     pixi run -e supabase config -f <neighborhood.json>
 
 import 'package:latlong2/latlong.dart' show LatLng;
 

@@ -19,7 +19,7 @@ cat <<EOF > neighborhood.json
 }
 EOF
 
-pixi run -e supabase configure neighborhood.json
+pixi run -e supabase configure -f neighborhood.json
 pixi run -e frontend run
 ```
 
@@ -82,7 +82,7 @@ These fields can also be set using environment variables and the `--from_env` op
 
 ### 3. Configure Database
 ```
-pixi run -e supabase config westport.json
+pixi run -e supabase config -f westport.json
 ```
 This will:
 - Load database with generated datasets.
