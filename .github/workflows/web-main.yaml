@@ -30,11 +30,19 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: python -m pip install --upgrade pip dotenv
+    - name: Generate neighborhood config
+      run: python scripts/appconfig.py --from-env --dart
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: '3.41.2'
+        flutter-version: '3.44.8'
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
     - run: |
