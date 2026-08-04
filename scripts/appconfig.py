@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import pprint
+from dotenv import load_dotenv
 
 ## params
 # -o outputfile
@@ -48,32 +49,60 @@ def load_publishable_key() -> str:
   pass
 
 
+def load_from_env():
+  load_dotenv()
+
+  # build a config structure from ENV VARS
+  location = os.environ.get('NEIGHBORHOOD_LOCATION')
+  if location:
+    long_lat = location.split(',')
+    location_pair = [float(long_lat[0].strip()), float(long_lat[1].strip())]
+
+  name = os.environ.get('NEIGHBORHOOD_NAME')
+  url = os.environ.get('SUPABASE_URL')
+  key = os.environ.get('SUPABASE_ANON_KEY')
+
+  assert name != None
+  assert url != None
+  assert key != None
+
+  config = {
+    "neighborhood": name,
+    "location": location_pair,
+    "supabaseUrl": url,
+    "supabaseAnonKey": key,
+  }
+  return config
+
+
 def main() -> int:
   # parse args
   parser = argparse.ArgumentParser()
-  parser.add_argument("neighborhood_file", default="neighborhood.json", help="Neighborhood metatdata JSON file.")
+  parser.add_argument("-f", "--neighborhood_file", default="neighborhood.json", help="Neighborhood metatdata JSON file.")
   parser.add_argument("-o", "--output", default=None, help="Write output to a specific file")
   parser.add_argument("--dart", action="store_true", help="Generate Dart output")
+  parser.add_argument("--from_env", action="store_true", help="Load neighborhood metatdata from env vars: NEIGHBORHOOD_NAME, NEIGHBORHOOD_LOCATION, SUPABASE_URL, SUPABASE_ANON_KEY")
   args = parser.parse_args()
 
-  with open(args.neighborhood_file) as f:
-    config = json.load(f)
+  if args.from_env:
+    config = load_from_env()
+  else:
+    with open(args.neighborhood_file) as f:
+      config = json.load(f)
 
-    if args.dart:
-      output = emit_dart_code(config)
-    else:
-      output = json.dumps(config, indent=4)
+  if args.dart:
+    output = emit_dart_code(config)
+  else:
+    output = json.dumps(config, indent=4)
 
-    if args.output:
-      with open(args.output, 'w') as outfile:
-        outfile.write(output)
-      print(f"Generated dart output to {args.output}")
-    else:
-      print(output)
+  if args.output:
+    with open(args.output, 'w') as outfile:
+      outfile.write(output)
+    print(f"Generated dart output to {args.output}")
+  else:
+    print(output)
 
-    return 0
-
-  return 1 # shouldn't get here
+  return 0
 
 
 if __name__ == '__main__':
