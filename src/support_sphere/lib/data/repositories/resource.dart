@@ -1,6 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/data/models/reservation_extension.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/data/models/resource_request.dart';
 import 'package:support_sphere/data/models/user_resource.dart';
@@ -167,7 +168,12 @@ class ResourceRepository {
       groupId: groupId,
     );
     if (results.isEmpty) return null;
-    return ResourceReservations.fromJson(results.first);
+    ResourceReservations reservation =
+        ResourceReservations.fromJson(results.first);
+    if (reservation.isExpired()) {
+      reservation = reservation.copyWith(status: RESERVATION_STATUS.expired);
+    }
+    return reservation;
   }
 
   Future<void> updateReservation({

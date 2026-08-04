@@ -130,7 +130,7 @@ class ClusterEditFormState extends State<ClusterEditForm> {
         });
       }
     } catch (e, stack) {
-      debugPrint('Failed to load people and captains: $e\n$stack');
+      log.warning('Failed to load people and captains: $e\n$stack');
       if (mounted) setState(() => _isLoadingPeople = false);
     }
   }

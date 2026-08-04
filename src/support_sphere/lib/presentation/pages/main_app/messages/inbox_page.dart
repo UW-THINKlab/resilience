@@ -159,15 +159,22 @@ class InboxView extends StatelessWidget {
 
   Color? _cardColor(ChatGroup group) {
     final baseColor = group.type.baseColor;
-    if (baseColor == null) return null;
-
-    final isNewRequest = group.reservationStatus == null ||
-        group.reservationStatus == RESERVATION_STATUS.pending;
-    if (isNewRequest) {
-      return group.isRequester ? baseColor[100] : baseColor[50];
+    switch (group.type) {
+      case GROUP_CHAT_TYPE.chat:
+        return baseColor?[50];
+      case GROUP_CHAT_TYPE.request_consumable:
+      case GROUP_CHAT_TYPE.request_durable:
+      case GROUP_CHAT_TYPE.request_skill:
+        final status = group.reservationStatus;
+        if (status == RESERVATION_STATUS.pending) {
+          return baseColor?[group.isRequester ? 100 : 50];
+        }
+        if (status == RESERVATION_STATUS.expired) {
+          return Colors.grey[90];
+        }
+        return group.reservationStatus
+            ?.statusColor(isRequester: group.isRequester);
     }
-
-    return group.reservationStatus!.statusColor(isRequester: group.isRequester);
   }
 
   void _navigateToChat(BuildContext context, ChatGroup group) async {

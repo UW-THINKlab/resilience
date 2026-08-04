@@ -53,9 +53,8 @@ class ResourceBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   FilterSearchBar(
                     labelText: ResourceStrings.searchResources,
-                    onQueryChanged: (query) => context
-                        .read<ResourceCubit>()
-                        .searchQueryChanged(query),
+                    onQueryChanged: (query) =>
+                        context.read<ResourceCubit>().searchQueryChanged(query),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
@@ -422,8 +421,8 @@ class _UserResourcesTabState extends State<UserResourcesTab> {
                   label: ResourceStrings.update,
                   onPressed: () async {
                     final edits = userResources
-                        .where((r) =>
-                            state.selectedUserResourceIds.contains(r.id))
+                        .where(
+                            (r) => state.selectedUserResourceIds.contains(r.id))
                         .map((r) => (
                               id: r.id,
                               quantity:

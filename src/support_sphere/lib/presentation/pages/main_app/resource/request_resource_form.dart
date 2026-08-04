@@ -28,6 +28,7 @@ class RequestResourceFormData extends Equatable {
     this.currentLongitude,
     this.resourceName,
     this.resourceTypeName,
+    this.hours,
   });
   final String? resourceId;
   final int? quantity;
@@ -37,6 +38,7 @@ class RequestResourceFormData extends Equatable {
   final double? currentLongitude;
   final String? resourceName;
   final String? resourceTypeName;
+  final int? hours;
 
   @override
   List<Object?> get props => [
@@ -59,16 +61,19 @@ class RequestResourceFormData extends Equatable {
     double? currentLongitude,
     String? resourceName,
     String? resourceTypeName,
+    int? hours,
   }) {
     return RequestResourceFormData(
-        resourceId: resourceId ?? this.resourceId,
-        quantity: quantity ?? this.quantity,
-        notes: notes ?? this.notes,
-        requestScope: requestScope ?? this.requestScope,
-        currentLatitude: currentLatitude ?? this.currentLatitude,
-        currentLongitude: currentLongitude ?? this.currentLongitude,
-        resourceName: resourceName ?? this.resourceName,
-        resourceTypeName: resourceTypeName ?? this.resourceTypeName);
+      resourceId: resourceId ?? this.resourceId,
+      quantity: quantity ?? this.quantity,
+      notes: notes ?? this.notes,
+      requestScope: requestScope ?? this.requestScope,
+      currentLatitude: currentLatitude ?? this.currentLatitude,
+      currentLongitude: currentLongitude ?? this.currentLongitude,
+      resourceName: resourceName ?? this.resourceName,
+      resourceTypeName: resourceTypeName ?? this.resourceTypeName,
+      hours: hours ?? this.hours,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -245,6 +250,36 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
     }
   }
 
+  Widget _extraField(ResourcesCv resourceCv) {
+    switch (resourceCv.unit) {
+      case UNIT.People:
+        return TextFormField(
+          key: const Key('RequestResourceForm_hours_textFormField'),
+          initialValue: '1',
+          keyboardType: TextInputType.number,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          onSaved: (value) =>
+              _formData = _formData.copyWith(hours: int.tryParse(value ?? '0')),
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(),
+            FormBuilderValidators.numeric(),
+            FormBuilderValidators.min(1)
+          ]),
+          decoration: InputDecoration(
+            labelText: 'hours needed',
+            helperText: '',
+            border: border(context),
+            enabledBorder: border(context),
+            focusedBorder: focusBorder(context),
+          ),
+        );
+      default:
+    }
+    return SizedBox(
+      height: 0,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -288,6 +323,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                     enabledBorder: border(context),
                     focusedBorder: focusBorder(context)),
               ),
+              _extraField(resourceCv),
               FormField<RequestScopes?>(
                 initialValue: null,
                 validator: (value) => value == null

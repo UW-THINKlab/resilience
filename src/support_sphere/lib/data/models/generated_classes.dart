@@ -114,7 +114,7 @@ enum APP_ROLES { user, subcom_agent, com_admin, admin }
 
 enum REQUEST_SCOPE { nearby, neighbors }
 
-enum UNIT { Gallons, People, Unknown }
+enum UNIT { Gallons, People, Servings, Unknown }
 
 // Utils
 class OperationalEvents implements SupadartClass<OperationalEvents> {
