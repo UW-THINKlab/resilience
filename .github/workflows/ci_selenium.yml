@@ -26,8 +26,9 @@ jobs:
       # Test credentials — set these as repository secrets
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-      NEIGHBORHOOD_NAME: "Laurelhurst"
-      NEIGHBORHOOD_LOCATION: "-122.277,47.658"
+
+      NEIGHBORHOOD_NAME: ${{ secrets.NEIGHBORHOOD_NAME }}
+      NEIGHBORHOOD_LOCATION: ${{ secrets.NEIGHBORHOOD_LOCATION }}
       SUPABASE_URL: ${{ secrets.CLOUD_DB_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.CLOUD_DB_JWT_ANON_KEY }}
 

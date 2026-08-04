@@ -14,13 +14,12 @@ cat <<EOF > neighborhood.json
 {
     "neighborhood": "Somewhere",
     "location": [-124.108927, 46.887251],
-    "bbox": [-124.161558, 46.846984, -124.068089, 46.914744],
     "supabaseUrl": "http://somewhere.example.com",
     "supabaseAnonKey": "insert-publishable-key"
 }
 EOF
 
-pixi run -e supabase initialize neighborhood.json
+pixi run -e supabase configure neighborhood.json
 pixi run -e frontend run
 ```
 
@@ -46,7 +45,6 @@ Create a JSON file for your neighborhood. "Westport" will be used in this exampl
 {
     "neighborhood": "Westport",
     "location": [-124.108927, 46.887251],
-    "bbox": [-124.161558, 46.846984, -124.068089, 46.914744],
     "supabaseUrl": "http://westport.supportsphere.org",
     "supabaseAnonKey": "eyJhbGciO....sldwdXZGEo"
 }
@@ -63,13 +61,6 @@ This location can be found using tools like https://bboxfinder.com.
 
 [LON, LAT]
 
-#### `bbox`
-A bounding-box around the general area. This will be used for generating offline maps and feature sets.
-
-This bounding-box can be found using tools like https://bboxfinder.com.
-
-[MIN_LON, MIN_LAT, MAX_LON, MAX_LAT]
-
 #### `supabaseUrl`
 This is the external URL of the neighborhood backend system.
 
@@ -83,23 +74,25 @@ pixi run -e supabase status | grep PUBLISHABLE_KEY
 PUBLISHABLE_KEY="sb_publishable_fDFGERFYEHdbfBEbefdFdsBD_3BJgxAaH"
 ```
 
-### 3. Initialize Database
+These fields can also be set using environment variables and the `--from_env` option of `scripts/appconfig.py`:
+- `NEIGHBORHOOD_NAME`
+- `NEIGHBORHOOD_LOCATION`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+### 3. Configure Database
 ```
-pixi run -e supabase initialize westport.json
+pixi run -e supabase config westport.json
 ```
 This will:
-- Generate offline map tiles for the configured area.
-- Generate geocoding index for the configured area.
-- FUTURE: Generate households and clusters for the for the configured area.
 - Load database with generated datasets.
-- Load map tiles and geocoding index.
 - Create an initial admin user `admin`, and generate a secure password.
 - Generate app configuration data.
 
 **NOTE** This is only run once: When the system is initialized during the neighborhood setup process. Results are undefined if run against an already-initialized DB.
 
 ### 4. Build and Deploy Apps
-Running the `initialize` step will create the resources needed to compile and deploy the apps.
+Running the `config` step will create the resources needed to compile and deploy the apps.
 
 To test locally:
 ```

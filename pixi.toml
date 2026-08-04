@@ -320,8 +320,8 @@ python = ">=3.10"
 [feature.supabase.tasks.install.env]
 # install in pixi env
 SUPABASE_INSTALL_DIR = "$CONDA_PREFIX/bin"
-# pin version to 2.107.0, current as of 2026-06-17
-VERSION = "2.107.0"
+# pin version to 2.111.0, current as of 2026-08-04
+VERSION = "2.111.0"
 
 [feature.supabase.tasks.install]
 cmd = "curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install | bash"

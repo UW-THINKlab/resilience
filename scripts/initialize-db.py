@@ -4,6 +4,8 @@ import os
 import sys
 import pprint
 
+### NOT READY YET - needs stable schema and initial data load.
+
 
 def load_publishable_key() -> str:
   ## FIXME

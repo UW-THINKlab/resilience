@@ -18,6 +18,12 @@ jobs:
     uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@messages
   build-and-publish:
     runs-on: ubuntu-latest
+    env:
+      NEIGHBORHOOD_NAME: ${{ secrets.NEIGHBORHOOD_NAME }}
+      NEIGHBORHOOD_LOCATION: ${{ secrets.NEIGHBORHOOD_LOCATION }}
+      SUPABASE_URL: ${{ secrets.CLOUD_DB_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.CLOUD_DB_JWT_ANON_KEY }}
+
     # This workflow accesses secrets and checks out a PR, so only run if labelled
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
     # if: contains(github.event.pull_request.labels.*.name, 'preview')
