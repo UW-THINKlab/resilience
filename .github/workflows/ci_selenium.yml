@@ -52,7 +52,7 @@ jobs:
           flutter-version: '3.44.8'
 
       - name: Generate neighborhood config
-        run: python scripts/appconfig.py --from_env --dart
+        run: python scripts/appconfig.py --from_env --dart -o src/support_sphere/lib/constants/appconfig.dart
 
       - name: Install Flutter dependencies
         working-directory: src/support_sphere
