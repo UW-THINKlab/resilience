@@ -177,8 +177,8 @@ cmd = "fastapi run ./src/support_sphere_py/src/support_sphere/apis/main.py"
 [feature.backend.tasks.fast-api-server-dev]
 cmd = "fastapi dev ./src/support_sphere_py/src/support_sphere/apis/main.py"
 
-[feature.backend.tasks.fresh-db]
-cmd = "scripts/fresh-db.sh"
+[feature.backend.tasks.seed-db]
+cmd = "scripts/generate-seed-db.sh"
 
 # ==== Frontend environment ====
 [feature.frontend.tasks]
