@@ -5,7 +5,7 @@
 # Backup the resilience DB
 
 script_dir=$(dirname "$0")
-backup_script='backup-on-db2.sh'
+backup_script='backup-on-db.sh'
 
 neighborhood=$TF_VAR_neighborhood
 backup_dir=./backups

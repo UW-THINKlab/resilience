@@ -1,33 +1,23 @@
 #!/usr/bin/env bash
-
-
-# This script is run in the db container in kubernetes
-# There is another script, run from pixi, that:
-# 1. finds the correct db pod
-# 2. copies _this_ script to the pod    - kubectl cp backup-on-db.sh POD:/tmp/backup-on-db.sh
-# 3. runs this script to get the backup - kubectl exec POD -- /tmp/backup-on-db.sh
-
-# Backup the resilience DB using supabase tool
-
-# Original - supabase CLI - https://supabase.com/docs/guides/local-development/cli
-# supabase db dump --local --keep-comments > $backup_file
-# supabase db dump --local --role-only >> $backup_file
-# supabase db dump --local --data-only >> $backup_file
-# gzip $backup_file
-
 set -euo pipefail
 
-# NOTE: admin user is needed for dumpall
-#user=supabase_admin
+# Resilience project note:
+# This script is constructed from 3 calls to "supabase db dump" to create a full script:
+#   supabase db dump --local --keep-comments --dry-run > new-backup.sh
+#   supabase db dump --local --role-only --dry-run >> new-backup.sh
+#   supabase db dump --local --data-only --dry-run >> new-backup.sh
+#
+# This dumps everything needed for a fresh load.
 
-# dump schema first
-# based on `supabase db dump --dry-run --local`
+export PGHOST=${PGHOST:-"127.0.0.1"}
+export PGPORT=${PGPORT:-"5432"}
+export PGUSER=${PGUSER:-"postgres"}
+export PGPASSWORD=${PGPASSWORD:-"postgres"}
+export PGDATABASE=${PGDATABASE:-"postgres"}
 
-export PGHOST=${PGHOST:-127.0.0.1}
-export PGPORT=${PGPORT:-5432}
-export PGUSER=${PGUSER:-postgres} # POSTGRES_USER
-export PGPASSWORD=${PGPASSWORD:-postgres}
-export PGDATABASE=${PGDATABASE:-postgres}
+## Dump schema ##
+
+echo "-- dumping schema"
 
 # Explanation of pg_dump flags:
 #
@@ -45,18 +35,11 @@ export PGDATABASE=${PGDATABASE:-postgres}
 #   - do not create pgtle schema and extension comments
 #   - do not create publication "supabase_realtime"
 #   - do not set transaction_timeout which requires pg17
-#
-#   --schema-only \
 pg_dump \
-    --username $PGUSER \
+    --schema-only \
     --quote-all-identifier \
     --role "postgres" \
-    --exclude-schema "information_schema|pg_*|_analytics|_realtime|_supavisor|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault" \
-    --exclude-table "auth.schema_migrations" \
-    --exclude-table "storage.migrations" \
-    --exclude-table "supabase_functions.migrations" \
-    --schema "*" \
-    --column-inserts --rows-per-insert 100000 \
+    --exclude-schema "information_schema|pg_*|_analytics|_realtime|_supavisor|auth|etl|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault" \
      \
 | sed -E 's/^\\(un)?restrict .*$/-- &/' \
 | sed -E 's/^CREATE SCHEMA "/CREATE SCHEMA IF NOT EXISTS "/' \
@@ -74,8 +57,8 @@ pg_dump \
 | sed -E 's/^ALTER FOREIGN DATA WRAPPER (.+) OWNER TO /-- &/' \
 | sed -E 's/^ALTER DEFAULT PRIVILEGES FOR ROLE "supabase_admin"/-- &/' \
 | sed -E 's/^GRANT ALL ON FOREIGN DATA WRAPPER (.+) TO "postgres" WITH GRANT OPTION/-- &/' \
-| sed -E "s/^GRANT (.+) ON (.+) \"(information_schema|pg_*|_analytics|_realtime|_supavisor|auth|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault)\"/-- &/" \
-| sed -E "s/^REVOKE (.+) ON (.+) \"(information_schema|pg_*|_analytics|_realtime|_supavisor|auth|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault)\"/-- &/" \
+| sed -E "s/^GRANT (.+) ON (.+) \"(information_schema|pg_*|_analytics|_realtime|_supavisor|auth|etl|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault)\"/-- &/" \
+| sed -E "s/^REVOKE (.+) ON (.+) \"(information_schema|pg_*|_analytics|_realtime|_supavisor|auth|etl|extensions|pgbouncer|realtime|storage|supabase_functions|supabase_migrations|cron|dbdev|graphql|graphql_public|net|pgmq|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault)\"/-- &/" \
 | sed -E 's/^(CREATE EXTENSION IF NOT EXISTS "pg_tle").+/\1;/' \
 | sed -E 's/^(CREATE EXTENSION IF NOT EXISTS "pgsodium").+/\1;/' \
 | sed -E 's/^(CREATE EXTENSION IF NOT EXISTS "pgmq").+/\1;/' \
@@ -83,4 +66,69 @@ pg_dump \
 | sed -E 's/^CREATE POLICY "cron_job_/-- &/' \
 | sed -E 's/^ALTER TABLE "cron"/-- &/' \
 | sed -E 's/^SET transaction_timeout = 0;/-- &/' \
-| sed -E "/^--/d"
+| sed -E ""
+
+## Dump roles ##
+
+echo "-- dumping roles"
+
+# Explanation of pg_dumpall flags:
+#
+#   --roles-only     only include create, alter, and grant role statements
+#
+# Explanation of sed substitutions:
+#
+#   - do not emit psql meta commands
+#   - do not create or alter reserved roles as they are blocked by supautils
+#   - explicitly allow altering safe attributes, ie. statement_timeout, pgrst.*
+#   - discard role attributes that require superuser, ie. nosuperuser, noreplication
+#   - do not alter membership grants by supabase_admin role
+pg_dumpall \
+    --roles-only \
+    --role "postgres" \
+    --quote-all-identifier \
+    --no-role-passwords \
+    --no-comments \
+| sed -E 's/^\\(un)?restrict .*$/-- &/' \
+| sed -E "s/^CREATE ROLE \"(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)\"/-- &/" \
+| sed -E "s/^ALTER ROLE \"(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)\"/-- &/" \
+| sed -E "s/ (NOSUPERUSER|NOREPLICATION)//g" \
+| sed -E "s/^-- (.* SET \"(pgaudit.*|pgrst.*|session_replication_role|statement_timeout|track_io_timing)\" .*)/\1/" \
+| sed -E "s/GRANT \".*\" TO \"(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)\"/-- &/" \
+| sed -E "/^--/d" \
+| uniq
+
+## Dump data ##
+
+echo "-- dumping data"
+
+# Disable triggers so that data dump can be restored exactly as it is
+echo "SET session_replication_role = replica;
+"
+
+# Explanation of pg_dump flags:
+#
+#   --exclude-schema omit data from internal schemas as they are maintained by platform
+#   --exclude-table  omit data from migration history tables as they are managed by platform
+#   --column-inserts only column insert syntax is supported, ie. no copy from stdin
+#   --schema '*'     include all other schemas by default
+#
+# Explanation of sed substitutions:
+#
+#   - do not emit psql meta commands
+#
+# Never delete SQL comments because multiline records may begin with them.
+pg_dump \
+    --data-only \
+    --quote-all-identifier \
+    --role "postgres" \
+    --exclude-schema "information_schema|pg_*|graphql|graphql_public|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault|etl|extensions|pgbouncer|realtime|supabase_migrations|_analytics|_realtime|_supavisor" \
+    --exclude-table "auth.schema_migrations" \
+    --exclude-table "storage.migrations" \
+    --exclude-table "supabase_functions.migrations" \
+    --schema "*" \
+    --column-inserts --rows-per-insert 100000 \
+| sed -E 's/^\\(un)?restrict .*$/-- &/'
+
+# Reset session config generated by pg_dump
+echo "RESET ALL;"

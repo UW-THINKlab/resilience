@@ -6,6 +6,9 @@ import pprint
 
 ### NOT READY YET - needs stable schema and initial data load.
 
+# INTENTION
+# This is the code that loads the db and initializes a new admin user.
+
 
 def load_publishable_key() -> str:
   ## FIXME

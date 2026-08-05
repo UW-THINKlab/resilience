@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Resilience project note:
 # This script is constructed from 3 calls to "supabase db dump" to create a full script:
 #   supabase db dump --local --keep-comments --dry-run > new-backup.sh
 #   supabase db dump --local --role-only --dry-run >> new-backup.sh
 #   supabase db dump --local --data-only --dry-run >> new-backup.sh
 #
-# This dumps everything needed for a fresh load.
+# The script was then modified to dump data only from a few tables needed to fully initialize a new system.
+#
+# Everything that is user-related is ignored.
+#
+# This dumps everything needed for a fresh load of a new system.
 
 export PGHOST=${PGHOST:-"127.0.0.1"}
 export PGPORT=${PGPORT:-"5432"}
@@ -122,6 +125,13 @@ pg_dump \
     --data-only \
     --quote-all-identifier \
     --role "postgres" \
+    --table "public.frequency" \
+    --table "public.point_of_interest_types" \
+    --table "public.resource_types" \
+    --table "public.resources" \
+    --table "public.resources_cv" \
+    --table "public.resource_types" \
+    --table "public.role_permissions" \
     --exclude-schema "information_schema|pg_*|graphql|graphql_public|pgsodium|pgsodium_masks|pgtle|repack|tiger|tiger_data|timescaledb_*|_timescaledb_*|topology|vault|etl|extensions|pgbouncer|realtime|supabase_migrations|_analytics|_realtime|_supavisor" \
     --exclude-table "auth.schema_migrations" \
     --exclude-table "storage.migrations" \
