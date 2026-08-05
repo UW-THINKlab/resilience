@@ -206,3 +206,6 @@ backups/
 
 # selenium test report
 tests/client/report.html
+
+# ignore generated file
+src/support_sphere/lib/constants/appconfig.dart

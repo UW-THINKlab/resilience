@@ -12,7 +12,12 @@ backend = ["backend", "db"]
 deployment = ["cloud", "backup-secret"]
 data-analysis = ["data-analysis", "db"]
 selenium = ["selenium", "frontend"]
-supabase = ["supabase"]
+
+[environments.supabase]
+features = ["supabase"]
+
+[environments.supabase.dependencies]
+python-dotenv = ">=1.2.2,<2"
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -218,11 +223,16 @@ depends-on = ["install-flutter"]
 cmd = "flutter doctor --android-licenses"
 depends-on = ["install-flutter"]
 
+[feature.frontend.tasks.build]
+cmd = "flutter clean; flutter build web --debug"
+cwd = "src/support_sphere"
+
 
 # ==== Deployment environment ====
 [feature.cloud.activation.env]
-"TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_neighborhood" = "Laurelhurst"
+"TF_VAR_domain_name" = "laurelhurst.supportsphere.acmerocket.com"
+"TF_VAR_project_name" = "Support Sphere"
 "TF_VAR_stage" = "dev"
 "TF_VAR_account_id" = "503561456208"
 "TF_VAR_ops_group_name" = "ssec-eng"
@@ -309,11 +319,14 @@ cmd = "gpg --import /root/private.pgp"
 
 ### New supabase CLI env ###
 
+[feature.supabase.dependencies]
+python = ">=3.10"
+
 [feature.supabase.tasks.install.env]
 # install in pixi env
 SUPABASE_INSTALL_DIR = "$CONDA_PREFIX/bin"
-# pin version to 2.107.0, current as of 2026-06-17
-VERSION = "2.107.0"
+# pin version to 2.111.0, current as of 2026-08-04
+VERSION = "2.111.0"
 
 [feature.supabase.tasks.install]
 cmd = "curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install | bash"
@@ -342,6 +355,11 @@ depends-on = ["install"]
 cmd = "scripts/db-load.sh"
 depends-on = ["reset"]
 
+[feature.supabase.tasks.initialize]
+cmd = "python scripts/initialize-db.py"
+
+[feature.supabase.tasks.config]
+cmd = "python scripts/appconfig.py --dart -o src/support_sphere/lib/constants/appconfig.dart"
 
 [tasks.execute-sql]
 cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]

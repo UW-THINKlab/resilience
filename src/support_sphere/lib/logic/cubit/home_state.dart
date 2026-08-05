@@ -1,7 +1,9 @@
 import 'dart:ui' show Offset;
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter_map_geojson/flutter_map_geojson.dart' show GeoJsonParser;
 import 'package:latlong2/latlong.dart';
+import 'package:support_sphere/constants/appconfig.dart' show AppConfig;
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
@@ -14,13 +16,12 @@ enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, fail
 // map default: if cluster meetingpoint, use cluster meetinpoint
 // if cluster, center cluster rect on cluster geom
 // if no cluster or geom, default to:
-const defaultInitMapCentroid = LatLng(47.658, -122.2772993912835);
 
 class HomeState extends Equatable {
   const HomeState({
     this.status = HomeStatus.initial,
     this.userLocation,
-    this.initMapCentroid = defaultInitMapCentroid,
+    this.initMapCentroid = AppConfig.location,
     this.initZoomLevel = 15.6,
     this.captainMarkers,
     this.cluster,
@@ -29,6 +30,7 @@ class HomeState extends Equatable {
     this.pickedLocation,
     this.pickedOffset,
     this.meetingPlace,
+    this.geojson, // Map layers loaded from assets/geojson
   });
 
   final HomeStatus status;
@@ -44,6 +46,7 @@ class HomeState extends Equatable {
   final Offset? pickedOffset;
   final String? meetingPlace; // description of the pick meeting point
 
+  final Map<String,GeoJsonParser>? geojson; // geojson layers
 
   @override
   List<Object?> get props => [
@@ -58,6 +61,7 @@ class HomeState extends Equatable {
         pickedLocation,
         pickedOffset,
         meetingPlace,
+        geojson,
       ];
 
   HomeState copyWith({
@@ -72,6 +76,7 @@ class HomeState extends Equatable {
     LatLng? pickedLocation,
     Offset? pickedOffset,
     String? meetingPlace,
+    Map<String,GeoJsonParser>? geojson,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -85,6 +90,7 @@ class HomeState extends Equatable {
       pickedLocation: pickedLocation ?? this.pickedLocation,
       pickedOffset: pickedOffset ?? this.pickedOffset,
       meetingPlace: meetingPlace ?? this.meetingPlace,
+      geojson: geojson ?? this.geojson,
     );
   }
 }

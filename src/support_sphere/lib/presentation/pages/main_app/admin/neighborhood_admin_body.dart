@@ -98,7 +98,7 @@ class EditClusterView extends StatelessWidget {
                   /// Back button
                   TextButton.icon(
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text(
+                    label: Text(
                       NeighborhoodStrings.manageNeighborhood,
                       style: TextStyle(
                         fontSize: 16,

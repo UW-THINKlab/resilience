@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart' show WidgetsFlutterBinding;
+import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
@@ -10,6 +12,8 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
+import 'package:flutter_map_geojson/flutter_map_geojson.dart';
+import 'package:support_sphere/utils/geojson.dart' show GeoJson;
 
 final log = Logger('HomeCubit');
 
@@ -31,6 +35,8 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await loadHomeData();
       await getCurrentLocation();
+      await loadGeojson();
+      log.fine("### ${state.geojson}");
 
       emit(state.copyWith(status: HomeStatus.success));
     } catch (error) {
@@ -165,5 +171,13 @@ class HomeCubit extends Cubit<HomeState> {
     LatLng maxPoint = LatLng(maxLat, maxLng);
     LatLng minPoint = LatLng(minLat, minLng);
     return LatLngBounds(minPoint, maxPoint);
+  }
+
+  // emit a new state with the geojson assets loaded
+  Future<void> loadGeojson() async {
+    final layers = await GeoJson.loadLayers();
+    emit(state.copyWith(
+      geojson: layers,
+    ));
   }
 }

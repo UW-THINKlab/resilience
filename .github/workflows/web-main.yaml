@@ -18,6 +18,12 @@ jobs:
     uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@messages
   build-and-publish:
     runs-on: ubuntu-latest
+    env:
+      NEIGHBORHOOD_NAME: ${{ secrets.NEIGHBORHOOD_NAME }}
+      NEIGHBORHOOD_LOCATION: ${{ secrets.NEIGHBORHOOD_LOCATION }}
+      SUPABASE_URL: ${{ secrets.CLOUD_DB_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.CLOUD_DB_JWT_ANON_KEY }}
+
     # This workflow accesses secrets and checks out a PR, so only run if labelled
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
     # if: contains(github.event.pull_request.labels.*.name, 'preview')
@@ -30,11 +36,19 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: python -m pip install --upgrade pip dotenv
+    - name: Generate neighborhood config
+      run: python scripts/appconfig.py --from_env --dart -o src/support_sphere/lib/constants/appconfig.dart
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: '3.41.2'
+        flutter-version: '3.44.8'
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
     - run: |

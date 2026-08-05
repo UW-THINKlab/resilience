@@ -7,12 +7,12 @@
 script_dir=$(dirname "$0")
 backup_script='backup-on-db2.sh'
 
-#echo backup script: $script_dir/$backup_script
-
-# FIXME: Name file based on neighborhood. from... ENV?
-# Currently, Neighborhood is hardcoded in code.
-neighborhood=Laurelhurst
+neighborhood=$TF_VAR_neighborhood
 backup_dir=./backups
+
+echo neighborhood: $neighborhood, backup script: $script_dir/$backup_script
+env
+exit 0
 
 mkdir -p $backup_dir
 backup_file="$backup_dir/backup-$neighborhood-`date +%Y-%m-%d-%H%M`.sql.gz"
