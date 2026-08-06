@@ -4,9 +4,7 @@
 
 import argparse
 import json
-import os
 import sys
-import pprint
 import uuid
 
 from supabase import create_client, Client

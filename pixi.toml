@@ -18,6 +18,7 @@ features = ["supabase"]
 
 [environments.supabase.dependencies]
 python-dotenv = ">=1.2.2,<2"
+supabase = ">=2.31.0,<3"
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -319,10 +320,11 @@ gnupg = ">=2.4.5"
 [feature.backup-secret.tasks.import-gpg-key]
 cmd = "gpg --import /root/private.pgp"
 
+
 ### New supabase CLI env ###
 
 [feature.supabase.dependencies]
-python = ">=3.10"
+python = ">=3.11"
 
 [feature.supabase.tasks.install.env]
 # install in pixi env
@@ -358,7 +360,8 @@ cmd = "scripts/db-load.sh"
 depends-on = ["reset"]
 
 [feature.supabase.tasks.initialize]
-cmd = "python scripts/initialize-db.py"
+cmd = "python scripts/initialize-db.py --admin"
+depends-on = ["start"]
 
 [feature.supabase.tasks.config]
 cmd = "python scripts/appconfig.py --dart -o src/support_sphere/lib/constants/appconfig.dart"

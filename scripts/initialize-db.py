@@ -1,58 +1,193 @@
 import argparse
 import json
-import os
 import sys
-import pprint
+import uuid
+import subprocess
+from pathlib import Path
+from supabase import create_client, Client
 
 ### NOT READY YET - needs stable schema and initial data load.
 
 # INTENTION
 # This is the code that loads the db and initializes a new admin user.
+# depends on supabase start
+# calls out to script -> scripts/db-load.sh seed.sql.gz -> depends load
+# creates admin user from neighborhood.json
+
+default_config = {
+  "is_safe": "true",
+  "needs_help": "false",
+  "nickname": "",
+}
+
+prompts = {
+  "neighborhood": "What is the name of the neighborhood?",
+  "location": "What is the latitude and longitude of the location? lat, long",
+  "supabaseUrl": "What is the public URL of the supabase API?",
+}
+
+admin_prompts = {
+  "given_name": "What is the adminstrator's given name?",
+  "family_name": "What is the adminstrator's family name?",
+  "email": "What is the adminstrator's email?",
+  "password": "What is the adminstrator's initial password?"
+}
+
+supabase_fields = {
+  "PUBLISHABLE_KEY": "supabaseAnonKey",
+  "SECRET_KEY": "secret_key",
+  "API_URL": "supabaseUrl",
+}
 
 
-def load_publishable_key() -> str:
-  ## FIXME
-  # Using the supabase command (or perhaps a grep of .env)
-  # the publishable key can be gotten from a running/configured system
-  # get the publishable key
-  #env_cmd = "supabase status -o env | grep PUBLISHABLE_KEY | cut -d '=' -f 2"
-  #supa_json = os.popen(env_cmd).read()
-  #print(supa_json)
-  #config['supabaseAnonKey'] = supa_json['PUBLISHABLE_KEY']
-  #return "jh34kj5h34kjh....fi834kreuhv7378g"
-  pass
+def load_supabase_keys() -> dict:
+  # supabase status -o json
+  result = subprocess.check_output('supabase status -o json', shell=True)
+  # parse the json
+  fields = json.loads(result)
+  # pick out supabase_fields
+  return {v: fields[k] for k, v in supabase_fields.items()}
+
+
+def overlay_supabase_config(config:dict) -> dict:
+  supabase_data = load_supabase_keys()
+  supabase_data.update(default_config) # bring in the defaults
+  for k, v in supabase_data.items():
+    if k not in config:
+      config[k] = v
+  return config
+
+def prompt_config(config:dict, ask_admin:bool) -> dict:
+  for key, prompt in prompts.items():
+    # check if key is set in config
+    if key not in config:
+      # if not, prompt for if
+      config[key] = input(prompt + "  ")
+
+  if ask_admin:
+    # collect the admin details
+    for key, prompt in admin_prompts.items():
+      # check if key is set in config
+      if key not in config:
+        # if not, prompt for if
+        config[key] = input(prompt + "  ")
+
+  return config
+
+
+def baseline_config() -> dict:
+  config = {}
+  config.update(default_config)
+  config.update(load_supabase_keys())
+  return config
+
+
+def load_config(filename:str) -> dict:
+  filepath = Path(filename)
+  if filepath.exists():
+    with open(filepath) as f:
+      config = json.load(f)
+      return overlay_supabase_config(config)
+  else:
+    return baseline_config()
+
+
+def get_supabase(config) -> Client:
+  url: str = config.get("supabaseUrl")
+  key: str = config.get("secret_key")
+  # TODO check and fail fast
+  return create_client(url, key)
+
+
+def load_seed_data(seed_file:str) -> None:
+  filepath = Path(seed_file)
+  if filepath.exists():
+    seed_cmd = f"./scripts/db-load.sh {seed_file}"
+    result = subprocess.check_output(seed_cmd, stderr=subprocess.STDOUT, shell=True)
+    print("Loaded DB seed data from", filepath.absolute())
+  else:
+    print("Cannot find expected DB seed file:", filepath.absolute())
+
+
+def is_true(value:str)->bool:
+  return value.lower() in ['true', '1', 't', 'y', 'yes']
+
+
+def create_admin_user(db:Client, config:dict) -> dict | None:
+  email = config["email"]
+  password = config["password"]
+
+  response = db.auth.admin.create_user(
+    {
+        "email": email,
+        "password": password,
+        "email_confirm": True,
+    }
+  )
+
+  if response and response.user:
+    user = response.user
+    user_id = user.id
+
+    # create profile
+    response = db.table("user_profiles").insert({
+      "id": user_id,
+    }).execute()
+
+    # create role
+    response = db.table("user_roles").insert({
+      "id": str(uuid.uuid4()),
+      "user_profile_id": user_id,
+      "role": "com_admin", # community admin
+    }).execute()
+
+    # create people entry
+    people_id = str(uuid.uuid4())
+    response = db.table("people").insert({
+      "id": people_id,
+      "user_profile_id": user_id,
+      "given_name": config.get("given_name"),
+      "family_name": config.get("family_name"),
+      "nickname": config.get("nickname"),
+      "is_safe": config.get("is_safe"),
+      "needs_help": config.get("needs_help"),
+    }).execute()
+
+    person = db.table("people").select().eq("id", people_id).maybe_single().execute()
+    return person
 
 
 def main() -> int:
   # parse args
   parser = argparse.ArgumentParser()
-  parser.add_argument("neighborhood_file", default="neighborhood.json", help="Neighborhood metatdata JSON file.")
-  parser.add_argument("-o", "--output", default=None, help="Write output to a specific file")
-  parser.add_argument("--dart", action="store_true", help="Generate Dart output")
+  parser.add_argument("-f", "--neighborhood_file", default="neighborhood.json", help="Neighborhood metatdata JSON file")
+  parser.add_argument("-w", "--write", action="store_true", help="Write output")
+  parser.add_argument("--admin", action="store_true", help="Collect information to initialize")
+  parser.add_argument("--seed", default="seed.sql.gz", help="GZipped SQL file to seed the initial database")
   args = parser.parse_args()
 
-  print(f"Not yet implemented. {args.neighborhood_file}")
-  return 1
+  # load config settings
+  config = load_config(args.neighborhood_file)
 
+  # prompt user for missing config values
+  config = prompt_config(config, args.admin)
 
-  with open(args.neighborhood_file) as f:
-    config = json.load(f)
+  # load seed data
+  load_seed_data(args.seed)
 
-    if args.dart:
-      output = emit_dart_code(config)
-    else:
-      output = json.dumps(config, indent=4)
+  # create admin user
+  if args.admin:
+    db = get_supabase(config)
+    user = create_admin_user(db, config)
+    print("Created admin user for", user)
 
-    if args.output:
-      with open(args.output, 'w') as outfile:
-        outfile.write(output)
-      print(f"Generated dart output to {args.output}")
-    else:
-      print(output)
+  # write the file
+  if args.write:
+    with open(args.neighborhood_file, 'w') as f:
+      json.dump(config, f, ensure_ascii=False, indent=4)
+      print("Wrote neighborhood config values to", args.neighborhood_file)
 
-    return 0
-
-  return 1 # shouldn't get here
+  return 0
 
 
 if __name__ == '__main__':

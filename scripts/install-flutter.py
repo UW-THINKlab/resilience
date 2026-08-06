@@ -3,7 +3,6 @@ import platform
 import urllib.request
 from urllib.request import urlretrieve
 import json
-import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import subprocess
