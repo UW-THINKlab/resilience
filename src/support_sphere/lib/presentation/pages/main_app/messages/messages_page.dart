@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/data/models/message_urgency_extension.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
@@ -16,22 +17,21 @@ import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/message_bar.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/utils/reservation_status_colors.dart';
 import 'package:timeago/timeago.dart';
 
-const preloader =
-    Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+const preloader = Center(
+  child: CircularProgressIndicator(color: Colors.blueGrey),
+);
 
 final log = Logger('MessagesPage');
 
 class MessagesPage extends StatefulWidget {
   final ChatGroup group;
 
-  const MessagesPage({
-    super.key,
-    required this.group,
-  });
+  const MessagesPage({super.key, required this.group});
 
   @override
   State<MessagesPage> createState() => MessagesState(group: group);
@@ -66,7 +66,9 @@ class MessagesState extends State<MessagesPage> {
 
     myUserId = supabase.auth.currentUser!.id;
     _baseGroupName = group.name.replaceFirst(
-        RegExp(r' \((Pending|Accepted|Tentative|Rejected|Released|Expired)\)$'), '');
+      RegExp(r' \((Pending|Accepted|Tentative|Rejected|Released|Expired)\)$'),
+      '',
+    );
     messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
     profileStream = userRepo.personForId(userId: myUserId);
     _loadBlockState();
@@ -156,12 +158,12 @@ class MessagesState extends State<MessagesPage> {
   String _groupNameWithStatus(RESERVATION_STATUS? status) {
     if (status == null) return _baseGroupName;
     final suffix = switch (status) {
-      RESERVATION_STATUS.pending   => MessagesStrings.statusPending,
+      RESERVATION_STATUS.pending => MessagesStrings.statusPending,
       RESERVATION_STATUS.tentative => MessagesStrings.statusTentative,
-      RESERVATION_STATUS.accepted  => MessagesStrings.statusAccepted,
-      RESERVATION_STATUS.rejected  => MessagesStrings.statusRejected,
-      RESERVATION_STATUS.released  => MessagesStrings.statusReleased,
-      RESERVATION_STATUS.expired   => MessagesStrings.statusExpired,
+      RESERVATION_STATUS.accepted => MessagesStrings.statusAccepted,
+      RESERVATION_STATUS.rejected => MessagesStrings.statusRejected,
+      RESERVATION_STATUS.released => MessagesStrings.statusReleased,
+      RESERVATION_STATUS.expired => MessagesStrings.statusExpired,
     };
     return '$_baseGroupName ($suffix)';
   }
@@ -195,14 +197,16 @@ class MessagesState extends State<MessagesPage> {
                               ? () => setState(() => _acceptQuantity--)
                               : null,
                         ),
-                        Text('$_acceptQuantity',
-                            style: const TextStyle(fontSize: 16)),
+                        Text(
+                          '$_acceptQuantity',
+                          style: const TextStyle(fontSize: 16),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.add),
                           onPressed:
                               _acceptQuantity < _pendingReservation!.quantity
-                                  ? () => setState(() => _acceptQuantity++)
-                                  : null,
+                              ? () => setState(() => _acceptQuantity++)
+                              : null,
                         ),
                       ],
                     ),
@@ -224,7 +228,8 @@ class MessagesState extends State<MessagesPage> {
                         fromProfileId: myUserId,
                         groupId: group.id,
                         text: MessagesStrings.rejectMessage(
-                            _pendingReservation!.quantity),
+                          _pendingReservation!.quantity,
+                        ),
                         urgency: MESSAGEURGENCY.normal,
                       );
                       if (!mounted) return;
@@ -251,13 +256,17 @@ class MessagesState extends State<MessagesPage> {
                         );
                         await chatRepo.updateGroupName(
                           groupId: group.id,
-                          name: _groupNameWithStatus(RESERVATION_STATUS.tentative),
+                          name: _groupNameWithStatus(
+                            RESERVATION_STATUS.tentative,
+                          ),
                         );
                         await messageRepo.sendMessage(
                           fromProfileId: myUserId,
                           groupId: group.id,
                           text: MessagesStrings.tentativeAcceptMessage(
-                              _acceptQuantity, originalQty),
+                            _acceptQuantity,
+                            originalQty,
+                          ),
                           urgency: MESSAGEURGENCY.normal,
                         );
                         if (!mounted) return;
@@ -285,13 +294,17 @@ class MessagesState extends State<MessagesPage> {
                         );
                         await chatRepo.updateGroupName(
                           groupId: group.id,
-                          name: _groupNameWithStatus(RESERVATION_STATUS.accepted),
+                          name: _groupNameWithStatus(
+                            RESERVATION_STATUS.accepted,
+                          ),
                         );
                         await messageRepo.sendMessage(
                           fromProfileId: myUserId,
                           groupId: group.id,
                           text: MessagesStrings.acceptMessage(
-                              _acceptQuantity, originalQty),
+                            _acceptQuantity,
+                            originalQty,
+                          ),
                           urgency: MESSAGEURGENCY.normal,
                         );
                         if (!mounted) return;
@@ -330,7 +343,8 @@ class MessagesState extends State<MessagesPage> {
                     fromProfileId: myUserId,
                     groupId: group.id,
                     text: MessagesStrings.cancelRequestMessage(
-                        _pendingReservation!.quantity),
+                      _pendingReservation!.quantity,
+                    ),
                     urgency: MESSAGEURGENCY.normal,
                   );
                   if (!mounted) return;
@@ -399,10 +413,7 @@ class MessagesState extends State<MessagesPage> {
                           },
                         ),
                 ),
-                if (_isCommunicationBlocked == true)
-                  Text(MessagesStrings.blockedCommunication)
-                else if (_isCommunicationBlocked == false)
-                  MessageBar(groupId: group.id),
+                _messageBar(),
               ],
             );
           } else {
@@ -412,152 +423,17 @@ class MessagesState extends State<MessagesPage> {
       ),
     );
   }
+
+  Widget _messageBar() {
+    if (_isCommunicationBlocked ?? false) {
+      return Text(MessagesStrings.blockedCommunication);
+    }
+    if (_pendingReservation?.status == RESERVATION_STATUS.expired) {
+      return Text(MessagesStrings.expiredRequest);
+    }
+    return MessageBar(groupId: group.id);
+  }
 } // -- end of state
-
-class MessageBar extends StatefulWidget {
-  const MessageBar({
-    super.key,
-    //required this.sendFunc,
-    required this.groupId,
-  });
-
-  //final sendFunc;
-  final String groupId;
-
-  @override
-  State<MessageBar> createState() => _MessageBarState();
-}
-
-extension on MESSAGEURGENCY {
-  Color get color {
-    switch (this) {
-      case MESSAGEURGENCY.normal:
-        return Colors.blue;
-      case MESSAGEURGENCY.important:
-        return Colors.orange;
-      case MESSAGEURGENCY.urgent:
-        return Colors.purpleAccent;
-      case MESSAGEURGENCY.emergency:
-        return Colors.red;
-    }
-  }
-}
-
-class _MessageBarState extends State<MessageBar> {
-  late final TextEditingController _textController;
-  MESSAGEURGENCY urgency = MESSAGEURGENCY.normal;
-
-  @override
-  void initState() {
-    _textController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      //color: Colors.grey[200],
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  maxLines: null,
-                  autofocus: true,
-                  controller: _textController,
-                  decoration: const InputDecoration(
-                    hintText: 'Type a message',
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.all(8),
-                  ),
-                  onFieldSubmitted: (value) => _submitMessage(
-                    context,
-                    widget.groupId,
-                    urgency,
-                  ),
-                ),
-              ),
-              ConfirmButton(
-                label: 'Send',
-                icon: const Icon(Icons.chat),
-                onPressed: () => _submitMessage(
-                  context,
-                  widget.groupId,
-                  urgency,
-                ),
-              ),
-              PopupMenuButton<MESSAGEURGENCY>(
-                initialValue: urgency,
-                onSelected: (v) => setState(() {
-                  urgency = v;
-                }),
-                itemBuilder: (ctx) => MESSAGEURGENCY.values
-                    .map(
-                      (v) => PopupMenuItem(
-                        value: v,
-                        child: Text(
-                          v.name,
-                          style: TextStyle(color: v.color),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                child: Container(
-                  color: urgency.color,
-                  child: Icon(Icons.alarm),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  void _submitMessage(
-    BuildContext context,
-    String toId,
-    MESSAGEURGENCY urgency,
-  ) async {
-    final text = _textController.text;
-    final myUserId = supabase.auth.currentUser!.id;
-    log.fine('✅ Group ID: ${widget.groupId}');
-    log.fine('✅ To ID: $toId');
-    if (text.isEmpty) {
-      log.fine('DEBUG: Empty message skipped');
-      return;
-    }
-
-    log.fine('DEBUG: Sending message from $myUserId to $toId: "$text"');
-
-    _textController.clear();
-
-    log.fine("Sent message from:$myUserId, to:$toId: $text");
-    try {
-      await MessagesRepository().sendMessage(
-        fromProfileId: myUserId,
-        groupId: widget.groupId,
-        text: text,
-        urgency: urgency,
-      );
-      log.fine('Message sent: $text');
-    } on Exception catch (error) {
-      log.warning("ERROR: $error");
-      //context.showErrorSnackBar(message: error.message); // FIXME - snackbar
-    }
-    setState(() {});
-  }
-}
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
@@ -580,16 +456,16 @@ class _MessageBubble extends StatelessWidget {
     List<Widget> chatContents = [
       if (message.fromId != myUserId)
         CircleAvatar(
-            child: Text(profile?.givenName.isNotEmpty == true
+          child: Text(
+            profile?.givenName.isNotEmpty == true
                 ? profile!.givenName[0].toUpperCase()
-                : '?')),
+                : '?',
+          ),
+        ),
       const SizedBox(width: 12),
       Expanded(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 12,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
             color: amSender ? Colors.grey[200] : message.urgency.color,
             borderRadius: BorderRadius.circular(8),
