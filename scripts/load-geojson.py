@@ -3,8 +3,9 @@ import os
 import sys
 import geojson
 import uuid
+import json
+import subprocess
 from supabase import create_client, Client
-from dotenv import load_dotenv
 
 
 _ASSET_CATEGORIES = {
@@ -26,40 +27,69 @@ def load_geojson(geojson_file):
         return geojson.load(f)
 
 
-def init_supabase() -> Client:
-    load_dotenv()
-    url = os.environ.get("SUPABASE_URL")
+def local_supabase_config() -> dict:
+    supabase_fields = {
+        "PUBLISHABLE_KEY": "supabaseAnonKey",
+        "SECRET_KEY": "secret_key",
+        "API_URL": "supabaseUrl",
+    }
+    # get the supabase env
+    status_cmd = 'supabase status -o json'
+    result = subprocess.check_output(status_cmd, shell=True)
+    # parse the json
+    fields = json.loads(result)
+    # pick out supabase_fields
+    return {v: fields[k] for k, v in supabase_fields.items()}
+
+
+def local_supabase() -> Client:
+    config = local_supabase_config()
+    url = config.get("supabaseUrl")
     if url is None:
-        print("Cannot find SUPABASE_URL")
-
-    key = os.environ.get("SUPABASE_ANON_KEY")
+        print("Cannot find supabaseUrl")
+    key = os.environ.get("secret_key")
     if key is None:
-        print("Cannot find SUPABASE_ANON_KEY")
-
+        print("Cannot find secret_key in config")
     return create_client(url, key)
+
+
+def load_neighborhood(filename:str) -> dict:
+    with open(filename) as f:
+        return json.load(f)
 
 
 def main() -> int:
     # parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument("poi_file", default="points-of-interest.geojson", help="Points-of-interest GEOJSON file")
+    parser.add_argument("--poi_file", default="points-of-interest.geojson", help="Points-of-interest GEOJSON file")
+    parser.add_argument("--neighborhood_file", default="neighborhood.json", help="Neighboorhood file")
+    parser.add_argument("-p", "--project", default=None, help="Project directory with neighboorhood and geojson files")
     args = parser.parse_args()
 
-    supabase = init_supabase()
+    #supabase = local_supabase()
 
     geojson = load_geojson(args.poi_file)
 
+    check_fields = {
+        "display": "name",
+        "NAME": "name",
+        "ADDRESS": "address",
+        "type": "point_type_name",
+    }
+
     for feature in geojson.features:
         #print(feature.properties)
-        category = feature.properties["AssetCate"]
-        point_type = _ASSET_CATEGORIES.get(category, _ASSET_CATEGORIES.get("_"))
+
         point_of_interest = {
             "id": str(uuid.uuid4()),
-            "name": feature.properties.get("OWNER"),
-            "address": feature.properties.get("SITUS", feature.properties.get("ADDRESS")),
             "geom": feature.geometry,
-            "point_type_name": point_type,
         }
+
+        for k, v in check_fields.items():
+            prop = feature.properties.get(k)
+            if prop:
+                point_of_interest[v] = prop
+
         print(point_of_interest)
         #supabase.table("point_of_interests").insert(point_of_interest)
 
