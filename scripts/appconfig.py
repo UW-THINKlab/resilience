@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 import sys
-import pprint
 from dotenv import load_dotenv
 
 ## params
@@ -62,9 +61,9 @@ def load_from_env():
   url = os.environ.get('SUPABASE_URL')
   key = os.environ.get('SUPABASE_ANON_KEY')
 
-  assert name != None
-  assert url != None
-  assert key != None
+  assert name is not None
+  assert url is not None
+  assert key is not None
 
   config = {
     "neighborhood": name,

@@ -1,12 +1,7 @@
 import argparse
-import json
-import os
 import sys
-import pprint
-import geojson
-import uuid
 import csv
-from geojson import Feature, Point, FeatureCollection
+from geojson import Feature, Point
 
 _ASSET_CATEGORIES = {
     "Coast Guard": ["life-ring", "blue"],
