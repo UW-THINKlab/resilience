@@ -66,7 +66,7 @@ def main() -> int:
     parser.add_argument("-p", "--project", default=None, help="Project directory with neighboorhood and geojson files")
     args = parser.parse_args()
 
-    #supabase = local_supabase()
+    supabase = local_supabase()
 
     geojson = load_geojson(args.poi_file)
 
@@ -91,7 +91,7 @@ def main() -> int:
                 point_of_interest[v] = prop
 
         print(point_of_interest)
-        #supabase.table("point_of_interests").insert(point_of_interest)
+        supabase.table("point_of_interests").insert(point_of_interest)
 
     return 0
 
