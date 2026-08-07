@@ -156,7 +156,8 @@ class ResourceStrings {
   }
 
   static String deleteConfirmWithReservations(
-      List<int> itemNumbersWithReservations) {
+    List<int> itemNumbersWithReservations,
+  ) {
     final itemsText = itemNumbersWithReservations.length == 1
         ? 'Item ${itemNumbersWithReservations.first} has a reservation on it.'
         : 'Items ${itemNumbersWithReservations.join(', ')} have reservations on them.';
@@ -213,7 +214,9 @@ class RequestResourceFormStrings {
   static String reqTitle(String resourceName) => "Request $resourceName";
   static const String requestCancelled = 'Request canceled';
   static String insufficientInventoryWarning(
-          int totalAvailable, int requested) =>
+    int totalAvailable,
+    int requested,
+  ) =>
       'Insufficient Quantity: $totalAvailable of the $requested requested unit(s) are '
       'currently available to request. Continue anyway?';
   static const String requestScope = 'Who to ask for this item?';
@@ -283,6 +286,7 @@ class NeighborhoodStrings {
 
 class MessagesStrings {
   static const String blockedCommunication = "Chat disabled with this user.";
+  static const String expiredRequest = "This request has expired.";
   static const String block = 'Block User';
   static const String unblock = 'Unblock User';
   static const String acceptRequest = 'Accept';
@@ -297,12 +301,12 @@ class MessagesStrings {
   static String acceptMessage(int accepted, int total) => accepted == total
       ? 'Accepted all $total requested item(s).'
       : 'Accepted $accepted of $total requested item(s). '
-          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
-  static String tentativeAcceptMessage(int accepted, int total) => accepted ==
-          total
+            'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String tentativeAcceptMessage(int accepted, int total) =>
+      accepted == total
       ? 'Tentatively accepting all $total requested item(s).'
       : 'Tentatively accepting $accepted of $total requested item(s). '
-          'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+            'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
   static String rejectMessage(int total) =>
       'Rejected the request for $total item(s).';
   static const String cancelRequest = 'Cancel Request';
