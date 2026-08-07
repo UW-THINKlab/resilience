@@ -26,26 +26,32 @@ def load_geojson(geojson_file):
         return geojson.load(f)
 
 
-def init_supabase() -> Client:
-    load_dotenv()
-    url = os.environ.get("SUPABASE_URL")
+def init_supabase(config:dict) -> Client:
+    url = config.get("supabaseUrl")
     if url is None:
-        print("Cannot find SUPABASE_URL")
+        print("Cannot find supabaseUrl")
 
-    key = os.environ.get("SUPABASE_ANON_KEY")
+    key = os.environ.get("supabaseAnonKey")
     if key is None:
-        print("Cannot find SUPABASE_ANON_KEY")
-
+        print("Cannot find supabaseAnonKey in config")
     return create_client(url, key)
+
+
+def load_neighborhood(file:str) -> dict|None:
+    pass
 
 
 def main() -> int:
     # parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument("poi_file", default="points-of-interest.geojson", help="Points-of-interest GEOJSON file")
+    parser.add_argument("--poi_file", default="points-of-interest.geojson", help="Points-of-interest GEOJSON file")
+    parser.add_argument("--neighborhood_file", default="neighborhood.json", help="Neighboorhood file")
+    parser.add_argument("-p", "--project", default=None, help="Project directory with neighboorhood and geojson files")
     args = parser.parse_args()
 
-    supabase = init_supabase()
+    config = load_neighborhood(args.neighborhood_file)
+
+    supabase = init_supabase(config)
 
     geojson = load_geojson(args.poi_file)
 
