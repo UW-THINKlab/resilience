@@ -360,7 +360,7 @@ cmd = "scripts/db-load.sh"
 depends-on = ["reset"]
 
 [feature.supabase.tasks.initialize]
-cmd = "python scripts/initialize-db.py --admin"
+cmd = "python scripts/initialize-db.py --admin --write --generate"
 depends-on = ["start"]
 
 [feature.supabase.tasks.config]

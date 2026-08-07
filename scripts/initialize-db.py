@@ -157,6 +157,32 @@ def create_admin_user(db:Client, config:dict) -> dict | None:
     return person
 
 
+appconfig_file = "src/support_sphere/lib/constants/appconfig.dart"
+
+dart_template = """
+// WARNING - This is a generated file. Do not edit. Do not commit to source control.
+// Generate this file with:
+//
+//     pixi run -e supabase config -f <neighborhood.json>
+
+import 'package:latlong2/latlong.dart' show LatLng;
+
+class AppConfig {{
+  static const String neighborhood = "{neighborhood}";
+  static const LatLng location = LatLng({location[1]}, {location[0]});
+  static const String supabaseUrl = "{supabaseUrl}";
+  static const String supabaseAnonKey = "{supabaseAnonKey}";
+}}
+"""
+
+def dart_config_code(config:dict) -> str:
+  # fix location from string to array
+  loc_str = config['location']
+  location = [float(value.strip()) for value in loc_str.split(',')]
+  config['location'] = location
+  return dart_template.format_map(config)
+
+
 def main() -> int:
   # parse args
   parser = argparse.ArgumentParser()
@@ -164,6 +190,8 @@ def main() -> int:
   parser.add_argument("-w", "--write", action="store_true", help="Write output")
   parser.add_argument("--admin", action="store_true", help="Collect information to initialize")
   parser.add_argument("--seed", default="seed.sql.gz", help="GZipped SQL file to seed the initial database")
+  parser.add_argument("--generate", action="store_true", help="If set, generate the Dart binding code for the client.")
+
   args = parser.parse_args()
 
   # load config settings
@@ -179,13 +207,20 @@ def main() -> int:
   if args.admin:
     db = get_supabase(config)
     user = create_admin_user(db, config)
-    print("Created admin user for", user)
+    print("Created admin user")
 
   # write the file
   if args.write:
     with open(args.neighborhood_file, 'w') as f:
       json.dump(config, f, ensure_ascii=False, indent=4)
       print("Wrote neighborhood config values to", args.neighborhood_file)
+
+  if args.generate:
+    gen_code = dart_config_code(config)
+    with open(appconfig_file, 'w') as outfile:
+      outfile.write(gen_code)
+    print("Generated dart config constants:", appconfig_file)
+
 
   return 0
 
