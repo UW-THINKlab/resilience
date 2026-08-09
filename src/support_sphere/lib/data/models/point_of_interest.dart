@@ -126,7 +126,7 @@ class PointOfInterest extends Equatable {
     //       47.6591528763917
     //       -122.27787227416428
     // geom:{"type:x", "coordinates":[lat,long]}
-    return LatLng(geomMap["coordinates"][0], geomMap["coordinates"][1]);
+    return LatLng(geomMap["coordinates"][1], geomMap["coordinates"][0]);
   }
 
   static PointOfInterest fromMap(Map poiMap) {

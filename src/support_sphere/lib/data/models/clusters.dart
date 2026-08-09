@@ -57,7 +57,9 @@ class Cluster extends Equatable implements Comparable {
       final geom = json['geom'];
       final List<dynamic> coords = geom['coordinates'][0];
       for (var point in coords) {
-        points.add(LatLng(point[0], point[1]));
+        // Noting: The data is stored in long, lat.
+        // The LatLng structure expects lat, long
+        points.add(LatLng(point[1], point[0]));
       }
     }
     final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;

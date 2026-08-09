@@ -22,19 +22,30 @@ class HomeRepository {
         Cluster? cluster,
         List<PointOfInterest>? pointsOfInterest,
       })?> getHomeData(String userProfileId) async {
+
     final clusterData =
         await _clusterService.getClusterIdByUserProfileId(userProfileId);
-    final clusterId =
-        clusterData?['people']['people_groups']['households']['cluster_id'];
 
-    if (clusterId == null) return null;
+    log.fine("^^^^^ clusterData: $clusterData");
 
-    final cluster = await clusterRepo.getCluster(clusterId);
+    Iterable<dynamic>? captains;
+    Cluster? cluster;
 
-    final captainsData =
-        await _clusterService.getCaptainsByClusterId(clusterId);
-    final captains =
-        captainsData?.map((row) => row['captain']['user_profile']['person']);
+    final groups = clusterData?['people']['people_groups'];
+    if (groups != null) {
+      final clusterId = groups['households']['cluster_id'];
+      log.fine("^^^^^ clusterId: $clusterId");
+
+      if (clusterId != null) {
+        cluster = await clusterRepo.getCluster(clusterId);
+        log.fine("^^^^^ cluster: $cluster");
+      }
+
+      final captainsData =
+          await _clusterService.getCaptainsByClusterId(clusterId);
+      captains =
+          captainsData?.map((row) => row['captain']['user_profile']['person']);
+    }
 
     final pointsOfInterest = await _poiService.getPointsOfInterest();
 

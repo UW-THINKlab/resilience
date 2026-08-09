@@ -127,7 +127,7 @@ class HomeMap extends StatelessWidget {
           if (entry.key != null ) {
             // FIXME check if layer is enabled
             value.addAll(entry.value.markers);
-            log.fine("XXXX Loaded feature: $entry");
+            log.fine("Loaded geojson feature: $entry");
           }
         }
       }

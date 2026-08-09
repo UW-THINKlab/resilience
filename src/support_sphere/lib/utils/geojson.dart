@@ -31,18 +31,12 @@ class GeoJson {
       }
       final layerName = fileName.substring(assetLocation.length, fileName.indexOf(assetExt));
       log.fine("Loaded layer: $layerName");
-      //log.finer("XXXXX JSON: $jsonStr");
 
       // parse
       try {
-        log.finer("XXXXX A");
         GeoJsonParser geoJson = GeoJsonParser();
-        log.finer("XXXXX B");
         geoJson.parseGeoJsonAsString(jsonStr);
-        //log.finer("XXXXX C: $jsonStr");
-        log.fine("Parsed geoJson: $geoJson");
         layers[layerName] =  geoJson;
-        log.fine("created layer: $layerName");
       } catch (e, s) {
         print('Exception details:\n $e');
         print('Stack trace:\n $s');
