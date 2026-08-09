@@ -144,10 +144,6 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    # FIXME
-    load_geojson(args.neighborhood_file)
-    exit(0)
-
     # load config settings
     config = load_config(args.neighborhood_file)
 
