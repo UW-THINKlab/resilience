@@ -11,7 +11,7 @@ def local_supabase_config() -> dict:
         "API_URL": "supabaseUrl",
     }
     # get the supabase env
-    status_cmd = 'supabase status -o json'
+    status_cmd = "supabase status -o json"
     result = subprocess.check_output(status_cmd, shell=True)
     # parse the json
     fields = json.loads(result)
@@ -38,6 +38,23 @@ def load_geojson(geojson_file):
         return geojson.load(f)
 
 
-def load_json(filename:str) -> dict:
+def load_json(filename: str) -> dict:
     with open(filename) as f:
         return json.load(f)
+
+
+def prompt_config(config: dict, prompts: dict) -> dict:
+    """
+    config is a name-vale dictionary
+    prompts is a dict of name and prompts
+    Given an existing config dict, and the prompts, IFF a prompt key does not
+    exist in the config dict, they user is prompted for an answer and it
+    is stored in the returned config, under the required key.
+    """
+    for key, prompt in prompts.items():
+        # check if key is set in config
+        if key not in config:
+            # if not, prompt for if
+            config[key] = input(prompt + "  ")
+
+    return config

@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 import uuid
 from pathlib import Path
 from geomet import wkt
@@ -23,6 +24,8 @@ def load_pois(db:Client, poi_file:str):
         point_of_interest = {
             "id": str(uuid.uuid4()),
             "geom": feature.geometry, # TODO check it's a POINT
+            "address": "n/a",
+            "point_type_name": "community center", # TODO better default?
         }
 
         for k, v in check_fields.items():
@@ -103,6 +106,38 @@ def load_households(db:Client, cluster_ids:dict, household_file:str):
     print("Loaded", len(geojson.features), "households")
 
 
+def load_neighborhood_geojson(supabase:Client, neighborhood_dir:Path) -> list:
+    processed = []
+
+    pois = Path(neighborhood_dir, "points-of-interest.geojson").resolve()
+    if pois.exists():
+        load_pois(supabase, pois)
+        processed.append(pois.name)
+
+    clusters = Path(neighborhood_dir, "clusters.geojson").resolve()
+    if clusters.exists():
+        clusters = load_clusters(supabase, clusters)
+        processed.append(clusters)
+
+    else:
+        clusters = {}
+
+    households = Path(neighborhood_dir, "households.geojson").resolve()
+    if households.exists():
+        load_households(supabase, clusters, households)
+        processed.append(households.name)
+
+    leftovers = []
+    files = neighborhood_dir.glob("*.geojson")
+
+    for file in files:
+        file = file.resolve()
+        if file.name not in processed:
+            leftovers.append(file)
+
+    return leftovers
+
+
 def main() -> int:
     # parse args
     parser = argparse.ArgumentParser()
@@ -112,22 +147,10 @@ def main() -> int:
     parser.add_argument("-p", "--project", default=None, help="Project directory with neighboorhood and geojson files")
     args = parser.parse_args()
 
-    if args.project:
-        pois = Path(args.project, "points-of-interest.geojson")
-        if pois.exists() and args.pois is None:
-            args.pois = pois
-
-        clusters = Path(args.project, "clusters.geojson")
-        if clusters.exists() and args.clusters is None:
-            args.clusters = clusters
-
-        households = Path(args.project, "households.geojson")
-        if households.exists() and args.households is None:
-            args.households = households
-
     supabase = local_supabase()
 
-    clusters = {}
+    if args.project:
+        load_neighborhood_geojson(supabase, Path(args.project))
 
     if args.pois:
         load_pois(supabase, args.pois)
