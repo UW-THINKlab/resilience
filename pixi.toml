@@ -20,6 +20,7 @@ features = ["supabase"]
 python-dotenv = ">=1.2.2,<2"
 supabase = ">=2.31.0,<3"
 geomet = ">=1.1.0,<2"
+geojson = ">=3.3.0,<4"
 
 [dependencies]
 go-sops = ">=3.9.0"
@@ -195,13 +196,13 @@ ruby = ">=3.3.3,<3.4"
 
 # Flutter tasks
 [feature.frontend.tasks.run-web]
-cmd = "flutter run --dart-define-from-file=../../.env -d chrome"
+cmd = "flutter run -d chrome"
 cwd = "src/support_sphere"
 #depends-on = ["flutter-devices", "flutter-get"]
 
 # Flutter tasks
 [feature.frontend.tasks.run]
-cmd = "flutter run --dart-define-from-file=../../.env"
+cmd = "flutter run"
 cwd = "src/support_sphere"
 #depends-on = ["flutter-devices", "flutter-get"]
 

@@ -1,6 +1,6 @@
 import argparse
 import sys
-import os
+import json
 import uuid
 from pathlib import Path
 from geomet import wkt
@@ -106,6 +106,49 @@ def load_households(db:Client, cluster_ids:dict, household_file:str):
     print("Loaded", len(geojson.features), "households")
 
 
+def load_checklists(db:Client, checklist_file:str):
+    """
+    Populate checklists to the database.
+    """
+    with open(checklist_file) as f:
+        data = json.load(f)
+
+    for ch in data['checklists']:
+
+        # Add frequency for checklist
+        result = db.table("frequency").insert({
+            "name": ch['frequency']['name'],
+            "num_days": ch['frequency']['num_days'],
+        }).execute()
+        # get id
+        frequency_id = result[0].id
+
+        result = db.table("checklists").insert({
+            "title": ch['title'],
+            "description": ch['purpose'],
+            "frenquency_id": frequency_id,
+        }).execute()
+        # get id
+        checklist_id = result[0].id
+
+        # Add steps for checklist
+        for idx, st in enumerate(ch['steps']):
+            result = db.table("checklist_steps").insert({
+                "checklist_id": checklist_id,
+                "description": ch['description']
+            }).execute()
+            # get id
+            step_id = result[0].id
+
+            db.table("checklist_steps_order").insert({
+                "checklist_id": checklist_id,
+                "checklist_step_id": step_id,
+                "priority": idx,
+            }).execute()
+            # get id
+            #step_order_id = result[0].id
+
+
 def load_neighborhood_geojson(supabase:Client, neighborhood_dir:Path) -> list:
     processed = []
 
@@ -144,6 +187,7 @@ def main() -> int:
     parser.add_argument("--pois", help="Points-of-interest GEOJSON file")
     parser.add_argument("--clusters", help="Neighborhood cluster GEOJSON file")
     parser.add_argument("--households", help="Neighborhood households GEOJSON file")
+    parser.add_argument("--checklists", help="Emergency preparedness checklist JSON file")
     parser.add_argument("-p", "--project", default=None, help="Project directory with neighboorhood and geojson files")
     args = parser.parse_args()
 
@@ -160,6 +204,9 @@ def main() -> int:
 
     if args.households:
         load_households(supabase, clusters, args.households)
+
+    if args.checklists:
+        load_checklists(supabase, args.checklists)
 
     return 0
 

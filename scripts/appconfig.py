@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import shutil
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
@@ -81,6 +80,30 @@ def load_from_env():
     return config
 
 
+def load_config(filename: str) -> dict:
+    filepath = Path(filename)
+    if filepath.exists():
+        with open(filepath) as f:
+            config = json.load(f)
+            # special case: location might be a string instead of a location array
+            # if so, convert to [float]
+            config['location'] = location_pair(config['location'])
+
+            return config
+    else:
+        return {}
+
+
+def location_pair(location) -> [float]:
+    if isinstance(location, str):
+        long_lat = location.split(",")
+        return [float(long_lat[0].strip()), float(long_lat[1].strip())]
+    elif isinstance(location, [float]):
+        return location
+    else:
+        print("Unknown location:", type(location), location)
+
+
 def main() -> int:
     # parse args
     parser = argparse.ArgumentParser()
@@ -104,8 +127,7 @@ def main() -> int:
     if args.from_env:
         config = load_from_env()
     else:
-        with open(args.neighborhood_file) as f:
-            config = json.load(f)
+        config = load_config(args.neighborhood_file)
 
     if args.dart:
         output = emit_dart_code(config)

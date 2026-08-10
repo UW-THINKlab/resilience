@@ -3,10 +3,10 @@ import json
 import sys
 import subprocess
 from pathlib import Path
-from supabase import create_client, Client
+from supabase import Client
 from create_user import user_from_dict
-from appconfig import write_dart_code, copy_assets, assets_dir
-from utils import local_supabase
+from appconfig import write_dart_code, copy_assets, assets_dir, load_config
+from utils import local_supabase_config, local_supabase
 from load_geojson import load_neighborhood_geojson
 
 # This is the code that loads the db and initializes a new admin user.
@@ -36,15 +36,6 @@ admin_prompts = {
 }
 
 
-def overlay_supabase_config(config: dict) -> dict:
-    supabase_data = local_supabase()
-    supabase_data.update(default_config)  # bring in the defaults
-    for k, v in supabase_data.items():
-        if k not in config:
-            config[k] = v
-    return config
-
-
 def prompt_config(config: dict, ask_admin: bool) -> dict:
     for key, prompt in prompts.items():
         # check if key is set in config
@@ -66,25 +57,8 @@ def prompt_config(config: dict, ask_admin: bool) -> dict:
 def baseline_config() -> dict:
     config = {}
     config.update(default_config)
-    config.update(local_supabase())
+    config.update(local_supabase_config())
     return config
-
-
-def load_config(filename: str) -> dict:
-    filepath = Path(filename)
-    if filepath.exists():
-        with open(filepath) as f:
-            config = json.load(f)
-            return overlay_supabase_config(config)
-    else:
-        return baseline_config()
-
-
-def get_supabase(config) -> Client:
-    url: str = config.get("supabaseUrl")
-    key: str = config.get("secret_key")
-    # TODO check and fail fast
-    return create_client(url, key)
 
 
 def load_seed_data(seed_file: str) -> None:
@@ -164,7 +138,7 @@ def main() -> int:
 
     # create admin user
     if args.admin:
-        db = get_supabase(config)
+        db = local_supabase()
         user_id = create_admin_user(db, config)
         print("Created admin user", user_id)
 
