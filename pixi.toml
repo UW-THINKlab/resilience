@@ -16,6 +16,9 @@ selenium = ["selenium", "frontend"]
 [environments.supabase]
 features = ["supabase"]
 
+[environments.secrets]
+features = ["secrets"]
+
 [environments.supabase.dependencies]
 python-dotenv = ">=1.2.2,<2"
 supabase = ">=2.31.0,<3"
@@ -389,6 +392,15 @@ depends-on = [
   { task = "setup-infra", environment = "backend" },
   { task = "setup-db-data-via-k8s-job", environment = "backend" },
 ]
+
+# ==== secrets environment ====
+[feature.secrets.tasks.encrypt]
+args = ["file_name"]
+cmd = 'sops encrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/\.(yaml|json|geojson)$/_enc.\1/")'
+
+[feature.secrets.tasks.decrypt]
+args = ["file_name"]
+cmd = 'SOPS_AGE_KEY_FILE=key.txt sops decrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/_enc\.(yaml|json_geojson)$/.\1/")'
 
 # ==== Selenium e2e test environment ====
 [feature.selenium.dependencies]
