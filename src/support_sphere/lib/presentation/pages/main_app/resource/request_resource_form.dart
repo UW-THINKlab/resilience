@@ -42,15 +42,15 @@ class RequestResourceFormData extends Equatable {
 
   @override
   List<Object?> get props => [
-        resourceId,
-        quantity,
-        notes,
-        requestScope,
-        currentLatitude,
-        currentLongitude,
-        resourceName,
-        resourceTypeName,
-      ];
+    resourceId,
+    quantity,
+    notes,
+    requestScope,
+    currentLatitude,
+    currentLongitude,
+    resourceName,
+    resourceTypeName,
+  ];
 
   RequestResourceFormData copyWith({
     String? resourceId,
@@ -89,6 +89,7 @@ class RequestResourceFormData extends Equatable {
       'created_at': now,
       'resource_name': resourceName,
       'resource_type_name': resourceTypeName,
+      'hours': hours,
     };
   }
 }
@@ -105,9 +106,9 @@ class RequestResourceForm extends StatefulWidget {
 
   @override
   State<RequestResourceForm> createState() => _RequestResourceFormState(
-        resourceCv: resourceCv,
-        resourceType: resourceType,
-      );
+    resourceCv: resourceCv,
+    resourceType: resourceType,
+  );
 }
 
 class _RequestResourceFormState extends State<RequestResourceForm> {
@@ -167,58 +168,58 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
       final isEmergency =
           mode == AppModes.emergency || mode == AppModes.testEmergency;
       await context.read<ResourceCubit>().submitResourceRequest(
-            requestData: _formData.toJson(),
-            isEmergency: isEmergency,
-            onInsufficientInventory: (totalAvailable, requested) async {
-              final res = await ConfirmationDialog(
-                actions: [
-                  CancelButton(
-                    label: 'Cancel',
-                    onPressed: () => Navigator.of(context).pop(false),
-                  ),
-                  ConfirmButton(
-                    label: 'Continue',
-                    onPressed: () => Navigator.of(context).pop(true),
-                  ),
-                ],
-                content: Text(
-                  RequestResourceFormStrings.insufficientInventoryWarning(
-                      totalAvailable, requested),
-                ),
-              ).show<bool>(context);
-              return res ?? false;
-            },
-            confirmation: (SuggestedResourceRequest req) async {
-              setState(() => _isProcessing = false);
-              final res = await ConfirmationDialog(
-                actions: [
-                  CancelButton(
-                    label: 'Cancel',
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                  ),
-                  ConfirmButton(
-                    label: 'Yes',
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                    },
-                  ),
-                ],
-                content: Text(
-                  'Confirming will send a request to ${req.supplierCandidate.givenName} for ${req.requestedQty} unit(s)',
-                ),
-              ).show<bool>(context);
-              if (mounted) setState(() => _isProcessing = true);
-              return res ?? false;
-            },
-            expiresAt: _expiryDate,
-          );
+        requestData: _formData.toJson(),
+        isEmergency: isEmergency,
+        onInsufficientInventory: (totalAvailable, requested) async {
+          final res = await ConfirmationDialog(
+            actions: [
+              CancelButton(
+                label: 'Cancel',
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              ConfirmButton(
+                label: 'Continue',
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
+            ],
+            content: Text(
+              RequestResourceFormStrings.insufficientInventoryWarning(
+                totalAvailable,
+                requested,
+              ),
+            ),
+          ).show<bool>(context);
+          return res ?? false;
+        },
+        confirmation: (SuggestedResourceRequest req) async {
+          setState(() => _isProcessing = false);
+          final res = await ConfirmationDialog(
+            actions: [
+              CancelButton(
+                label: 'Cancel',
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              ConfirmButton(
+                label: 'Yes',
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+            content: Text(
+              'Confirming will send a request to ${req.supplierCandidate.givenName} for ${req.requestedQty} unit(s)',
+            ),
+          ).show<bool>(context);
+          if (mounted) setState(() => _isProcessing = true);
+          return res ?? false;
+        },
+        expiresAt: _expiryDate,
+      );
       if (!mounted) return;
       showSuccessSnackBar(context, 'Request sent.');
-      context.read<ResourceCubit>().currentNavChanged(
-            ResourceNav.savedRequest,
-          );
+      context.read<ResourceCubit>().currentNavChanged(ResourceNav.savedRequest);
     } catch (e) {
       if (!mounted) return;
       if (e is ResourceRequestCancelled) {
@@ -263,7 +264,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
           validator: FormBuilderValidators.compose([
             FormBuilderValidators.required(),
             FormBuilderValidators.numeric(),
-            FormBuilderValidators.min(1)
+            FormBuilderValidators.min(1),
           ]),
           decoration: InputDecoration(
             labelText: 'hours needed',
@@ -275,9 +276,7 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
         );
       default:
     }
-    return SizedBox(
-      height: 0,
-    );
+    return SizedBox(height: 0);
   }
 
   @override
@@ -289,9 +288,13 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
           key: _formKey,
           child: Column(
             children: [
-              Text(RequestResourceFormStrings.reqTitle(resourceCv.name),
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                RequestResourceFormStrings.reqTitle(resourceCv.name),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -309,19 +312,21 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                 initialValue: '1',
                 keyboardType: TextInputType.number,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                onSaved: (value) => _formData =
-                    _formData.copyWith(quantity: int.tryParse(value ?? '0')),
+                onSaved: (value) => _formData = _formData.copyWith(
+                  quantity: int.tryParse(value ?? '0'),
+                ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
-                  FormBuilderValidators.min(1)
+                  FormBuilderValidators.min(1),
                 ]),
                 decoration: InputDecoration(
-                    labelText: RequestResourceFormStrings.numberNeeded,
-                    helperText: '',
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)),
+                  labelText: RequestResourceFormStrings.numberNeeded,
+                  helperText: '',
+                  border: border(context),
+                  enabledBorder: border(context),
+                  focusedBorder: focusBorder(context),
+                ),
               ),
               _extraField(resourceCv),
               FormField<RequestScopes?>(
@@ -336,8 +341,10 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (field.hasError)
-                      Text(field.errorText!,
-                          style: TextStyle(color: Colors.red)),
+                      Text(
+                        field.errorText!,
+                        style: TextStyle(color: Colors.red),
+                      ),
                     Text(RequestResourceFormStrings.requestScope),
                     RadioButtonGroup<RequestScopes>(
                       value: field.value,
@@ -348,17 +355,16 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _expiryDateController,
                 decoration: InputDecoration(
                   labelText: 'Expires at',
                   filled: true,
                   prefixIcon: Icon(Icons.calendar_today),
-                  enabledBorder:
-                      OutlineInputBorder(borderSide: BorderSide.none),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.blue),
                   ),
@@ -377,32 +383,37 @@ class _RequestResourceFormState extends State<RequestResourceForm> {
                 minLines: 1,
                 maxLines: 5,
                 decoration: InputDecoration(
-                    labelText: RequestResourceFormStrings.notes,
-                    helperMaxLines: 3,
-                    border: border(context),
-                    enabledBorder: border(context),
-                    focusedBorder: focusBorder(context)),
+                  labelText: RequestResourceFormStrings.notes,
+                  helperMaxLines: 3,
+                  border: border(context),
+                  enabledBorder: border(context),
+                  focusedBorder: focusBorder(context),
+                ),
               ),
               const SizedBox(height: 16),
               if (_isProcessing) ...[
-                const Text('Requesting...',
-                    style: TextStyle(fontStyle: FontStyle.italic)),
+                const Text(
+                  'Requesting...',
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                ),
                 const SizedBox(height: 8),
               ],
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CancelButton(
-                      label: 'Cancel',
-                      onPressed: () {
-                        context
-                            .read<ResourceCubit>()
-                            .currentNavChanged(ResourceNav.showAllResources);
-                      }),
+                    label: 'Cancel',
+                    onPressed: () {
+                      context.read<ResourceCubit>().currentNavChanged(
+                        ResourceNav.showAllResources,
+                      );
+                    },
+                  ),
                   const SizedBox(width: 4),
                   ConfirmButton(
-                      label: 'Request',
-                      onPressed: _isProcessing ? null : () => _handleSubmit()),
+                    label: 'Request',
+                    onPressed: _isProcessing ? null : () => _handleSubmit(),
+                  ),
                 ],
               ),
             ],
@@ -417,13 +428,13 @@ enum RequestScopes { nearby, neighbors }
 
 extension RequestScopesExtension on RequestScopes {
   String get displayName => switch (this) {
-        RequestScopes.nearby => 'Near Current Location',
-        RequestScopes.neighbors => 'Near Home',
-      };
+    RequestScopes.nearby => 'Near Current Location',
+    RequestScopes.neighbors => 'Near Home',
+  };
   String get dbValue => switch (this) {
-        RequestScopes.nearby => 'nearby',
-        RequestScopes.neighbors => 'neighbors',
-      };
+    RequestScopes.nearby => 'nearby',
+    RequestScopes.neighbors => 'neighbors',
+  };
 }
 
 class RadioButtonGroup<T> extends StatefulWidget {
@@ -477,17 +488,15 @@ class _RadioButtonGroupState<T> extends State<RadioButtonGroup<T>> {
       onChanged: _handleChanged,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: widget.options.map(
-          (option) {
-            final label = widget.labelBuilder(option);
-            return RadioListTile<T>(
-              title: Text(label),
-              value: option,
-              // groupValue: _selected,
-              onChanged: (value) => _handleChanged(value),
-            );
-          },
-        ).toList(),
+        children: widget.options.map((option) {
+          final label = widget.labelBuilder(option);
+          return RadioListTile<T>(
+            title: Text(label),
+            value: option,
+            // groupValue: _selected,
+            onChanged: (value) => _handleChanged(value),
+          );
+        }).toList(),
       ),
     );
   }

@@ -41,19 +41,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (_) => AuthenticationRepository(),
-        ),
-        RepositoryProvider(
-          create: (_) => UserRepository(),
-        ),
+        RepositoryProvider(create: (_) => AuthenticationRepository()),
+        RepositoryProvider(create: (_) => UserRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthenticationBloc>(
             create: (context) => AuthenticationBloc(
-              authenticationRepository:
-                  context.read<AuthenticationRepository>(),
+              authenticationRepository: context
+                  .read<AuthenticationRepository>(),
             ),
           ),
           BlocProvider<LocationCubit>(
@@ -77,9 +73,7 @@ class AppView extends StatelessWidget {
       title: AppStrings.appName,
 
       // Theme configuration
-      theme: _buildTheme(
-        Brightness.light,
-      ),
+      theme: _buildTheme(Brightness.light),
       debugShowCheckedModeBanner: false,
 
       home: const AuthSelect(),
@@ -91,8 +85,9 @@ class AppView extends StatelessWidget {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child:
-                  Text('404 NOT FOUND: No route defined for ${settings.name}'),
+              child: Text(
+                '404 NOT FOUND: No route defined for ${settings.name}',
+              ),
             ),
           ),
         );

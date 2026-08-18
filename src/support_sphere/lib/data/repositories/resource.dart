@@ -36,11 +36,11 @@ class ResourceRepository {
     MessagesRepository? messagesRepository,
     ChatRepository? chatRepository,
     UserRepository? userRepository,
-  })  : _resourceService = resourceService ?? ResourceService(),
-        _authService = authService ?? AuthService(),
-        _messagesRepository = messagesRepository ?? MessagesRepository(),
-        _chatRepository = chatRepository ?? ChatRepository(),
-        _userRepository = userRepository ?? UserRepository();
+  }) : _resourceService = resourceService ?? ResourceService(),
+       _authService = authService ?? AuthService(),
+       _messagesRepository = messagesRepository ?? MessagesRepository(),
+       _chatRepository = chatRepository ?? ChatRepository(),
+       _userRepository = userRepository ?? UserRepository();
 
   final ResourceService _resourceService;
   final AuthService _authService;
@@ -67,13 +67,15 @@ class ResourceRepository {
   }
 
   Future<List<UserResource>> getUserResourcesByUserId(String userId) async {
-    PostgrestList? results =
-        await _resourceService.getUserResourcesByUserId(userId);
+    PostgrestList? results = await _resourceService.getUserResourcesByUserId(
+      userId,
+    );
     final rows =
         results?.map((data) => UserResource.fromJson(data)).toList() ?? [];
     rows.sort((a, b) {
-      final nameComparison =
-          a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      final nameComparison = a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      );
       if (nameComparison != 0) return nameComparison;
       return b.addedDate!.compareTo(a.addedDate!);
     });
@@ -133,7 +135,8 @@ class ResourceRepository {
   }
 
   Future<List<String>> getUserResourceIdsWithReservations(
-      List<String> ids) async {
+    List<String> ids,
+  ) async {
     final rows = await _resourceService.getReservationsForUserResources(ids);
     return (rows ?? [])
         .map((r) => r['user_resource_id'] as String)
@@ -143,8 +146,9 @@ class ResourceRepository {
 
   Future<void> notifyReservationsRemoved(List<String> userResourceIds) async {
     if (userResourceIds.isEmpty) return;
-    final rows =
-        await _resourceService.getReservationsForUserResources(userResourceIds);
+    final rows = await _resourceService.getReservationsForUserResources(
+      userResourceIds,
+    );
     final fromProfileId = _authService.getSignedInUser()!.id;
     final notifiedGroupIds = <String>{};
     for (final row in rows ?? []) {
@@ -168,8 +172,9 @@ class ResourceRepository {
       groupId: groupId,
     );
     if (results.isEmpty) return null;
-    ResourceReservations reservation =
-        ResourceReservations.fromJson(results.first);
+    ResourceReservations reservation = ResourceReservations.fromJson(
+      results.first,
+    );
     if (reservation.isExpired()) {
       reservation = reservation.copyWith(status: RESERVATION_STATUS.expired);
     }
@@ -194,7 +199,7 @@ class ResourceRepository {
     required Future<bool> Function(SuggestedResourceRequest) confirmation,
     required bool isEmergency,
     required Future<bool> Function(int totalAvailable, int requested)
-        onInsufficientInventory,
+    onInsufficientInventory,
   }) async {
     final candidates = await _getCandidates(
       requesterProfileId: requesterProfileId,
@@ -256,6 +261,7 @@ class ResourceRepository {
           userResourceId: candidate.userResourceId,
           distanceMeters: candidate.distanceMeters,
           expiresAt: resourceRequest.expiresAt,
+          hours: resourceRequest.hours,
         );
       } catch (e) {
         log.fine(
@@ -297,6 +303,9 @@ class ResourceRepository {
       buf.writeln(
         'Notes: ${resourceRequest.notes?.isEmpty ?? true ? 'NA' : resourceRequest.notes}.',
       );
+      if (resourceRequest.hours != null) {
+        buf.writeln('Needed for: ${resourceRequest.hours!} hour(s)');
+      }
 
       await _messagesRepository.sendMessage(
         fromProfileId: requesterProfileId,
@@ -370,7 +379,8 @@ class ResourceRepository {
     final requesterPerson = await _userRepository.getMyProfile();
     final requesterName = requesterPerson?.name() ?? 'Unk Neighbor 1';
     final candidatePerson = await _userRepository.getPersonProfileByUserId(
-        userId: candidate.profileId);
+      userId: candidate.profileId,
+    );
     final candidateName = candidatePerson?.name() ?? 'Unk Neighbor 2';
     return 'Request from $requesterName to $candidateName for $quantity $resourceName';
   }
