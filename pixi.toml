@@ -402,7 +402,7 @@ cmd = 'sops encrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/\.(yaml|jso
 
 [feature.secrets.tasks.decrypt]
 args = ["file_name"]
-cmd = 'SOPS_AGE_KEY_FILE=key.txt sops decrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/_enc\.(yaml|json_geojson)$/.\1/")'
+cmd = 'SOPS_AGE_KEY_FILE=key.txt sops decrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/_enc\.(yaml|json|geojson)$/.\1/")'
 
 # ==== Selenium e2e test environment ====
 [feature.selenium.dependencies]
