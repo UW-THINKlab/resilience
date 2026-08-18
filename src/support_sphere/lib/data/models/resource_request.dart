@@ -10,6 +10,7 @@ class ResourceRequest {
   final String? notes;
   final double? lon;
   final double? lat;
+  final int? hours;
   final DateTime expiresAt;
 
   ResourceRequest({
@@ -23,5 +24,6 @@ class ResourceRequest {
     required this.lat,
     this.urgency = MESSAGEURGENCY.normal,
     required this.expiresAt,
+    this.hours,
   });
 }
