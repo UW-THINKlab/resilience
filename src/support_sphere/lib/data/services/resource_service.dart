@@ -1,6 +1,5 @@
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/widgets.dart'; //debugPrint
 import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/data/models/supplier_candidate.dart';
@@ -10,7 +9,9 @@ class ResourceService {
   final log = Logger('ResourceService');
 
   Future<PostgrestList?> getUserResourcesByUserId(String userId) async {
-    return await _supabaseClient.from('user_resources').select('''
+    return await _supabaseClient
+        .from('user_resources')
+        .select('''
       id,
       user_id,
       resources (
@@ -31,15 +32,19 @@ class ResourceService {
       sharing_scope_emergency,
       created_at,
       updated_at
-    ''').eq('user_id', userId);
+    ''')
+        .eq('user_id', userId);
   }
 
   Future<PostgrestList?> getResourceCVByText(String text) async {
-    return await _supabaseClient.from('resources_cv').select('''
+    return await _supabaseClient
+        .from('resources_cv')
+        .select('''
       id,
       name,
       description
-    ''').ilike('name', '%$text%');
+    ''')
+        .ilike('name', '%$text%');
   }
 
   Future<PostgrestList?> getResourceTypes() async {
@@ -121,13 +126,16 @@ class ResourceService {
     required SHARING_SCOPES sharingScope,
     required SHARING_SCOPES sharingScopeEmergency,
   }) async {
-    await _supabaseClient.from('user_resources').update({
-      'quantity': quantity,
-      'notes': notes,
-      'sharing_scope': sharingScope.name,
-      'sharing_scope_emergency': sharingScopeEmergency.name,
-      'updated_at': DateTime.now().toIso8601String(),
-    }).eq('id', id);
+    await _supabaseClient
+        .from('user_resources')
+        .update({
+          'quantity': quantity,
+          'notes': notes,
+          'sharing_scope': sharingScope.name,
+          'sharing_scope_emergency': sharingScopeEmergency.name,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', id);
   }
 
   Future<void> createResourceCV(Map<String, dynamic> data) async {
@@ -199,9 +207,10 @@ class ResourceService {
     required String userResourceId,
     double? distanceMeters,
     required DateTime expiresAt,
+    int? hours,
   }) async {
     final row = await _supabaseClient.rpc(
-      'reserve_request_candidate_v2',
+      'reserve_request_candidate_v3',
       params: {
         'p_resource_id': resourceId,
         'p_quantity': quantity,
@@ -212,6 +221,7 @@ class ResourceService {
         'p_notes': notes,
         'p_distance_meters': distanceMeters,
         'p_expires_at': expiresAt.toIso8601String(),
+        'p_hours_needed': hours,
       },
     );
 
@@ -253,7 +263,8 @@ class ResourceService {
   }
 
   Future<PostgrestList?> getReservationsForUserResources(
-      List<String> userResourceIds) async {
+    List<String> userResourceIds,
+  ) async {
     if (userResourceIds.isEmpty) return [];
     return await _supabaseClient
         .from('resource_reservations')

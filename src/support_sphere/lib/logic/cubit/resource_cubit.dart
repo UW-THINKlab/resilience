@@ -42,8 +42,8 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void fetchResourceTypes() async {
-    List<ResourceTypes> resourceTypes =
-        await _resourceRepository.getResourceTypes();
+    List<ResourceTypes> resourceTypes = await _resourceRepository
+        .getResourceTypes();
     resourceTypesChanged(resourceTypes);
   }
 
@@ -53,8 +53,8 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void fetchUserResources(String userId) async {
-    List<UserResource> userResources =
-        await _resourceRepository.getUserResourcesByUserId(userId);
+    List<UserResource> userResources = await _resourceRepository
+        .getUserResourcesByUserId(userId);
     emit(state.copyWith(userResources: userResources));
   }
 
@@ -92,15 +92,17 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   Future<void> bulkUpdateUserResources(
-      List<
-              ({
-                String id,
-                int quantity,
-                String? notes,
-                SHARING_SCOPES sharingScope,
-                SHARING_SCOPES sharingScopeEmergency
-              })>
-          edits) async {
+    List<
+      ({
+        String id,
+        int quantity,
+        String? notes,
+        SHARING_SCOPES sharingScope,
+        SHARING_SCOPES sharingScopeEmergency,
+      })
+    >
+    edits,
+  ) async {
     for (final edit in edits) {
       await _resourceRepository.updateUserResource(
         id: edit.id,
@@ -116,10 +118,7 @@ class ResourceCubit extends Cubit<ResourceState> {
   }
 
   void enterSelectionModeAndSelect(String id) {
-    emit(state.copyWith(
-      selectionMode: true,
-      selectedUserResourceIds: {id},
-    ));
+    emit(state.copyWith(selectionMode: true, selectedUserResourceIds: {id}));
   }
 
   void toggleSelectionMode() {
@@ -162,7 +161,7 @@ class ResourceCubit extends Cubit<ResourceState> {
     required Future<bool> Function(SuggestedResourceRequest) confirmation,
     required bool isEmergency,
     required Future<bool> Function(int totalAvailable, int requested)
-        onInsufficientInventory,
+    onInsufficientInventory,
     required DateTime expiresAt,
   }) async {
     if (isClosed) return;
@@ -176,6 +175,7 @@ class ResourceCubit extends Cubit<ResourceState> {
       lon: requestData['current_longitude'],
       lat: requestData['current_latitude'],
       expiresAt: expiresAt,
+      hours: requestData['hours'],
     );
     await _resourceRepository.submitResourceRequestAndNotify(
       resourceRequest: resourceRequest,

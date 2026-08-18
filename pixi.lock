@@ -1644,6 +1644,16 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.5.2-py313hcdf3177_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h925e9cb_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zeromq-4.3.5-hc1bb282_7.conda
+  secrets:
+    channels:
+    - url: https://conda.anaconda.org/conda-forge/
+    packages:
+      linux-64:
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.13.3-hfc2019e_0.conda
+      osx-64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/go-sops-3.13.3-h5839d16_0.conda
+      osx-arm64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/go-sops-3.13.3-hf76c51c_0.conda
   selenium:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -2964,6 +2974,14 @@ packages:
   run_exports: {}
   size: 29815936
   timestamp: 1779212581258
+- conda: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.13.3-hfc2019e_0.conda
+  sha256: 1a87fc1fae9954346e01b76d5d9e59262ae14ad1c68c81a31c562644a3db0855
+  md5: 03b8c9da967ab0fdeb27476e0d530137
+  license: MPL-2.0
+  license_family: MOZILLA
+  run_exports: {}
+  size: 30291608
+  timestamp: 1785020911089
 - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
   sha256: 71e750d509f5fa3421087ba88ef9a7b9be11c53174af3aa4d06aff4c18b38e8e
   md5: 8b189310083baabfb622af68fd9d3ae3
@@ -9049,6 +9067,16 @@ packages:
   run_exports: {}
   size: 31341807
   timestamp: 1779212715824
+- conda: https://conda.anaconda.org/conda-forge/osx-64/go-sops-3.13.3-h5839d16_0.conda
+  sha256: e7f7c5ad6c3ebbc2b8ba299c54d5affa893568c042db3752028ede40e7022175
+  md5: b43ecdcb97e5774b97f46555ae1cf3df
+  constrains:
+  - __osx >=10.12
+  license: MPL-2.0
+  license_family: MOZILLA
+  run_exports: {}
+  size: 31829482
+  timestamp: 1785020980458
 - conda: https://conda.anaconda.org/conda-forge/osx-64/icu-75.1-h120a0e1_0.conda
   sha256: 2e64307532f482a0929412976c8450c719d558ba20c0962832132fd0d07ba7a7
   md5: d68d48a3060eb5abdc1cdc8e2a3a5966
@@ -11956,6 +11984,14 @@ packages:
   run_exports: {}
   size: 29237000
   timestamp: 1779212624289
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/go-sops-3.13.3-hf76c51c_0.conda
+  sha256: 12616aa760f84ff90bc2e315f75a0a8d9eb738c5a16775d3aff4e1c9bbf4b2fa
+  md5: d5329e28dc4bb5755f4eb5f0f44214a5
+  license: MPL-2.0
+  license_family: MOZILLA
+  run_exports: {}
+  size: 29695468
+  timestamp: 1785020971964
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-75.1-hfee45f7_0.conda
   sha256: 9ba12c93406f3df5ab0a43db8a4b4ef67a5871dfd401010fbe29b218b2cbe620
   md5: 5eb22c1d7b3fc4abb50d92d621583137
