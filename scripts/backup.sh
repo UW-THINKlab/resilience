@@ -10,10 +10,6 @@ backup_script='backup-on-db.sh'
 neighborhood=$TF_VAR_neighborhood
 backup_dir=./backups
 
-echo neighborhood: $neighborhood, backup script: $script_dir/$backup_script
-env
-exit 0
-
 mkdir -p $backup_dir
 backup_file="$backup_dir/backup-$neighborhood-`date +%Y-%m-%d-%H%M`.sql.gz"
 
