@@ -396,6 +396,9 @@ depends-on = [
 ]
 
 # ==== secrets environment ====
+[feature.secrets.dependencies]
+python = ">=3.11"
+
 [feature.secrets.tasks.encrypt]
 args = ["file_name"]
 cmd = 'sops encrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/\.(yaml|json|geojson)$/_enc.\1/")'
@@ -403,6 +406,10 @@ cmd = 'sops encrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/\.(yaml|jso
 [feature.secrets.tasks.decrypt]
 args = ["file_name"]
 cmd = 'SOPS_AGE_KEY_FILE=key.txt sops decrypt {{file_name}} > $(echo {{file_name}} | sed -E "s/_enc\.(yaml|json|geojson)$/.\1/")'
+
+[feature.secrets.tasks.encrypt-neighborhood]
+args = ["dir_name"]
+cmd = 'python scripts/encrypt.py --location {{dir_name}}'
 
 # ==== Selenium e2e test environment ====
 [feature.selenium.dependencies]
