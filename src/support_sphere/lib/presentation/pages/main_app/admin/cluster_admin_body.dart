@@ -9,7 +9,8 @@ import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_ca
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart' hide log;
+import 'package:support_sphere/utils/natural_compare.dart';
 
 class ClusterAdminBody extends StatelessWidget {
   const ClusterAdminBody({super.key, this.clusterId});
@@ -77,9 +78,32 @@ class AddHouseholdView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // FIXME!!!
-    throw UnimplementedError();
+    return Column(
+      children: [
+        /// Back button
+        TextButton.icon(
+          icon: const Icon(Icons.arrow_back),
+          label: Text(
+            ClusterAdminStrings.addHousehold,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          onPressed: onPressed,
+        ),
+
+        /// Add Household Form
+        Expanded(
+          child: Card(
+            child: Container(
+              margin: const EdgeInsets.all(15.0),
+              child: AddHouseholdForm(onCancel: onPressed),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -237,22 +261,28 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   }
 
   List<Household> applySearch(List<Household> households) {
+    List<Household> results;
     switch (_householdFilter) {
       case ClusterAdminStrings.clusterFilterParticipate:
-        return households.where((item) {
-          // FIXME: Add "participation" metadata
+        // FIXME: Add "participation" metadata
+        results = households.where((item) {
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
+        break;
       case ClusterAdminStrings.clusterFilterResources:
-        return households.where((item) {
-          // FIXME: Add resources metadata
+        // FIXME: Add resources metadata
+        results = households.where((item) {
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
+        break;
       default:
-        return households.where((item) {
+        results = households.where((item) {
           return matchHousehold(item);
         }).toList();
     }
+    results.sort((a, b) => naturalCompare(
+        (a.address ?? '').toLowerCase(), (b.address ?? '').toLowerCase()));
+    return results;
   }
 
   @override

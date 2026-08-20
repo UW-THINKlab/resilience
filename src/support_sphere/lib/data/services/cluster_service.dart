@@ -111,7 +111,7 @@ class ClusterService {
   Future<void> addHousehold(String clusterId, Household household) async {
     await supabase.from('households').insert({
       'id': const UuidV4().generate(),
-      'cluster_id': household.clusterId,
+      'cluster_id': clusterId,
       'name': household.name,
       'address': household.address,
       'notes': household.notes,

@@ -10,6 +10,7 @@ import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_ca
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
+import 'package:support_sphere/utils/natural_compare.dart';
 
 
 class NeighborhoodAdminBody extends StatelessWidget {
@@ -142,25 +143,6 @@ class _NeighborhoodsBody extends StatefulWidget {
   _NeighborhoodsBodyState createState() => _NeighborhoodsBodyState();
 }
 
-/// Compares strings the way people expect numbers to sort, e.g. "c_9" before
-/// "c_10", by splitting each string into alternating runs of digits and
-/// non-digits and comparing numeric runs as numbers.
-int _naturalCompare(String a, String b) {
-  final regExp = RegExp(r'(\d+|\D+)');
-  final aParts = regExp.allMatches(a).map((m) => m.group(0)!).toList();
-  final bParts = regExp.allMatches(b).map((m) => m.group(0)!).toList();
-
-  for (var i = 0; i < aParts.length && i < bParts.length; i++) {
-    final aNum = int.tryParse(aParts[i]);
-    final bNum = int.tryParse(bParts[i]);
-    final cmp = (aNum != null && bNum != null)
-        ? aNum.compareTo(bNum)
-        : aParts[i].compareTo(bParts[i]);
-    if (cmp != 0) return cmp;
-  }
-  return aParts.length.compareTo(bParts.length);
-}
-
 class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   List<Cluster>? _searchResults;
   String _nameQuery = '';
@@ -192,7 +174,7 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
           return matchCluster(item);
         }).toList();
     }
-    results.sort((a, b) => _naturalCompare(
+    results.sort((a, b) => naturalCompare(
         (a.name ?? '').toLowerCase(), (b.name ?? '').toLowerCase()));
     return results;
   }
