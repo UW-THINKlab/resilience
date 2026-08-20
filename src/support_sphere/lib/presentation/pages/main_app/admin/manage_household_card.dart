@@ -6,8 +6,11 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/constants/color.dart' show ColorConstants;
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart' show Person;
+import 'package:support_sphere/data/repositories/authentication.dart'
+    show AuthenticationRepository;
 import 'package:support_sphere/data/repositories/user.dart' show UserRepository;
 import 'package:support_sphere/logic/cubit/manage_cluster_state.dart';
+import 'package:support_sphere/presentation/components/edit_household_sheet.dart';
 
 final log = Logger('ManageHouseholdCard');
 
@@ -22,11 +25,13 @@ class ManageHouseholdCard extends StatefulWidget {
 
 class _HouseholdCardState extends State<ManageHouseholdCard> {
   List<Person> _members = [];
+  String? _inviteCode;
 
   @override
   void initState() {
     super.initState();
     _fetchMembers();
+    _fetchInviteCode();
   }
 
   Future<void> _fetchMembers() async {
@@ -44,6 +49,17 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
     }
   }
 
+  Future<void> _fetchInviteCode() async {
+    try {
+      final code = await AuthenticationRepository()
+          .getSignUpCodeForHousehold(widget.household.id);
+      if (mounted) setState(() => _inviteCode = code);
+    } catch (e, st) {
+      log.warning(
+          'Failed to load invite code for household ${widget.household.id}: $e\n$st');
+    }
+  }
+
   Widget _iconValueRow(Widget icon, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -53,6 +69,35 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
           const SizedBox(width: 8),
           Expanded(child: Text(value ?? '')),
         ],
+      ),
+    );
+  }
+
+  void _openEditSheet() {
+    final cubit = context.read<ManageClusterCubit>();
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: EditHouseholdSheet(
+          household: widget.household,
+          members: _members,
+          onSave: (
+              {address, pets, accessibilityNeeds, notes, membersToRemove}) async {
+            await UserRepository().updateHousehold(
+              householdId: widget.household.id,
+              address: address,
+              pets: pets,
+              accessibilityNeeds: accessibilityNeeds,
+              notes: notes,
+              membersToRemove: membersToRemove,
+            );
+            if (mounted) {
+              cubit.fetchHouseholds();
+              _fetchMembers();
+            }
+          },
+        ),
       ),
     );
   }
@@ -69,36 +114,51 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
               : ColorConstants.confirmGreen,
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _iconValueRow(greyIcon(Icons.home_outlined), widget.household.name),
-            _iconValueRow(greyIcon(Icons.location_searching_outlined),
-                widget.household.address),
-            _iconValueRow(
-              FaIcon(FontAwesomeIcons.peopleRoof,
-                  size: 16, color: Colors.grey[600]),
-              _members.map((p) => p.name()).join(', '),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _iconValueRow(
+                      greyIcon(Icons.home_outlined), widget.household.name),
+                  _iconValueRow(greyIcon(Icons.location_searching_outlined),
+                      widget.household.address),
+                  _iconValueRow(
+                    FaIcon(FontAwesomeIcons.peopleRoof,
+                        size: 16, color: Colors.grey[600]),
+                    _members.map((p) => p.name()).join(', '),
+                  ),
+                  _iconValueRow(greyIcon(Icons.pets), widget.household.pets),
+                  _iconValueRow(greyIcon(Icons.accessibility),
+                      widget.household.accessibilityNeeds),
+                  _iconValueRow(greyIcon(Icons.key_outlined), _inviteCode),
+                  (widget.household.notes != null &&
+                          widget.household.notes!.isNotEmpty)
+                      ? Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: ExpandableText(
+                            widget.household.notes ?? '',
+                            prefixText: "Notes: ",
+                            expandText: 'show more',
+                            collapseText: 'show less',
+                            expandOnTextTap: true,
+                            collapseOnTextTap: true,
+                            maxLines: 2,
+                            linkColor: Colors.blue,
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
             ),
-            _iconValueRow(greyIcon(Icons.pets), widget.household.pets),
-            _iconValueRow(
-                greyIcon(Icons.accessibility), widget.household.accessibilityNeeds),
-            (widget.household.notes != null && widget.household.notes!.isNotEmpty)
-                ? Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: ExpandableText(
-                      widget.household.notes ?? '',
-                      prefixText: "Notes: ",
-                      expandText: 'show more',
-                      collapseText: 'show less',
-                      expandOnTextTap: true,
-                      collapseOnTextTap: true,
-                      maxLines: 2,
-                      linkColor: Colors.blue,
-                    ),
-                  )
-                : const SizedBox(),
+            IconButton(
+              icon: const Icon(Icons.create, size: 18),
+              tooltip: 'Edit household',
+              onPressed: _openEditSheet,
+            ),
           ],
         ),
       )),
