@@ -36,8 +36,9 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
 
   Future<void> _fetchMembers() async {
     try {
-      final result = await UserRepository()
-          .getHouseholdMembersByHouseholdId(widget.household.id);
+      final result = await UserRepository().getHouseholdMembersByHouseholdId(
+        widget.household.id,
+      );
       if (mounted) {
         setState(() {
           _members = (result?.members ?? []).whereType<Person>().toList();
@@ -45,18 +46,21 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
       }
     } catch (e, st) {
       log.warning(
-          'Failed to load members for household ${widget.household.id}: $e\n$st');
+        'Failed to load members for household ${widget.household.id}: $e\n$st',
+      );
     }
   }
 
   Future<void> _fetchInviteCode() async {
     try {
-      final code = await AuthenticationRepository()
-          .getSignUpCodeForHousehold(widget.household.id);
+      final code = await AuthenticationRepository().getSignUpCodeForHousehold(
+        widget.household.id,
+      );
       if (mounted) setState(() => _inviteCode = code);
     } catch (e, st) {
       log.warning(
-          'Failed to load invite code for household ${widget.household.id}: $e\n$st');
+        'Failed to load invite code for household ${widget.household.id}: $e\n$st',
+      );
     }
   }
 
@@ -82,21 +86,27 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
         child: EditHouseholdSheet(
           household: widget.household,
           members: _members,
-          onSave: (
-              {address, pets, accessibilityNeeds, notes, membersToRemove}) async {
-            await UserRepository().updateHousehold(
-              householdId: widget.household.id,
-              address: address,
-              pets: pets,
-              accessibilityNeeds: accessibilityNeeds,
-              notes: notes,
-              membersToRemove: membersToRemove,
-            );
-            if (mounted) {
-              cubit.fetchHouseholds();
-              _fetchMembers();
-            }
-          },
+          onSave:
+              ({
+                address,
+                pets,
+                accessibilityNeeds,
+                notes,
+                membersToRemove,
+              }) async {
+                await UserRepository().updateHousehold(
+                  householdId: widget.household.id,
+                  address: address,
+                  pets: pets,
+                  accessibilityNeeds: accessibilityNeeds,
+                  notes: notes,
+                  membersToRemove: membersToRemove,
+                );
+                if (mounted) {
+                  cubit.fetchHouseholds();
+                  _fetchMembers();
+                }
+              },
         ),
       ),
     );
@@ -109,59 +119,69 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
     return BlocProvider.value(
       value: BlocProvider.of<ManageClusterCubit>(context),
       child: Card(
-          color: _members.isEmpty
-              ? ColorConstants.warningRed
-              : ColorConstants.confirmGreen,
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _iconValueRow(
-                      greyIcon(Icons.home_outlined), widget.household.name),
-                  _iconValueRow(greyIcon(Icons.location_searching_outlined),
-                      widget.household.address),
-                  _iconValueRow(
-                    FaIcon(FontAwesomeIcons.peopleRoof,
-                        size: 16, color: Colors.grey[600]),
-                    _members.map((p) => p.name()).join(', '),
-                  ),
-                  _iconValueRow(greyIcon(Icons.pets), widget.household.pets),
-                  _iconValueRow(greyIcon(Icons.accessibility),
-                      widget.household.accessibilityNeeds),
-                  _iconValueRow(greyIcon(Icons.key_outlined), _inviteCode),
-                  (widget.household.notes != null &&
-                          widget.household.notes!.isNotEmpty)
-                      ? Container(
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: ExpandableText(
-                            widget.household.notes ?? '',
-                            prefixText: "Notes: ",
-                            expandText: 'show more',
-                            collapseText: 'show less',
-                            expandOnTextTap: true,
-                            collapseOnTextTap: true,
-                            maxLines: 2,
-                            linkColor: Colors.blue,
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
+        color: _members.isEmpty
+            ? ColorConstants.cancelGray
+            : ColorConstants.confirmGreen,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _iconValueRow(
+                      greyIcon(Icons.home_outlined),
+                      widget.household.name,
+                    ),
+                    _iconValueRow(
+                      greyIcon(Icons.location_searching_outlined),
+                      widget.household.address,
+                    ),
+                    _iconValueRow(
+                      FaIcon(
+                        FontAwesomeIcons.peopleRoof,
+                        size: 16,
+                        color: Colors.grey[600],
+                      ),
+                      _members.map((p) => p.name()).join(', '),
+                    ),
+                    _iconValueRow(greyIcon(Icons.pets), widget.household.pets),
+                    _iconValueRow(
+                      greyIcon(Icons.accessibility),
+                      widget.household.accessibilityNeeds,
+                    ),
+                    _iconValueRow(greyIcon(Icons.key_outlined), _inviteCode),
+                    (widget.household.notes != null &&
+                            widget.household.notes!.isNotEmpty)
+                        ? Container(
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: ExpandableText(
+                              widget.household.notes ?? '',
+                              prefixText: "Notes: ",
+                              expandText: 'show more',
+                              collapseText: 'show less',
+                              expandOnTextTap: true,
+                              collapseOnTextTap: true,
+                              maxLines: 2,
+                              linkColor: Colors.blue,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.create, size: 18),
-              tooltip: 'Edit household',
-              onPressed: _openEditSheet,
-            ),
-          ],
+              IconButton(
+                icon: const Icon(Icons.create, size: 18),
+                tooltip: 'Edit household',
+                onPressed: _openEditSheet,
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
