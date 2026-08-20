@@ -5,10 +5,10 @@ import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart' hide log;
 import 'package:support_sphere/data/repositories/user.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
-import 'package:support_sphere/presentation/components/cancel_button.dart';
-import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/people_select_list.dart'
     show PersonSelectorField;
+import 'package:support_sphere/presentation/components/update_entity_form.dart'
+    show UpdateEntityForm;
 
 // FORMZ: derive from col/attr list, props from entity...
 class EditClusterFormData extends Equatable {
@@ -97,7 +97,6 @@ class ClusterEditFormState extends State<ClusterEditForm> {
   List<Person> _allPeople = [];
   List<Person> _selectedCaptains = [];
   bool _isLoadingPeople = true;
-  bool _isSaving = false;
 
   @override
   void initState() {
@@ -137,127 +136,87 @@ class ClusterEditFormState extends State<ClusterEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the form data
-    //_formData = _formData.copyWith(name: widget.cluster.name);
-    // if cluster set, load from
-    return Card(
-        child: Container(
-            margin: const EdgeInsets.all(15.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Center(
-                      child: Text(
-                    addButtonLabel,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  )),
-                  // Name of Cluster and Cluster Type
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    initialValue: widget.cluster?.name,
-                    key: const Key('ClusterEditForm_name'),
-                    onSaved: (value) =>
-                        _formData = _formData.copyWith(name: value),
-                    decoration: InputDecoration(
-                        labelText: "Cluster name", // FIXME strings
-                        //helperText: 'Name of the cluster',
-                        border: border(context),
-                        enabledBorder: border(context),
-                        focusedBorder: focusBorder(context)),
+    return UpdateEntityForm(
+      formKey: _formKey,
+      title: addButtonLabel,
+      confirmLabel: addButtonLabel,
+      onConfirm: () async {
+        _formKey.currentState!.save();
+        if (!_formKey.currentState!.validate()) return false;
+        log.finer(
+            "Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
+        final clusterUpsert = _formData.toUpsert(widget.cluster);
+        clusterUpsert['captains'] = _selectedCaptains;
+        log.finer("Updating cluster: $clusterUpsert");
+        await widget.updateCluster(clusterUpsert);
+        return true;
+      },
+      fields: [
+        // Name of Cluster and Cluster Type
+        TextFormField(
+          initialValue: widget.cluster?.name,
+          key: const Key('ClusterEditForm_name'),
+          onSaved: (value) => _formData = _formData.copyWith(name: value),
+          decoration: InputDecoration(
+              labelText: "Cluster name", // FIXME strings
+              //helperText: 'Name of the cluster',
+              border: border(context),
+              enabledBorder: border(context),
+              focusedBorder: focusBorder(context)),
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          initialValue: widget.cluster?.meetingPlace,
+          key: const Key('ClusterEditForm_meetingPlace'),
+          onSaved: (value) =>
+              _formData = _formData.copyWith(meetingPlace: value),
+          decoration: InputDecoration(
+              labelText: "Meeting place",
+              //helperText: 'Description of the cluster meeting place.',
+              border: border(context),
+              enabledBorder: border(context),
+              focusedBorder: focusBorder(context)),
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: const Key('ClusterEditForm_notes'),
+          onSaved: (value) => _formData = _formData.copyWith(notes: value),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+              labelText: "Notes",
+              //helperText: 'Notes about the cluster',
+              border: border(context),
+              enabledBorder: border(context),
+              focusedBorder: focusBorder(context)),
+        ),
+        // cluster captains
+        Row(children: [
+          Text(
+            'Cluster captains:',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _isLoadingPeople
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Expanded(
+                  child: PersonSelectorField(
+                    people: _allPeople,
+                    initialValue: _selectedCaptains,
+                    title: const Text('Select Cluster Captains'),
+                    buttonText: const Text('Select captains'),
+                    onConfirm: (captains) =>
+                        setState(() => _selectedCaptains = captains),
                   ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    initialValue: widget.cluster?.meetingPlace,
-                    key: const Key('ClusterEditForm_meetingPlace'),
-                    onSaved: (value) =>
-                        _formData = _formData.copyWith(meetingPlace: value),
-                    decoration: InputDecoration(
-                        labelText: "Meeting place",
-                        //helperText: 'Description of the cluster meeting place.',
-                        border: border(context),
-                        enabledBorder: border(context),
-                        focusedBorder: focusBorder(context)),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    key: const Key('ClusterEditForm_notes'),
-                    onSaved: (value) =>
-                        _formData = _formData.copyWith(notes: value),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                        labelText: "Notes",
-                        //helperText: 'Notes about the cluster',
-                        border: border(context),
-                        enabledBorder: border(context),
-                        focusedBorder: focusBorder(context)),
-                  ),
-                  // cluster captains
-                  Row(children: [
-                    Text(
-                      'Cluster captains:',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    _isLoadingPeople
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Expanded(
-                            child: PersonSelectorField(
-                              people: _allPeople,
-                              initialValue: _selectedCaptains,
-                              title: const Text('Select Cluster Captains'),
-                              buttonText: const Text('Select captains'),
-                              onConfirm: (captains) =>
-                                  setState(() => _selectedCaptains = captains),
-                            ),
-                          ),
-                  ]),
-                  const SizedBox(height: 50),
-                  // Buttons to Add Item or Cancel
-                  Row(children: [
-                    CancelButton(
-                      label: 'Cancel',
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    ConfirmButton(
-                      label: addButtonLabel,
-                      onPressed: _isSaving
-                          ? null
-                          : () async {
-                              _formKey.currentState!.save();
-                              if (_formKey.currentState!.validate()) {
-                                log.finer(
-                                    "Original cluster: ${widget.cluster?.name} - ID: ${widget.cluster?.id} - ${widget.cluster?.geom}");
-                                final clusterUpsert =
-                                    _formData.toUpsert(widget.cluster);
-                                clusterUpsert['captains'] = _selectedCaptains;
-                                log.finer("Updating cluster: $clusterUpsert");
-                                setState(() => _isSaving = true);
-                                await widget.updateCluster(clusterUpsert);
-                                if (mounted) Navigator.pop(context);
-                              }
-                            },
-                      child: _isSaving
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : null,
-                    ),
-                  ]),
-                ],
-              ),
-            )));
+                ),
+        ]),
+      ],
+    );
   }
 }

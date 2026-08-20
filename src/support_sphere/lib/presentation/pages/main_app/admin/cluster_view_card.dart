@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/constants/color.dart' show ColorConstants;
 import 'package:support_sphere/constants/string_catalog.dart'
     show NeighborhoodStrings;
 import 'package:support_sphere/data/models/person.dart' show Person;
@@ -14,13 +15,15 @@ class ClusterViewCard extends StatefulWidget {
   final Cluster cluster;
   final List<Person> members;
   final Function(Map<String, dynamic>) updateCluster;
+  final VoidCallback? onTap;
 
-  ClusterViewCard(
-      {super.key,
-      required this.cluster,
-      required this.updateCluster,
-      List<Person>? members})
-      : members = members ?? [];
+  ClusterViewCard({
+    super.key,
+    required this.cluster,
+    required this.updateCluster,
+    this.onTap,
+    List<Person>? members,
+  }) : members = members ?? [];
 
   @override
   ClusterCardState createState() => ClusterCardState();
@@ -37,8 +40,9 @@ class ClusterCardState extends State<ClusterViewCard> {
 
   Future<void> _fetchCaptains() async {
     try {
-      final rows = await ClusterRepository()
-          .getCaptainsViewByClusterId(widget.cluster.id);
+      final rows = await ClusterRepository().getCaptainsViewByClusterId(
+        widget.cluster.id,
+      );
       if (mounted) {
         setState(() {
           _captainNames = rows.map((r) {
@@ -50,87 +54,95 @@ class ClusterCardState extends State<ClusterViewCard> {
       }
     } catch (e, st) {
       log.warning(
-          'Failed to load captains for cluster ${widget.cluster.id}: $e\n$st');
+        'Failed to load captains for cluster ${widget.cluster.id}: $e\n$st',
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        // detect the card has been clicked on, open the
-        // details panel
-        onTap: () => showDialog(
-                context: context,
-                builder: (BuildContext context) => Dialog(
-                    child: ClusterEditForm(
-                        cluster: widget.cluster,
-                        updateCluster: widget.updateCluster)))
-            .then((_) => _fetchCaptains()),
-        child: Card(
-            child: Column(
+      // detect the card has been clicked on, open the
+      // details panel (unless overridden by widget.onTap)
+      onTap:
+          widget.onTap ??
+          () => showDialog(
+            context: context,
+            builder: (BuildContext context) => Dialog(
+              child: ClusterEditForm(
+                cluster: widget.cluster,
+                updateCluster: widget.updateCluster,
+              ),
+            ),
+          ).then((_) => _fetchCaptains()),
+      child: Card(
+        color: _captainNames.isEmpty
+            ? ColorConstants.cancelGray
+            : ColorConstants.confirmGreen,
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // Card Header
             Container(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 200,
-                      child: Row(
-                        children: [
-                          FaIcon(FontAwesomeIcons.shapes, size: 18),
-                          const SizedBox(width: 4),
-                          Text(
-                            widget.cluster.name ?? "- no name -",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )),
-            Container(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: Row(
                       children: [
-                        Text('Meeting place: ${widget.cluster.meetingPlace}'),
-                      ],
-                    ),
-                  ],
-                )),
-            Container(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text('Notes: ${widget.cluster.notes}'),
-                      ],
-                    ),
-                  ],
-                )),
-            Container(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
+                        FaIcon(FontAwesomeIcons.shapes, size: 18),
+                        const SizedBox(width: 4),
                         Text(
-                          'Captains: ${_captainNames.isEmpty ? NeighborhoodStrings.captainNeeded : _captainNames.join(', ')}',
+                          widget.cluster.name ?? "- no name -",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text('Meeting place: ${widget.cluster.meetingPlace}'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(children: [Text('Notes: ${widget.cluster.notes}')]),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Captains: ${_captainNames.isEmpty ? NeighborhoodStrings.captainNeeded : _captainNames.join(', ')}',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             // Container(
             //   alignment: Alignment.centerLeft,
             //   padding: const EdgeInsets.all(8),
@@ -174,6 +186,8 @@ class ClusterCardState extends State<ClusterViewCard> {
             //   ),
             // ),
           ],
-        )));
+        ),
+      ),
+    );
   }
 }
