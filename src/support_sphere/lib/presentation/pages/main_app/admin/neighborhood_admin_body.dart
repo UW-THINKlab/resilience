@@ -4,6 +4,7 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_admin_body.dart' show ClusterAdminPage;
 import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
@@ -255,6 +256,11 @@ class _NeighborhoodViewSection extends StatelessWidget {
 
                       return ClusterViewCard(
                         cluster: cluster,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ClusterAdminPage(cluster.id),
+                          ),
+                        ),
                         updateCluster: (clusterData) async {
                           final cubit = context.read<ManageNeighborhoodCubit>();
                           await cubit.upsertCluster(clusterData);

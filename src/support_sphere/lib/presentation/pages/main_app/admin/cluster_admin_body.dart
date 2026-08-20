@@ -12,16 +12,20 @@ import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
 
 class ClusterAdminBody extends StatelessWidget {
-  const ClusterAdminBody({super.key});
+  const ClusterAdminBody({super.key, this.clusterId});
+
+  final String? clusterId;
 
   @override
   Widget build(BuildContext context) {
-    return ClusterAdminBodyController();
+    return ClusterAdminBodyController(clusterId: clusterId);
   }
 }
 
 class ClusterAdminBodyController extends StatefulWidget {
-  const ClusterAdminBodyController({super.key});
+  const ClusterAdminBodyController({super.key, this.clusterId});
+
+  final String? clusterId;
 
   @override
   _ClusterAdminBodyControllerState createState() =>
@@ -30,8 +34,6 @@ class ClusterAdminBodyController extends StatefulWidget {
 
 class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController> {
   bool _showingAddHousehold = false;
-  String myClusterId = "";
-  bool isReady = false;
 
   final UserRepository userRepo = UserRepository();
 
@@ -43,10 +45,27 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
       });
     }
     return BlocProvider(
-      create: (context) => ManageClusterCubit(myClusterId),
+      create: (context) => ManageClusterCubit(widget.clusterId),
       child: (_showingAddHousehold)
           ? AddHouseholdView(onPressed: switchPage)
           : ManageClusterView(addHouseholdOnPressed: switchPage),
+    );
+  }
+}
+
+/// Full-page wrapper around [ClusterAdminBody], used when a neighborhood
+/// admin drills into a specific cluster's dashboard from the neighborhood
+/// admin cluster list. Provides a visible AppBar back button.
+class ClusterAdminPage extends StatelessWidget {
+  const ClusterAdminPage(this.clusterId, {super.key});
+
+  final String clusterId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text(NavRouteLabels.adminCluster)),
+      body: ClusterAdminBody(clusterId: clusterId),
     );
   }
 }

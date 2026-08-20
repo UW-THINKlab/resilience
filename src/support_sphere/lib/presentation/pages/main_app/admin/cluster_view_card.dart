@@ -14,11 +14,13 @@ class ClusterViewCard extends StatefulWidget {
   final Cluster cluster;
   final List<Person> members;
   final Function(Map<String, dynamic>) updateCluster;
+  final VoidCallback? onTap;
 
   ClusterViewCard(
       {super.key,
       required this.cluster,
       required this.updateCluster,
+      this.onTap,
       List<Person>? members})
       : members = members ?? [];
 
@@ -58,14 +60,15 @@ class ClusterCardState extends State<ClusterViewCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
         // detect the card has been clicked on, open the
-        // details panel
-        onTap: () => showDialog(
-                context: context,
-                builder: (BuildContext context) => Dialog(
-                    child: ClusterEditForm(
-                        cluster: widget.cluster,
-                        updateCluster: widget.updateCluster)))
-            .then((_) => _fetchCaptains()),
+        // details panel (unless overridden by widget.onTap)
+        onTap: widget.onTap ??
+            () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) => Dialog(
+                        child: ClusterEditForm(
+                            cluster: widget.cluster,
+                            updateCluster: widget.updateCluster)))
+                .then((_) => _fetchCaptains()),
         child: Card(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

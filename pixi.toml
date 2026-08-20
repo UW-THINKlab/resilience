@@ -20,33 +20,33 @@ features = ["supabase"]
 features = ["secrets"]
 
 [environments.supabase.dependencies]
-python-dotenv = ">=1.2.2,<2"
+python-dotenv = ">=1.2.3,<2"
 supabase = ">=2.31.0,<3"
 
 [dependencies]
-go-sops = ">=3.9.0"
+go-sops = ">=3.13.3,<4"
 
 # ==== Data Analysis environment ====
 [feature.data-analysis.dependencies]
-python = ">=3.10,<3.13"
-pip = "*"
-jupyterlab = ">=4.2.5,<5"
-pandas = ">=2.2.3,<3"
-geopandas = ">=1.0.1,<2"
-pixi-kernel = ">=0.5.1,<0.6"
-ipykernel = ">=6.29.5,<7"
+python = ">=3.12.13,<3.13"
+pip = ">=26.2.1,<27"
+jupyterlab = ">=4.6.3,<5"
+pandas = ">=3.0.5,<4"
+geopandas = ">=1.1.4,<2"
+pixi-kernel = ">=0.7.1,<0.8"
+ipykernel = ">=7.3.0,<8"
 
 [feature.data-analysis.tasks]
 start-jupyterlab = { cmd = "jupyter lab", cwd = "notebooks" }
 
 [feature.data-analysis.pypi-dependencies]
-supabase = ">=2.6.0,<2.99"
+supabase = ">=2.31.0, <3"
 
 # ==== Backend Database environment ====
 [feature.db.dependencies]
-python = ">=3.10,<3.13"
-pip = "*"
-psycopg2-binary = ">=2.9.9,<3"
+python = ">=3.12.13,<3.15"
+pip = ">=26.2.1,<27"
+psycopg2-binary = ">=2.9.10,<3"
 
 [feature.db.pypi-dependencies]
 support-sphere-py = { path = "./src/support_sphere_py", editable = true }
@@ -99,9 +99,9 @@ open-db-port = { depends-on = ["port-forward-supabase-db"] }
 setup-and-load ={ depends-on = ["setup-infra", "setup-db-data-via-k8s-job"] }
 
 [feature.backend.dependencies]
-curl = ">=8.8.0,<8.9"
-kubernetes-helm = ">=3.15.3,<3.16"
-kubernetes-client = ">=1.23.6,<1.31"
+curl = ">=8.21.0,<9"
+kubernetes-helm = ">=4.2.4,<5"
+kubernetes-client = ">=1.23.6,<2"
 
 # Supabase tasks
 [feature.backend.tasks.fetch-supabase-chart]
@@ -190,10 +190,10 @@ install-tools = { depends-on = ["install-flutter"] }
 setup-infra = { depends-on = ["check-android-licenses", "flutter-get"] }
 
 [feature.frontend.dependencies]
-python = ">=3.10"
-ipykernel = ">=6.29.5,<6.30"
-rich = ">=13.7.1,<13.8"
-ruby = ">=3.3.3,<3.4"
+python = ">=3.12.13,<3.15"
+ipykernel = ">=7.3.0,<8"
+rich = ">=15.0.0,<16"
+ruby = ">=3.4.2,<4"
 
 # Flutter tasks
 [feature.frontend.tasks.run-web]
@@ -249,11 +249,11 @@ cwd = "src/support_sphere"
 # empty for now
 
 [feature.cloud.dependencies]
-python = ">=3.10"
-opentofu = ">=1.8.1"
-boto3 = ">=1.35"
-awscli = ">=2.4.0"
-aws-session-manager-plugin = ">=1.2.0"
+python = ">=3.14.7,<3.15"
+opentofu = ">=1.12.6,<2"
+boto3 = ">=1.43.73,<2"
+awscli = ">=2.36.26,<3"
+aws-session-manager-plugin = ">=1.2.835.0,<2"
 
 # OpenTofu tasks
 [feature.cloud.tasks.cloud-deploy]
@@ -315,7 +315,7 @@ cmd = "python scripts/aws-user-controls.py"
 
 # ==== Backup Secret environment ====
 [feature.backup-secret.dependencies]
-gnupg = ">=2.4.5"
+gnupg = ">=2.5.21,<3"
 
 [feature.backup-secret.activation.env]
 "GPG_TTY" = "$(tty)"
@@ -327,7 +327,7 @@ cmd = "gpg --import /root/private.pgp"
 ### New supabase CLI env ###
 
 [feature.supabase.dependencies]
-python = ">=3.11"
+python = ">=3.14.7,<3.15"
 
 [feature.supabase.tasks.install.env]
 # install in pixi env
@@ -404,15 +404,15 @@ cmd = 'SOPS_AGE_KEY_FILE=key.txt sops decrypt {{file_name}} > $(echo {{file_name
 
 # ==== Selenium e2e test environment ====
 [feature.selenium.dependencies]
-python = ">=3.10,<3.13"
-pip = "*"
-pytest = ">=7.4"
-selenium = ">=4.18"
+python = ">=3.14.7,<3.15"
+pip = ">=26.2.1,<27"
+pytest = ">=9.1.1,<10"
+selenium = ">=4.47.0,<5"
 # webdriver-manager resolves the correct chromedriver automatically
-webdriver-manager = ">=4.0"
+webdriver-manager = ">=4.1.2,<5"
 
 [feature.selenium.pypi-dependencies]
-pytest-html = ">=4.0"
+pytest-html = ">=4.2.0, <5"
 
 # Build the Flutter web app for a headless test run
 [feature.selenium.tasks.build-web]
