@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart' show WidgetsFlutterBinding;
-import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
@@ -12,7 +10,6 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
-import 'package:flutter_map_geojson/flutter_map_geojson.dart';
 import 'package:support_sphere/utils/geojson.dart' show GeoJson;
 
 final log = Logger('HomeCubit');

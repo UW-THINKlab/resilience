@@ -30,7 +30,7 @@ cd /opt/resilience
 git checkout messages
 pixi run -e supabase initialize
 ```
-This will attempt to load values from `neighborhood.json`. If not present (by default), the initialization script 
+This will attempt to load values from `neighborhood.json`. If not present (by default), the initialization script
 will prompt the user for required values, and store everything in `neighborhood.json`.
 
 ```
@@ -44,21 +44,25 @@ Wrote neighborhood config values to neighborhood.json
 Generated dart config constants: src/support_sphere/lib/constants/appconfig.dart
 ```
 
-## 1.1. neighborhood.json
+By default, `pixi run -e supabase initialize` will load the default `neighborhood.json` (if available) and prompt the user for any information needed to complete initialization.
+
+When loading a pre-existing neighborhood file, using `pixi run -e supabase initialize -f <neighborhood-file>`, the initialization will also scan the same directory as the neighborhood-file for [geojson](https://en.wikipedia.org/wiki/GeoJSON) files. Some files can be loaded directly in the resilience database (households, clusters, points-of-interest). Any other geojson files will be copied into the project `assets/geojson` folder to be loaded as layers in the map.
+
+## neighborhood.json
 The neighborhood file is use to configure the resilience node. It typically contains:
 ```json
 {
     "neighborhood": "Westport",
     "location": [-124.108927, 46.887251],
     "supabaseUrl": "http://westport.supportsphere.org",
-    "supabaseAnonKey": "eyJhbGciO....sldwdXZGEo"
+    "supabaseAnonKey": "eyJhbGciO....sldwdXZGEo",
     "given_name": "Paolo",
     "family_name": "Ajax",
     "email": "ajax@example.com",
 }
 ```
 
-### 1.1 Expected Fields
+### Fields
 #### `neighborhood`
 The name of the location. Used generally in the app and messages.
 
@@ -89,7 +93,7 @@ These fields can also be set using environment variables and the `--from_env` op
 - `SUPABASE_ANON_KEY`
 
 #### `given_name`, `family_name`, `email`
-These fields are used to create an initial administrator account. The login for that account is the email. 
+These fields are used to create an initial administrator account. The login for that account is the email.
 The initialization script will prompt the user for a password.
 
 

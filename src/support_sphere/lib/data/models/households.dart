@@ -59,7 +59,7 @@ class Household extends Equatable {
     // {type: Point, coordinates: [47.6501785, -122.2767234]}
     LatLng? point;
     if (json['geom'] != null) {
-      point = LatLng(json['geom']['coordinates'][0], json['geom']['coordinates'][1]);
+      point = LatLng(json['geom']['coordinates'][1], json['geom']['coordinates'][0]);
     }
 
     return Household(
