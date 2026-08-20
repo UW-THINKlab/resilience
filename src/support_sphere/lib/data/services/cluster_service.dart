@@ -204,4 +204,11 @@ class ClusterService {
         .select('cluster_id, user_profile_id, given_name, family_name, nickname')
         .eq('cluster_id', clusterId);
   }
+
+  Future<PostgrestList?> getCommunityAdmins() async {
+    return await supabase
+        .from(UserRoles.table_name)
+        .select(UserRoles.c_userProfileId)
+        .eq(UserRoles.c_role, APP_ROLES.com_admin.name);
+  }
 }

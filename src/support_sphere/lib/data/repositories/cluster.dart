@@ -2,7 +2,7 @@ import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/generated_classes.dart'
-    show ClusterCaptainsView, APP_ROLES;
+    show ClusterCaptainsView, UserRoles, APP_ROLES;
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/services/cluster_service.dart';
@@ -139,6 +139,32 @@ class ClusterRepository {
         await _clusterService.getUserCaptainClustersByRoleId(userRoleId);
     if (remaining.isEmpty) {
       await _clusterService.deleteUserRole(userRoleId);
+    }
+  }
+
+  Future<List<String>> getCommunityAdminProfileIds() async {
+    final data = await _clusterService.getCommunityAdmins();
+    if (data == null) return [];
+    return data
+        .map((row) => row[UserRoles.c_userProfileId] as String?)
+        .whereType<String>()
+        .toList();
+  }
+
+  Future<void> updateCommunityAdmins(List<Person> admins) async {
+    final newIds =
+        admins.map((a) => a.profile?.id).whereType<String>().toSet();
+    final currentIds = (await getCommunityAdminProfileIds()).toSet();
+
+    for (final id in newIds.difference(currentIds)) {
+      await _clusterService.upsertUserRole(id, APP_ROLES.com_admin);
+    }
+    for (final id in currentIds.difference(newIds)) {
+      final roleRow =
+          await _clusterService.getUserRoleByProfileId(id, APP_ROLES.com_admin);
+      if (roleRow != null) {
+        await _clusterService.deleteUserRole(roleRow[UserRoles.c_id] as String);
+      }
     }
   }
 

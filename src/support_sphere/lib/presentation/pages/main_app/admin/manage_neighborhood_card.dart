@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/constants/appconfig.dart';
+import 'package:support_sphere/constants/string_catalog.dart'
+    show NeighborhoodStrings;
 import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_edit_form.dart'
+    show NeighborhoodEditForm;
 
 class ManageNeighborhoodCard extends StatefulWidget {
   const ManageNeighborhoodCard({super.key});
@@ -15,67 +19,96 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: BlocProvider.of<ManageNeighborhoodCubit>(context),
-      child: Card(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Card Header
-          Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  // TODO: Implement Checkbox for selection
-                  // Checkbox(
-                  //   value: _isSelected,
-                  //   onChanged: (value) => _toggleSelection(value),
-                  // ),
-                  SizedBox(
-                    width: 200,
-                    child: Text(
-                      AppConfig.neighborhood,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                ],
-              )),
-          Container(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      // FIXME FaIcon(widget.resource.resourceType.icon, size: 15),
-                      const SizedBox(width: 4),
-                      // FIXME: Values here need to be determined in ManageNeighborhoodCubit
-                      // probably a Neighborhood structure: all clusters, metadata.
-                      Text('''
+      child: BlocBuilder<ManageNeighborhoodCubit, ManageNeighborhoodState>(
+        builder: (context, state) {
+          final adminNames = state.admins.map((p) => p.name()).toList();
+          final cubit = context.read<ManageNeighborhoodCubit>();
+          return GestureDetector(
+            onTap: () => showDialog(
+              context: context,
+              builder: (dialogContext) => Dialog(
+                child: NeighborhoodEditForm(
+                  admins: state.admins,
+                  updateAdmins: (admins) =>
+                      cubit.upsertNeighborhoodAdmins(admins),
+                ),
+              ),
+            ),
+            child: Card(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Card Header
+                Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      children: [
+                        // TODO: Implement Checkbox for selection
+                        // Checkbox(
+                        //   value: _isSelected,
+                        //   onChanged: (value) => _toggleSelection(value),
+                        // ),
+                        SizedBox(
+                          width: 200,
+                          child: Text(
+                            AppConfig.neighborhood,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    )),
+                Container(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            // FIXME FaIcon(widget.resource.resourceType.icon, size: 15),
+                            const SizedBox(width: 4),
+                            // FIXME: Values here need to be determined in ManageNeighborhoodCubit
+                            // probably a Neighborhood structure: all clusters, metadata.
+                            Text('''
                         Households: 2025
                         Clusters: 100
                         Clusters without captains: 26
                         '''),
-                    ],
-                  ),
-                  // Row(
-                  //   children: [
-                  //     Badge(
-                  //       label: Text(" available"),
-                  //       backgroundColor: Colors.blueAccent,
-                  //     ),
-                  //     const SizedBox(width: 4),
-                  //     Badge(
-                  //       label: Text("widget.resource.qtyNeeded needed"),
-                  //       backgroundColor: Colors.redAccent,
-                  //     ),
-                  //   ],
-                  // )
-                ],
-              )),
-          // Container(
+                          ],
+                        ),
+                        // Row(
+                        //   children: [
+                        //     Badge(
+                        //       label: Text(" available"),
+                        //       backgroundColor: Colors.blueAccent,
+                        //     ),
+                        //     const SizedBox(width: 4),
+                        //     Badge(
+                        //       label: Text("widget.resource.qtyNeeded needed"),
+                        //       backgroundColor: Colors.redAccent,
+                        //     ),
+                        //   ],
+                        // )
+                      ],
+                    )),
+                Container(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Admins: ${adminNames.isEmpty ? NeighborhoodStrings.adminNeeded : adminNames.join(', ')}',
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
+                // Container(
           //   alignment: Alignment.centerLeft,
           //   padding: const EdgeInsets.all(8),
           //   child: Text('resourceDescription'),
@@ -117,8 +150,11 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
           //     ],
           //   ),
           // ),
-        ],
-      )),
+              ],
+            )),
+          );
+        },
+      ),
     );
   }
 }

@@ -280,6 +280,7 @@ class NeighborhoodStrings {
   static const String searchClusters = "Search clusters";
   static const String noClustersFound = 'No Cluster found';
   static const String captainNeeded = 'Captain needed';
+  static const String adminNeeded = 'Admin needed';
 
   static final String manageNeighborhood = "Manage ${AppConfig.neighborhood}";
 }
