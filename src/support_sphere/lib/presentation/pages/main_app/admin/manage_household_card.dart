@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/constants/color.dart' show ColorConstants;
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart' show Person;
 import 'package:support_sphere/data/repositories/user.dart' show UserRepository;
@@ -63,6 +64,9 @@ class _HouseholdCardState extends State<ManageHouseholdCard> {
     return BlocProvider.value(
       value: BlocProvider.of<ManageClusterCubit>(context),
       child: Card(
+          color: _members.isEmpty
+              ? ColorConstants.warningRed
+              : ColorConstants.confirmGreen,
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Column(
