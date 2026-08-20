@@ -8,26 +8,32 @@ import 'package:support_sphere/data/repositories/user.dart';
 class ManageNeighborhoodState extends Equatable {
   const ManageNeighborhoodState({
     this.clusters = const [],
-    this.info = const {},
     this.admins = const [],
+    this.householdCount = 0,
+    this.clustersWithoutCaptainsCount = 0,
   });
 
   final List<Cluster> clusters;
-  final Map<String, dynamic> info;
   final List<Person> admins;
+  final int householdCount;
+  final int clustersWithoutCaptainsCount;
 
   @override
-  List<Object?> get props => [clusters, info, admins];
+  List<Object?> get props =>
+      [clusters, admins, householdCount, clustersWithoutCaptainsCount];
 
   ManageNeighborhoodState copyWith({
     final List<Cluster>? clusters,
-    final Map<String, dynamic>? info,
     final List<Person>? admins,
+    final int? householdCount,
+    final int? clustersWithoutCaptainsCount,
   }) {
     return ManageNeighborhoodState(
       clusters: clusters ?? this.clusters,
-      info: info ?? this.info,
       admins: admins ?? this.admins,
+      householdCount: householdCount ?? this.householdCount,
+      clustersWithoutCaptainsCount:
+          clustersWithoutCaptainsCount ?? this.clustersWithoutCaptainsCount,
     );
   }
 }
@@ -41,8 +47,13 @@ class ManageNeighborhoodCubit extends Cubit<ManageNeighborhoodState> {
   final ClusterRepository _clusterRepo = ClusterRepository();
   final UserRepository _userRepo = UserRepository();
 
-  void neighborhoodChanged(List<Cluster>? clusters, Map<String, Object>? info) {
-    emit(state.copyWith(clusters: clusters));
+  void neighborhoodChanged(List<Cluster> clusters, int householdCount,
+      int clustersWithoutCaptainsCount) {
+    emit(state.copyWith(
+      clusters: clusters,
+      householdCount: householdCount,
+      clustersWithoutCaptainsCount: clustersWithoutCaptainsCount,
+    ));
   }
 
   void adminsChanged(List<Person> admins) {
@@ -50,15 +61,21 @@ class ManageNeighborhoodCubit extends Cubit<ManageNeighborhoodState> {
   }
 
   void fetchNeighborhood() async {
-    final clusters = await _clusterRepo.getAllClusters();
-    // FIXME: What neighborlood level details to LEAP admins want to see?
-    final info = {
-      'Total population': 3043, // QUERY: number of people
-      '# Clusters': 98, // QUERY: number of clusters
-      '# Households': 1021, // QUERY: number of households
-      '# Resources': 2821, // QUERY: size of user-resources
-    };
-    neighborhoodChanged(clusters, info);
+    // Start all three queries concurrently instead of awaiting them one at a
+    // time, since only the final count computation actually depends on both
+    // the cluster list and the captain-id set.
+    final clustersFuture = _clusterRepo.getAllClusters();
+    final householdCountFuture = _clusterRepo.getHouseholdCount();
+    final clusterIdsWithCaptainsFuture = _clusterRepo.getClusterIdsWithCaptains();
+
+    final clusters = await clustersFuture;
+    final householdCount = await householdCountFuture;
+    final clusterIdsWithCaptains = await clusterIdsWithCaptainsFuture;
+
+    final clustersWithoutCaptainsCount = clusters
+        .where((c) => !clusterIdsWithCaptains.contains(c.id))
+        .length;
+    neighborhoodChanged(clusters, householdCount, clustersWithoutCaptainsCount);
   }
 
   void fetchAdmins() async {

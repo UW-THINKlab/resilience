@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/constants/color.dart' show ColorConstants;
 import 'package:support_sphere/constants/string_catalog.dart'
     show NeighborhoodStrings;
 import 'package:support_sphere/data/models/person.dart' show Person;
@@ -70,6 +71,9 @@ class ClusterCardState extends State<ClusterViewCard> {
                             updateCluster: widget.updateCluster)))
                 .then((_) => _fetchCaptains()),
         child: Card(
+            color: _captainNames.isEmpty
+                ? ColorConstants.warningRed
+                : ColorConstants.confirmGreen,
             child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

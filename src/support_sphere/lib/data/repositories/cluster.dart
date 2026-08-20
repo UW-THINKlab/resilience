@@ -168,6 +168,18 @@ class ClusterRepository {
     }
   }
 
+  Future<int> getHouseholdCount() async {
+    return _clusterService.getHouseholdCount();
+  }
+
+  Future<Set<String>> getClusterIdsWithCaptains() async {
+    final rows = await _clusterService.getAllClusterCaptains();
+    return (rows ?? [])
+        .map((row) => row['cluster_id'] as String?)
+        .whereType<String>()
+        .toSet();
+  }
+
   Future<Captains?> getCaptainsByClusterId(String clusterId) async {
     final data = await _clusterService.getCaptainsByClusterId(clusterId);
 

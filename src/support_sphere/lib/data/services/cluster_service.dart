@@ -211,4 +211,12 @@ class ClusterService {
         .select(UserRoles.c_userProfileId)
         .eq(UserRoles.c_role, APP_ROLES.com_admin.name);
   }
+
+  Future<int> getHouseholdCount() async {
+    return await supabase.from('households').count();
+  }
+
+  Future<PostgrestList?> getAllClusterCaptains() async {
+    return await supabase.from('cluster_captains_view').select('cluster_id');
+  }
 }

@@ -70,13 +70,9 @@ class _NeighborhoodCardState extends State<ManageNeighborhoodCard> {
                           children: [
                             // FIXME FaIcon(widget.resource.resourceType.icon, size: 15),
                             const SizedBox(width: 4),
-                            // FIXME: Values here need to be determined in ManageNeighborhoodCubit
-                            // probably a Neighborhood structure: all clusters, metadata.
-                            Text('''
-                        Households: 2025
-                        Clusters: 100
-                        Clusters without captains: 26
-                        '''),
+                            Text('Households: ${state.householdCount}\n'
+                                'Clusters: ${state.clusters.length}\n'
+                                'Clusters without captains: ${state.clustersWithoutCaptainsCount}'),
                           ],
                         ),
                         // Row(

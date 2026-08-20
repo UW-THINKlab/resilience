@@ -9,4 +9,5 @@ abstract class ColorConstants {
   static const Color cancelGray = Color(0xFFE0E0E0); // grey[300]
   static const Color rejectedGray = Color(0xFFBDBDBD); // grey[400]
   static const Color dangerRed = Color(0xFFD32F2F);
+  static const Color warningRed = Color(0xFFFFEBEE); // Colors.red[50]
 }

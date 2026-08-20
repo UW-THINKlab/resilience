@@ -142,6 +142,25 @@ class _NeighborhoodsBody extends StatefulWidget {
   _NeighborhoodsBodyState createState() => _NeighborhoodsBodyState();
 }
 
+/// Compares strings the way people expect numbers to sort, e.g. "c_9" before
+/// "c_10", by splitting each string into alternating runs of digits and
+/// non-digits and comparing numeric runs as numbers.
+int _naturalCompare(String a, String b) {
+  final regExp = RegExp(r'(\d+|\D+)');
+  final aParts = regExp.allMatches(a).map((m) => m.group(0)!).toList();
+  final bParts = regExp.allMatches(b).map((m) => m.group(0)!).toList();
+
+  for (var i = 0; i < aParts.length && i < bParts.length; i++) {
+    final aNum = int.tryParse(aParts[i]);
+    final bNum = int.tryParse(bParts[i]);
+    final cmp = (aNum != null && bNum != null)
+        ? aNum.compareTo(bNum)
+        : aParts[i].compareTo(bParts[i]);
+    if (cmp != 0) return cmp;
+  }
+  return aParts.length.compareTo(bParts.length);
+}
+
 class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   List<Cluster>? _searchResults;
   String _nameQuery = '';
@@ -155,21 +174,27 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   }
 
   List<Cluster> applySearch(List<Cluster> clusters) {
+    List<Cluster> results;
     switch (_filterValue) {
       case NeighborhoodStrings.clusterFilterParticipate:
         // FIXME: What is participation?
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return (item.notes == null) &&  matchCluster(item);
         }).toList();
+        break;
       case NeighborhoodStrings.clusterFilterNeedCaptain:
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return (item.captains == null) &&  matchCluster(item);
         }).toList();
+        break;
       default:
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return matchCluster(item);
         }).toList();
     }
+    results.sort((a, b) => _naturalCompare(
+        (a.name ?? '').toLowerCase(), (b.name ?? '').toLowerCase()));
+    return results;
   }
 
   @override
