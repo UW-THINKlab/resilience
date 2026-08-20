@@ -4,11 +4,13 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/logic/cubit/manage_neighborhood_state.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_edit_form.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/cluster_admin_body.dart' show ClusterAdminPage;
 import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_card.dart' show ClusterViewCard;
 import 'package:support_sphere/presentation/pages/main_app/admin/manage_neighborhood_card.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/admin/neighborhood_filter.dart';
+import 'package:support_sphere/utils/natural_compare.dart';
 
 
 class NeighborhoodAdminBody extends StatelessWidget {
@@ -154,21 +156,27 @@ class _NeighborhoodsBodyState extends State<_NeighborhoodsBody> {
   }
 
   List<Cluster> applySearch(List<Cluster> clusters) {
+    List<Cluster> results;
     switch (_filterValue) {
       case NeighborhoodStrings.clusterFilterParticipate:
         // FIXME: What is participation?
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return (item.notes == null) &&  matchCluster(item);
         }).toList();
+        break;
       case NeighborhoodStrings.clusterFilterNeedCaptain:
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return (item.captains == null) &&  matchCluster(item);
         }).toList();
+        break;
       default:
-        return clusters.where((item) {
+        results = clusters.where((item) {
           return matchCluster(item);
         }).toList();
     }
+    results.sort((a, b) => naturalCompare(
+        (a.name ?? '').toLowerCase(), (b.name ?? '').toLowerCase()));
+    return results;
   }
 
   @override
@@ -255,6 +263,11 @@ class _NeighborhoodViewSection extends StatelessWidget {
 
                       return ClusterViewCard(
                         cluster: cluster,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ClusterAdminPage(cluster.id),
+                          ),
+                        ),
                         updateCluster: (clusterData) async {
                           final cubit = context.read<ManageNeighborhoodCubit>();
                           await cubit.upsertCluster(clusterData);

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:support_sphere/constants/constants.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
-import 'package:support_sphere/presentation/components/people_select_list.dart';
+import 'package:support_sphere/presentation/components/edit_household_sheet.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/add_house_hold_members_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/profile/info_row.dart';
@@ -17,8 +16,6 @@ class HouseholdInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormBuilderState>();
-
     return BlocBuilder<ProfileCubit, ProfileState>(
       buildWhen: (previous, current) => previous.household != current.household,
       builder: (context, state) {
@@ -34,83 +31,24 @@ class HouseholdInformation extends StatelessWidget {
                 .map((p) => p!)
                 .toList();
 
-        List<Person> selectedMembers = [...householdMembers];
-
         return ProfileSection(
           title: UserProfileStrings.householdInformation,
           state: state,
-          modalBody: FormBuilder(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FormBuilderTextField(
-                    name: 'address',
-                    decoration: const InputDecoration(
-                        labelText: UserProfileStrings.address),
-                    initialValue: address,
-                  ),
-                  FormBuilderTextField(
-                    name: 'pets',
-                    decoration: const InputDecoration(
-                        labelText: UserProfileStrings.pets),
-                    initialValue: pets,
-                  ),
-                  const SizedBox(height: 4),
-                  FormBuilderTextField(
-                    name: 'accessibilityNeeds',
-                    decoration: const InputDecoration(
-                        labelText: UserProfileStrings.accessibilityNeeds),
-                    initialValue: accessibilityNeeds,
-                  ),
-                  const SizedBox(height: 4),
-                  PersonSelectorField(
-                    people: householdMembers,
-                    onConfirm: (l) {
-                      selectedMembers = l;
-                    },
-                    title: const Text('Edit household members'),
-                    buttonText: const Text('Edit members'),
-                    initialValue: householdMembers,
-                  ),
-                  const SizedBox(height: 4),
-                  FormBuilderTextField(
-                    name: 'notes',
-                    decoration: const InputDecoration(
-                        labelText: UserProfileStrings.notes),
-                    initialValue: notes,
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
-                    ),
-                    onPressed: () {
-                      if (formKey.currentState?.saveAndValidate() ?? false) {
-                        final formData = formKey.currentState?.value;
-                        if (formData != null && household != null) {
-                          context.read<ProfileCubit>().saveHouseholdInfoModal(
-                                householdId: household.id,
-                                address: formData['address'],
-                                pets: formData['pets'],
-                                accessibilityNeeds:
-                                    formData['accessibilityNeeds'],
-                                notes: formData['notes'],
-                                membersToRemove: householdMembers
-                                    .where((m) => !selectedMembers.contains(m))
-                                    .toList(),
-                              );
-                          Navigator.of(context).pop();
-                        }
-                      }
-                    },
-                    child: const Text(UserProfileStrings.submit),
-                  ),
-                ],
-              ),
-            ),
+          modalBody: EditHouseholdSheet(
+            household: household,
+            members: householdMembers,
+            onSave: (
+                {address, pets, accessibilityNeeds, notes, membersToRemove}) async {
+              if (household == null) return;
+              await context.read<ProfileCubit>().saveHouseholdInfoModal(
+                    householdId: household.id,
+                    address: address,
+                    pets: pets,
+                    accessibilityNeeds: accessibilityNeeds,
+                    notes: notes,
+                    membersToRemove: membersToRemove,
+                  );
+            },
           ),
           children: [
             // Invite code with copy button

@@ -136,6 +136,31 @@ class HomeMap extends StatelessWidget {
     }
   }
 
+  LatLngBounds? clusterBounds(Cluster cluster) {
+    double maxLat = 0;
+    double maxLng = 0;
+    double minLat = 100;
+    double minLng = 100;
+
+    if (cluster.geom != null) {
+      for (var point in cluster.geom!) {
+        maxLat = max(maxLat, point.latitude);
+        minLat = min(minLat, point.latitude);
+        maxLng = max(maxLng, point.longitude);
+        minLng = min(minLng, point.longitude);
+      }
+    }
+
+    if (minLat < -90.0) {
+      log.warning("Cannot render invalid cluster geometry -  ${cluster.name}");
+      return null;
+    }
+
+    LatLng maxPoint = LatLng(maxLat, maxLng);
+    LatLng minPoint = LatLng(minLat, minLng);
+    return LatLngBounds(minPoint, maxPoint);
+  }
+
   Polygon? clusterPolygon(Cluster cluster) {
     if (cluster.geom == null) return null;
 
@@ -143,15 +168,26 @@ class HomeMap extends StatelessWidget {
     // could be based on hash of cluster name
     // or cluster geometry
     final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    // FIXME: Provide a better way to color cluster polygons
+
     //log.fine("Cluster polygon: ${cluster.name} ${cluster.geom}");
-    return Polygon(
-      label: cluster.name,
-      points: cluster.geom!,
-      color: color.withAlpha(64),
-      borderColor: color,
-      borderStrokeWidth: 3,
-      labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
-    );
+    // HACK: There have been some problems in the data, with latitude and longitude getting reversed.
+    // This is an attempt simple check to warn and skip.
+    final LatLngBounds? bounds = clusterBounds(cluster);
+    if (bounds != null && bounds.south < -90) {
+      log.warning("Cannot render invalid cluster geometry -  ${cluster.name}");
+      return null;
+    }
+    else {
+      return Polygon(
+        label: cluster.name,
+        points: cluster.geom!,
+        color: color.withAlpha(64),
+        borderColor: color,
+        borderStrokeWidth: 3,
+        labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
+      );
+    }
   }
 
   List<Polygon> _generatePolygons() {

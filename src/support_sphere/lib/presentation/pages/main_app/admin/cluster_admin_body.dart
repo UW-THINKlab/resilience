@@ -9,19 +9,24 @@ import 'package:support_sphere/presentation/pages/main_app/admin/cluster_view_ca
 import 'package:support_sphere/presentation/pages/main_app/admin/household_filter.dart';
 import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/components/add_item_button.dart';
-import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart';
+import 'package:support_sphere/presentation/pages/main_app/admin/manage_household_card.dart' hide log;
+import 'package:support_sphere/utils/natural_compare.dart';
 
 class ClusterAdminBody extends StatelessWidget {
-  const ClusterAdminBody({super.key});
+  const ClusterAdminBody({super.key, this.clusterId});
+
+  final String? clusterId;
 
   @override
   Widget build(BuildContext context) {
-    return ClusterAdminBodyController();
+    return ClusterAdminBodyController(clusterId: clusterId);
   }
 }
 
 class ClusterAdminBodyController extends StatefulWidget {
-  const ClusterAdminBodyController({super.key});
+  const ClusterAdminBodyController({super.key, this.clusterId});
+
+  final String? clusterId;
 
   @override
   _ClusterAdminBodyControllerState createState() =>
@@ -30,8 +35,6 @@ class ClusterAdminBodyController extends StatefulWidget {
 
 class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController> {
   bool _showingAddHousehold = false;
-  String myClusterId = "";
-  bool isReady = false;
 
   final UserRepository userRepo = UserRepository();
 
@@ -43,10 +46,27 @@ class _ClusterAdminBodyControllerState extends State<ClusterAdminBodyController>
       });
     }
     return BlocProvider(
-      create: (context) => ManageClusterCubit(myClusterId),
+      create: (context) => ManageClusterCubit(widget.clusterId),
       child: (_showingAddHousehold)
           ? AddHouseholdView(onPressed: switchPage)
           : ManageClusterView(addHouseholdOnPressed: switchPage),
+    );
+  }
+}
+
+/// Full-page wrapper around [ClusterAdminBody], used when a neighborhood
+/// admin drills into a specific cluster's dashboard from the neighborhood
+/// admin cluster list. Provides a visible AppBar back button.
+class ClusterAdminPage extends StatelessWidget {
+  const ClusterAdminPage(this.clusterId, {super.key});
+
+  final String clusterId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text(NavRouteLabels.adminCluster)),
+      body: ClusterAdminBody(clusterId: clusterId),
     );
   }
 }
@@ -58,9 +78,32 @@ class AddHouseholdView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // FIXME!!!
-    throw UnimplementedError();
+    return Column(
+      children: [
+        /// Back button
+        TextButton.icon(
+          icon: const Icon(Icons.arrow_back),
+          label: Text(
+            ClusterAdminStrings.addHousehold,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          onPressed: onPressed,
+        ),
+
+        /// Add Household Form
+        Expanded(
+          child: Card(
+            child: Container(
+              margin: const EdgeInsets.all(15.0),
+              child: AddHouseholdForm(onCancel: onPressed),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -218,22 +261,28 @@ class _ClusterAdminBodyState extends State<_ClusterAdminBody> {
   }
 
   List<Household> applySearch(List<Household> households) {
+    List<Household> results;
     switch (_householdFilter) {
       case ClusterAdminStrings.clusterFilterParticipate:
-        return households.where((item) {
-          // FIXME: Add "participation" metadata
+        // FIXME: Add "participation" metadata
+        results = households.where((item) {
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
+        break;
       case ClusterAdminStrings.clusterFilterResources:
-        return households.where((item) {
-          // FIXME: Add resources metadata
+        // FIXME: Add resources metadata
+        results = households.where((item) {
           return (item.notes == null) &&  matchHousehold(item);
         }).toList();
+        break;
       default:
-        return households.where((item) {
+        results = households.where((item) {
           return matchHousehold(item);
         }).toList();
     }
+    results.sort((a, b) => naturalCompare(
+        (a.address ?? '').toLowerCase(), (b.address ?? '').toLowerCase()));
+    return results;
   }
 
   @override

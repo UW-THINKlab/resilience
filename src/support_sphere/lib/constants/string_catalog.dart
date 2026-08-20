@@ -68,6 +68,7 @@ class UserProfileStrings {
   static const String meetingPlace = 'Meeting place';
   static const String captains = 'Captain(s)';
   static const String submit = 'Submit';
+  static const String removeMembersButton = 'Remove members (must be added by code)';
   static const String deleteMyAccount = 'Delete My Account';
   static const String manageBlockedUsers = 'Manage Block List';
   static const String confirmPrompt = 'Please Confirm';
@@ -280,6 +281,7 @@ class NeighborhoodStrings {
   static const String searchClusters = "Search clusters";
   static const String noClustersFound = 'No Cluster found';
   static const String captainNeeded = 'Captain needed';
+  static const String adminNeeded = 'Admin needed';
 
   static final String manageNeighborhood = "Manage ${AppConfig.neighborhood}";
 }
