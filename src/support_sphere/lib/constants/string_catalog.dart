@@ -114,6 +114,9 @@ class ChecklistStrings {
   static const String titleFieldLabel = 'Title*';
   static const String frequencyFieldLabel = 'Frequency';
   static const String priorityFieldLabel = 'Priority Level*';
+  static const String priorityLow = 'Low';
+  static const String priorityMedium = 'Medium';
+  static const String priorityHigh = 'High';
   static const String descriptionFieldLabel =
       'Description* (Visible to all users)';
   static const String notesFieldLabel =
