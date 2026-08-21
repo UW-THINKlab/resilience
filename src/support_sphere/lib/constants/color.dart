@@ -10,4 +10,14 @@ abstract class ColorConstants {
   static const Color rejectedGray = Color(0xFFBDBDBD); // grey[400]
   static const Color dangerRed = Color(0xFFD32F2F);
   static const Color warningRed = Color(0xFFFFEBEE); // Colors.red[50]
+
+  // Okabe-Ito palette — stays distinguishable under deuteranopia/protanopia/tritanopia
+  static const Color cbOrange = Color(0xFFE69F00);
+  static const Color cbSkyBlue = Color(0xFF56B4E9);
+  static const Color cbBluishGreen = Color(0xFF009E73);
+  static const Color cbYellow = Color(0xFFF0E442);
+  static const Color cbBlue = Color(0xFF0072B2);
+  static const Color cbVermillion = Color(0xFFD55E00);
+  static const Color cbReddishPurple = Color(0xFFCC79A7);
+  static const Color cbBlack = Color(0xFF000000);
 }

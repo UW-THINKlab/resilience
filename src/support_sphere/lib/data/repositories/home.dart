@@ -1,3 +1,5 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
@@ -21,6 +23,7 @@ class HomeRepository {
         List<CaptainMarker>? captainMarkers,
         Cluster? cluster,
         List<PointOfInterest>? pointsOfInterest,
+        Map<String, (FaIconData, Color)> poiTypeStyles,
       })?> getHomeData(String userProfileId) async {
 
     final clusterData =
@@ -47,7 +50,15 @@ class HomeRepository {
           captainsData?.map((row) => row['captain']['user_profile']['person']);
     }
 
-    final pointsOfInterest = await _poiService.getPointsOfInterest();
+    log.fine('getHomeData: fetching pointsOfInterest for $userProfileId');
+    final pointsOfInterest = await _poiService.getPointsOfInterest(
+      userProfileId,
+    );
+    log.fine('getHomeData: got ${pointsOfInterest.length} pointsOfInterest');
+
+    log.fine('getHomeData: fetching poiTypeStyles');
+    final poiTypeStyles = await _poiService.getPointOfInterestTypes();
+    log.fine('getHomeData: got ${poiTypeStyles.length} poiTypeStyles');
 
     return (
       captainMarkers: captains?.map((captain) {
@@ -73,6 +84,17 @@ class HomeRepository {
       }).toList(),
       cluster: cluster,
       pointsOfInterest: pointsOfInterest,
+      poiTypeStyles: poiTypeStyles,
     );
+  }
+
+  Future<List<PointOfInterest>> getPointsOfInterest(
+    String userProfileId,
+  ) {
+    return _poiService.getPointsOfInterest(userProfileId);
+  }
+
+  Future<Map<String, (FaIconData, Color)>> getPointOfInterestTypes() {
+    return _poiService.getPointOfInterestTypes();
   }
 }

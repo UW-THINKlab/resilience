@@ -48,18 +48,41 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: HomeStatus.loading));
 
     try {
+      log.fine('loadHomeData: fetching home data for ${authUser.uuid}');
       final homeData = await _homeRepository.getHomeData(authUser.uuid);
+      log.fine(
+        'loadHomeData: got homeData, '
+        'poiCount=${homeData?.pointsOfInterest?.length}, '
+        'poiTypeStylesCount=${homeData?.poiTypeStyles.length}',
+      );
       final points = homeData?.pointsOfInterest;
       final allClusters = await clusterRepo.getAllClusters();
+      log.fine('loadHomeData: got allClusters, count=${allClusters.length}');
 
       emit(state.copyWith(
         captainMarkers: homeData!.captainMarkers,
         cluster: homeData.cluster,
         pointsOfInterest: points,
+        poiTypeStyles: homeData.poiTypeStyles,
         allClusters: allClusters,
       ));
-    } catch (error) {
-      throw Exception(error);
+      log.fine('loadHomeData: emitted updated state');
+    } catch (error, stackTrace) {
+      log.severe('loadHomeData failed', error, stackTrace);
+      emit(state.copyWith(status: HomeStatus.failure));
+    }
+  }
+
+  Future<void> refreshPointsOfInterest() async {
+    try {
+      final points = await _homeRepository.getPointsOfInterest(authUser.uuid);
+      final poiTypeStyles = await _homeRepository.getPointOfInterestTypes();
+      emit(state.copyWith(
+        pointsOfInterest: points,
+        poiTypeStyles: poiTypeStyles,
+      ));
+    } catch (error, stackTrace) {
+      log.severe('refreshPointsOfInterest failed', error, stackTrace);
     }
   }
 
@@ -69,7 +92,6 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(state.copyWith(
         userLocation: LatLng(position.latitude, position.longitude),
-        initMapCentroid: LatLng(position.latitude, position.longitude),
         // TODO: adjust zoom level based on user location and cluster size
         //initZoomLevel: 17.5,
       ));
@@ -112,6 +134,14 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(
       status: HomeStatus.editMeetingPlace,
     ));
+  }
+
+  Future<void> startAddPointOfInterest() async {
+    emit(state.copyWith(status: HomeStatus.addPointOfInterest));
+  }
+
+  Future<void> cancelAddPointOfInterest() async {
+    emit(state.copyWith(status: HomeStatus.success));
   }
 
   Future<void> saveMeetingPlace(String? description) async {

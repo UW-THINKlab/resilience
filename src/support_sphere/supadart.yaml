@@ -10,6 +10,8 @@ enums:
   app_roles: [user, subcom_agent, com_admin, admin]
   request_scope: [nearby, neighbors]
   unit: [Gallons, People, Servings, Unknown]
+  visibility_scope: [neighborhood, cluster, household, private]
+  poi_category: [emergency_safety, medical, education, community_civic, nature_outdoor, utility, business_economic, personal_other]
 
 output: lib/data/models/
 postGIS: true
