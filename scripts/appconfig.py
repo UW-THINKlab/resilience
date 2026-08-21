@@ -88,17 +88,16 @@ def load_config(filename: str) -> dict:
             # special case: location might be a string instead of a location array
             # if so, convert to [float]
             config['location'] = location_pair(config['location'])
-
             return config
     else:
         return {}
 
 
 def location_pair(location) -> [float]:
-    if isinstance(location, str):
+    if type(location) is str:
         long_lat = location.split(",")
         return [float(long_lat[0].strip()), float(long_lat[1].strip())]
-    elif isinstance(location, [float]):
+    elif type(location) is list:
         return location
     else:
         print("Unknown location:", type(location), location)
