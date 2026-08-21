@@ -348,4 +348,16 @@ class PoiDetailsDialogStrings {
   static const String address = 'Address';
   static const String notes = 'Notes';
   static const String visibility = 'Visibility';
+  static const String delete = 'Delete';
+  static const String confirmDeleteTitle = 'Delete point of interest?';
+  static const String confirmDeleteMessage =
+      'This will permanently remove this point of interest from the map.';
+}
+
+class SaveMeetingPointDialogStrings {
+  static const String title = 'Save new cluster meeting point?';
+  static const String descriptionLabel = 'Description/Notes:';
+  static const String description = 'Description';
+  static const String cancel = 'Cancel';
+  static const String save = 'Save';
 }

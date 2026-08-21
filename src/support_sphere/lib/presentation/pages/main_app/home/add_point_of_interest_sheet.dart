@@ -94,20 +94,30 @@ class _AddPointOfInterestSheetState extends State<AddPointOfInterestSheet> {
               ),
             ),
             const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              initialValue: _type,
-              menuMaxHeight: 300,
-              items: widget.availableTypes
-                  .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                  .toList(),
-              onChanged: (value) => setState(() => _type = value),
-              validator: (value) =>
-                  value == null ? AddPointOfInterestFormStrings.required : null,
-              decoration: InputDecoration(
-                labelText: AddPointOfInterestFormStrings.type,
-                border: border(context),
-                enabledBorder: border(context),
-                focusedBorder: focusBorder(context),
+            Theme(
+              data: Theme.of(context).copyWith(
+                scrollbarTheme: ScrollbarThemeData(
+                  thumbVisibility: const WidgetStatePropertyAll(true),
+                  thickness: const WidgetStatePropertyAll(8),
+                  thumbColor: WidgetStatePropertyAll(Colors.black54),
+                ),
+              ),
+              child: DropdownButtonFormField<String>(
+                initialValue: _type,
+                menuMaxHeight: 300,
+                items: widget.availableTypes
+                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .toList(),
+                onChanged: (value) => setState(() => _type = value),
+                validator: (value) => value == null
+                    ? AddPointOfInterestFormStrings.required
+                    : null,
+                decoration: InputDecoration(
+                  labelText: AddPointOfInterestFormStrings.type,
+                  border: border(context),
+                  enabledBorder: border(context),
+                  focusedBorder: focusBorder(context),
+                ),
               ),
             ),
             const SizedBox(height: 10),

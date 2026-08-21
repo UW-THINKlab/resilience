@@ -13,6 +13,10 @@ class PointOfInterestService {
     await supabase.from(collection).insert(poi.toMap());
   }
 
+  Future<void> delete(String id) async {
+    await supabase.from(collection).delete().eq('id', id);
+  }
+
   Future<List<PointOfInterest>> getPointsOfInterest(
     String requesterProfileId,
   ) async {

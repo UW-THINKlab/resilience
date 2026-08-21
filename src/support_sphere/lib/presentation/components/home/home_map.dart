@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:support_sphere/constants/color.dart' show ColorConstants;
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
+import 'package:support_sphere/presentation/components/confirmation_dialog.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
+import 'package:support_sphere/data/services/poi_service.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
 import 'package:support_sphere/presentation/pages/main_app/home/add_point_of_interest_sheet.dart';
 import 'dart:math';
@@ -144,20 +147,22 @@ class HomeMap extends StatelessWidget {
       builder: (context) => Dialog(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              ...details,
-            ],
+                const SizedBox(height: 8),
+                ...details,
+              ],
+            ),
           ),
         ),
       ),
@@ -165,6 +170,9 @@ class HomeMap extends StatelessWidget {
   }
 
   void _showPoiDetailsDialog(BuildContext context, PointOfInterest poi) {
+    final canDelete = poi.userId == cubit.authUser.uuid ||
+        cubit.authUser.userRole == AppRoles.communityAdmin;
+
     _showDetailsDialog(context, poi.name, [
       Text('${PoiDetailsDialogStrings.type}: ${poi.type}'),
       if (poi.address.isNotEmpty)
@@ -174,6 +182,39 @@ class HomeMap extends StatelessWidget {
       if (poi.expiresAt != null)
         Text(AddPointOfInterestFormStrings.expiresOn(poi.expiresAt!)),
       Text('${PoiDetailsDialogStrings.visibility}: ${poi.visibilityScope.name}'),
+      if (canDelete) ...[
+        const SizedBox(height: 12),
+        Center(
+          child: ConfirmButton(
+            label: PoiDetailsDialogStrings.delete,
+            color: ColorConstants.dangerRed,
+            onPressed: () async {
+              final confirmed = await ConfirmationDialog(
+                title: const Text(PoiDetailsDialogStrings.confirmDeleteTitle),
+                content: const Text(
+                  PoiDetailsDialogStrings.confirmDeleteMessage,
+                ),
+                actions: [
+                  CancelButton(
+                    label: AddPointOfInterestFormStrings.cancel,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  ConfirmButton(
+                    label: PoiDetailsDialogStrings.delete,
+                    color: ColorConstants.dangerRed,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              ).show<bool>(context);
+              if (confirmed != true) return;
+
+              await PointOfInterestService().delete(poi.id);
+              if (context.mounted) Navigator.of(context).pop();
+              cubit.refreshPointsOfInterest();
+            },
+          ),
+        ),
+      ],
     ]);
   }
 
@@ -345,7 +386,7 @@ class HomeMap extends StatelessWidget {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         scrollable: true,
-        title: Text('Save new cluster meeting point?'),
+        title: const Text(SaveMeetingPointDialogStrings.title),
         content: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -353,12 +394,12 @@ class HomeMap extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text('Description/Notes:'),
+                const Text(SaveMeetingPointDialogStrings.descriptionLabel),
                 const SizedBox(height: 15),
                 TextFormField(
                   onChanged: (value) => description = value,
                   decoration: InputDecoration(
-                    labelText: 'Description',
+                    labelText: SaveMeetingPointDialogStrings.description,
                     //icon: Icon(Icons.message ),
                   ),
                 ),
@@ -368,14 +409,14 @@ class HomeMap extends StatelessWidget {
         ),
         actions: [
           CancelButton(
-            label: 'Cancel',
+            label: SaveMeetingPointDialogStrings.cancel,
             onPressed: () {
               cubit.cancelMeetingPlace();
               Navigator.pop(context);
             },
           ),
           ConfirmButton(
-            label: 'Save',
+            label: SaveMeetingPointDialogStrings.save,
             onPressed: () {
               cubit.saveMeetingPlace(description);
               Navigator.pop(context);
