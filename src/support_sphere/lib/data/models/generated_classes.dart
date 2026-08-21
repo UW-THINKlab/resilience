@@ -86,7 +86,7 @@ enum GROUP_CHAT_TYPE {
   chat,
   request_consumable,
   request_durable,
-  request_skill
+  request_skill,
 }
 
 enum OPERATIONAL_STATUS { emergency, test, normal }
@@ -101,7 +101,7 @@ enum RESERVATION_STATUS {
   rejected,
   released,
   expired,
-  tentative
+  tentative,
 }
 
 enum MESSAGEURGENCY { normal, important, urgent, emergency }
@@ -115,6 +115,19 @@ enum APP_ROLES { user, subcom_agent, com_admin, admin }
 enum REQUEST_SCOPE { nearby, neighbors }
 
 enum UNIT { Gallons, People, Servings, Unknown }
+
+enum VISIBILITY_SCOPE { neighborhood, cluster, household, private }
+
+enum POI_CATEGORY {
+  emergency_safety,
+  medical,
+  education,
+  community_civic,
+  nature_outdoor,
+  utility,
+  business_economic,
+  personal_other,
+}
 
 // Utils
 class OperationalEvents implements SupadartClass<OperationalEvents> {
@@ -189,8 +202,9 @@ class OperationalEvents implements SupadartClass<OperationalEvents> {
   factory OperationalEvents.fromJson(Map<String, dynamic> jsonn) {
     return OperationalEvents(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-      createdBy:
-          jsonn['created_by'] != null ? jsonn['created_by'].toString() : '',
+      createdBy: jsonn['created_by'] != null
+          ? jsonn['created_by'].toString()
+          : '',
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
@@ -245,6 +259,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
   final String address;
   final Geometry? geom;
   final String pointTypeName;
+  final String? userId;
+  final VISIBILITY_SCOPE visibilityScope;
+  final String? clusterId;
+  final String? householdId;
+  final DateTime? expiresAt;
+  final String? notes;
 
   const PointOfInterests({
     required this.id,
@@ -252,6 +272,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     required this.address,
     this.geom,
     required this.pointTypeName,
+    this.userId,
+    required this.visibilityScope,
+    this.clusterId,
+    this.householdId,
+    this.expiresAt,
+    this.notes,
   });
 
   static String get table_name => 'point_of_interests';
@@ -260,6 +286,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
   static String get c_address => 'address';
   static String get c_geom => 'geom';
   static String get c_pointTypeName => 'point_type_name';
+  static String get c_userId => 'user_id';
+  static String get c_visibilityScope => 'visibility_scope';
+  static String get c_clusterId => 'cluster_id';
+  static String get c_householdId => 'household_id';
+  static String get c_expiresAt => 'expires_at';
+  static String get c_notes => 'notes';
 
   static List<PointOfInterests> converter(List<Map<String, dynamic>> data) {
     return data.map(PointOfInterests.fromJson).toList();
@@ -275,6 +307,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     String? address,
     Geometry? geom,
     String? pointTypeName,
+    String? userId,
+    VISIBILITY_SCOPE? visibilityScope,
+    String? clusterId,
+    String? householdId,
+    DateTime? expiresAt,
+    String? notes,
   }) {
     return {
       if (id != null) 'id': id,
@@ -282,6 +320,13 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       if (address != null) 'address': address,
       if (geom != null) 'geom': geom.toBytesHex(format: WKB.geometryExtended),
       if (pointTypeName != null) 'point_type_name': pointTypeName,
+      if (userId != null) 'user_id': userId,
+      if (visibilityScope != null)
+        'visibility_scope': visibilityScope.toString().split('.').last,
+      if (clusterId != null) 'cluster_id': clusterId,
+      if (householdId != null) 'household_id': householdId,
+      if (expiresAt != null) 'expires_at': expiresAt.toUtc().toIso8601String(),
+      if (notes != null) 'notes': notes,
     };
   }
 
@@ -291,6 +336,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     required String address,
     Geometry? geom,
     required String pointTypeName,
+    String? userId,
+    VISIBILITY_SCOPE? visibilityScope,
+    String? clusterId,
+    String? householdId,
+    DateTime? expiresAt,
+    String? notes,
   }) {
     return _generateMap(
       id: id,
@@ -298,6 +349,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       address: address,
       geom: geom,
       pointTypeName: pointTypeName,
+      userId: userId,
+      visibilityScope: visibilityScope,
+      clusterId: clusterId,
+      householdId: householdId,
+      expiresAt: expiresAt,
+      notes: notes,
     );
   }
 
@@ -307,6 +364,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     String? address,
     Geometry? geom,
     String? pointTypeName,
+    String? userId,
+    VISIBILITY_SCOPE? visibilityScope,
+    String? clusterId,
+    String? householdId,
+    DateTime? expiresAt,
+    String? notes,
   }) {
     return _generateMap(
       id: id,
@@ -314,6 +377,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       address: address,
       geom: geom,
       pointTypeName: pointTypeName,
+      userId: userId,
+      visibilityScope: visibilityScope,
+      clusterId: clusterId,
+      householdId: householdId,
+      expiresAt: expiresAt,
+      notes: notes,
     );
   }
 
@@ -323,12 +392,28 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
       address: jsonn['address'] != null ? jsonn['address'].toString() : '',
       geom: jsonn['geom'] != null
-          ? GeometryBuilder.decodeHex(jsonn['geom'].toString(),
-              format: WKB.geometryExtended)
+          ? GeometryBuilder.decodeHex(
+              jsonn['geom'].toString(),
+              format: WKB.geometryExtended,
+            )
           : null,
       pointTypeName: jsonn['point_type_name'] != null
           ? jsonn['point_type_name'].toString()
           : '',
+      userId: jsonn['user_id'] != null ? jsonn['user_id'].toString() : null,
+      visibilityScope: jsonn['visibility_scope'] != null
+          ? VISIBILITY_SCOPE.values.byName(jsonn['visibility_scope'].toString())
+          : VISIBILITY_SCOPE.values.first,
+      clusterId: jsonn['cluster_id'] != null
+          ? jsonn['cluster_id'].toString()
+          : null,
+      householdId: jsonn['household_id'] != null
+          ? jsonn['household_id'].toString()
+          : null,
+      expiresAt: jsonn['expires_at'] != null
+          ? DateTime.parse(jsonn['expires_at'].toString())
+          : null,
+      notes: jsonn['notes'] != null ? jsonn['notes'].toString() : null,
     );
   }
 
@@ -338,6 +423,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     String? address,
     Geometry? geom,
     String? pointTypeName,
+    String? userId,
+    VISIBILITY_SCOPE? visibilityScope,
+    String? clusterId,
+    String? householdId,
+    DateTime? expiresAt,
+    String? notes,
   }) {
     return {
       if (id != null) 'id': id,
@@ -345,6 +436,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       if (address != null) 'address': address,
       if (geom != null) 'geom': geom,
       if (pointTypeName != null) 'point_type_name': pointTypeName,
+      if (userId != null) 'user_id': userId,
+      if (visibilityScope != null) 'visibility_scope': visibilityScope,
+      if (clusterId != null) 'cluster_id': clusterId,
+      if (householdId != null) 'household_id': householdId,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (notes != null) 'notes': notes,
     };
   }
 
@@ -355,6 +452,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       address: address,
       geom: geom,
       pointTypeName: pointTypeName,
+      userId: userId,
+      visibilityScope: visibilityScope,
+      clusterId: clusterId,
+      householdId: householdId,
+      expiresAt: expiresAt,
+      notes: notes,
     );
   }
 
@@ -365,6 +468,12 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
     Object? address = _unset,
     Object? geom = _unset,
     Object? pointTypeName = _unset,
+    Object? userId = _unset,
+    Object? visibilityScope = _unset,
+    Object? clusterId = _unset,
+    Object? householdId = _unset,
+    Object? expiresAt = _unset,
+    Object? notes = _unset,
   }) {
     return PointOfInterests(
       id: id == _unset ? this.id : id as String,
@@ -374,6 +483,16 @@ class PointOfInterests implements SupadartClass<PointOfInterests> {
       pointTypeName: pointTypeName == _unset
           ? this.pointTypeName
           : pointTypeName as String,
+      userId: userId == _unset ? this.userId : userId as String?,
+      visibilityScope: visibilityScope == _unset
+          ? this.visibilityScope
+          : visibilityScope as VISIBILITY_SCOPE,
+      clusterId: clusterId == _unset ? this.clusterId : clusterId as String?,
+      householdId: householdId == _unset
+          ? this.householdId
+          : householdId as String?,
+      expiresAt: expiresAt == _unset ? this.expiresAt : expiresAt as DateTime?,
+      notes: notes == _unset ? this.notes : notes as String?,
     );
   }
 }
@@ -442,8 +561,10 @@ class UserResources implements SupadartClass<UserResources> {
       if (sharingScope != null)
         'sharing_scope': sharingScope.toString().split('.').last,
       if (sharingScopeEmergency != null)
-        'sharing_scope_emergency':
-            sharingScopeEmergency.toString().split('.').last,
+        'sharing_scope_emergency': sharingScopeEmergency
+            .toString()
+            .split('.')
+            .last,
     };
   }
 
@@ -499,8 +620,9 @@ class UserResources implements SupadartClass<UserResources> {
     return UserResources(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
       userId: jsonn['user_id'] != null ? jsonn['user_id'].toString() : null,
-      resourceId:
-          jsonn['resource_id'] != null ? jsonn['resource_id'].toString() : null,
+      resourceId: jsonn['resource_id'] != null
+          ? jsonn['resource_id'].toString()
+          : null,
       quantity: jsonn['quantity'] != null
           ? int.parse(jsonn['quantity'].toString())
           : null,
@@ -515,8 +637,9 @@ class UserResources implements SupadartClass<UserResources> {
           ? SHARING_SCOPES.values.byName(jsonn['sharing_scope'].toString())
           : SHARING_SCOPES.values.first,
       sharingScopeEmergency: jsonn['sharing_scope_emergency'] != null
-          ? SHARING_SCOPES.values
-              .byName(jsonn['sharing_scope_emergency'].toString())
+          ? SHARING_SCOPES.values.byName(
+              jsonn['sharing_scope_emergency'].toString(),
+            )
           : SHARING_SCOPES.values.first,
     );
   }
@@ -575,8 +698,9 @@ class UserResources implements SupadartClass<UserResources> {
     return UserResources(
       id: id == _unset ? this.id : id as String,
       userId: userId == _unset ? this.userId : userId as String?,
-      resourceId:
-          resourceId == _unset ? this.resourceId : resourceId as String?,
+      resourceId: resourceId == _unset
+          ? this.resourceId
+          : resourceId as String?,
       quantity: quantity == _unset ? this.quantity : quantity as int?,
       notes: notes == _unset ? this.notes : notes as String?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
@@ -595,10 +719,7 @@ class ResourceTags implements SupadartClass<ResourceTags> {
   final String resourceId;
   final String? resourceSubtypeTagId;
 
-  const ResourceTags({
-    required this.resourceId,
-    this.resourceSubtypeTagId,
-  });
+  const ResourceTags({required this.resourceId, this.resourceSubtypeTagId});
 
   static String get table_name => 'resource_tags';
   static String get c_resourceId => 'resource_id';
@@ -645,18 +766,16 @@ class ResourceTags implements SupadartClass<ResourceTags> {
 
   factory ResourceTags.fromJson(Map<String, dynamic> jsonn) {
     return ResourceTags(
-      resourceId:
-          jsonn['resource_id'] != null ? jsonn['resource_id'].toString() : '',
+      resourceId: jsonn['resource_id'] != null
+          ? jsonn['resource_id'].toString()
+          : '',
       resourceSubtypeTagId: jsonn['resource_subtype_tag_id'] != null
           ? jsonn['resource_subtype_tag_id'].toString()
           : null,
     );
   }
 
-  static Object New({
-    String? resourceId,
-    String? resourceSubtypeTagId,
-  }) {
+  static Object New({String? resourceId, String? resourceSubtypeTagId}) {
     return {
       if (resourceId != null) 'resource_id': resourceId,
       if (resourceSubtypeTagId != null)
@@ -783,8 +902,9 @@ class ClusterCaptainsView implements SupadartClass<ClusterCaptainsView> {
 
   factory ClusterCaptainsView.fromJson(Map<String, dynamic> jsonn) {
     return ClusterCaptainsView(
-      clusterId:
-          jsonn['cluster_id'] != null ? jsonn['cluster_id'].toString() : null,
+      clusterId: jsonn['cluster_id'] != null
+          ? jsonn['cluster_id'].toString()
+          : null,
       clusterName: jsonn['cluster_name'] != null
           ? jsonn['cluster_name'].toString()
           : null,
@@ -794,10 +914,12 @@ class ClusterCaptainsView implements SupadartClass<ClusterCaptainsView> {
       userProfileId: jsonn['user_profile_id'] != null
           ? jsonn['user_profile_id'].toString()
           : null,
-      givenName:
-          jsonn['given_name'] != null ? jsonn['given_name'].toString() : null,
-      familyName:
-          jsonn['family_name'] != null ? jsonn['family_name'].toString() : null,
+      givenName: jsonn['given_name'] != null
+          ? jsonn['given_name'].toString()
+          : null,
+      familyName: jsonn['family_name'] != null
+          ? jsonn['family_name'].toString()
+          : null,
       nickname: jsonn['nickname'] != null ? jsonn['nickname'].toString() : null,
     );
   }
@@ -846,15 +968,17 @@ class ClusterCaptainsView implements SupadartClass<ClusterCaptainsView> {
   }) {
     return ClusterCaptainsView(
       clusterId: clusterId == _unset ? this.clusterId : clusterId as String?,
-      clusterName:
-          clusterName == _unset ? this.clusterName : clusterName as String?,
+      clusterName: clusterName == _unset
+          ? this.clusterName
+          : clusterName as String?,
       userRole: userRole == _unset ? this.userRole : userRole as APP_ROLES?,
       userProfileId: userProfileId == _unset
           ? this.userProfileId
           : userProfileId as String?,
       givenName: givenName == _unset ? this.givenName : givenName as String?,
-      familyName:
-          familyName == _unset ? this.familyName : familyName as String?,
+      familyName: familyName == _unset
+          ? this.familyName
+          : familyName as String?,
       nickname: nickname == _unset ? this.nickname : nickname as String?,
     );
   }
@@ -960,8 +1084,9 @@ class Checklists implements SupadartClass<Checklists> {
     return Checklists(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
       title: jsonn['title'] != null ? jsonn['title'].toString() : '',
-      description:
-          jsonn['description'] != null ? jsonn['description'].toString() : null,
+      description: jsonn['description'] != null
+          ? jsonn['description'].toString()
+          : null,
       notes: jsonn['notes'] != null ? jsonn['notes'].toString() : null,
       updatedAt: jsonn['updated_at'] != null
           ? DateTime.parse(jsonn['updated_at'].toString())
@@ -1020,12 +1145,14 @@ class Checklists implements SupadartClass<Checklists> {
     return Checklists(
       id: id == _unset ? this.id : id as String,
       title: title == _unset ? this.title : title as String,
-      description:
-          description == _unset ? this.description : description as String?,
+      description: description == _unset
+          ? this.description
+          : description as String?,
       notes: notes == _unset ? this.notes : notes as String?,
       updatedAt: updatedAt == _unset ? this.updatedAt : updatedAt as DateTime,
-      frequencyId:
-          frequencyId == _unset ? this.frequencyId : frequencyId as String?,
+      frequencyId: frequencyId == _unset
+          ? this.frequencyId
+          : frequencyId as String?,
       priority: priority == _unset ? this.priority : priority as PRIORITY,
     );
   }
@@ -1036,11 +1163,7 @@ class ResourceTypes implements SupadartClass<ResourceTypes> {
   final String name;
   final String? description;
 
-  const ResourceTypes({
-    required this.id,
-    required this.name,
-    this.description,
-  });
+  const ResourceTypes({required this.id, required this.name, this.description});
 
   static String get table_name => 'resource_types';
   static String get c_id => 'id';
@@ -1072,11 +1195,7 @@ class ResourceTypes implements SupadartClass<ResourceTypes> {
     required String name,
     String? description,
   }) {
-    return _generateMap(
-      id: id,
-      name: name,
-      description: description,
-    );
+    return _generateMap(id: id, name: name, description: description);
   }
 
   static Map<String, dynamic> update({
@@ -1084,27 +1203,20 @@ class ResourceTypes implements SupadartClass<ResourceTypes> {
     String? name,
     String? description,
   }) {
-    return _generateMap(
-      id: id,
-      name: name,
-      description: description,
-    );
+    return _generateMap(id: id, name: name, description: description);
   }
 
   factory ResourceTypes.fromJson(Map<String, dynamic> jsonn) {
     return ResourceTypes(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
-      description:
-          jsonn['description'] != null ? jsonn['description'].toString() : null,
+      description: jsonn['description'] != null
+          ? jsonn['description'].toString()
+          : null,
     );
   }
 
-  static Object New({
-    String? id,
-    String? name,
-    String? description,
-  }) {
+  static Object New({String? id, String? name, String? description}) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
@@ -1113,11 +1225,7 @@ class ResourceTypes implements SupadartClass<ResourceTypes> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      name: name,
-      description: description,
-    );
+    return _generateMap(id: id, name: name, description: description);
   }
 
   static const _unset = Object();
@@ -1129,8 +1237,9 @@ class ResourceTypes implements SupadartClass<ResourceTypes> {
     return ResourceTypes(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String,
-      description:
-          description == _unset ? this.description : description as String?,
+      description: description == _unset
+          ? this.description
+          : description as String?,
     );
   }
 }
@@ -1139,10 +1248,7 @@ class ResourceSubtypeTags implements SupadartClass<ResourceSubtypeTags> {
   final String id;
   final String name;
 
-  const ResourceSubtypeTags({
-    required this.id,
-    required this.name,
-  });
+  const ResourceSubtypeTags({required this.id, required this.name});
 
   static String get table_name => 'resource_subtype_tags';
   static String get c_id => 'id';
@@ -1156,34 +1262,16 @@ class ResourceSubtypeTags implements SupadartClass<ResourceSubtypeTags> {
     return ResourceSubtypeTags.fromJson(data);
   }
 
-  static Map<String, dynamic> _generateMap({
-    String? id,
-    String? name,
-  }) {
-    return {
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-    };
+  static Map<String, dynamic> _generateMap({String? id, String? name}) {
+    return {if (id != null) 'id': id, if (name != null) 'name': name};
   }
 
-  static Map<String, dynamic> insert({
-    String? id,
-    required String name,
-  }) {
-    return _generateMap(
-      id: id,
-      name: name,
-    );
+  static Map<String, dynamic> insert({String? id, required String name}) {
+    return _generateMap(id: id, name: name);
   }
 
-  static Map<String, dynamic> update({
-    String? id,
-    String? name,
-  }) {
-    return _generateMap(
-      id: id,
-      name: name,
-    );
+  static Map<String, dynamic> update({String? id, String? name}) {
+    return _generateMap(id: id, name: name);
   }
 
   factory ResourceSubtypeTags.fromJson(Map<String, dynamic> jsonn) {
@@ -1193,28 +1281,16 @@ class ResourceSubtypeTags implements SupadartClass<ResourceSubtypeTags> {
     );
   }
 
-  static Object New({
-    String? id,
-    String? name,
-  }) {
-    return {
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-    };
+  static Object New({String? id, String? name}) {
+    return {if (id != null) 'id': id, if (name != null) 'name': name};
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      name: name,
-    );
+    return _generateMap(id: id, name: name);
   }
 
   static const _unset = Object();
-  ResourceSubtypeTags copyWith({
-    Object? id = _unset,
-    Object? name = _unset,
-  }) {
+  ResourceSubtypeTags copyWith({Object? id = _unset, Object? name = _unset}) {
     return ResourceSubtypeTags(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String,
@@ -1263,11 +1339,7 @@ class UserCaptainClusters implements SupadartClass<UserCaptainClusters> {
     required String clusterId,
     required String userRoleId,
   }) {
-    return _generateMap(
-      id: id,
-      clusterId: clusterId,
-      userRoleId: userRoleId,
-    );
+    return _generateMap(id: id, clusterId: clusterId, userRoleId: userRoleId);
   }
 
   static Map<String, dynamic> update({
@@ -1275,28 +1347,22 @@ class UserCaptainClusters implements SupadartClass<UserCaptainClusters> {
     String? clusterId,
     String? userRoleId,
   }) {
-    return _generateMap(
-      id: id,
-      clusterId: clusterId,
-      userRoleId: userRoleId,
-    );
+    return _generateMap(id: id, clusterId: clusterId, userRoleId: userRoleId);
   }
 
   factory UserCaptainClusters.fromJson(Map<String, dynamic> jsonn) {
     return UserCaptainClusters(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-      clusterId:
-          jsonn['cluster_id'] != null ? jsonn['cluster_id'].toString() : '',
-      userRoleId:
-          jsonn['user_role_id'] != null ? jsonn['user_role_id'].toString() : '',
+      clusterId: jsonn['cluster_id'] != null
+          ? jsonn['cluster_id'].toString()
+          : '',
+      userRoleId: jsonn['user_role_id'] != null
+          ? jsonn['user_role_id'].toString()
+          : '',
     );
   }
 
-  static Object New({
-    String? id,
-    String? clusterId,
-    String? userRoleId,
-  }) {
+  static Object New({String? id, String? clusterId, String? userRoleId}) {
     return {
       if (id != null) 'id': id,
       if (clusterId != null) 'cluster_id': clusterId,
@@ -1305,11 +1371,7 @@ class UserCaptainClusters implements SupadartClass<UserCaptainClusters> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      clusterId: clusterId,
-      userRoleId: userRoleId,
-    );
+    return _generateMap(id: id, clusterId: clusterId, userRoleId: userRoleId);
   }
 
   static const _unset = Object();
@@ -1388,21 +1450,19 @@ class MessageReads implements SupadartClass<MessageReads> {
 
   factory MessageReads.fromJson(Map<String, dynamic> jsonn) {
     return MessageReads(
-      messageId:
-          jsonn['message_id'] != null ? jsonn['message_id'].toString() : '',
-      profileId:
-          jsonn['profile_id'] != null ? jsonn['profile_id'].toString() : '',
+      messageId: jsonn['message_id'] != null
+          ? jsonn['message_id'].toString()
+          : '',
+      profileId: jsonn['profile_id'] != null
+          ? jsonn['profile_id'].toString()
+          : '',
       readAt: jsonn['read_at'] != null
           ? DateTime.parse(jsonn['read_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
-  static Object New({
-    String? messageId,
-    String? profileId,
-    DateTime? readAt,
-  }) {
+  static Object New({String? messageId, String? profileId, DateTime? readAt}) {
     return {
       if (messageId != null) 'message_id': messageId,
       if (profileId != null) 'profile_id': profileId,
@@ -1563,15 +1623,17 @@ class Resources implements SupadartClass<Resources> {
     Object? qtyAvailable = _unset,
   }) {
     return Resources(
-      resourceCvId:
-          resourceCvId == _unset ? this.resourceCvId : resourceCvId as String,
+      resourceCvId: resourceCvId == _unset
+          ? this.resourceCvId
+          : resourceCvId as String,
       resourceTypeId: resourceTypeId == _unset
           ? this.resourceTypeId
           : resourceTypeId as String,
       notes: notes == _unset ? this.notes : notes as String?,
       qtyNeeded: qtyNeeded == _unset ? this.qtyNeeded : qtyNeeded as int,
-      qtyAvailable:
-          qtyAvailable == _unset ? this.qtyAvailable : qtyAvailable as int,
+      qtyAvailable: qtyAvailable == _unset
+          ? this.qtyAvailable
+          : qtyAvailable as int,
     );
   }
 }
@@ -1670,8 +1732,9 @@ class Groups implements SupadartClass<Groups> {
           ? jsonn['created_by_id'].toString()
           : '',
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
-      description:
-          jsonn['description'] != null ? jsonn['description'].toString() : null,
+      description: jsonn['description'] != null
+          ? jsonn['description'].toString()
+          : null,
       type: jsonn['type'] != null
           ? GROUP_CHAT_TYPE.values.byName(jsonn['type'].toString())
           : GROUP_CHAT_TYPE.values.first,
@@ -1721,11 +1784,13 @@ class Groups implements SupadartClass<Groups> {
   }) {
     return Groups(
       id: id == _unset ? this.id : id as String,
-      createdById:
-          createdById == _unset ? this.createdById : createdById as String,
+      createdById: createdById == _unset
+          ? this.createdById
+          : createdById as String,
       name: name == _unset ? this.name : name as String,
-      description:
-          description == _unset ? this.description : description as String?,
+      description: description == _unset
+          ? this.description
+          : description as String?,
       type: type == _unset ? this.type : type as GROUP_CHAT_TYPE,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
@@ -1853,8 +1918,9 @@ class ResourceReservations implements SupadartClass<ResourceReservations> {
       userResourceId: jsonn['user_resource_id'] != null
           ? jsonn['user_resource_id'].toString()
           : '',
-      requestId:
-          jsonn['request_id'] != null ? jsonn['request_id'].toString() : '',
+      requestId: jsonn['request_id'] != null
+          ? jsonn['request_id'].toString()
+          : '',
       quantity: jsonn['quantity'] != null
           ? int.parse(jsonn['quantity'].toString())
           : 0,
@@ -2078,8 +2144,9 @@ class Messages implements SupadartClass<Messages> {
       metadata: jsonn['metadata'] != null
           ? jsonn['metadata'] as Map<String, dynamic>
           : null,
-      requestId:
-          jsonn['request_id'] != null ? jsonn['request_id'].toString() : null,
+      requestId: jsonn['request_id'] != null
+          ? jsonn['request_id'].toString()
+          : null,
     );
   }
 
@@ -2224,8 +2291,9 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     return ResourcesCv(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
-      description:
-          jsonn['description'] != null ? jsonn['description'].toString() : null,
+      description: jsonn['description'] != null
+          ? jsonn['description'].toString()
+          : null,
       unit: jsonn['unit'] != null
           ? UNIT.values.byName(jsonn['unit'].toString())
           : UNIT.values.first,
@@ -2265,8 +2333,9 @@ class ResourcesCv implements SupadartClass<ResourcesCv> {
     return ResourcesCv(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String,
-      description:
-          description == _unset ? this.description : description as String?,
+      description: description == _unset
+          ? this.description
+          : description as String?,
       unit: unit == _unset ? this.unit : unit as UNIT,
     );
   }
@@ -2351,8 +2420,9 @@ class ChecklistStepsStates implements SupadartClass<ChecklistStepsStates> {
       userProfileId: jsonn['user_profile_id'] != null
           ? jsonn['user_profile_id'].toString()
           : '',
-      isCompleted:
-          jsonn['is_completed'] != null ? jsonn['is_completed'] as bool : false,
+      isCompleted: jsonn['is_completed'] != null
+          ? jsonn['is_completed'] as bool
+          : false,
     );
   }
 
@@ -2395,8 +2465,9 @@ class ChecklistStepsStates implements SupadartClass<ChecklistStepsStates> {
       userProfileId: userProfileId == _unset
           ? this.userProfileId
           : userProfileId as String,
-      isCompleted:
-          isCompleted == _unset ? this.isCompleted : isCompleted as bool,
+      isCompleted: isCompleted == _unset
+          ? this.isCompleted
+          : isCompleted as bool,
     );
   }
 }
@@ -2443,11 +2514,7 @@ class RolePermissions implements SupadartClass<RolePermissions> {
     APP_ROLES? role,
     APP_PERMISSIONS? permission,
   }) {
-    return _generateMap(
-      id: id,
-      role: role,
-      permission: permission,
-    );
+    return _generateMap(id: id, role: role, permission: permission);
   }
 
   static Map<String, dynamic> update({
@@ -2455,11 +2522,7 @@ class RolePermissions implements SupadartClass<RolePermissions> {
     APP_ROLES? role,
     APP_PERMISSIONS? permission,
   }) {
-    return _generateMap(
-      id: id,
-      role: role,
-      permission: permission,
-    );
+    return _generateMap(id: id, role: role, permission: permission);
   }
 
   factory RolePermissions.fromJson(Map<String, dynamic> jsonn) {
@@ -2487,11 +2550,7 @@ class RolePermissions implements SupadartClass<RolePermissions> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      role: role,
-      permission: permission,
-    );
+    return _generateMap(id: id, role: role, permission: permission);
   }
 
   static const _unset = Object();
@@ -2514,10 +2573,7 @@ class SignupCodes implements SupadartClass<SignupCodes> {
   final String code;
   final String householdId;
 
-  const SignupCodes({
-    required this.code,
-    required this.householdId,
-  });
+  const SignupCodes({required this.code, required this.householdId});
 
   static String get table_name => 'signup_codes';
   static String get c_code => 'code';
@@ -2545,34 +2601,23 @@ class SignupCodes implements SupadartClass<SignupCodes> {
     String? code,
     required String householdId,
   }) {
-    return _generateMap(
-      code: code,
-      householdId: householdId,
-    );
+    return _generateMap(code: code, householdId: householdId);
   }
 
-  static Map<String, dynamic> update({
-    String? code,
-    String? householdId,
-  }) {
-    return _generateMap(
-      code: code,
-      householdId: householdId,
-    );
+  static Map<String, dynamic> update({String? code, String? householdId}) {
+    return _generateMap(code: code, householdId: householdId);
   }
 
   factory SignupCodes.fromJson(Map<String, dynamic> jsonn) {
     return SignupCodes(
       code: jsonn['code'] != null ? jsonn['code'].toString() : '',
-      householdId:
-          jsonn['household_id'] != null ? jsonn['household_id'].toString() : '',
+      householdId: jsonn['household_id'] != null
+          ? jsonn['household_id'].toString()
+          : '',
     );
   }
 
-  static Object New({
-    String? code,
-    String? householdId,
-  }) {
+  static Object New({String? code, String? householdId}) {
     return {
       if (code != null) 'code': code,
       if (householdId != null) 'household_id': householdId,
@@ -2580,21 +2625,16 @@ class SignupCodes implements SupadartClass<SignupCodes> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      code: code,
-      householdId: householdId,
-    );
+    return _generateMap(code: code, householdId: householdId);
   }
 
   static const _unset = Object();
-  SignupCodes copyWith({
-    Object? code = _unset,
-    Object? householdId = _unset,
-  }) {
+  SignupCodes copyWith({Object? code = _unset, Object? householdId = _unset}) {
     return SignupCodes(
       code: code == _unset ? this.code : code as String,
-      householdId:
-          householdId == _unset ? this.householdId : householdId as String,
+      householdId: householdId == _unset
+          ? this.householdId
+          : householdId as String,
     );
   }
 }
@@ -2707,8 +2747,9 @@ class Households implements SupadartClass<Households> {
   factory Households.fromJson(Map<String, dynamic> jsonn) {
     return Households(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-      clusterId:
-          jsonn['cluster_id'] != null ? jsonn['cluster_id'].toString() : '',
+      clusterId: jsonn['cluster_id'] != null
+          ? jsonn['cluster_id'].toString()
+          : '',
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
       address: jsonn['address'] != null ? jsonn['address'].toString() : null,
       notes: jsonn['notes'] != null ? jsonn['notes'].toString() : null,
@@ -2717,8 +2758,10 @@ class Households implements SupadartClass<Households> {
           ? jsonn['accessibility_needs'].toString()
           : null,
       geom: jsonn['geom'] != null
-          ? GeometryBuilder.decodeHex(jsonn['geom'].toString(),
-              format: WKB.geometryExtended)
+          ? GeometryBuilder.decodeHex(
+              jsonn['geom'].toString(),
+              format: WKB.geometryExtended,
+            )
           : null,
     );
   }
@@ -2825,11 +2868,7 @@ class UserRoles implements SupadartClass<UserRoles> {
     required String userProfileId,
     APP_ROLES? role,
   }) {
-    return _generateMap(
-      id: id,
-      userProfileId: userProfileId,
-      role: role,
-    );
+    return _generateMap(id: id, userProfileId: userProfileId, role: role);
   }
 
   static Map<String, dynamic> update({
@@ -2837,11 +2876,7 @@ class UserRoles implements SupadartClass<UserRoles> {
     String? userProfileId,
     APP_ROLES? role,
   }) {
-    return _generateMap(
-      id: id,
-      userProfileId: userProfileId,
-      role: role,
-    );
+    return _generateMap(id: id, userProfileId: userProfileId, role: role);
   }
 
   factory UserRoles.fromJson(Map<String, dynamic> jsonn) {
@@ -2856,11 +2891,7 @@ class UserRoles implements SupadartClass<UserRoles> {
     );
   }
 
-  static Object New({
-    String? id,
-    String? userProfileId,
-    APP_ROLES? role,
-  }) {
+  static Object New({String? id, String? userProfileId, APP_ROLES? role}) {
     return {
       if (id != null) 'id': id,
       if (userProfileId != null) 'user_profile_id': userProfileId,
@@ -2869,11 +2900,7 @@ class UserRoles implements SupadartClass<UserRoles> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      userProfileId: userProfileId,
-      role: role,
-    );
+    return _generateMap(id: id, userProfileId: userProfileId, role: role);
   }
 
   static const _unset = Object();
@@ -2973,8 +3000,9 @@ class ChecklistStepsOrders implements SupadartClass<ChecklistStepsOrders> {
   factory ChecklistStepsOrders.fromJson(Map<String, dynamic> jsonn) {
     return ChecklistStepsOrders(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-      checklistId:
-          jsonn['checklist_id'] != null ? jsonn['checklist_id'].toString() : '',
+      checklistId: jsonn['checklist_id'] != null
+          ? jsonn['checklist_id'].toString()
+          : '',
       checklistStepId: jsonn['checklist_step_id'] != null
           ? jsonn['checklist_step_id'].toString()
           : '',
@@ -3023,8 +3051,9 @@ class ChecklistStepsOrders implements SupadartClass<ChecklistStepsOrders> {
   }) {
     return ChecklistStepsOrders(
       id: id == _unset ? this.id : id as String,
-      checklistId:
-          checklistId == _unset ? this.checklistId : checklistId as String,
+      checklistId: checklistId == _unset
+          ? this.checklistId
+          : checklistId as String,
       checklistStepId: checklistStepId == _unset
           ? this.checklistStepId
           : checklistStepId as String,
@@ -3107,8 +3136,9 @@ class ChecklistSteps implements SupadartClass<ChecklistSteps> {
     return ChecklistSteps(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
       label: jsonn['label'] != null ? jsonn['label'].toString() : '',
-      description:
-          jsonn['description'] != null ? jsonn['description'].toString() : null,
+      description: jsonn['description'] != null
+          ? jsonn['description'].toString()
+          : null,
       updatedAt: jsonn['updated_at'] != null
           ? DateTime.parse(jsonn['updated_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
@@ -3148,8 +3178,9 @@ class ChecklistSteps implements SupadartClass<ChecklistSteps> {
     return ChecklistSteps(
       id: id == _unset ? this.id : id as String,
       label: label == _unset ? this.label : label as String,
-      description:
-          description == _unset ? this.description : description as String?,
+      description: description == _unset
+          ? this.description
+          : description as String?,
       updatedAt: updatedAt == _unset ? this.updatedAt : updatedAt as DateTime,
     );
   }
@@ -3158,15 +3189,21 @@ class ChecklistSteps implements SupadartClass<ChecklistSteps> {
 class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
   final String name;
   final String icon;
+  final String? color;
+  final POI_CATEGORY? category;
 
   const PointOfInterestTypes({
     required this.name,
     required this.icon,
+    this.color,
+    this.category,
   });
 
   static String get table_name => 'point_of_interest_types';
   static String get c_name => 'name';
   static String get c_icon => 'icon';
+  static String get c_color => 'color';
+  static String get c_category => 'category';
 
   static List<PointOfInterestTypes> converter(List<Map<String, dynamic>> data) {
     return data.map(PointOfInterestTypes.fromJson).toList();
@@ -3179,30 +3216,42 @@ class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
   static Map<String, dynamic> _generateMap({
     String? name,
     String? icon,
+    String? color,
+    POI_CATEGORY? category,
   }) {
     return {
       if (name != null) 'name': name,
       if (icon != null) 'icon': icon,
+      if (color != null) 'color': color,
+      if (category != null) 'category': category.toString().split('.').last,
     };
   }
 
   static Map<String, dynamic> insert({
     String? name,
     required String icon,
+    String? color,
+    POI_CATEGORY? category,
   }) {
     return _generateMap(
       name: name,
       icon: icon,
+      color: color,
+      category: category,
     );
   }
 
   static Map<String, dynamic> update({
     String? name,
     String? icon,
+    String? color,
+    POI_CATEGORY? category,
   }) {
     return _generateMap(
       name: name,
       icon: icon,
+      color: color,
+      category: category,
     );
   }
 
@@ -3210,16 +3259,24 @@ class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
     return PointOfInterestTypes(
       name: jsonn['name'] != null ? jsonn['name'].toString() : '',
       icon: jsonn['icon'] != null ? jsonn['icon'].toString() : '',
+      color: jsonn['color'] != null ? jsonn['color'].toString() : null,
+      category: jsonn['category'] != null
+          ? POI_CATEGORY.values.byName(jsonn['category'].toString())
+          : POI_CATEGORY.values.first,
     );
   }
 
   static Object New({
     String? name,
     String? icon,
+    String? color,
+    POI_CATEGORY? category,
   }) {
     return {
       if (name != null) 'name': name,
       if (icon != null) 'icon': icon,
+      if (color != null) 'color': color,
+      if (category != null) 'category': category,
     };
   }
 
@@ -3227,6 +3284,8 @@ class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
     return _generateMap(
       name: name,
       icon: icon,
+      color: color,
+      category: category,
     );
   }
 
@@ -3234,10 +3293,14 @@ class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
   PointOfInterestTypes copyWith({
     Object? name = _unset,
     Object? icon = _unset,
+    Object? color = _unset,
+    Object? category = _unset,
   }) {
     return PointOfInterestTypes(
       name: name == _unset ? this.name : name as String,
       icon: icon == _unset ? this.icon : icon as String,
+      color: color == _unset ? this.color : color as String?,
+      category: category == _unset ? this.category : category as POI_CATEGORY?,
     );
   }
 }
@@ -3245,9 +3308,7 @@ class PointOfInterestTypes implements SupadartClass<PointOfInterestTypes> {
 class UserProfiles implements SupadartClass<UserProfiles> {
   final String id;
 
-  const UserProfiles({
-    required this.id,
-  });
+  const UserProfiles({required this.id});
 
   static String get table_name => 'user_profiles';
   static String get c_id => 'id';
@@ -3260,57 +3321,33 @@ class UserProfiles implements SupadartClass<UserProfiles> {
     return UserProfiles.fromJson(data);
   }
 
-  static Map<String, dynamic> _generateMap({
-    String? id,
-  }) {
-    return {
-      if (id != null) 'id': id,
-    };
+  static Map<String, dynamic> _generateMap({String? id}) {
+    return {if (id != null) 'id': id};
   }
 
-  static Map<String, dynamic> insert({
-    String? id,
-  }) {
-    return _generateMap(
-      id: id,
-    );
+  static Map<String, dynamic> insert({String? id}) {
+    return _generateMap(id: id);
   }
 
-  static Map<String, dynamic> update({
-    String? id,
-  }) {
-    return _generateMap(
-      id: id,
-    );
+  static Map<String, dynamic> update({String? id}) {
+    return _generateMap(id: id);
   }
 
   factory UserProfiles.fromJson(Map<String, dynamic> jsonn) {
-    return UserProfiles(
-      id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-    );
+    return UserProfiles(id: jsonn['id'] != null ? jsonn['id'].toString() : '');
   }
 
-  static Object New({
-    String? id,
-  }) {
-    return {
-      if (id != null) 'id': id,
-    };
+  static Object New({String? id}) {
+    return {if (id != null) 'id': id};
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-    );
+    return _generateMap(id: id);
   }
 
   static const _unset = Object();
-  UserProfiles copyWith({
-    Object? id = _unset,
-  }) {
-    return UserProfiles(
-      id: id == _unset ? this.id : id as String,
-    );
+  UserProfiles copyWith({Object? id = _unset}) {
+    return UserProfiles(id: id == _unset ? this.id : id as String);
   }
 }
 
@@ -3386,8 +3423,9 @@ class UserChecklists implements SupadartClass<UserChecklists> {
   factory UserChecklists.fromJson(Map<String, dynamic> jsonn) {
     return UserChecklists(
       id: jsonn['id'] != null ? jsonn['id'].toString() : '',
-      checklistId:
-          jsonn['checklist_id'] != null ? jsonn['checklist_id'].toString() : '',
+      checklistId: jsonn['checklist_id'] != null
+          ? jsonn['checklist_id'].toString()
+          : '',
       userProfileId: jsonn['user_profile_id'] != null
           ? jsonn['user_profile_id'].toString()
           : '',
@@ -3429,13 +3467,15 @@ class UserChecklists implements SupadartClass<UserChecklists> {
   }) {
     return UserChecklists(
       id: id == _unset ? this.id : id as String,
-      checklistId:
-          checklistId == _unset ? this.checklistId : checklistId as String,
+      checklistId: checklistId == _unset
+          ? this.checklistId
+          : checklistId as String,
       userProfileId: userProfileId == _unset
           ? this.userProfileId
           : userProfileId as String,
-      completedAt:
-          completedAt == _unset ? this.completedAt : completedAt as DateTime?,
+      completedAt: completedAt == _unset
+          ? this.completedAt
+          : completedAt as DateTime?,
     );
   }
 }
@@ -3444,10 +3484,7 @@ class GroupMembers implements SupadartClass<GroupMembers> {
   final String groupId;
   final String profileId;
 
-  const GroupMembers({
-    required this.groupId,
-    required this.profileId,
-  });
+  const GroupMembers({required this.groupId, required this.profileId});
 
   static String get table_name => 'group_members';
   static String get c_groupId => 'group_id';
@@ -3471,38 +3508,24 @@ class GroupMembers implements SupadartClass<GroupMembers> {
     };
   }
 
-  static Map<String, dynamic> insert({
-    String? groupId,
-    String? profileId,
-  }) {
-    return _generateMap(
-      groupId: groupId,
-      profileId: profileId,
-    );
+  static Map<String, dynamic> insert({String? groupId, String? profileId}) {
+    return _generateMap(groupId: groupId, profileId: profileId);
   }
 
-  static Map<String, dynamic> update({
-    String? groupId,
-    String? profileId,
-  }) {
-    return _generateMap(
-      groupId: groupId,
-      profileId: profileId,
-    );
+  static Map<String, dynamic> update({String? groupId, String? profileId}) {
+    return _generateMap(groupId: groupId, profileId: profileId);
   }
 
   factory GroupMembers.fromJson(Map<String, dynamic> jsonn) {
     return GroupMembers(
       groupId: jsonn['group_id'] != null ? jsonn['group_id'].toString() : '',
-      profileId:
-          jsonn['profile_id'] != null ? jsonn['profile_id'].toString() : '',
+      profileId: jsonn['profile_id'] != null
+          ? jsonn['profile_id'].toString()
+          : '',
     );
   }
 
-  static Object New({
-    String? groupId,
-    String? profileId,
-  }) {
+  static Object New({String? groupId, String? profileId}) {
     return {
       if (groupId != null) 'group_id': groupId,
       if (profileId != null) 'profile_id': profileId,
@@ -3510,10 +3533,7 @@ class GroupMembers implements SupadartClass<GroupMembers> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      groupId: groupId,
-      profileId: profileId,
-    );
+    return _generateMap(groupId: groupId, profileId: profileId);
   }
 
   static const _unset = Object();
@@ -3598,11 +3618,7 @@ class Blocks implements SupadartClass<Blocks> {
     );
   }
 
-  static Object New({
-    String? blocker,
-    String? blockee,
-    DateTime? createdAt,
-  }) {
+  static Object New({String? blocker, String? blockee, DateTime? createdAt}) {
     return {
       if (blocker != null) 'blocker': blocker,
       if (blockee != null) 'blockee': blockee,
@@ -4024,8 +4040,9 @@ class Requests implements SupadartClass<Requests> {
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
-      resourceId:
-          jsonn['resource_id'] != null ? jsonn['resource_id'].toString() : '',
+      resourceId: jsonn['resource_id'] != null
+          ? jsonn['resource_id'].toString()
+          : '',
       quantity: jsonn['quantity'] != null
           ? int.parse(jsonn['quantity'].toString())
           : 0,
@@ -4130,8 +4147,9 @@ class Requests implements SupadartClass<Requests> {
           ? this.requesterProfileId
           : requesterProfileId as String,
       expiresAt: expiresAt == _unset ? this.expiresAt : expiresAt as DateTime?,
-      hoursNeeded:
-          hoursNeeded == _unset ? this.hoursNeeded : hoursNeeded as int?,
+      hoursNeeded: hoursNeeded == _unset
+          ? this.hoursNeeded
+          : hoursNeeded as int?,
       distanceMeters: distanceMeters == _unset
           ? this.distanceMeters
           : distanceMeters as double?,
@@ -4239,13 +4257,17 @@ class Clusters implements SupadartClass<Clusters> {
           ? jsonn['meeting_place'].toString()
           : null,
       meetingPoint: jsonn['meeting_point'] != null
-          ? GeometryBuilder.decodeHex(jsonn['meeting_point'].toString(),
-              format: WKB.geometryExtended)
+          ? GeometryBuilder.decodeHex(
+              jsonn['meeting_point'].toString(),
+              format: WKB.geometryExtended,
+            )
           : null,
       notes: jsonn['notes'] != null ? jsonn['notes'].toString() : null,
       geom: jsonn['geom'] != null
-          ? GeometryBuilder.decodeHex(jsonn['geom'].toString(),
-              format: WKB.geometryExtended)
+          ? GeometryBuilder.decodeHex(
+              jsonn['geom'].toString(),
+              format: WKB.geometryExtended,
+            )
           : null,
     );
   }
@@ -4291,8 +4313,9 @@ class Clusters implements SupadartClass<Clusters> {
     return Clusters(
       id: id == _unset ? this.id : id as String,
       name: name == _unset ? this.name : name as String?,
-      meetingPlace:
-          meetingPlace == _unset ? this.meetingPlace : meetingPlace as String?,
+      meetingPlace: meetingPlace == _unset
+          ? this.meetingPlace
+          : meetingPlace as String?,
       meetingPoint: meetingPoint == _unset
           ? this.meetingPoint
           : meetingPoint as Geometry?,
@@ -4404,14 +4427,17 @@ class People implements SupadartClass<People> {
       userProfileId: jsonn['user_profile_id'] != null
           ? jsonn['user_profile_id'].toString()
           : null,
-      givenName:
-          jsonn['given_name'] != null ? jsonn['given_name'].toString() : null,
-      familyName:
-          jsonn['family_name'] != null ? jsonn['family_name'].toString() : null,
+      givenName: jsonn['given_name'] != null
+          ? jsonn['given_name'].toString()
+          : null,
+      familyName: jsonn['family_name'] != null
+          ? jsonn['family_name'].toString()
+          : null,
       nickname: jsonn['nickname'] != null ? jsonn['nickname'].toString() : null,
       isSafe: jsonn['is_safe'] != null ? jsonn['is_safe'] as bool : false,
-      needsHelp:
-          jsonn['needs_help'] != null ? jsonn['needs_help'] as bool : false,
+      needsHelp: jsonn['needs_help'] != null
+          ? jsonn['needs_help'] as bool
+          : false,
     );
   }
 
@@ -4463,8 +4489,9 @@ class People implements SupadartClass<People> {
           ? this.userProfileId
           : userProfileId as String?,
       givenName: givenName == _unset ? this.givenName : givenName as String?,
-      familyName:
-          familyName == _unset ? this.familyName : familyName as String?,
+      familyName: familyName == _unset
+          ? this.familyName
+          : familyName as String?,
       nickname: nickname == _unset ? this.nickname : nickname as String?,
       isSafe: isSafe == _unset ? this.isSafe : isSafe as bool,
       needsHelp: needsHelp == _unset ? this.needsHelp : needsHelp as bool,
@@ -4477,11 +4504,7 @@ class PeopleGroups implements SupadartClass<PeopleGroups> {
   final String? householdId;
   final String? notes;
 
-  const PeopleGroups({
-    required this.peopleId,
-    this.householdId,
-    this.notes,
-  });
+  const PeopleGroups({required this.peopleId, this.householdId, this.notes});
 
   static String get table_name => 'people_groups';
   static String get c_peopleId => 'people_id';
@@ -4542,11 +4565,7 @@ class PeopleGroups implements SupadartClass<PeopleGroups> {
     );
   }
 
-  static Object New({
-    String? peopleId,
-    String? householdId,
-    String? notes,
-  }) {
+  static Object New({String? peopleId, String? householdId, String? notes}) {
     return {
       if (peopleId != null) 'people_id': peopleId,
       if (householdId != null) 'household_id': householdId,
@@ -4570,8 +4589,9 @@ class PeopleGroups implements SupadartClass<PeopleGroups> {
   }) {
     return PeopleGroups(
       peopleId: peopleId == _unset ? this.peopleId : peopleId as String,
-      householdId:
-          householdId == _unset ? this.householdId : householdId as String?,
+      householdId: householdId == _unset
+          ? this.householdId
+          : householdId as String?,
       notes: notes == _unset ? this.notes : notes as String?,
     );
   }
@@ -4618,23 +4638,11 @@ class Frequency implements SupadartClass<Frequency> {
     required String name,
     required int numDays,
   }) {
-    return _generateMap(
-      id: id,
-      name: name,
-      numDays: numDays,
-    );
+    return _generateMap(id: id, name: name, numDays: numDays);
   }
 
-  static Map<String, dynamic> update({
-    String? id,
-    String? name,
-    int? numDays,
-  }) {
-    return _generateMap(
-      id: id,
-      name: name,
-      numDays: numDays,
-    );
+  static Map<String, dynamic> update({String? id, String? name, int? numDays}) {
+    return _generateMap(id: id, name: name, numDays: numDays);
   }
 
   factory Frequency.fromJson(Map<String, dynamic> jsonn) {
@@ -4647,11 +4655,7 @@ class Frequency implements SupadartClass<Frequency> {
     );
   }
 
-  static Object New({
-    String? id,
-    String? name,
-    int? numDays,
-  }) {
+  static Object New({String? id, String? name, int? numDays}) {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
@@ -4660,11 +4664,7 @@ class Frequency implements SupadartClass<Frequency> {
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(
-      id: id,
-      name: name,
-      numDays: numDays,
-    );
+    return _generateMap(id: id, name: name, numDays: numDays);
   }
 
   static const _unset = Object();

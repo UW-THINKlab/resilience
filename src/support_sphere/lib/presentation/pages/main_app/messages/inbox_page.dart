@@ -5,7 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/presentation/components/circular_floating_button.dart';
 import 'package:support_sphere/utils/reservation_status_colors.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/inbox_cubit.dart';
@@ -145,9 +147,10 @@ class InboxView extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: CircularFloatingButton(
+        icon: Icons.add,
+        tooltip: MessagesStrings.newMessageGroupTooltip,
         onPressed: () => _openCreateGroupSheet(context),
-        child: const Icon(Icons.add),
       ),
     );
   }

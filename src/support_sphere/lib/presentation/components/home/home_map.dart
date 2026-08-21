@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:latlong2/latlong.dart';
@@ -7,6 +8,7 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
+import 'package:support_sphere/presentation/pages/main_app/home/add_point_of_interest_sheet.dart';
 import 'dart:math';
 
 import 'package:support_sphere/logic/cubit/home_state.dart';
@@ -45,30 +47,51 @@ class HomeMap extends StatelessWidget {
             // FIXME - popup dialog for description
             //cubit.saveMeetingPlace(); // TODO move to dialog popup
             _popupDescriptionDialog(context, cubit);
+          } else if (state.status == HomeStatus.addPointOfInterest) {
+            cubit.cancelAddPointOfInterest();
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: AddPointOfInterestSheet(
+                  authUser: cubit.authUser,
+                  availableTypes: state.poiTypeStyles.keys
+                      .where((t) => t != "cluster meeting point")
+                      .toList(),
+                  center: latLng,
+                  onSave: () => cubit.refreshPointsOfInterest(),
+                ),
+              ),
+            );
           }
         },
       ),
       children: [
         TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: appUserAgent),
-        PolygonLayer(
-          polygons: _generatePolygons(),
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: appUserAgent,
         ),
+        PolygonLayer(polygons: _generatePolygons()),
         MarkerLayer(
           markers: [
             if (state.userLocation != null)
               _buildUserMarker(state.userLocation!),
             if (state.cluster?.meetingPoint != null)
               buildMeetingMarker(
-                  state.cluster?.meetingPlace, state.cluster?.meetingPoint),
+                context,
+                state.cluster?.meetingPlace,
+                state.cluster?.meetingPoint,
+              ),
             // ...state.captainMarkers!
             //     .where((marker) => marker.householdGeom != null)
             //     .map((marker) => _buildCaptainMarker(
             //           context,
             //           marker,
             //         )),
-            ..._buildPointsOfInterest(),
+            ..._buildPointsOfInterest(context),
           ],
         ),
       ],
@@ -80,11 +103,7 @@ class HomeMap extends StatelessWidget {
       point: location,
       width: 40,
       height: 40,
-      child: const Icon(
-        Icons.person,
-        color: Colors.black,
-        size: 40,
-      ),
+      child: const Icon(Icons.person, color: Colors.black, size: 40),
     );
   }
 
@@ -115,16 +134,76 @@ class HomeMap extends StatelessWidget {
   //   }
   // }
 
-  List<Marker> _buildPointsOfInterest() {
+  void _showDetailsDialog(
+    BuildContext context,
+    String title,
+    List<Widget> details,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...details,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPoiDetailsDialog(BuildContext context, PointOfInterest poi) {
+    _showDetailsDialog(context, poi.name, [
+      Text('${PoiDetailsDialogStrings.type}: ${poi.type}'),
+      if (poi.address.isNotEmpty)
+        Text('${PoiDetailsDialogStrings.address}: ${poi.address}'),
+      if (poi.notes != null && poi.notes!.isNotEmpty)
+        Text('${PoiDetailsDialogStrings.notes}: ${poi.notes}'),
+      if (poi.expiresAt != null)
+        Text(AddPointOfInterestFormStrings.expiresOn(poi.expiresAt!)),
+      Text('${PoiDetailsDialogStrings.visibility}: ${poi.visibilityScope.name}'),
+    ]);
+  }
+
+  void _showMeetingPointDetailsDialog(
+    BuildContext context,
+    String label,
+    String? description,
+  ) {
+    _showDetailsDialog(context, label, [
+      if (description != null && description.isNotEmpty)
+        Text('${PoiDetailsDialogStrings.notes}: $description'),
+    ]);
+  }
+
+  List<Marker> _buildPointsOfInterest(BuildContext context) {
     if (state.pointsOfInterest == null) {
       return [];
     } else {
-      var value = [for (var p in state.pointsOfInterest!) p.marker()];
+      var value = [
+        for (var p in state.pointsOfInterest!)
+          p.marker(
+            state.poiTypeStyles,
+            onTap: () => _showPoiDetailsDialog(context, p),
+          ),
+      ];
 
       // Append geojson points
       if (state.geojson != null) {
         for (final entry in state.geojson!.entries) {
-          if (entry.key != null ) {
+          if (entry.key != null) {
             // FIXME check if layer is enabled
             value.addAll(entry.value.markers);
             log.fine("Loaded geojson feature: $entry");
@@ -164,11 +243,9 @@ class HomeMap extends StatelessWidget {
   Polygon? clusterPolygon(Cluster cluster) {
     if (cluster.geom == null) return null;
 
-    // random color
-    // could be based on hash of cluster name
-    // or cluster geometry
-    final color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
-    // FIXME: Provide a better way to color cluster polygons
+    // deterministic per-cluster color, so it stays stable across rebuilds
+    final color =
+        Colors.primaries[cluster.id.hashCode.abs() % Colors.primaries.length];
 
     //log.fine("Cluster polygon: ${cluster.name} ${cluster.geom}");
     // HACK: There have been some problems in the data, with latitude and longitude getting reversed.
@@ -177,15 +254,17 @@ class HomeMap extends StatelessWidget {
     if (bounds != null && bounds.south < -90) {
       log.warning("Cannot render invalid cluster geometry -  ${cluster.name}");
       return null;
-    }
-    else {
+    } else {
       return Polygon(
         label: cluster.name,
         points: cluster.geom!,
         color: color.withAlpha(64),
         borderColor: color,
         borderStrokeWidth: 3,
-        labelStyle: TextStyle(fontWeight: FontWeight.bold, color: color.shade900),
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: color.shade900,
+        ),
       );
     }
   }
@@ -207,7 +286,7 @@ class HomeMap extends StatelessWidget {
     // Add geojson polygons
     if (state.geojson != null) {
       for (final entry in state.geojson!.entries) {
-        if (entry.key != null ) {
+        if (entry.key != null) {
           // TODO: Add check for if layer is visible.
           polygons.addAll(entry.value.polygons);
           log.fine("adding geojson polygon layer: ${entry.key}");
@@ -218,9 +297,24 @@ class HomeMap extends StatelessWidget {
     return polygons;
   }
 
-  Marker buildMeetingMarker(String? meetingPlace, LatLng? meetingPoint) {
+  Marker buildMeetingMarker(
+    BuildContext context,
+    String? meetingPlace,
+    LatLng? meetingPoint,
+  ) {
     log.fine("Building meeting marker: $meetingPlace, $meetingPoint");
-    return PointOfInterest.markerFor(meetingPoint!, "meeting-place", "green");
+    final clusterName = state.cluster?.name;
+    final label = (clusterName != null && clusterName.isNotEmpty)
+        ? "cluster $clusterName meeting point"
+        : "cluster meeting point";
+    return PointOfInterest.markerFor(
+      meetingPoint!,
+      "cluster meeting point",
+      state.poiTypeStyles,
+      label: label,
+      onTap: () =>
+          _showMeetingPointDetailsDialog(context, label, meetingPlace),
+    );
     // const iconSize = 40.0; // FIXME - move to general constant
     // return Marker(
     //   point: meetingPoint!,
@@ -243,47 +337,52 @@ class HomeMap extends StatelessWidget {
   }
 
   Future<void> _popupDescriptionDialog(
-      BuildContext context, HomeCubit cubit) async {
+    BuildContext context,
+    HomeCubit cubit,
+  ) async {
+    String description = "";
     return showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              scrollable: true,
-              title: Text('Save meeting point location?'),
-              content: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Text('Enter description for '),
-                      const SizedBox(height: 15),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Description',
-                          //icon: Icon(Icons.message ),
-                        ),
-                      ),
-                    ],
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        scrollable: true,
+        title: Text('Save new cluster meeting point?'),
+        content: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text('Description/Notes:'),
+                const SizedBox(height: 15),
+                TextFormField(
+                  onChanged: (value) => description = value,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    //icon: Icon(Icons.message ),
                   ),
                 ),
-              ),
-              actions: [
-                CancelButton(
-                    label: 'Cancel',
-                    onPressed: () {
-                      cubit.cancelMeetingPlace();
-                      Navigator.pop(context);
-                    }),
-                ConfirmButton(
-                    label: 'Save',
-                    onPressed: () {
-                      // FIXME: get description from form!
-                      final description = "";
-                      cubit.saveMeetingPlace(description);
-                      Navigator.pop(context);
-                    }),
               ],
-            ));
+            ),
+          ),
+        ),
+        actions: [
+          CancelButton(
+            label: 'Cancel',
+            onPressed: () {
+              cubit.cancelMeetingPlace();
+              Navigator.pop(context);
+            },
+          ),
+          ConfirmButton(
+            label: 'Save',
+            onPressed: () {
+              cubit.saveMeetingPlace(description);
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

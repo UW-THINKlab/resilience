@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/cubit/home_cubit.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
+import 'package:support_sphere/presentation/components/circular_floating_button.dart';
 import 'package:support_sphere/presentation/components/home/home_header.dart';
 import 'package:support_sphere/presentation/components/home/home_map.dart';
+import 'package:support_sphere/presentation/components/snackbars.dart';
 
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
@@ -35,10 +38,13 @@ class HomeBodyState extends State<HomeBody> {
       create: (context) => HomeCubit(authUser: authUser),
       child: BlocConsumer<HomeCubit, HomeState>(
         listener: (context, state) {
-          if (state.status == HomeStatus.success) {
-            _recenterMap(state);
-          } else if (state.status == HomeStatus.editMeetingPlace) {
+          if (state.status == HomeStatus.editMeetingPlace) {
             _editMode(state);
+          } else if (state.status == HomeStatus.addPointOfInterest) {
+            showInfoSnackBar(
+              context,
+              HomeMapStrings.addPointOfInterestPlacementHint,
+            );
           }
         },
         builder: (context, state) {
@@ -68,23 +74,43 @@ class HomeBodyState extends State<HomeBody> {
                 // start edit-mode button
                 left: 16,
                 bottom: 16,
-                child: FloatingActionButton(
+                child: CircularFloatingButton(
+                  icon: Icons.sports_score,
+                  tooltip: HomeMapStrings.setMeetingPointTooltip,
+                  isActive: state.status == HomeStatus.editMeetingPlace,
                   onPressed: () {
                     final cubit = context.read<HomeCubit>();
-                    cubit.editMeetingPlace();
+                    if (state.status == HomeStatus.editMeetingPlace) {
+                      cubit.cancelMeetingPlace();
+                    } else {
+                      cubit.editMeetingPlace();
+                    }
                   },
-                  backgroundColor: Colors.white,
-                  elevation: 2,
-                  child: const Icon(
-                    Icons.flag,
-                    color: Colors.black,
-                  ),
                 ),
               ), // end edit-mode button
               Positioned(
+                left: 16,
+                bottom: 86,
+                child: CircularFloatingButton(
+                  icon: Icons.add,
+                  tooltip: HomeMapStrings.addPointOfInterestTooltip,
+                  isActive: state.status == HomeStatus.addPointOfInterest,
+                  onPressed: () {
+                    final cubit = context.read<HomeCubit>();
+                    if (state.status == HomeStatus.addPointOfInterest) {
+                      cubit.cancelAddPointOfInterest();
+                    } else {
+                      cubit.startAddPointOfInterest();
+                    }
+                  },
+                ),
+              ),
+              Positioned(
                 right: 16,
                 bottom: 86,
-                child: FloatingActionButton(
+                child: CircularFloatingButton(
+                  icon: Icons.location_searching,
+                  tooltip: HomeMapStrings.jumpToLocationTooltip,
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
                     await cubit.getCurrentLocation();
@@ -92,19 +118,15 @@ class HomeBodyState extends State<HomeBody> {
                     if (!mounted) return;
                     _recenterMap(cubit.state);
                   },
-                  backgroundColor: Colors.white,
-                  elevation: 2,
-                  child: const Icon(
-                    Icons.location_searching,
-                    color: Colors.black,
-                  ),
                 ),
               ),
               //
               Positioned(
                 right: 16,
                 bottom: 16,
-                child: FloatingActionButton(
+                child: CircularFloatingButton(
+                  icon: Icons.square_outlined,
+                  tooltip: HomeMapStrings.toggleClusterViewTooltip,
                   onPressed: () async {
                     final cubit = context.read<HomeCubit>();
                     // could flip icon! custom icon? mouse pointer?
@@ -112,12 +134,6 @@ class HomeBodyState extends State<HomeBody> {
                     await cubit.showAllClusters(
                         state.status != HomeStatus.allClusters);
                   },
-                  backgroundColor: Colors.white,
-                  elevation: 2,
-                  child: const Icon(
-                    Icons.square_outlined,
-                    color: Colors.black,
-                  ),
                 ),
               ),
             ],

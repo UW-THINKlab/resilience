@@ -68,7 +68,8 @@ class UserProfileStrings {
   static const String meetingPlace = 'Meeting place';
   static const String captains = 'Captain(s)';
   static const String submit = 'Submit';
-  static const String removeMembersButton = 'Remove members (must be added by code)';
+  static const String removeMembersButton =
+      'Remove members (must be added by code)';
   static const String deleteMyAccount = 'Delete My Account';
   static const String manageBlockedUsers = 'Manage Block List';
   static const String confirmPrompt = 'Please Confirm';
@@ -314,4 +315,37 @@ class MessagesStrings {
   static const String cancelRequest = 'Cancel Request';
   static String cancelRequestMessage(int total) =>
       'Canceled the request for $total item(s).';
+  static const String newMessageGroupTooltip = 'New message group';
+}
+
+class HomeMapStrings {
+  static const String setMeetingPointTooltip = 'Set cluster meeting point';
+  static const String jumpToLocationTooltip = 'Jump to your location';
+  static const String toggleClusterViewTooltip = 'Toggle cluster view';
+  static const String addPointOfInterestTooltip = 'Add point of interest';
+  static const String addPointOfInterestPlacementHint =
+      'Tap the map to place your point of interest';
+}
+
+class AddPointOfInterestFormStrings {
+  static const String title = 'Add point of interest';
+  static const String name = 'Name';
+  static const String address = 'Address';
+  static const String type = 'Type';
+  static const String required = 'Required';
+  static const String visibleToNeighborhood = 'Make public';
+  static const String cancel = 'Cancel';
+  static const String add = 'Add';
+  static const String noExpiration = 'Add expiry';
+  static const String setExpiration = 'Set expiration';
+  static const String clearExpiration = 'Clear expiration';
+  static String expiresOn(DateTime dt) =>
+      'Expires ${DateFormat.yMMMd('en').add_jm().format(dt.toLocal())}';
+}
+
+class PoiDetailsDialogStrings {
+  static const String type = 'Type';
+  static const String address = 'Address';
+  static const String notes = 'Notes';
+  static const String visibility = 'Visibility';
 }

@@ -2,13 +2,23 @@ import 'dart:ui' show Offset;
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_map_geojson/flutter_map_geojson.dart' show GeoJsonParser;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/constants/appconfig.dart' show AppConfig;
 import 'package:support_sphere/data/models/captain_marker.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
-enum HomeStatus { initial, loading, success, editMeetingPlace, allClusters, failure }
+enum HomeStatus {
+  initial,
+  loading,
+  success,
+  editMeetingPlace,
+  addPointOfInterest,
+  allClusters,
+  failure
+}
 
 // we assume that the user will provide permission to access their location for now
 // but still need to set a default map centroid such as the cluster's geometry
@@ -26,6 +36,7 @@ class HomeState extends Equatable {
     this.captainMarkers,
     this.cluster,
     this.pointsOfInterest,
+    this.poiTypeStyles = const {},
     this.allClusters,
     this.pickedLocation,
     this.pickedOffset,
@@ -40,6 +51,7 @@ class HomeState extends Equatable {
   final List<CaptainMarker>? captainMarkers;
   final Cluster? cluster;
   final List<PointOfInterest>? pointsOfInterest;
+  final Map<String, (FaIconData, Color)> poiTypeStyles;
   final List<Cluster>? allClusters;
 
   final LatLng? pickedLocation;
@@ -57,6 +69,7 @@ class HomeState extends Equatable {
         captainMarkers,
         cluster,
         pointsOfInterest,
+        poiTypeStyles,
         allClusters,
         pickedLocation,
         pickedOffset,
@@ -72,6 +85,7 @@ class HomeState extends Equatable {
     List<CaptainMarker>? captainMarkers,
     Cluster? cluster,
     List<PointOfInterest>? pointsOfInterest,
+    Map<String, (FaIconData, Color)>? poiTypeStyles,
     List<Cluster>? allClusters,
     LatLng? pickedLocation,
     Offset? pickedOffset,
@@ -86,6 +100,7 @@ class HomeState extends Equatable {
       captainMarkers: captainMarkers ?? this.captainMarkers,
       cluster: cluster ?? this.cluster,
       pointsOfInterest: pointsOfInterest ?? this.pointsOfInterest,
+      poiTypeStyles: poiTypeStyles ?? this.poiTypeStyles,
       allClusters: allClusters ?? this.allClusters,
       pickedLocation: pickedLocation ?? this.pickedLocation,
       pickedOffset: pickedOffset ?? this.pickedOffset,
