@@ -4,18 +4,6 @@ import csv
 import json
 from geojson import Feature, Point, FeatureCollection
 
-_ASSET_CATEGORIES = {
-    "Coast Guard": ["life-ring", "blue"],
-    "Food": ["utensils", "green"],
-    "Hotels": ["hotel", "green"],
-    "Lighthouse": ["lightbulb", "yellow"],
-    "Parks": ["tree", "green"],
-    "After School": ["school", "blue"],
-    "Shoalwater": ["water", "green"],
-    "Library": ["book-open-reader", "blue"],
-    "Brady's Oysters": ["utensils", "green"],
-    "_": ["question", "yellow"]
-}
 
 _Categories = {
     "Natural": "park",
@@ -23,62 +11,59 @@ _Categories = {
     "Church": "church",
     "Wildlife refuge": "park",
     "State Park": "park",
-    "Business": "business",
-    "Beach": "beach",
+    "Business": "store",
+    "Beach": "park",
     "Park": "park",
-    "Campground": "camping",
-    "Bus Stop": "bus_map_pin",
-    "Regional bus hub": "bus_map_pin",
-    "Transportation service": "bus_map_pin",
-    "Fire Station and EMS": "local_fire_department",
-    "Fire Station": "local_fire_department",
-    "Grocery store": "grocery",
-    "Gasoline and convenience store": "local_convenience_store",
-    "Visitor center": "rest_area",
-    "Water treatment plant": "water_do",
-    " Water utility ": "water_do",
-    "Medical clinic": "medical-services",
-    "Police Station": "local_police",
-    "Garden": "nature",
+    "Campground": "park",
+    "Bus Stop": "visitor-service",
+    "Regional bus hub": "visitor-service",
+    "Transportation service": "visitor-service",
+    "Fire Station and EMS": "fire-department",
+    "Fire Station": "fire-department",
+    "Grocery store": "store",
+    "Gasoline and convenience store": "store",
+    "Visitor center": "visitor-service",
+    "Water treatment plant": "utility",
+    " Water utility ": "utility",
+    "Medical clinic": "hospital",
+    "Garden": "park",
     "School": "school",
-    "Community service": "community-center",
+    "Community service": "community center",
     "Public Library": "library",
     "Library": "library",
-    "School and Evacuation Structure": "emergency_home",
-    "Evacuation Structure": "emergency_home",
-    "Coastal Infrastructure / Shoreline Protection": "emergency_home",
+    "School and Evacuation Structure": "visitor-service",
+    "Evacuation Structure": "visitor-service",
+    "Coastal Infrastructure / Shoreline Protection": "visitor-service",
     "Museum": "museum",
-    "Event Hall": "account_balance",
-    "Waterfront": "beach_access",
-    "Historic lighthouse": "lightbulb_circle",
-    "City Hall": "location_city",
+    "Event Hall": "hall",
+    "Waterfront": "park",
+    "Historic lighthouse": "museum",
+    "City Hall": "hall",
     "City Park": "park",
-    "Athletic Field": "shoe_cleats",
-    "Gym": "fitness_center",
+    "Athletic Field": "park",
     "Hospital": "hospital",
-    "Food Bank": "food_bank",
-    "Outpatient Clinic": "medical-services",
-    "Recycling / waste management": "recycling",
-    "Waste management": "delete",
-    "Day care": "child_care",
-    "Tourist attraction": "attractions",
-    "Social services": "help_clinic",
-    "Social and Health Services": "help_clinic",
-    "Electric utility": "electric_bolt",
-    "Waterfront viewing tower": "",
-
+    "Food Bank": "foodbank",
+    "Outpatient Clinic": "clinic",
+    "Recycling / waste management": "utility",
+    "Waste management": "utility",
+    "Day care": "school",
+    "Tourist attraction": "visitor-service",
+    "Social services": "clinic",
+    "Social and Health Services": "clinic",
+    "Electric utility": "utility",
+    "Waterfront viewing tower": "community center",
+    "Public works department": "utility"
 }
-
 
 
 def type_from_properties(properties:dict) -> str:
     # check Notes, Subcategory, Category
     result = _Categories.get(properties['Notes'],
         _Categories.get(properties['Subcategory'],
-            _Categories.get(properties['Category'], "default")))
+            _Categories.get(properties['Category'], "other")))
 
-    if result == "default":
-        print("Unknown type:", properties['Notes'], properties['Subcategory'], properties['Category'])
+    #if result == "default":
+    #    print("Unknown type:", properties['Notes'], properties['Subcategory'], properties['Category'])
 
     return result
 
@@ -104,12 +89,13 @@ def main() -> int:
             point = Point((long, lat))
             # derive a type from properties
             row['type'] = type_from_properties(row)
+            #print(row['type']) # "<-", row['Notes'], row['Subcategory'], row['Category'])
             # create a feature with the point and leftover properties
             feature = Feature(geometry=point, properties=row)
             features.append(feature)
 
     collection = FeatureCollection(features)
-    #print(json.dumps(collection, indent=4))
+    print(json.dumps(collection, indent=4))
     return 0
 
 
