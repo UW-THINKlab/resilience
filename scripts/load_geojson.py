@@ -18,6 +18,7 @@ def load_pois(db:Client, poi_file:str):
         "NAME": "name",
         "ADDRESS": "address",
         "type": "point_type_name",
+        "Asset Name": "name",
     }
 
     for feature in geojson.features:
@@ -26,6 +27,7 @@ def load_pois(db:Client, poi_file:str):
             "geom": feature.geometry, # TODO check it's a POINT
             "address": "n/a",
             "point_type_name": "community center", # TODO better default?
+            "visibility_scope": "neighborhood",
         }
 
         for k, v in check_fields.items():
