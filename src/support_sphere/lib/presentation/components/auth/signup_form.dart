@@ -199,7 +199,6 @@ class _SignupCodeInput extends StatelessWidget {
           validator: (value) => validateValue<SignupCubit>([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(7),
-              FormBuilderValidators.uppercase(),
             ],
             value,
             context,
