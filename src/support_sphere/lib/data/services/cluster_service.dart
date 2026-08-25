@@ -5,6 +5,7 @@ import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/generated_classes.dart'
     show UserRoles, UserCaptainClusters, APP_ROLES;
 import 'package:support_sphere/data/models/households.dart' show Household;
+import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:uuid/v4.dart' show UuidV4;
@@ -17,15 +18,23 @@ class ClusterService {
   /// Returns null if the cluster does not exist.
   Future<PostgrestMap?> getClusterById(String clusterId) async {
     /// This query will perform a join on the user_profiles and people tables
-    return await supabase.from('clusters').select('*').eq('id', clusterId).maybeSingle();
+    return await supabase
+        .from('clusters')
+        .select('*')
+        .eq('id', clusterId)
+        .maybeSingle();
   }
 
   Future<PostgrestList?> getAllClusters() async {
     return await supabase.from('clusters').select('*');
   }
 
-  Future<PostgrestMap?> getClusterIdByUserProfileId(String userProfileId) async {
-    return await supabase.from('user_profiles').select('''
+  Future<PostgrestMap?> getClusterIdByUserProfileId(
+    String userProfileId,
+  ) async {
+    return await supabase
+        .from('user_profiles')
+        .select('''
       id,
       people (
         people_groups (
@@ -34,7 +43,9 @@ class ClusterService {
           )
         )
       )
-    ''').eq('id', userProfileId).maybeSingle();
+    ''')
+        .eq('id', userProfileId)
+        .maybeSingle();
   }
 
   // FIXME - couldn't find an existing lib
@@ -53,13 +64,20 @@ class ClusterService {
     return buffer;
   }
 
-  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location, String? description) async {
+  Future<PostgrestMap?> updateClusterMeetingPoint(
+    String clusterId,
+    LatLng location,
+    String? description,
+  ) async {
     // update
     log.fine("updateClusterMeetingPoint: $clusterId $location");
-    await supabase.from('clusters').update({
-      'meeting_point': pointGisStr(location),
-      'meeting_place': description,
-    }).eq('id', clusterId);
+    await supabase
+        .from('clusters')
+        .update({
+          'meeting_point': pointGisStr(location),
+          'meeting_place': description,
+        })
+        .eq('id', clusterId);
 
     // new version
     final updatedCluster = await getClusterById(clusterId);
@@ -92,7 +110,10 @@ class ClusterService {
   }
 
   Future<List<Household>> getHouseholds(String clusterId) async {
-    PostgrestList? data = await supabase.from('households').select('*').eq('cluster_id', clusterId);
+    PostgrestList? data = await supabase
+        .from('households')
+        .select('*')
+        .eq('cluster_id', clusterId);
 
     List<Household> households = [];
 
@@ -109,8 +130,9 @@ class ClusterService {
   }
 
   Future<void> addHousehold(String clusterId, Household household) async {
+    final householdId = const UuidV4().generate();
     await supabase.from('households').insert({
-      'id': const UuidV4().generate(),
+      'id': householdId,
       'cluster_id': clusterId,
       'name': household.name,
       'address': household.address,
@@ -120,6 +142,7 @@ class ClusterService {
       //'created_by': supabase.auth.currentUser!.id,
       //'created_at': DateTime.now().toIso8601String(),
     });
+    await AuthService().createSignUpCodeForHousehold(householdId);
   }
 
   Future<void> deleteHousehold(String householdId) async {
@@ -138,7 +161,9 @@ class ClusterService {
   }
 
   Future<PostgrestMap?> getUserRoleByProfileId(
-      String userProfileId, APP_ROLES role) async {
+    String userProfileId,
+    APP_ROLES role,
+  ) async {
     return await supabase
         .from(UserRoles.table_name)
         .select(UserRoles.c_id)
@@ -148,33 +173,43 @@ class ClusterService {
   }
 
   Future<PostgrestMap> upsertUserRole(
-      String userProfileId, APP_ROLES role) async {
+    String userProfileId,
+    APP_ROLES role,
+  ) async {
     final existing = await getUserRoleByProfileId(userProfileId, role);
     if (existing != null) return existing;
     return await supabase
         .from(UserRoles.table_name)
-        .insert(UserRoles.insert(
-          id: const UuidV4().generate(),
-          userProfileId: userProfileId,
-          role: role,
-        ))
+        .insert(
+          UserRoles.insert(
+            id: const UuidV4().generate(),
+            userProfileId: userProfileId,
+            role: role,
+          ),
+        )
         .select(UserRoles.c_id)
         .single();
   }
 
   Future<void> insertUserCaptainCluster(
-      String clusterId, String userRoleId) async {
+    String clusterId,
+    String userRoleId,
+  ) async {
     await supabase
         .from(UserCaptainClusters.table_name)
-        .insert(UserCaptainClusters.insert(
-          id: const UuidV4().generate(),
-          clusterId: clusterId,
-          userRoleId: userRoleId,
-        ));
+        .insert(
+          UserCaptainClusters.insert(
+            id: const UuidV4().generate(),
+            clusterId: clusterId,
+            userRoleId: userRoleId,
+          ),
+        );
   }
 
   Future<void> deleteUserCaptainCluster(
-      String clusterId, String userRoleId) async {
+    String clusterId,
+    String userRoleId,
+  ) async {
     await supabase
         .from(UserCaptainClusters.table_name)
         .delete()
@@ -183,7 +218,8 @@ class ClusterService {
   }
 
   Future<List<UserCaptainClusters>> getUserCaptainClustersByRoleId(
-      String userRoleId) async {
+    String userRoleId,
+  ) async {
     final data = await supabase
         .from(UserCaptainClusters.table_name)
         .select()
@@ -201,7 +237,9 @@ class ClusterService {
   Future<PostgrestList?> getCaptainsViewByClusterId(String clusterId) async {
     return await supabase
         .from('cluster_captains_view')
-        .select('cluster_id, user_profile_id, given_name, family_name, nickname')
+        .select(
+          'cluster_id, user_profile_id, given_name, family_name, nickname',
+        )
         .eq('cluster_id', clusterId);
   }
 

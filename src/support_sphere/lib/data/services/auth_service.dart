@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart' show Logger;
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -33,8 +34,19 @@ class AuthService extends Equatable {
     return result?['code'];
   }
 
+  Future<String> createSignUpCodeForHousehold(String householdId) async {
+    final code = UuidV4().generate().substring(0, 7);
+    await _supabaseClient.signup_codes.insert(
+      SignupCodes.insert(householdId: householdId, code: code),
+    );
+    return code;
+  }
+
   Future<void> logUseOfSignupCode(
-      String email, String householdId, String code) async {
+    String email,
+    String householdId,
+    String code,
+  ) async {
     // add log to table
     await _supabaseClient.from('signup_logs').insert({
       'id': const UuidV4().generate(),
@@ -47,8 +59,10 @@ class AuthService extends Equatable {
   }
 
   Future<void> invalidateSignupCode(String code) async {
-    await _supabaseClient
-        .rpc('invalidate_signup_code', params: {'input_code': code});
+    await _supabaseClient.rpc(
+      'invalidate_signup_code',
+      params: {'input_code': code},
+    );
   }
 
   // Delete the users account
@@ -63,18 +77,26 @@ class AuthService extends Equatable {
   }
 
   Future<AuthResponse> signUpWithEmailAndPassword(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     // TODO: Add email verification in the future
-    final response =
-        await _supabaseAuth.signUp(email: email, password: password);
+    final response = await _supabaseAuth.signUp(
+      email: email,
+      password: password,
+    );
     return response;
   }
 
   Future<AuthResponse> signInWithEmailAndPassword(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     _log.fine("login: $email, $_supabaseAuth");
     final response = await _supabaseAuth.signInWithPassword(
-        email: email, password: password);
+      email: email,
+      password: password,
+    );
     _log.fine("login response: $response");
     return response;
   }
@@ -106,13 +128,10 @@ class AuthService extends Equatable {
       // RPC Workaround:
       // await _supabaseClient.rpc('clear_user_phone', params: { 'user_id': _supabaseAuth.currentUser?.id });
       return Future.value(
-          UserResponse.fromJson(_supabaseAuth.currentUser?.toJson() ?? {}));
-    } else {
-      return await _supabaseAuth.updateUser(
-        UserAttributes(
-          phone: phone,
-        ),
+        UserResponse.fromJson(_supabaseAuth.currentUser?.toJson() ?? {}),
       );
+    } else {
+      return await _supabaseAuth.updateUser(UserAttributes(phone: phone));
     }
   }
 
