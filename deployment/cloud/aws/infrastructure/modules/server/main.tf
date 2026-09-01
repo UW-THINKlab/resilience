@@ -64,7 +64,8 @@ resource "aws_iam_role" "instance" {
             "ec2:StartInstances",
             "ec2:StopInstances",
             "ec2:AssociateAddress",
-            "ec2:DisassociateAddress"
+            "ec2:DisassociateAddress",
+            "kms:Decrypt"
           ],
           Resource = "*",
           Condition = {
@@ -189,18 +190,18 @@ resource "aws_autoscaling_group" "this" {
   }
 }
 
-// Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
-resource "aws_autoscaling_schedule" "scale_down" {
-  # only create this resource in non-prod environments
-  count = var.stage != "prod" ? 1 : 0
-
-  scheduled_action_name  = "${var.resource_prefix}-asg-shutdown-after-working-hours"
-  min_size               = 0
-  desired_capacity       = 0
-  max_size               = 1
-  recurrence             = "0 1 * * MON-FRI"
-  autoscaling_group_name = aws_autoscaling_group.this.name
-}
+//// Autoscaling action to shutdown the server every weekday at 1AM UTC (6PM PDT/5PM PST)
+//resource "aws_autoscaling_schedule" "scale_down" {
+//  # only create this resource in non-prod environments
+//  count = var.stage != "prod" ? 1 : 0
+//
+//  scheduled_action_name  = "${var.resource_prefix}-asg-shutdown-after-working-hours"
+//  min_size               = 0
+//  desired_capacity       = 0
+//  max_size               = 1
+//  recurrence             = "0 1 * * MON-FRI"
+//  autoscaling_group_name = aws_autoscaling_group.this.name
+//}
 
 // ALB and target group
 resource "aws_lb" "this" {
@@ -249,6 +250,6 @@ resource "aws_autoscaling_attachment" "this" {
 }
 
 resource "aws_acm_certificate" "this" {
-  domain_name       = "laurelhurst.supportsphere.nikiofti.me"
+  domain_name       = "laurelhurst.supportsphere.acmerocket.com"
   validation_method = "DNS"
 }

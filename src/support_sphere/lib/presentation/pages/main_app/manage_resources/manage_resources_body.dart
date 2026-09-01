@@ -4,8 +4,9 @@ import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:support_sphere/data/models/resource.dart';
 import 'package:support_sphere/presentation/components/manage_resource_card.dart';
 import 'package:support_sphere/logic/cubit/manage_resource_cubit.dart';
-import 'package:support_sphere/presentation/components/resource_search_bar.dart';
+import 'package:support_sphere/presentation/components/filter_search_bar.dart';
 import 'package:support_sphere/presentation/components/resource_type_filter.dart';
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 import 'package:support_sphere/presentation/pages/main_app/manage_resources/add_resource_form.dart';
 
 class ManageResourcesBody extends StatelessWidget {
@@ -21,11 +22,11 @@ class ManageResourceBodyController extends StatefulWidget {
   const ManageResourceBodyController({super.key});
 
   @override
-  _ManageResourceBodyControllerState createState() =>
-      _ManageResourceBodyControllerState();
+  ManageResourceBodyControllerState createState() =>
+      ManageResourceBodyControllerState();
 }
 
-class _ManageResourceBodyControllerState
+class ManageResourceBodyControllerState
     extends State<ManageResourceBodyController> {
   bool _showingAddResource = false;
 
@@ -53,17 +54,19 @@ class ManageResourceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(12),
-          child: Center(
-            child: Text(ResourceStrings.manageResources,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Center(
+              child: Text(ResourceStrings.manageResources,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
           ),
-        ),
-        _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
-      ],
+          _ResourcesBody(addResourceOnPressed: addResourceOnPressed),
+        ],
+      ),
     );
   }
 }
@@ -190,10 +193,14 @@ class _ResourcesBodyState extends State<_ResourcesBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(width: 16),
-                ElevatedButton(
-                    onPressed: widget.addResourceOnPressed,
-                    child: Text(ResourceStrings.addResource)),
-                Expanded(child: ResourceSearchBar(onQueryChanged: onQueryChanged)),
+                AddItemButton(
+                  label: ResourceStrings.addResource,
+                  onPressed: widget.addResourceOnPressed,
+                ),
+                Expanded(
+                    child: FilterSearchBar(
+                        labelText: ResourceStrings.searchResources,
+                        onQueryChanged: onQueryChanged)),
                 Expanded(
                     child: ResourceTypeFilter(
                   resourceTypes: state.resourceTypes,

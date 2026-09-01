@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
 
 class ProfileSection extends StatelessWidget {
@@ -22,37 +21,48 @@ class ProfileSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _getTitle(context) ?? const SizedBox(),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: children,
+          if (displayTitle) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                  if (!readOnly)
+                    GestureDetector(
+                      onTap: () => _showModalBottomSheet(context),
+                      child: Icon(
+                        Icons.create,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                ],
               ),
             ),
-          )
+            const Divider(height: 1),
+          ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  Widget? _getTitle(BuildContext context) {
-    if (displayTitle) {
-      return ListTile(
-        title: Text(title),
-        trailing: readOnly
-            ? null
-            : GestureDetector(
-                onTap: () => _showModalBottomSheet(context),
-                child: const Icon(Ionicons.create_outline),
-              ),
-      );
-    }
-    return null;
   }
 
   Future<dynamic> _showModalBottomSheet(BuildContext context) {

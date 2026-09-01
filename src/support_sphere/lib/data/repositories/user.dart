@@ -1,32 +1,40 @@
 import 'dart:async';
 
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
-import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/user_service.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+
+final log = Logger('UserRepository');
 
 /// Repository for user interactions.
 /// This class is responsible for handling user-related data operations.
 class UserRepository {
   final UserService _userService = UserService();
   final AuthService _authService = AuthService();
-  final ClusterService _clusterService = ClusterService();
   final ClusterRepository _clusters = ClusterRepository();
 
-  Future<List<Person?>> getAllMembers() async {
+  // Builds a mapping of all members: profile-id -> Person
+  // Can be used for cached lookup of user profile info
+  // NOTE: There should probably be a "person view" with all
+  // salient details. This dumps a cache of all users into a users web cache
+  Future<Map<String, Person>> getAllMembers() async {
     final data = await _userService.getAllPeople();
 
-    List<Person> members = [];
+    Map<String, Person> members = {};
 
     if (data != null) {
       for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        members.add(Person.fromJson(personData));
+        final person = Person.fromJson(member);
+        if (person.profile != null) {
+          members[person.profile!.id] = person;
+        }
       }
     }
     return members;
@@ -38,28 +46,12 @@ class UserRepository {
   /// The [HouseHoldMembers] object contains a list of [Person] objects.
   Future<HouseHoldMembers?> getHouseholdMembersByHouseholdId(
       String householdId) async {
-    final data = await _userService.getHouseholdMembersByHouseholdId(householdId);
-
+    final data =
+        await _userService.getHouseholdMembersByHouseholdId(householdId);
     if (data != null) {
       List<Person> members = [];
       for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        Profile? profile;
-        String? userProfileId = personData["user_profile_id"];
-
-        if (userProfileId != null) {
-          profile = Profile(id: userProfileId);
-        }
-
-        members.add(Person(
-          id: personData["id"],
-          profile: profile,
-          givenName: personData["given_name"],
-          familyName: personData["family_name"],
-          nickname: personData["nickname"],
-          isSafe: personData["is_safe"],
-          needsHelp: personData["needs_help"],
-        ));
+        members.add(Person.fromJson(member["people"]));
       }
 
       return HouseHoldMembers(members: members);
@@ -67,54 +59,21 @@ class UserRepository {
     return null;
   }
 
-
-  Future<(Cluster?,List<Person?>)> getClusterWithPeople(String clusterId) async {
-    final cluster = await _clusters.getCluster(clusterId);
-
+  Future<List<Person>> getClusterMembers(String clusterId) async {
     List<Person> people = [];
-    final data = await _userService.getPeopleByCluster(clusterId);
-    if (data != null) {
-
-      for (var member in data) {
-        Map<String, dynamic> personData = member["people"];
-        Profile? profile;
-        String? userProfileId = personData["user_profile_id"];
-
-        if (userProfileId != null) {
-          profile = Profile(id: userProfileId);
-        }
-
-        people.add(Person(
-          id: personData["id"],
-          profile: profile,
-          givenName: personData["given_name"],
-          familyName: personData["family_name"],
-          nickname: personData["nickname"],
-          isSafe: personData["is_safe"],
-          needsHelp: personData["needs_help"],
-        ));
-      }
+    final data = await _userService.getClusterMembers(clusterId);
+    for (var item in data) {
+      people.add(Person.fromJson(item["people"]));
     }
-    return (cluster,people);
+    return people;
   }
-
 
   /// Get the household by person id.
   Future<Household?> getHouseholdByPersonId(String personId) async {
+    log.fine("getting household for person id: $personId");
     final data = await _userService.getPersonHouseholdByPersonId(personId);
-
     if (data != null) {
-      Map<String, dynamic> householdData = data["households"];
-
-      return Household(
-        id: householdData["id"],
-        name: householdData["name"],
-        address: householdData["address"],
-        notes: householdData["notes"],
-        pets: householdData["pets"],
-        accessibility_needs: householdData["accessibility_needs"],
-        cluster_id: householdData["cluster_id"],
-      );
+      return Household.fromJson(data["households"]);
     }
     return null;
   }
@@ -125,19 +84,8 @@ class UserRepository {
     required String userId,
   }) async {
     final data = await _userService.getProfileAndPersonByUserId(userId);
-
     if (data != null) {
-      Map<String, dynamic> personData = data["people"];
-
-      return Person(
-        id: personData["id"],
-        profile: Profile(id: userId),
-        givenName: personData["given_name"],
-        familyName: personData["family_name"],
-        nickname: personData["nickname"],
-        isSafe: personData["is_safe"],
-        needsHelp: personData["needs_help"],
-      );
+      return Person.fromJson(data["people"]);
     }
     return null;
   }
@@ -146,46 +94,9 @@ class UserRepository {
     yield await getPersonProfileByUserId(userId: userId);
   }
 
-  /// Get the cluster by cluster id retrieved from [Household].
-  /// Returns a [Cluster] object
-  Future<Cluster?> getClusterById({
-    required String clusterId,
-  }) async {
-    final data = await _clusterService.getClusterById(clusterId);
-
-    if (data != null) {
-      return Cluster(
-        id: data["id"],
-        name: data["name"],
-        meetingPlace: data["meeting_place"],
-      );
-    }
-    return null;
+  Future<Captains?> getCaptainsByClusterId(String clusterId) async {
+    return _clusters.getCaptainsByClusterId(clusterId);
   }
-
-  Future<Captains?> getCaptainsByClusterId({
-    required String clusterId,
-  }) async {
-    final data = await _clusterService.getCaptainsByClusterId(clusterId);
-
-    if (data != null) {
-      List<Person> captains = [];
-
-      for (var record in data) {
-        Map<String, dynamic> captainData = record["captain"]["user_profile"]["person"];
-
-        captains.add(Person(
-          id: captainData["id"],
-          givenName: captainData["given_name"],
-          familyName: captainData["family_name"],
-        ));
-      }
-
-      return Captains(people: captains);
-    }
-    return null;
-  }
-
 
   /// Create a new user with the given user info.
   /// This will perform two operations:
@@ -206,10 +117,28 @@ class UserRepository {
 
     // Create a person with the given user id, given name, family name, and household id
     await _userService.createPerson(
-        userId: userId, givenName: givenName, familyName: familyName, householdId: data["household_id"]);
+        userId: userId,
+        givenName: givenName,
+        familyName: familyName,
+        householdId: data["household_id"]);
 
     // Invalidate the signup code used to create the user
-    await _authService.invalidateSignupCode(data["code"]);
+    //await _authService.invalidateSignupCode(data["code"]);
+    String email = user.email ?? '[unknown]';
+    await _authService.logUseOfSignupCode(
+        email, data["household_id"], data["code"]);
+  }
+
+  Future<void> createPerson({
+    required String householdId,
+    required String familyName,
+    required String givenName,
+  }) async {
+    await _userService.createPerson(
+      givenName: givenName,
+      familyName: familyName,
+      householdId: householdId,
+    );
   }
 
   Future<void> updateUserName({
@@ -230,6 +159,7 @@ class UserRepository {
     String? pets,
     String? accessibilityNeeds,
     String? notes,
+    List<Person>? membersToRemove,
   }) async {
     await _userService.updateHousehold(
       id: householdId,
@@ -237,6 +167,101 @@ class UserRepository {
       pets: pets,
       accessibilityNeeds: accessibilityNeeds,
       notes: notes,
+      membersToRemove: membersToRemove,
     );
+  }
+
+  Future<Person?> getMyProfile() async {
+    return await getPersonProfileByUserId(
+        userId: _authService.getSignedInUser()!.id);
+  }
+
+  Future<Household?> getMyHousehold() async {
+    log.finer("calling: getMyProfile");
+    final profile = await getMyProfile();
+    if (profile != null) {
+      log.finer("Found profile: $profile");
+      return await getHouseholdByPersonId(profile.id);
+    } else {
+      log.fine("NO PROFILE");
+      return null;
+    }
+  }
+
+  Future<String?> getMyClusterId() async {
+    final household = await getMyHousehold();
+    log.finer("✅ GOT household: $household");
+
+    if (household != null) {
+      return household.clusterId;
+    } else {
+      log.warning("My household not found");
+      return null;
+    }
+  }
+
+  Future<Cluster?> getMyCluster() async {
+    final myClusterId = await getMyClusterId();
+    log.finer("✅ GOT clusterid: $myClusterId");
+    if (myClusterId != null) {
+      return await _clusters.getCluster(myClusterId);
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> blockUser({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await _userService.blockPerson(
+      blockerId: blockerId,
+      blockeeId: blockeeId,
+    );
+  }
+
+  Future<void> unblockUser({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    await _userService.unblockPerson(
+      blockerId: blockerId,
+      blockeeId: blockeeId,
+    );
+  }
+
+  Future<bool> isUserBlocking({
+    required String blockerId,
+    required String blockeeId,
+  }) async {
+    return await _userService.isUser1BlockingUser2(
+      user1Id: blockerId,
+      user2Id: blockeeId,
+    );
+  }
+
+  Future<bool> isEitherUserBlocked({
+    required String user1Id,
+    required String user2Id,
+  }) async {
+    return await _userService.isUser1BlockingUser2(
+          user1Id: user1Id,
+          user2Id: user2Id,
+        ) ||
+        await _userService.isUser1BlockingUser2(
+          user1Id: user2Id,
+          user2Id: user1Id,
+        );
+  }
+
+  Stream<List<People>> blockedUsersStream(String userId) {
+    return _userService.blockedUsersStream(userId);
+  }
+
+  Future<void> addToHousehold(
+    List<Person> peopleToAdd,
+    String householdId,
+  ) async {
+    return _userService.addToHousehold(peopleToAdd, householdId);
   }
 }

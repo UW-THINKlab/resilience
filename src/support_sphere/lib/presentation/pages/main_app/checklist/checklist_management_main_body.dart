@@ -8,6 +8,7 @@ import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/presentation/components/add_item_button.dart';
 
 class ChecklistManagementBody extends StatelessWidget {
   const ChecklistManagementBody({super.key});
@@ -84,18 +85,11 @@ class ChecklistManagementBody extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: OutlinedButton.icon(
+                  child: AddItemButton(
+                    label: ChecklistStrings.newChecklist,
                     onPressed: () => context
                         .read<ChecklistManagementCubit>()
                         .showChecklistForm(),
-                    icon: const Icon(Icons.add),
-                    label: const Text(ChecklistStrings.newChecklist),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.grey[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
                   ),
                 ),
               ),

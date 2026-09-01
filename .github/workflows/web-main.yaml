@@ -11,13 +11,19 @@ on:
     branches:
       - main
   workflow_dispatch:
-    
+
 
 jobs:
   call-run-server:
-    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@main
+    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml
   build-and-publish:
     runs-on: ubuntu-latest
+    env:
+      NEIGHBORHOOD_NAME: ${{ secrets.NEIGHBORHOOD_NAME }}
+      NEIGHBORHOOD_LOCATION: ${{ secrets.NEIGHBORHOOD_LOCATION }}
+      SUPABASE_URL: ${{ secrets.CLOUD_DB_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.CLOUD_DB_JWT_ANON_KEY }}
+
     # This workflow accesses secrets and checks out a PR, so only run if labelled
     # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
     # if: contains(github.event.pull_request.labels.*.name, 'preview')
@@ -30,20 +36,27 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: python -m pip install --upgrade pip dotenv
+    - name: Generate neighborhood config
+      run: python ../../scripts/appconfig.py --from_env --dart -o lib/constants/appconfig.dart
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: '3.24.5'
+        flutter-version: '3.44.8'
     - run: flutter pub get
     # original values are in deployment/values.cloud.yaml
     - run: |
         flutter build web \
         --release \
         --base-href "/resilience/" \
-        --web-renderer html \
         --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
-        --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}} 
+        --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
 
     - name: Upload Pages HTML
       uses: actions/upload-pages-artifact@v3

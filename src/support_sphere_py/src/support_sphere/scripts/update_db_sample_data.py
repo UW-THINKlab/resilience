@@ -2,11 +2,14 @@ import csv
 import datetime
 import uuid
 import time
+from support_sphere.models.public.group import Group
+from support_sphere.models.public.group_member import GroupMember
 from support_sphere.models.public.point_of_interest import PointOfInterest, PointOfInterestType
 from support_sphere.models.public.message import Message
 import typer
 import json
 from shapely.wkt import loads
+import psycopg2
 
 
 from pathlib import Path
@@ -99,7 +102,8 @@ def populate_user_details():
                 user: User = UserRepository.find_by_email(row['email'])
                 if not user:
                     # Create a auth.user with encrypted_password (ONLY FOR LOCAL TESTING)
-                    supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                    result = supabase_client.auth.sign_up({"email": row['email'], "password": row['username']})
+                    log.warning(f"CREATED USER {row['email']}, {result}")
                     supabase_client.auth.sign_out()
                     user: User = UserRepository.find_by_email(row['email'])
 
@@ -107,7 +111,7 @@ def populate_user_details():
                     profile = UserProfile(user=user)
                     user_profile = UserProfileRepository.add(profile)
 
-                    user_role = UserRole(user_profile=user_profile, role=AppRoles.USER)
+                    user_role = UserRole(user_profile=user_profile, role=AppRoles.user)
                     BaseRepository.add(user_role)
 
             # Create People Entry
@@ -117,6 +121,8 @@ def populate_user_details():
                                    user_profile=user_profile)
 
             person = PeopleRepository.add(person_detail)
+
+            log.debug(f"created person: {person.id}")
 
             # Create a PeopleGroup Entry
             people_group = PeopleGroup(people=person, household=all_households[-1])
@@ -153,25 +159,18 @@ def populate_checklists():
 
 @db_init_app.command(help="Setup a dummy cluster and a household")
 def populate_cluster_and_household_details():
-    # Creating entries in 'Cluster' and 'Household' table.
-    # load a file of Clusters
-    # name: str|None = Field(nullable=True) < !!!
-    # meeting_place: str|None = Field(nullable=True)
-    # notes: str | None = Field(nullable=True)
-    # geom: Geometry|None = Field(sa_type=Geometry(geometry_type="POLYGON"), nullable=True) < !!!
-
     for cluster in load_clusters():
         try:
             BaseRepository.add(cluster)
         except Exception as ex:
             log.error(f"Error adding {cluster}: {ex}")
 
-    for cluster in BaseRepository.select_all(Cluster):
-        if cluster.name == "c_1":
-            household = Household(cluster=cluster, name="Household1")
-            BaseRepository.add(household)
-            log.info(f"added household {household}")
-            break
+    # Use "c_1" cluster to add test household
+    test_cluster = BaseRepository.get_one(Cluster, "name", "c_1")
+    if test_cluster:
+        household = Household(cluster=test_cluster, name="Household1")
+        BaseRepository.add(household)
+        log.info(f"added household {household}")
 
 
 def generate_signup_codes(household_id: uuid.UUID):
@@ -202,7 +201,7 @@ def populate_real_cluster_and_household():
     Populate clusters and households based on household data container cluster name and address.
     During the creation of household, random signup code is also generated using uuid.
     """
-    household_data = DATA_DIRECTORY / 'households.csv'
+    household_data = DATA_DIRECTORY / 'households-geom.csv'
     with household_data.open(mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
 
@@ -218,9 +217,16 @@ def populate_real_cluster_and_household():
             else:
                 log.error(f"Unknown cluster name: {cluster_name}")
 
+            geo_str = row.get('GEOM', None)
+            if geo_str:
+                geom = from_shape(loads(geo_str))
+            else:
+                geom = None
+                log.warning(f"No geometry for {row}")
+
             # Setup household
             household_address = row['ADDRESS']
-            household = Household(cluster_id=cluster_id, address=household_address)
+            household = Household(cluster_id=cluster_id, address=household_address, geom=geom)
             # Add household to the database
             BaseRepository.add(household)
 
@@ -241,11 +247,11 @@ def authenticate_user_signup_signin_signout_via_supabase():
 
 
 def update_user_permissions_roles_by_cluster():
-    role_1 = RolePermission(role=AppRoles.ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_READ)
-    role_2 = RolePermission(role=AppRoles.ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
-    role_3 = RolePermission(role=AppRoles.COM_ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
-    role_4 = RolePermission(role=AppRoles.COM_ADMIN, permission=AppPermissions.OPERATIONAL_EVENT_READ)
-    role_5 = RolePermission(role=AppRoles.SUBCOM_AGENT, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_1 = RolePermission(role=AppRoles.admin, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_2 = RolePermission(role=AppRoles.admin, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
+    role_3 = RolePermission(role=AppRoles.com_admin, permission=AppPermissions.OPERATIONAL_EVENT_CREATE)
+    role_4 = RolePermission(role=AppRoles.com_admin, permission=AppPermissions.OPERATIONAL_EVENT_READ)
+    role_5 = RolePermission(role=AppRoles.subcom_agent, permission=AppPermissions.OPERATIONAL_EVENT_READ)
 
     BaseRepository.add(role_1)
     BaseRepository.add(role_2)
@@ -255,7 +261,7 @@ def update_user_permissions_roles_by_cluster():
 
     user = UserRepository.find_by_email('adam.abacus@example.com')
     user_role = UserRoleRepository.find_by_user_profile_id(user.id)
-    user_role.role = AppRoles.SUBCOM_AGENT
+    user_role.role = AppRoles.subcom_agent
     BaseRepository.add(user_role)
 
     all_clusters = BaseRepository.select_all(Cluster)
@@ -264,7 +270,7 @@ def update_user_permissions_roles_by_cluster():
 
     user = UserRepository.find_by_email('beth.bodmas@example.com')
     user_role = UserRoleRepository.find_by_user_profile_id(user.id)
-    user_role.role = AppRoles.COM_ADMIN
+    user_role.role = AppRoles.com_admin
     BaseRepository.add(user_role)
 
 
@@ -377,21 +383,96 @@ def load_clusters(csv_file: Path = DATA_DIRECTORY/'cluster_map.csv') -> list[Clu
 def load_test_messages(csv_file: Path = DATA_DIRECTORY/'messages.csv') -> list[Message]:
     messages = []
     try:
+        # user cluser id for to addr.
+        #cluster = BaseRepository.get_one(Cluster, "name", "c_1")
+
         with csv_file.open(mode='r', newline='') as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
-                from_user: User = UserRepository.find_by_email(row['from_id'])
+                log.info(f"reading row: {row}")
+                # replace
+                from_user: User = UserRepository.find_by_email(row['from_id'], fetch_user_profile=True)
                 if from_user:
-                    row['from_id'] = from_user.id
-                to_user: User = UserRepository.find_by_email(row['to_id'])
-                if to_user:
-                    row['to_id'] = to_user.id
+                    log.info(f"found from: {from_user}, {from_user.user_profile}")
+                    row['from_id'] = from_user.user_profile.id
+
+                group_name = row['to_id']
+                # check for uuid
+                to_group = ensure_group(group_name, from_user)
+                if to_group:
+                    log.info(f"found to: {to_group}")
+                    row['to_id'] = to_group.id
+
                 msg = Message.fromDict(row)
                 messages.append(msg)
         log.info(f"Loaded {len(messages)} messages")
     except Exception as e:
         log.error(f"Error loading {csv_file}: {e}")
     return messages
+
+
+def create_group_with_user(name: str, from_user: User) -> Group:
+
+    log.info(f"create_group_with_user: {name}, {from_user}")
+
+    # first, check if group exists
+    group = BaseRepository.get_one(Group, "name", name)
+    if group is None:
+        # if not, create
+        group = Group(id=uuid.uuid4(), name=name, created_by_id=from_user.user_profile.id)
+        BaseRepository.add(group)
+
+    add_user_to_group(group, from_user)
+
+    return group
+
+
+def add_user_to_group(group: Group, user: User) -> None:
+    try:
+        member_instance = GroupMember(group_id=group.id, people_id=user.id)
+        BaseRepository.add(member_instance)
+        log.info(f"added member {member_instance} to {group}")
+    except psycopg2.errors.UniqueViolation:
+        log.debug(f"Duplicate key: {user.email} already a member of: {group.name}")
+    except Exception as ex:
+        log.error(f"Error adding user: {ex}")
+
+
+
+def ensure_group(name: str, from_user: User) -> Group:
+    # given a "name", see if it is a
+    # 1. user, by email
+    # 2. household, by name
+    # 3. cluster, but name
+    # or null
+
+    # check for the group first
+    group = BaseRepository.get_one(Group, "name", name)
+    if group is not None:
+        return group
+
+    # check for the email
+    user = UserRepository.find_by_email(name, fetch_user_profile=True)
+    if user is not None:
+        log.info(f"found to user: {user} {user.id} {from_user.id}")
+        # FIXME: compound DM name?
+        group_name = '|'.join(sorted([str(from_user.user_profile.id), str(user.user_profile.id)]))
+        log.info(f"DM group name: {group_name}")
+        nu_group = create_group_with_user(group_name, from_user)
+        add_user_to_group(nu_group, user)
+        log.info(f"DM group: {nu_group}")
+        return nu_group
+
+    household = BaseRepository.get_one(Household, "name", name)
+    if household is not None:
+        return create_group_with_user(household.name, from_user)
+
+    cluster = BaseRepository.get_one(Cluster, "name", name)
+    if cluster is not None:
+        return create_group_with_user(cluster.name, from_user)
+
+    # fallback to just creating a group
+    return create_group_with_user(name, from_user)
 
 
 def populate_messages():
@@ -404,6 +485,10 @@ def populate_messages():
 
 @db_init_app.command(help="Sanity check for testing authorization for app mode change")
 def test_app_mode_change():
+    # FIXME - Disable for: failing in docker compose version
+    # CODE: 42501
+    # Authorization and roles are validated with custom functions in execute_sql_statement.py
+    # Something has invalidated that running against a later version, based on row-level-auth.
     test_app_mode_status_update()
     test_unauthorized_app_mode_update()
 
@@ -414,7 +499,6 @@ def run_all():
     log.info("Starting to populate db with sample entries...")
 
     # Sanity check for user sign-up and sign-in flow via supabase
-    # FIXME
     authenticate_user_signup_signin_signout_via_supabase()
 
     # Set up a dummy cluster and a household
@@ -430,7 +514,6 @@ def run_all():
     setup_points_of_interest()
 
     # Sanity check app mode update
-    # FIXME
     test_app_mode_change()
 
     # Populate real data

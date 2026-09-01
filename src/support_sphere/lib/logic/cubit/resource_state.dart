@@ -8,6 +8,9 @@ class ResourceState extends Equatable {
     this.currentNav = ResourceNav.showAllResources,
     this.initialTabIndex = 0,
     this.selectedResource,
+    this.selectionMode = false,
+    this.selectedUserResourceIds = const {},
+    this.searchQuery = '',
   });
 
   final List<ResourceTypes> resourceTypes;
@@ -16,6 +19,9 @@ class ResourceState extends Equatable {
   final ResourceNav currentNav;
   final Resource? selectedResource;
   final int initialTabIndex;
+  final bool selectionMode;
+  final Set<String> selectedUserResourceIds;
+  final String searchQuery;
 
   @override
   List<Object?> get props => [
@@ -24,7 +30,10 @@ class ResourceState extends Equatable {
         userResources,
         currentNav,
         selectedResource,
-        initialTabIndex
+        initialTabIndex,
+        selectionMode,
+        selectedUserResourceIds,
+        searchQuery,
       ];
 
   ResourceState copyWith(
@@ -33,13 +42,20 @@ class ResourceState extends Equatable {
       List<UserResource>? userResources,
       ResourceNav? currentNav,
       Resource? selectedResource,
-      int? initialTabIndex}) {
+      int? initialTabIndex,
+      bool? selectionMode,
+      Set<String>? selectedUserResourceIds,
+      String? searchQuery}) {
     return ResourceState(
         resourceTypes: resourceTypes ?? this.resourceTypes,
         resources: resources ?? this.resources,
         userResources: userResources ?? this.userResources,
         currentNav: currentNav ?? this.currentNav,
         selectedResource: selectedResource ?? this.selectedResource,
-        initialTabIndex: initialTabIndex ?? this.initialTabIndex);
+        initialTabIndex: initialTabIndex ?? this.initialTabIndex,
+        selectionMode: selectionMode ?? this.selectionMode,
+        selectedUserResourceIds:
+            selectedUserResourceIds ?? this.selectedUserResourceIds,
+        searchQuery: searchQuery ?? this.searchQuery);
   }
 }

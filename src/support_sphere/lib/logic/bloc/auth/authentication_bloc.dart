@@ -17,6 +17,7 @@ class AuthenticationBloc
         super(const AuthenticationState.initial()) {
     on<AuthOnCurrentUserChanged>(_onCurrentUserChanged);
     on<AuthOnLogoutRequested>(_onLogoutRequested);
+    on<AuthDeleteMyUserRequested>(_onDeleteMyUserRequested);
 
     _userSubscription = _authRepository.user.listen(
       (user) => add(AuthOnCurrentUserChanged(user)),
@@ -38,6 +39,12 @@ class AuthenticationBloc
   void _onLogoutRequested(
       AuthOnLogoutRequested event, Emitter<AuthenticationState> emit) {
     unawaited(_authRepository.logOut());
+  }
+
+  Future<void> _onDeleteMyUserRequested(
+      AuthDeleteMyUserRequested event, Emitter<AuthenticationState> emit) async {
+    await _authRepository.deleteMyAccount();
+    await _authRepository.logOut();
   }
 
   @override

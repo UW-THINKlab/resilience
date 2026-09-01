@@ -10,23 +10,25 @@ import 'package:support_sphere/utils/config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/data/repositories/authentication.dart';
+import 'package:support_sphere/logic/cubit/location_cubit.dart';
 
 void initializeLogging(Level level) {
   Logger.root.level = level;
   Logger.root.onRecord.listen((record) {
     // ignore: avoid_print - This is a standard logger
-    print('${record.time}: ${record.message}');
+    debugPrint('${record.time} ${record.level}: ${record.message}');
   });
 }
 
 final log = Logger('MyApp');
 
 void main() async {
-  initializeLogging(Level.FINE);
+  initializeLogging(Level.FINER);
   try {
     await Config.initSupabase();
   } catch (e, stackTrace) {
-    log.severe('Error initializing DB', e, stackTrace);
+    log.severe('Error initializing DB: $e');
+    log.severe('Trace: $stackTrace');
   }
   runApp(const MyApp());
 }
@@ -39,17 +41,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (_) => AuthenticationRepository(),
-        ),
-        RepositoryProvider(
-          create: (_) => UserRepository(),
-        ),
+        RepositoryProvider(create: (_) => AuthenticationRepository()),
+        RepositoryProvider(create: (_) => UserRepository()),
       ],
-      child: BlocProvider(
-        create: (_) => AuthenticationBloc(
-          authenticationRepository: context.read<AuthenticationRepository>(),
-        ),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthenticationBloc>(
+            create: (context) => AuthenticationBloc(
+              authenticationRepository: context
+                  .read<AuthenticationRepository>(),
+            ),
+          ),
+          BlocProvider<LocationCubit>(
+            lazy: false,
+            create: (_) => LocationCubit()..getCurrentLocation(),
+          ),
+        ],
         child: const AppView(),
       ),
     );
@@ -66,9 +73,7 @@ class AppView extends StatelessWidget {
       title: AppStrings.appName,
 
       // Theme configuration
-      theme: _buildTheme(
-        Brightness.light,
-      ),
+      theme: _buildTheme(Brightness.light),
       debugShowCheckedModeBanner: false,
 
       home: const AuthSelect(),
@@ -80,8 +85,9 @@ class AppView extends StatelessWidget {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child:
-                  Text('404 NOT FOUND: No route defined for ${settings.name}'),
+              child: Text(
+                '404 NOT FOUND: No route defined for ${settings.name}',
+              ),
             ),
           ),
         );

@@ -17,7 +17,7 @@ class Checklist extends Equatable {
     required this.title,
     this.description = '',
     this.notes = '',
-    this.priority = 'Low',
+    this.priority = 'low',
     this.steps = const [],
     this.completions = 0,
     this.frequency,
@@ -34,7 +34,7 @@ class Checklist extends Equatable {
     steps,
     completions,
     frequency,
-    updatedAt
+    updatedAt,
   ];
 }
 
@@ -54,7 +54,7 @@ class UserChecklist extends Equatable {
     this.steps = const [],
     this.frequency,
     this.completedAt,
-    required this.updatedAt
+    required this.updatedAt,
   });
 
   @override
@@ -65,7 +65,7 @@ class UserChecklist extends Equatable {
     steps,
     frequency,
     completedAt,
-    updatedAt
+    updatedAt,
   ];
 }
 

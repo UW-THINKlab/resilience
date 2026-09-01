@@ -2,94 +2,406 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' show Logger;
-import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/chat_group.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
+import 'package:support_sphere/data/models/message_urgency_extension.dart';
 import 'package:support_sphere/data/models/messages.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/message.dart';
 import 'package:support_sphere/data/repositories/user.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/constants/constants.dart';
+import 'package:support_sphere/presentation/components/discreet_button.dart';
+import 'package:support_sphere/presentation/components/reauth_dialog.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
+import 'package:support_sphere/data/repositories/resource.dart';
+import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/group_settings_page.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/message_bar.dart';
 import 'package:support_sphere/utils/supabase.dart';
+import 'package:support_sphere/utils/reservation_status_colors.dart';
+import 'package:timeago/timeago.dart';
 
-const preloader = Center(child: CircularProgressIndicator(color: Colors.blueGrey));
+const preloader = Center(
+  child: CircularProgressIndicator(color: Colors.blueGrey),
+);
 
 final log = Logger('MessagesPage');
 
-// ASIDE: "Groups" include households, clusters
-
-// from github.com/supabase-community/flutter-chat/blob/main/lib/pages/chat_page.dart
-
-
-/// Initial page for cluster messaging.
-/// Cluster captains get special display,
-/// and ability to send "urgent" messages
 class MessagesPage extends StatefulWidget {
-  const MessagesPage({Key? key}) : super(key: key);
+  final ChatGroup group;
 
-  static Route<void> route() {
-    return MaterialPageRoute(
-      builder: (context) => const MessagesPage(),
-    );
-  }
+  const MessagesPage({super.key, required this.group});
 
   @override
-  State<MessagesPage> createState() => MessagesState();
+  State<MessagesPage> createState() => MessagesState(group: group);
 }
 
 class MessagesState extends State<MessagesPage> {
+  final ChatGroup group;
+
   final UserRepository userRepo = UserRepository();
   final MessagesRepository messageRepo = MessagesRepository();
   final ClusterRepository clusterRepo = ClusterRepository();
 
   late final Stream<List<Message>> messagesStream;
   late final Stream<Person?> profileStream;
-  late final Cluster? cluster;
-  late final String clusterId;
-  final Map<String,Person> profileCache = {};
+  final Map<String, Person> profileCache = {};
   late final String myUserId;
-  late final Person? myUser;
+  bool? _isCommunicationBlocked;
+  bool? _isBlockedByMe;
+  ResourceReservations? _pendingReservation;
+  bool _resourceRemoved = false;
+  int _acceptQuantity = 1;
+  final ResourceRepository resourceRepo = ResourceRepository();
+  late final String _baseGroupName;
+  final ChatRepository chatRepo = ChatRepository();
+
+  MessagesState({required this.group});
 
   @override
   void initState() {
-    myUserId = supabase.auth.currentUser!.id;
-    messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
-    profileStream = userRepo.personForId(userId: myUserId);
+    log.fine('🚀 initState groupId: "${group.id}"');
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadInitialData();
+    myUserId = supabase.auth.currentUser!.id;
+    _baseGroupName = group.name.replaceFirst(
+      RegExp(r' \((Pending|Accepted|Tentative|Rejected|Released|Expired)\)$'),
+      '',
+    );
+    messagesStream = messageRepo.messagesTo(supabase.auth.currentUser!);
+    profileStream = userRepo.personForId(userId: myUserId);
+    _loadBlockState();
+    _loadPendingReservation();
+    _loadInitialData();
+  }
+
+  Future<void> _loadBlockState() async {
+    if (group.members.length != 2) {
+      setState(() {
+        _isCommunicationBlocked = false;
+        _isBlockedByMe = false;
+      });
+      return;
+    }
+    final otherUserId = getOtherUserId();
+    final iBlockedOther = await userRepo.isUserBlocking(
+      blockerId: myUserId,
+      blockeeId: otherUserId,
+    );
+    final otherBlockedMe = await userRepo.isUserBlocking(
+      blockerId: otherUserId,
+      blockeeId: myUserId,
+    );
+    if (!mounted) return;
+    setState(() {
+      _isBlockedByMe = iBlockedOther;
+      _isCommunicationBlocked = iBlockedOther || otherBlockedMe;
+    });
+  }
+
+  Future<void> _loadPendingReservation() async {
+    if (group.members.length != 2 || group.type == GROUP_CHAT_TYPE.chat) return;
+    final reservation = await resourceRepo.getPendingReservationForChat(
+      groupId: group.id,
+    );
+    var resourceRemoved = false;
+    if (reservation == null) {
+      resourceRemoved = await messageRepo.hasResourceRemovedMessage(group.id);
+    }
+    if (!mounted) return;
+    setState(() {
+      _pendingReservation = reservation;
+      _acceptQuantity = reservation?.quantity ?? 1;
+      _resourceRemoved = resourceRemoved;
     });
   }
 
   Future<void> _loadInitialData() async {
-    //setState(() => _isLoading = true);
-
-    myUser = await userRepo.getPersonProfileByUserId(userId: myUserId);
-    log.fine("MY USER ID: $myUserId, profile: ${myUser!.profile!.id}");
-    cluster = await clusterRepo.getClusterByUser(myUserId);
-
-    final members = await userRepo.getAllMembers();
-    for (var member in members) {
-      profileCache[member!.id] = member;
-    }
-
-    // if (!mounted) return; // avoid calling setState after dispose
-    // setState(() {
-    //   _data = result;
-    //   _isLoading = false;
-    // });
+    log.fine('✅ Group ID: ${group.id}');
+    log.fine('✅ My User: $myUserId');
+    setState(() => {});
+    final user = await userRepo.getPersonProfileByUserId(userId: myUserId);
+    log.fine("MY USER ID: $myUserId, profile: ${user!.profile!.id}");
+    log.fine("MY GROUP ID: $group.id");
+    final allUsers = await userRepo.getAllMembers();
+    profileCache.addAll(allUsers);
+    // mark all messages read
+    await messageRepo.markMessagesRead(group.id, myUserId);
+    if (!mounted) return;
+    setState(() => {});
   }
+
+  Person? getProfile(String userId) {
+    final person = profileCache[userId];
+    return person;
+  }
+
+  String getOtherUserId() {
+    return group.members.first != myUserId
+        ? group.members.first
+        : group.members.last;
+  }
+
+  Color get _appBarColor {
+    final reservation = _pendingReservation;
+    if (reservation == null) {
+      return _resourceRemoved ? ColorConstants.cancelGray : Colors.white;
+    }
+    if (reservation.status == RESERVATION_STATUS.pending) {
+      return Colors.white;
+    }
+    final isRequester = myUserId == reservation.requesterProfileId;
+    return reservation.status.statusColor(isRequester: isRequester);
+  }
+
+  String _groupNameWithStatus(RESERVATION_STATUS? status) {
+    if (status == null) return _baseGroupName;
+    final suffix = switch (status) {
+      RESERVATION_STATUS.pending => MessagesStrings.statusPending,
+      RESERVATION_STATUS.tentative => MessagesStrings.statusTentative,
+      RESERVATION_STATUS.accepted => MessagesStrings.statusAccepted,
+      RESERVATION_STATUS.rejected => MessagesStrings.statusRejected,
+      RESERVATION_STATUS.released => MessagesStrings.statusReleased,
+      RESERVATION_STATUS.expired => MessagesStrings.statusExpired,
+    };
+    return '$_baseGroupName ($suffix)';
+  }
+
+  String get _groupTitle => _groupNameWithStatus(_pendingReservation?.status);
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    //final MyAuthUser authUser = context.select((AuthenticationBloc bloc) => bloc.state.user);
-    //final profileStream = _userRepo.personForAuthUser(user: authUser);
-    final title = cluster != null && cluster!.name != null ? cluster!.name : 'Messages';
     return Scaffold(
-      appBar: AppBar(title: Text(title!)),
+      appBar: AppBar(
+        backgroundColor: _appBarColor,
+        title: GestureDetector(
+          child: Text(_groupTitle),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => GroupSettingsPage(group: group),
+              ),
+            );
+          },
+        ),
+        actions: [
+          if (_pendingReservation != null &&
+              myUserId != _pendingReservation!.requesterProfileId &&
+              _pendingReservation!.status != RESERVATION_STATUS.released &&
+              _pendingReservation!.status != RESERVATION_STATUS.expired)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.accepted) ...[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: _acceptQuantity > 1
+                              ? () => setState(() => _acceptQuantity--)
+                              : null,
+                        ),
+                        Text(
+                          '$_acceptQuantity',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed:
+                              _acceptQuantity < _pendingReservation!.quantity
+                              ? () => setState(() => _acceptQuantity++)
+                              : null,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  ConfirmButton(
+                    label: MessagesStrings.rejectRequest,
+                    color: ColorConstants.cancelGray,
+                    onPressed: () async {
+                      await resourceRepo.updateReservation(
+                        reservationId: _pendingReservation!.id,
+                        status: RESERVATION_STATUS.rejected,
+                      );
+                      await chatRepo.updateGroupName(
+                        groupId: group.id,
+                        name: _groupNameWithStatus(RESERVATION_STATUS.rejected),
+                      );
+                      await messageRepo.sendMessage(
+                        fromProfileId: myUserId,
+                        groupId: group.id,
+                        text: MessagesStrings.rejectMessage(
+                          _pendingReservation!.quantity,
+                        ),
+                        urgency: MESSAGEURGENCY.normal,
+                      );
+                      if (!mounted) return;
+                      setState(() {
+                        _pendingReservation = _pendingReservation!.copyWith(
+                          status: RESERVATION_STATUS.rejected,
+                        );
+                      });
+                    },
+                  ),
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.tentative) ...[
+                    const SizedBox(width: 8),
+                    ConfirmButton(
+                      label: MessagesStrings.tentativeAccept,
+                      color: ColorConstants.tentativeLime,
+                      onPressed: () async {
+                        final originalQty = _pendingReservation!.quantity;
+                        final reservationId = _pendingReservation!.id;
+                        await resourceRepo.updateReservation(
+                          reservationId: reservationId,
+                          status: RESERVATION_STATUS.tentative,
+                          quantity: _acceptQuantity,
+                        );
+                        await chatRepo.updateGroupName(
+                          groupId: group.id,
+                          name: _groupNameWithStatus(
+                            RESERVATION_STATUS.tentative,
+                          ),
+                        );
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.tentativeAcceptMessage(
+                            _acceptQuantity,
+                            originalQty,
+                          ),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
+                        if (!mounted) return;
+                        setState(() {
+                          _pendingReservation = _pendingReservation!.copyWith(
+                            status: RESERVATION_STATUS.tentative,
+                            quantity: _acceptQuantity,
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                  if (_pendingReservation!.status !=
+                      RESERVATION_STATUS.accepted) ...[
+                    const SizedBox(width: 8),
+                    ConfirmButton(
+                      label: MessagesStrings.acceptRequest,
+                      onPressed: () async {
+                        final originalQty = _pendingReservation!.quantity;
+                        final reservationId = _pendingReservation!.id;
+                        await resourceRepo.updateReservation(
+                          reservationId: reservationId,
+                          status: RESERVATION_STATUS.accepted,
+                          quantity: _acceptQuantity,
+                        );
+                        await chatRepo.updateGroupName(
+                          groupId: group.id,
+                          name: _groupNameWithStatus(
+                            RESERVATION_STATUS.accepted,
+                          ),
+                        );
+                        await messageRepo.sendMessage(
+                          fromProfileId: myUserId,
+                          groupId: group.id,
+                          text: MessagesStrings.acceptMessage(
+                            _acceptQuantity,
+                            originalQty,
+                          ),
+                          urgency: MESSAGEURGENCY.normal,
+                        );
+                        if (!mounted) return;
+                        setState(() {
+                          _pendingReservation = _pendingReservation!.copyWith(
+                            status: RESERVATION_STATUS.accepted,
+                            quantity: _acceptQuantity,
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          if (_pendingReservation != null &&
+              myUserId == _pendingReservation!.requesterProfileId &&
+              _pendingReservation!.status != RESERVATION_STATUS.rejected &&
+              _pendingReservation!.status != RESERVATION_STATUS.released &&
+              _pendingReservation!.status != RESERVATION_STATUS.expired)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ConfirmButton(
+                label: MessagesStrings.cancelRequest,
+                color: ColorConstants.cancelGray,
+                onPressed: () async {
+                  await resourceRepo.updateReservation(
+                    reservationId: _pendingReservation!.id,
+                    status: RESERVATION_STATUS.released,
+                  );
+                  await chatRepo.updateGroupName(
+                    groupId: group.id,
+                    name: _groupNameWithStatus(RESERVATION_STATUS.released),
+                  );
+                  await messageRepo.sendMessage(
+                    fromProfileId: myUserId,
+                    groupId: group.id,
+                    text: MessagesStrings.cancelRequestMessage(
+                      _pendingReservation!.quantity,
+                    ),
+                    urgency: MESSAGEURGENCY.normal,
+                  );
+                  if (!mounted) return;
+                  setState(() {
+                    _pendingReservation = _pendingReservation!.copyWith(
+                      status: RESERVATION_STATUS.released,
+                    );
+                  });
+                },
+              ),
+            ),
+          if (group.members.length == 2 && _isBlockedByMe != null)
+            DiscreetButton(
+              label: _isBlockedByMe!
+                  ? MessagesStrings.unblock
+                  : MessagesStrings.block,
+              onPressed: () async {
+                if (await ReauthDialog(context).perform(AuthService())) {
+                  if (_isBlockedByMe!) {
+                    await userRepo.unblockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = false;
+                      _isCommunicationBlocked = false;
+                    });
+                  } else {
+                    await userRepo.blockUser(
+                      blockerId: myUserId,
+                      blockeeId: getOtherUserId(),
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _isBlockedByMe = true;
+                      _isCommunicationBlocked = true;
+                    });
+                  }
+                }
+              },
+            ),
+        ],
+      ),
       body: StreamBuilder<List<Message>>(
-        stream: messagesStream,
+        stream: messageRepo.messagesFor(supabase.auth.currentUser!, group.id),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final messages = snapshot.data!;
@@ -106,13 +418,13 @@ class MessagesState extends State<MessagesPage> {
                           itemBuilder: (context, index) {
                             return _MessageBubble(
                               message: messages[index],
-                              profile: profileCache[messages[index].fromId],
+                              profile: getProfile(messages[index].fromId),
                               myUserId: myUserId,
                             );
                           },
                         ),
                 ),
-                const _MessageBar(),
+                _messageBar(),
               ],
             );
           } else {
@@ -122,102 +434,24 @@ class MessagesState extends State<MessagesPage> {
       ),
     );
   }
-}
 
-
-/// Set of widget that contains TextField and Button to submit message
-class _MessageBar extends StatefulWidget {
-  const _MessageBar({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<_MessageBar> createState() => _MessageBarState();
-}
-
-class _MessageBarState extends State<_MessageBar> {
-  late final TextEditingController _textController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.grey[200],
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  maxLines: null,
-                  autofocus: true,
-                  controller: _textController,
-                  decoration: const InputDecoration(
-                    hintText: 'Type a message',
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.all(8),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => _submitMessage(context),
-                child: const Text('Send'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    _textController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  void _submitMessage(BuildContext context) async {
-    final text = _textController.text;
-    final myUserId = supabase.auth.currentUser!.id;
-    if (text.isEmpty) {
-      return;
+  Widget _messageBar() {
+    if (_isCommunicationBlocked ?? false) {
+      return Text(MessagesStrings.blockedCommunication);
     }
-    _textController.clear();
-
-    final MessagesRepository _messageRepo = MessagesRepository();
-    _messageRepo.sendMessage(myUserId, "_clusterId", text);
-
-
-    // try {
-    //   await supabase.from('messages').insert({
-    //    'profile_id': myUserId,
-    //    'content': text,
-    //   });
-    // } on PostgrestException catch (error) {
-    //   log.warning("ERROR: ${error.message}");
-    //   //context.showErrorSnackBar(message: error.message);
-    // } catch (_) {
-    //   //context.showErrorSnackBar(message: unexpectedErrorMessage);
-    //   log.warning("Unknown error in _submitMessage");
-    // }
+    if (_pendingReservation?.status == RESERVATION_STATUS.expired) {
+      return Text(MessagesStrings.expiredRequest);
+    }
+    return MessageBar(groupId: group.id);
   }
 }
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
-    Key? key,
     required this.message,
     required this.profile,
     required this.myUserId,
-  }) : super(key: key);
+  });
 
   final Message message;
   final Person? profile;
@@ -225,28 +459,36 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final amSender = message.fromId == myUserId;
+    String metaStr = message.fromId != myUserId
+        ? "${profile?.givenName} ${profile?.familyName} ${format(message.sentOn)}"
+        : format(message.sentOn);
+
     List<Widget> chatContents = [
-      CircleAvatar(
-        child: Center(child: Icon(
-          URGENCY_ICONS[message.urgency],
-          color:  URGENCY_COLOR[message.urgency],
-        ))),
-      const SizedBox(width: 12),
-      Flexible(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 12,
+      if (message.fromId != myUserId)
+        CircleAvatar(
+          child: Text(
+            profile?.givenName.isNotEmpty == true
+                ? profile!.givenName[0].toUpperCase()
+                : '?',
           ),
+        ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            color: URGENCY_COLOR[message.urgency],
+            color: amSender ? Colors.grey[200] : message.urgency.color,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(message.content, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          child: Text(
+            message.content,
+            style: TextStyle(color: amSender ? Colors.black : Colors.white),
+          ),
         ),
       ),
       const SizedBox(width: 12),
-      Text("${profile?.givenName} ${profile?.familyName} on ${message.sentOn.toString()}"),
+      Text(metaStr),
       const SizedBox(width: 60),
     ];
     if (message.fromId == myUserId) {
@@ -260,20 +502,4 @@ class _MessageBubble extends StatelessWidget {
       ),
     );
   }
-
-  static const URGENCY_COLOR = {
-    MessageUrgency.emergency:  Colors.red,
-    MessageUrgency.urgent: Colors.purpleAccent,
-    MessageUrgency.important:Colors.orange,
-    MessageUrgency.normal: Colors.blue,
-    "default": Colors.grey,
-  };
-
-  static const URGENCY_ICONS = {
-    MessageUrgency.emergency: Icons.emergency,
-    MessageUrgency.urgent: Icons.explicit_sharp,
-    MessageUrgency.important: Icons.label_important,
-    MessageUrgency.normal: Icons.mail_rounded,
-  };
-
 }
