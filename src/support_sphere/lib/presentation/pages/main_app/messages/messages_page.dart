@@ -17,6 +17,7 @@ import 'package:support_sphere/presentation/components/reauth_dialog.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/data/repositories/resource.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/presentation/pages/main_app/messages/group_settings_page.dart';
 import 'package:support_sphere/presentation/pages/main_app/messages/message_bar.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/utils/reservation_status_colors.dart';
@@ -175,7 +176,17 @@ class MessagesState extends State<MessagesPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        title: Text(_groupTitle),
+        title: GestureDetector(
+          child: Text(_groupTitle),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => GroupSettingsPage(group: group),
+              ),
+            );
+          },
+        ),
         actions: [
           if (_pendingReservation != null &&
               myUserId != _pendingReservation!.requesterProfileId &&
@@ -433,7 +444,7 @@ class MessagesState extends State<MessagesPage> {
     }
     return MessageBar(groupId: group.id);
   }
-} // -- end of state
+}
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
