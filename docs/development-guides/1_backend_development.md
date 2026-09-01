@@ -46,7 +46,6 @@ To checkout and run a dev supabase server, from scratch:
 curl -fsSL https://pixi.sh/install.sh | sh
 git clone https://github.com/UW-THINKlab/resilience
 cd resilience
-git checkout messages
 
 pixi run -e supabase load <backup>.sql.gz
 ```
@@ -64,14 +63,11 @@ pixi run -e frontend run
 ```
 
 ### 0. Prerequisites: Install pixi and clone project
-Current development work is committed on the `messages` branch.
-
-To get started, clone the GitHub project and checkout the messages branch:
+To get started, clone the GitHub project:
 ```
 curl -fsSL https://pixi.sh/install.sh | sh
 git clone https://github.com/UW-THINKlab/resilience
 cd resilience
-git checkout messages
 ```
 
 ### 1. Start supabase and load data

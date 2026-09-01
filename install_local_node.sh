@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-#### Assumes: 
+#### Assumes:
 # script running as root
 # the decryption key for cloud-values is already in the root home dir
 # the backup.sql file is in the root home dir
@@ -61,8 +61,6 @@ if [ -d "${GITHUB_REPO:-}" ]; then
 fi
 git clone "https://github.com/${GITHUB_ORG}/${GITHUB_REPO}.git"
 cd "${GITHUB_REPO}"
-## FIXME: current dev branch
-git checkout messages
 
 ## tool pathing for root
 echo "export PATH=\$PATH:$PWD/.pixi/envs/backend/bin" >> /root/.bashrc

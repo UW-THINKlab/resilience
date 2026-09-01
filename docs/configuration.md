@@ -7,7 +7,6 @@ sudo mkdir -p /opt/resilience
 sudo chown -r $USER /opt/resilience
 git clone https://github.com/UW-THINKlab/resilience /opt/resilience
 cd /opt/resilience
-git checkout messages
 
 pixi run -e supabase initialize
 
@@ -27,7 +26,6 @@ sudo mkdir -p /opt/resilience
 sudo chown -r $USER /opt/resilience
 git clone https://github.com/UW-THINKlab/resilience /opt/resilience
 cd /opt/resilience
-git checkout messages
 pixi run -e supabase initialize
 ```
 This will attempt to load values from `neighborhood.json`. If not present (by default), the initialization script

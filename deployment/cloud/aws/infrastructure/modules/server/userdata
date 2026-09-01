@@ -36,8 +36,6 @@ runcmd:
   - cd /opt
   - git clone https://github.com/${github_organization}/${github_repo}.git
   - cd ${github_repo}
-  # FIXME current dev branch
-  - git checkout messages
 
   # tool pathing for root
   - echo "export PATH=\$PATH:$PWD/.pixi/envs/backend/bin" >> /root/.bashrc
