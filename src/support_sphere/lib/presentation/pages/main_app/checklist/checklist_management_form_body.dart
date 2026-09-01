@@ -6,8 +6,16 @@ import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/logic/cubit/checklist_form_cubit.dart';
 import 'package:support_sphere/presentation/components/checklist/checklist_step_field.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
-import 'package:support_sphere/constants/priority.dart';
-import 'package:support_sphere/utils/extensions.dart';
+import 'package:support_sphere/data/models/generated_classes.dart'
+    show PRIORITY;
+
+extension PriorityDisplay on PRIORITY {
+  String get displayName => switch (this) {
+        PRIORITY.low => ChecklistStrings.priorityLow,
+        PRIORITY.medium => ChecklistStrings.priorityMedium,
+        PRIORITY.high => ChecklistStrings.priorityHigh,
+      };
+}
 
 class ChecklistFormBody extends StatefulWidget {
   const ChecklistFormBody({
@@ -145,16 +153,16 @@ class _ChecklistFormBodyState extends State<ChecklistFormBody> {
             /// Priority level field
             FormBuilderDropdown<String>(
               name: 'priority',
-              initialValue: widget.initialChecklist?.priority.capitalize() ??
-                  priorityLevels[1],
+              initialValue:
+                  widget.initialChecklist?.priority ?? PRIORITY.medium.name,
               decoration: const InputDecoration(
                 labelText: ChecklistStrings.priorityFieldLabel,
                 border: OutlineInputBorder(),
               ),
-              items: priorityLevels.map((priority) {
+              items: PRIORITY.values.map((priority) {
                 return DropdownMenuItem(
-                  value: priority,
-                  child: Text(priority),
+                  value: priority.name,
+                  child: Text(priority.displayName),
                 );
               }).toList(),
               validator: FormBuilderValidators.required(),

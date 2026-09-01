@@ -9,6 +9,8 @@ class Landing extends StatelessWidget{
   const Landing({super.key});
 
   static MaterialPage page() => const MaterialPage(child: LandingView());
+  static MaterialPageRoute route() => MaterialPageRoute(builder: (context) => const Landing());
+
 
   @override
   Widget build(BuildContext context) {

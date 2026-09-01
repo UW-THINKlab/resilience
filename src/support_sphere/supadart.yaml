@@ -1,0 +1,17 @@
+enums:
+  group_chat_type: [chat, request_consumable, request_durable, request_skill]
+  operational_status: [emergency, test, normal]
+  sharing_scopes: [cluster, neighborhood, everyone]
+  priority: [low, medium, high]
+  reservation_status: [pending, accepted, rejected, released, expired, tentative]
+  messageurgency: [normal, important, urgent, emergency]
+  message_type: [resource_request, text, resource_removed]
+  app_permissions: [operational_event_read, operational_event_create]
+  app_roles: [user, subcom_agent, com_admin, admin]
+  request_scope: [nearby, neighbors]
+  unit: [Gallons, People, Servings, Unknown]
+  visibility_scope: [neighborhood, cluster, household, private]
+  poi_category: [emergency_safety, medical, education, community_civic, nature_outdoor, utility, business_economic, personal_other]
+
+output: lib/data/models/
+postGIS: true

@@ -36,9 +36,9 @@ variable "instance_type" {
 }
 
 variable "volume_size" {
-  description = "The instance type to use for the server"
+  description = "The size of the volume, in GiB"
   type        = string
-  default     = 16
+  default     = 512
 }
 
 variable "ops_group_name" {

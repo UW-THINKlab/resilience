@@ -1,49 +1,68 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/material.dart' show Color;
+import 'package:support_sphere/data/models/generated_classes.dart'
+    show POI_CATEGORY;
 import 'package:support_sphere/utils/supabase.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
 class PointOfInterestService {
-  final SupabaseClient _supabaseClient = supabase;
+  static const String collection = 'point_of_interests';
+  static const String typesCollection = 'point_of_interest_types';
 
-  Future<PostgrestList?> queryPointsOfInterest() async {
-    return await _supabaseClient.from('point_of_interests').select().order('name', ascending: true);
+  Future<void> insert(PointOfInterest poi) async {
+    await supabase.from(collection).insert(poi.toMap());
   }
 
-  LatLng geometryFromMap(Map geomMap) {
-    // "geom" -> Map (2 items)
-    //     "type" -> "Point"
-    //     "coordinates" -> List (2 items)
-    //       47.6591528763917
-    //       -122.27787227416428
-    // geom:{"type:x", "coordinates":[lat,long]}
-    return LatLng(geomMap["coordinates"][0], geomMap["coordinates"][1]);
+  Future<void> delete(String id) async {
+    await supabase.from(collection).delete().eq('id', id);
   }
 
-  PointOfInterest fromMap(Map poiMap) {
-    var geomMap = poiMap['geom'];
-    var geom = geometryFromMap(geomMap);
-    return PointOfInterest(
-      id:poiMap['id'],
-      name:poiMap['name'],
-      address:poiMap['address'],
-      geom: geom,
-      type:poiMap['point_type_name']);
+  Future<List<PointOfInterest>> getPointsOfInterest(
+    String requesterProfileId,
+  ) async {
+    log.fine(
+      'getPointsOfInterest: calling get_visible_points_of_interest rpc '
+      'for $requesterProfileId',
+    );
+    final points = await supabase
+        .rpc(
+          'get_visible_points_of_interest',
+          params: {'p_requester_profile_id': requesterProfileId},
+        )
+        .order('name', ascending: true);
+    log.fine('getPointsOfInterest: rpc returned ${points.length} rows: $points');
+    return [for (var p in points) PointOfInterest.fromMap(p)];
   }
 
-  Future<List<PointOfInterest>> getPointsOfInterest() async {
-    var points = await queryPointsOfInterest();
-    if (points == null) {
-      return [];
+  Future<Map<String, (FaIconData, Color)>> getPointOfInterestTypes() async {
+    final rows = await supabase.from(typesCollection).select();
+    final styles = <String, (FaIconData, Color)>{};
+    for (final row in rows) {
+      final icon = iconBySlug[row['icon']];
+      final category = row['category'] != null
+          ? POI_CATEGORY.values.byName(row['category'].toString())
+          : null;
+      final color = category != null ? colorByCategory[category] : null;
+      if (icon != null && color != null) {
+        styles[row['name']] = (icon, color);
+      } else {
+        log.warning('Unresolvable POI type style: ${row['name']}');
+      }
     }
-    else {
-      return [for (var p in points) fromMap(p)];
-    }
+    return styles;
   }
 
   // FIXME: Add query based on user location
+  Future<List<PointOfInterest>> near(double distanceInMeters) async {
+    // TODO: Add distance based query !!!
+    var points = await supabase
+        .from(collection)
+        .select()
+        .order('name', ascending: true);
+    return [for (var p in points) PointOfInterest.fromMap(p)];
+  }
 
-	// select id,
+  // select id,
   // name,
   // gis.st_y(location::gis.geometry) as lat,
   // gis.st_x(location::gis.geometry) as long
@@ -71,6 +90,4 @@ class PointOfInterestService {
   //         .toList(),
   //     cluster: userCluster != null ? Cluster.fromJson(userCluster) : null,
   //   );
-
-
 }

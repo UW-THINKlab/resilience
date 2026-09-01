@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:logging/logging.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/color.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/logic/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/router/app_body_select.dart';
 import 'package:support_sphere/data/repositories/app.dart';
+
+final log = Logger('MyApp');
 
 class AppPage extends StatelessWidget {
   const AppPage({super.key});
@@ -19,20 +22,40 @@ class AppPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => AppBloc(appRepository: AppRepository()),
       child: BlocListener<AppBloc, AppState>(
+        listenWhen: (previous, current) => previous.mode != current.mode,
         listener: (context, state) {
           /// Show a banner if the app is in test emergency mode
           /// This is to help users understand that the emergency
           /// is not real and is only a test
 
-          // TODO: Fix this... still buggy
           if (state.mode == AppModes.testEmergency) {
             ScaffoldMessenger.of(context).showMaterialBanner(
               const MaterialBanner(
                 padding: EdgeInsets.all(5),
                 content: Text(AppStrings.testEmergencyBannerText),
-                leading: Icon(Ionicons.warning_sharp),
+                leading: Icon(Icons.warning_sharp),
                 backgroundColor: Colors.yellow,
                 actions: [SizedBox()],
+              ),
+            );
+          } else if (state.mode == AppModes.emergency) {
+            ScaffoldMessenger.of(context).showMaterialBanner(
+              MaterialBanner(
+                padding: const EdgeInsets.all(5),
+                content: const Text(
+                  AppStrings.emergencyBannerText,
+                  style: TextStyle(color: Colors.white),
+                ),
+                leading: const Icon(Icons.warning_sharp, color: Colors.white),
+                backgroundColor: ColorConstants.dangerRed,
+                actions: [
+                  TextButton(
+                    onPressed: () => ScaffoldMessenger.of(context)
+                        .hideCurrentMaterialBanner(),
+                    child: const Text('Dismiss',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ],
               ),
             );
           } else {
@@ -48,8 +71,12 @@ class AppPage extends StatelessWidget {
             final MyAuthUser authUser = context.select(
               (AuthenticationBloc bloc) => bloc.state.user,
             );
+            log.fine(
+                'Logged in from App Page: ${authUser.uuid} (${authUser.email})');
+            log.fine('User role from App Page: ${authUser.userRole}');
             MediaQueryData screenData = MediaQuery.of(context);
-            AppBodySelect bodySelector = AppBodySelect(role: authUser.userRole, screenData: screenData);
+            AppBodySelect bodySelector =
+                AppBodySelect(role: authUser.userRole, screenData: screenData);
             return SafeArea(
               child: Scaffold(
                 appBar: AppBar(
@@ -57,7 +84,7 @@ class AppPage extends StatelessWidget {
                   // leading: Builder(
                   //   builder: (context) {
                   //     return IconButton(
-                  //       icon: const Icon(color: Colors.white, Ionicons.menu_outline),
+                  //       icon: const Icon(color: Colors.white, Icons.menu_outline),
                   //       onPressed: () {
                   //         Scaffold.of(context).openDrawer();
                   //       },
@@ -69,7 +96,7 @@ class AppPage extends StatelessWidget {
                       ? Theme.of(context).colorScheme.primaryContainer
                       : Colors.red,
                   // TODO: Add "Emergency Declared" title during emergency mode
-                  title: const Text(
+                  title: Text(
                     AppStrings.appName,
                     style: TextStyle(color: Colors.white),
                   ),
@@ -79,7 +106,7 @@ class AppPage extends StatelessWidget {
                     // IconButton(
                     //   icon: const Badge(
                     //       label: Text('2'),
-                    //       child: Icon(Ionicons.notifications_sharp)),
+                    //       child: Icon(Icons.notifications_sharp)),
                     //   color: Colors.white,
                     //   onPressed: () {},
                     // ),

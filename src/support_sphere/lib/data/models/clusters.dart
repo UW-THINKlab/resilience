@@ -1,3 +1,4 @@
+
 import 'package:equatable/equatable.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:support_sphere/data/models/person.dart';
@@ -5,7 +6,7 @@ import 'package:logging/logging.dart';
 
 final log = Logger('Cluster');
 
-class Cluster extends Equatable {
+class Cluster extends Equatable implements Comparable {
 
   const Cluster({
     required this.id,
@@ -56,10 +57,13 @@ class Cluster extends Equatable {
       final geom = json['geom'];
       final List<dynamic> coords = geom['coordinates'][0];
       for (var point in coords) {
-        points.add(LatLng(point[0], point[1]));
+        // Noting: The data is stored in long, lat.
+        // The LatLng structure expects lat, long
+        points.add(LatLng(point[1], point[0]));
       }
     }
     final meetingPoint = json['meeting_point'] != null ? LatLng.fromJson(json['meeting_point']) : null;
+    //log.fine("#### $meetingPoint -- ${json['meeting_point']}");
     final captains = json['captains'] != null ? Captains.fromJson(json['captains']) : null;
 
     return Cluster(
@@ -73,9 +77,49 @@ class Cluster extends Equatable {
     );
   }
 
+  // Define a toJson method to convert Cluster object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'notes': notes,
+      'meeting_place': meetingPlace,
+      'geom': geom,
+      'meeting_point': meetingPoint,
+      'captains': captains,
+    };
+  }
+
   LatLng? centroid() {
     return geom != null ? PolygonCentroid.findPolygonCentroid(geom!): null;
   }
+
+  @override
+  int compareTo(other) {
+    if (other.runtimeType == Cluster) {
+      return name!.compareTo(other.name);
+    }
+    else {
+      return -1;
+    }
+  }
+
+
+//   List<Marker> markers() {
+//     final List<Marker> markers = [];
+//     // cluster captains
+//     if (captains != null) {
+//       for (var captain in captains) {
+
+//       }
+//     }
+//     // meeting place
+//     if (meetingPoint != null) {
+//       markers.add(PointOfInterest.markerFor(meetingPoint!, "meeting-place", "green"));
+//     }
+
+//     return markers;
+//   }
 }
 
 class Captains extends Equatable {

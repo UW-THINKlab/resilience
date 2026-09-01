@@ -1,11 +1,4 @@
-
-
-class MessageUrgency {
-  static const String normal = "normal";
-  static const String important = "important";
-  static const String urgent = "urgent";
-  static const String emergency = "emergency";
-}
+import 'package:support_sphere/data/models/generated_classes.dart';
 
 class Message {
   Message({
@@ -32,7 +25,7 @@ class Message {
   /// Date and time when the message was created
   final DateTime sentOn;
 
-  final String urgency;
+  final MESSAGEURGENCY urgency;
 
   Message.fromJson({
     required Map<String, dynamic> json,
@@ -40,7 +33,7 @@ class Message {
         fromId = json['from_id'],
         toId = json['to_id'],
         content = json['content'],
-        urgency = json['urgency'],
+        urgency = MESSAGEURGENCY.values.byName(json['urgency']),
         sentOn = DateTime.parse(json['sent_on']);
 
   static List<Message> fromList(List<dynamic> stuff) {
@@ -50,5 +43,4 @@ class Message {
     }
     return messages;
   }
-
 }

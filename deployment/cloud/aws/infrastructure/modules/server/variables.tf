@@ -26,7 +26,6 @@ variable "instance_type" {
 variable "volume_size" {
   description = "The instance volume size to use for the server"
   type        = string
-
 }
 
 variable "kms_key_arn_west" {

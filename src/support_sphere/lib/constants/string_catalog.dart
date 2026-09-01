@@ -1,11 +1,14 @@
 import 'package:intl/intl.dart';
+import 'package:support_sphere/constants/appconfig.dart' show AppConfig;
 
 /// Strings used in the app
 class AppStrings {
-  static const String appName = 'Resilience - Laurelhurst';
-  static const String signUpWelcome =
+  static final String appName = 'Resilience - ${AppConfig.neighborhood}';
+  static final String signUpWelcome =
       'Welcome to ${AppStrings.appName}\nCreate a new account and prepare with your community';
-  static const String testEmergencyBannerText = "This is a test emergency.";
+  static const String testEmergencyBannerText =
+      "This is a test of emergency mode.";
+  static const String emergencyBannerText = "Emergency mode declared.";
 }
 
 class EmergencyAlertDialogStrings {
@@ -65,6 +68,16 @@ class UserProfileStrings {
   static const String meetingPlace = 'Meeting place';
   static const String captains = 'Captain(s)';
   static const String submit = 'Submit';
+  static const String removeMembersButton =
+      'Remove members (must be added by code)';
+  static const String deleteMyAccount = 'Delete My Account';
+  static const String manageBlockedUsers = 'Manage Block List';
+  static const String confirmPrompt = 'Please Confirm';
+  static const String confirmAccountDelete =
+      'Are you sure you want to delete your account?';
+  static const String destructiveActions = 'Destructive Actions';
+  static const String deleteAccountConfirm = 'Delete Account';
+  static const String deleteAccountCancel = 'Cancel';
 }
 
 /// Checklist messages
@@ -92,7 +105,8 @@ class ChecklistStrings {
       'Complete $frequencyName';
   static const String newChecklist = 'New Checklist';
   static const String manageChecklists = 'Manage Preparedness Checklists';
-  static const String addNewPreparednessChecklist = 'Add New Preparedness Checklist';
+  static const String addNewPreparednessChecklist =
+      'Add New Preparedness Checklist';
   static const String editPreparednessChecklist = 'Edit Preparedness Checklist';
   static const String edit = 'Edit';
   static const String save = 'Save';
@@ -100,8 +114,13 @@ class ChecklistStrings {
   static const String titleFieldLabel = 'Title*';
   static const String frequencyFieldLabel = 'Frequency';
   static const String priorityFieldLabel = 'Priority Level*';
-  static const String descriptionFieldLabel = 'Description* (Visible to all users)';
-  static const String notesFieldLabel = 'Notes (Visible only to LEAP steering committee)';
+  static const String priorityLow = 'Low';
+  static const String priorityMedium = 'Medium';
+  static const String priorityHigh = 'High';
+  static const String descriptionFieldLabel =
+      'Description* (Visible to all users)';
+  static const String notesFieldLabel =
+      'Notes (Visible only to LEAP steering committee)';
   static const String stepLabelFieldLabel = 'Label*';
   static const String stepDescriptionFieldLabel = 'Step Description';
   static const String pleaseSelect = '-- Please Select --';
@@ -113,13 +132,54 @@ class ResourceStrings {
   static const String selectResourceType = 'Select a resource type';
   static const String noResourcesFound = 'No resources found';
   static const String allResources = 'All Resources';
-  static const String addResource = 'Add New Resource or Skill';
+  static const String addResource = 'New Resource';
   static const String manageResources = 'Manage Resources';
   static const String resourcesInventory = 'Resources Inventory';
   static const String noUserResources = 'You have not added any resources yet';
-  static String addedOnDate(DateTime date) => "Added on ${DateFormat.yMMMd('en').format(date)}";
-  static const String markUpToDate = 'Mark as up to date';
-  static const String delete = 'Delete item';
+  static String addedOnDate(DateTime date) =>
+      "Added on ${DateFormat.yMMMd('en').format(date)}";
+  static const String markUpToDate = 'Up-to-date';
+  static const String delete = 'Delete';
+  static const String quantity = 'Quantity';
+  static const String notes = 'Notes';
+  static const String update = 'Update';
+  static const String whoCanRequestLabel = 'Who can request:';
+  static const String whoCanRequestEmergencyLabel = 'In an emergency:';
+  static const String updateSuccess = 'Item updated successfully';
+  static String bulkUpdateSuccess(int count) =>
+      '$count item(s) updated successfully';
+  static const String deleteSuccess = 'Item deleted successfully';
+  static String bulkDeleteSuccess(int count) =>
+      '$count item(s) deleted successfully';
+  static const String resourceRemovedMessage =
+      'This resource has been removed.';
+  static String itemLabel(int number) => '$number)';
+  static String deleteConfirm(List<int> itemNumbers) {
+    return itemNumbers.length == 1
+        ? 'Delete Item ${itemNumbers.first}?'
+        : 'Delete ${itemNumbers.length} items?';
+  }
+
+  static String deleteConfirmWithReservations(
+    List<int> itemNumbersWithReservations,
+  ) {
+    final itemsText = itemNumbersWithReservations.length == 1
+        ? 'Item ${itemNumbersWithReservations.first} has a reservation on it.'
+        : 'Items ${itemNumbersWithReservations.join(', ')} have reservations on them.';
+    return '$itemsText Still delete?';
+  }
+}
+
+class SharingScopeStrings {
+  static const String clusterOnly = 'My Cluster Only';
+  static const String neighborhood = 'All Clusters in Neighborhood';
+  static const String everyone = 'Everyone';
+}
+
+class SelectionToolbarStrings {
+  static const String select = 'Select';
+  static const String delete = 'Delete';
+  static String selectedCount(int count) => '$count selected';
 }
 
 class AddResourceInventoryFormStrings {
@@ -128,13 +188,16 @@ class AddResourceInventoryFormStrings {
   static String addTitle(String resourceName) =>
       "Add $resourceName to Inventory";
   static const String howManyAdding = 'How many are you adding?';
+  static const String setSharingScopeNormal = 'Who can request this item?';
+  static const String setSharingScopeEmergency =
+      'Who can request this in an emergency?';
   static String askSubtype(String resourceName) =>
       "What type of $resourceName is it (if known)?";
   static const String notes = 'Any notes on this item?';
   static String notesHelperText =
       "Notes are always visible to ${AppStrings.appName} admins and your cluster captain, and are visible to a requester if you accept their request.";
   static String thankYouText(String resourceName) =>
-      "You have successfully added your $resourceName. You are helping our community be more prepared and resilient! Go to My Resources to update this item at any time. During an emergency, you may receive a request to use your item. The requester won't know your identity until you accept their request. Likewise, you'll be able to request items and skills others have added. To keep our inventory up to date, we'll check in with you in six months to see if the item is still available.";
+      "You have successfully added your $resourceName. Thanks for helping our community be more prepared and resilient! Go to My Resources to update this item at any time. During an emergency, you may receive a request to use your item. The requester won't know your identity until you accept their request. Likewise, you'll be able to request items and skills others have added. To keep our inventory up to date, we'll check in with you in six months to see if the item is still available.";
 }
 
 class AddResourceFormStrings {
@@ -146,6 +209,22 @@ class AddResourceFormStrings {
   static const String subtype = 'Subtype, if applicable';
   static const String notes =
       'Notes (visible only to neighborhood steering committee)';
+}
+
+class RequestResourceFormStrings {
+  static const String numberNeeded = 'Number needed';
+  static const String timeNeeded = 'Time needed';
+  static const String notes =
+      'Details or special notes on this request (optional)';
+  static String reqTitle(String resourceName) => "Request $resourceName";
+  static const String requestCancelled = 'Request canceled';
+  static String insufficientInventoryWarning(
+    int totalAvailable,
+    int requested,
+  ) =>
+      'Insufficient Quantity: $totalAvailable of the $requested requested unit(s) are '
+      'currently available to request. Continue anyway?';
+  static const String requestScope = 'Who to ask for this item?';
 }
 
 /// Error messages
@@ -162,24 +241,126 @@ class ErrorMessageStrings {
 
 /// App Modes Strings
 class AppModes {
-  static const String normal = 'NORMAL';
-  static const String emergency = 'EMERGENCY';
-  static const String testEmergency = 'TEST';
+  static const String normal = 'normal';
+  static const String emergency = 'emergency';
+  static const String testEmergency = 'test';
 }
 
 class AppRoles {
-  static const String user = 'USER';
-  static const String subcommunityAgent = 'SUBCOM_AGENT';
-  static const String communityAdmin = 'COM_ADMIN';
-  static const String admin = 'ADMIN';
+  static const String user = 'user';
+  static const String subcommunityAgent = 'subcom_agent';
+  static const String communityAdmin = 'com_admin';
+  static const String admin = 'admin';
 }
 
 class NavRouteLabels {
-  static const String home = 'Home';
-  static const String profile = 'Me';
-  static const String prepare = 'Prepare';
-  static const String resources = 'Resources';
+  static const String home = 'Map';
+  static const String profile = 'My Profile';
+  static const String prepare = 'My Checklists';
+  static const String resources = 'My Resources';
   static const String messages = 'Messages';
   static const String manageResources = 'Manage Resources';
   static const String manageChecklists = 'Manage Checklists';
+  static const String adminCluster = 'Cluster Admin';
+  static const String adminNeighborhood = 'Neighborhood Admin';
+}
+
+class ClusterAdminStrings {
+  static const String addHousehold = 'Add Household';
+  static const String selectFilter = 'Filter households';
+  static const String clusterFilterAll = "All households";
+  static const String clusterFilterAssist = "Needs assisstance";
+  static const String clusterFilterResources = "Has resources";
+  static const String clusterFilterParticipate = "Low participation";
+  static const String searchHouseholds = "Search households";
+  static const String noHouseholdsFound = 'No households found';
+}
+
+class NeighborhoodStrings {
+  static const String addCluster = 'New cluster';
+  static const String selectFilter = 'Filter clusters';
+  static const String clusterFilterAll = "All clusters";
+  static const String clusterFilterNeedCaptain = "Needs captain";
+  static const String clusterFilterParticipate = "Low participation";
+  static const String searchClusters = "Search clusters";
+  static const String noClustersFound = 'No Cluster found';
+  static const String captainNeeded = 'Captain needed';
+  static const String adminNeeded = 'Admin needed';
+
+  static final String manageNeighborhood = "Manage ${AppConfig.neighborhood}";
+}
+
+class MessagesStrings {
+  static const String blockedCommunication = "Chat disabled with this user.";
+  static const String expiredRequest = "This request has expired.";
+  static const String block = 'Block User';
+  static const String unblock = 'Unblock User';
+  static const String acceptRequest = 'Accept';
+  static const String rejectRequest = 'Reject';
+  static const String tentativeAccept = 'Tentative';
+  static const String statusPending = 'Pending';
+  static const String statusTentative = 'Tentative';
+  static const String statusAccepted = 'Accepted';
+  static const String statusRejected = 'Rejected';
+  static const String statusReleased = 'Released';
+  static const String statusExpired = 'Expired';
+  static String acceptMessage(int accepted, int total) => accepted == total
+      ? 'Accepted all $total requested item(s).'
+      : 'Accepted $accepted of $total requested item(s). '
+            'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String tentativeAcceptMessage(int accepted, int total) =>
+      accepted == total
+      ? 'Tentatively accepting all $total requested item(s).'
+      : 'Tentatively accepting $accepted of $total requested item(s). '
+            'The remaining ${total - accepted} item(s) could not be fulfilled by this supplier.';
+  static String rejectMessage(int total) =>
+      'Rejected the request for $total item(s).';
+  static const String cancelRequest = 'Cancel Request';
+  static String cancelRequestMessage(int total) =>
+      'Canceled the request for $total item(s).';
+  static const String newMessageGroupTooltip = 'New message group';
+}
+
+class HomeMapStrings {
+  static const String setMeetingPointTooltip = 'Set cluster meeting point';
+  static const String jumpToLocationTooltip = 'Jump to your location';
+  static const String toggleClusterViewTooltip = 'Toggle cluster view';
+  static const String addPointOfInterestTooltip = 'Add point of interest';
+  static const String addPointOfInterestPlacementHint =
+      'Tap the map to place your point of interest';
+}
+
+class AddPointOfInterestFormStrings {
+  static const String title = 'Add point of interest';
+  static const String name = 'Name';
+  static const String address = 'Address';
+  static const String type = 'Type';
+  static const String required = 'Required';
+  static const String visibleToNeighborhood = 'Make public';
+  static const String cancel = 'Cancel';
+  static const String add = 'Add';
+  static const String noExpiration = 'Add expiry';
+  static const String setExpiration = 'Set expiration';
+  static const String clearExpiration = 'Clear expiration';
+  static String expiresOn(DateTime dt) =>
+      'Expires ${DateFormat.yMMMd('en').add_jm().format(dt.toLocal())}';
+}
+
+class PoiDetailsDialogStrings {
+  static const String type = 'Type';
+  static const String address = 'Address';
+  static const String notes = 'Notes';
+  static const String visibility = 'Visibility';
+  static const String delete = 'Delete';
+  static const String confirmDeleteTitle = 'Delete point of interest?';
+  static const String confirmDeleteMessage =
+      'This will permanently remove this point of interest from the map.';
+}
+
+class SaveMeetingPointDialogStrings {
+  static const String title = 'Save new cluster meeting point?';
+  static const String descriptionLabel = 'Description/Notes:';
+  static const String description = 'Description';
+  static const String cancel = 'Cancel';
+  static const String save = 'Save';
 }

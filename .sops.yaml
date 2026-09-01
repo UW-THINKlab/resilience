@@ -2,4 +2,6 @@
 creation_rules:
   - path_regex: values\.cloud\.yaml$
     pgp: 'AD28C8D8C60268C5F329509B31FEC69867EB2B81'
-    kms: 'arn:aws:kms:us-west-2:871683513797:key/9531919a-aae2-4ad9-bd2a-4f30eb8250c3,arn:aws:kms:us-east-1:871683513797:key/0fc8c451-67d6-4b6f-8ad2-d8537d375937'
+    kms: 'arn:aws:kms:us-west-2:503561456208:key/8f487e8c-d6c5-4ed4-9ace-c5011baead84,arn:aws:kms:us-east-1:503561456208:key/4ce4551c-4b42-4e0a-ac14-961f385c9517'
+  - path_regex: ^locations/[^/]+/.*\.(yaml|json|geojson)$
+    age: age1g7yh7stzvsq8mw5gqh27vhhpq9wxpp0am7ytf8e4q0pxp7sf6p5sakhf5e

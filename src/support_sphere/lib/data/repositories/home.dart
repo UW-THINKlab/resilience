@@ -1,16 +1,20 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:geodesy/geodesy.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/models/captain_marker.dart';
+import 'package:support_sphere/data/repositories/cluster.dart'
+    show ClusterRepository;
 import 'package:support_sphere/data/services/cluster_service.dart';
 import 'package:support_sphere/data/services/poi_service.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
 final log = Logger('HomeRepository');
 
-
 class HomeRepository {
   final ClusterService _clusterService = ClusterService();
+  final ClusterRepository clusterRepo = ClusterRepository();
   final PointOfInterestService _poiService = PointOfInterestService();
 
   // get all required data for displaying map on home page
@@ -19,67 +23,78 @@ class HomeRepository {
         List<CaptainMarker>? captainMarkers,
         Cluster? cluster,
         List<PointOfInterest>? pointsOfInterest,
+        Map<String, (FaIconData, Color)> poiTypeStyles,
       })?> getHomeData(String userProfileId) async {
+
     final clusterData =
         await _clusterService.getClusterIdByUserProfileId(userProfileId);
-    final clusterId =
-        clusterData?['people']['people_groups']['households']['cluster_id'];
 
-    if (clusterId == null) return null;
+    log.fine("^^^^^ clusterData: $clusterData");
 
-    final userCluster = await _clusterService.getClusterById(clusterId);
-    final captainsData =
-        await _clusterService.getCaptainsByClusterId(clusterId);
-    final captains =
-        captainsData?.map((row) => row['captain']['user_profile']['person']);
+    Iterable<dynamic>? captains;
+    Cluster? cluster;
 
-    final cluster = userCluster != null ? Cluster.fromJson(userCluster) : null;
+    final groups = clusterData?['people']['people_groups'];
+    if (groups != null) {
+      final clusterId = groups['households']['cluster_id'];
+      log.fine("^^^^^ clusterId: $clusterId");
 
-    final pointsOfInterest = await _poiService.getPointsOfInterest();
+      if (clusterId != null) {
+        cluster = await clusterRepo.getCluster(clusterId);
+        log.fine("^^^^^ cluster: $cluster");
+      }
+
+      final captainsData =
+          await _clusterService.getCaptainsByClusterId(clusterId);
+      captains =
+          captainsData?.map((row) => row['captain']['user_profile']['person']);
+    }
+
+    log.fine('getHomeData: fetching pointsOfInterest for $userProfileId');
+    final pointsOfInterest = await _poiService.getPointsOfInterest(
+      userProfileId,
+    );
+    log.fine('getHomeData: got ${pointsOfInterest.length} pointsOfInterest');
+
+    log.fine('getHomeData: fetching poiTypeStyles');
+    final poiTypeStyles = await _poiService.getPointOfInterestTypes();
+    log.fine('getHomeData: got ${poiTypeStyles.length} poiTypeStyles');
 
     return (
-      captainMarkers: captains
-          ?.map((captain) => CaptainMarker(
-                id: captain['id'],
-                familyName: captain['family_name'],
-                givenName: captain['given_name'],
-                householdGeom: captain['people_groups']['households']['geom'] != null
-                    ? PolygonCentroid.findPolygonCentroid(
-                        captain['people_groups']['households']['geom']['coordinates'][0]
-                            .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
-                            .toList())
-                    : null,
-              ))
-          .toList(),
+      captainMarkers: captains?.map((captain) {
+        LatLng? householdGeom;
+        final geom = captain['people_groups']['households']['geom'];
+        switch (geom['type']) {
+          case "Point":
+            final latlng =
+                LatLng(geom['coordinates'][1], geom['coordinates'][0]);
+            householdGeom = PolygonCentroid.findPolygonCentroid([latlng]);
+            break;
+          default:
+            log.warning(
+              'Geom type of type ${geom['type'].runtimeType} is not handled',
+            );
+        }
+        return CaptainMarker(
+          id: captain['id'],
+          familyName: captain['family_name'],
+          givenName: captain['given_name'],
+          householdGeom: householdGeom,
+        );
+      }).toList(),
       cluster: cluster,
       pointsOfInterest: pointsOfInterest,
+      poiTypeStyles: poiTypeStyles,
     );
   }
 
-  Future<List<Cluster>> getAllClusters() async {
-      //log.fine("getAllClusters");
+  Future<List<PointOfInterest>> getPointsOfInterest(
+    String userProfileId,
+  ) {
+    return _poiService.getPointsOfInterest(userProfileId);
+  }
 
-      final clusterList = await _clusterService.getAllClusters();
-      if (clusterList == null || clusterList.isEmpty) {
-        return [];
-      }
-
-      final List<Cluster> clusters = [];
-      for (var clusterData in clusterList) {
-        var cluster = Cluster.fromJson(clusterData);
-        clusters.add(cluster);
-      }
-      log.fine("getAllClusters found ${clusters.length} clusters");
-
-      return clusters;
-    }
-
-    Future<Cluster> updateClusterMeetingPoint(Cluster cluster, LatLng? meetingPoint) async {
-      if (meetingPoint == null) {
-        return cluster;
-      }
-      // update db
-      final data = await _clusterService.updateClusterMeetingPoint(cluster.id, meetingPoint);
-      return Cluster.fromJson(data!);
-    }
+  Future<Map<String, (FaIconData, Color)>> getPointOfInterestTypes() {
+    return _poiService.getPointOfInterestTypes();
+  }
 }

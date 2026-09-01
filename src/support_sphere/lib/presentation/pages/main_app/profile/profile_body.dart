@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
-import 'package:support_sphere/data/models/households.dart';
 import 'package:support_sphere/data/models/person.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/logic/cubit/profile_cubit.dart';
+import 'package:support_sphere/presentation/components/confirm_button.dart';
 import 'package:support_sphere/presentation/components/profile_section.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:support_sphere/constants/constants.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/action_buttons.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/household_information.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/info_row.dart';
+import 'package:support_sphere/presentation/pages/main_app/profile/person_chips_row.dart';
 
 /// Profile Body Widget
 class ProfileBody extends StatelessWidget {
@@ -25,62 +27,96 @@ class ProfileBody extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => ProfileCubit(authUser),
-      child: LayoutBuilder(builder: (context, constraint) {
-        return Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: const Center(
-                // TODO: Add profile picture
-                child: Text(UserProfileStrings.userProfile,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ),
+      child: Column(
+        children: [
+          const _ProfileHeader(),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              children: const [
+                _PersonalInformation(),
+                HouseholdInformation(),
+                _ClusterInformation(),
+                ActionButtons(),
+              ],
             ),
-            Expanded(
-              child: Container(
-                height: MediaQuery.sizeOf(context).height,
-                padding: const EdgeInsets.all(10),
-                child: ListView(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  children: const [
-                    // Personal Information
-                    _PersonalInformation(),
-                    // Household Information
-                    _HouseholdInformation(),
-                    // Cluster Information
-                    _ClusterInformation(),
-                    // TODO: Add Privacy and Notifications
-                    // Privacy and Notifications
-                    // _PrivacyAndNotifications(),
-                    // Log Out Button
-                    _LogOutButton(),
-                  ],
-                ),
-              ),
-            )
-          ],
-        );
-      }),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _LogOutButton extends StatelessWidget {
-  const _LogOutButton();
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      buildWhen: (prev, curr) =>
+          prev.userProfile != curr.userProfile ||
+          prev.authUser != curr.authUser,
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.all(10),
-          child: ElevatedButton.icon(
-            onPressed: () =>
-                context.read<AuthenticationBloc>().add(AuthOnLogoutRequested()),
-            icon: const Icon(Ionicons.log_out_outline),
-            label: const Text(LoginStrings.logout),
+        final givenName = state.userProfile?.givenName ?? '';
+        final familyName = state.userProfile?.familyName ?? '';
+        final fullName = '$givenName $familyName'.trim();
+        final email = state.authUser?.email ?? '';
+        final avatarInitials = state.userProfile?.initials() ?? '';
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          color: Theme.of(context)
+              .colorScheme
+              .primaryContainer
+              .withValues(alpha: 0.35),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: Text(
+                  avatarInitials.isEmpty ? '?' : avatarInitials,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      fullName.isEmpty ? 'User' : fullName,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    if (email.isNotEmpty)
+                      Text(
+                        email,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              ConfirmButton(
+                label: LoginStrings.logout,
+                color: Colors.white,
+                icon: const Icon(Icons.logout),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                child: const Text(LoginStrings.logout,
+                    style: TextStyle(fontSize: 16)),
+                onPressed: () => context
+                    .read<AuthenticationBloc>()
+                    .add(AuthOnLogoutRequested()),
+              ),
+            ],
           ),
         );
       },
@@ -102,11 +138,11 @@ class _PersonalInformation extends StatelessWidget {
       builder: (context, state) {
         Person? userProfile = state.userProfile;
         MyAuthUser? authUser = state.authUser;
-        String givenName = userProfile?.givenName ?? '';
-        String familyName = userProfile?.familyName ?? '';
-        String fullName = '$givenName $familyName';
-        String phoneNumber = authUser?.phone ?? '';
-        String email = authUser?.email ?? '';
+        final givenName = userProfile?.givenName ?? '';
+        final familyName = userProfile?.familyName ?? '';
+        final fullName = '$givenName $familyName'.trim();
+        final phoneNumber = authUser?.phone ?? '';
+        final email = authUser?.email ?? '';
 
         return ProfileSection(
           title: UserProfileStrings.personalInformation,
@@ -142,13 +178,11 @@ class _PersonalInformation extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+                        borderRadius: BorderRadius.circular(4)),
                   ),
                   onPressed: () {
                     if (formKey.currentState?.saveAndValidate() ?? false) {
                       final formData = formKey.currentState?.value;
-
                       if (formData != null && userProfile != null) {
                         context.read<ProfileCubit>().savePersonalInfoModal(
                               personId: userProfile.id,
@@ -166,26 +200,20 @@ class _PersonalInformation extends StatelessWidget {
             ),
           ),
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.fullName),
-                Text(fullName),
-              ],
+            InfoRow(
+              icon: Icons.person_outline,
+              label: UserProfileStrings.fullName,
+              value: fullName,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.phone),
-                Text(phoneNumber),
-              ],
+            InfoRow(
+              icon: Icons.call_outlined,
+              label: UserProfileStrings.phone,
+              value: phoneNumber,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.email),
-                Text(email),
-              ],
+            InfoRow(
+              icon: Icons.mail_outline,
+              label: UserProfileStrings.email,
+              value: email,
             ),
           ],
         );
@@ -194,170 +222,7 @@ class _PersonalInformation extends StatelessWidget {
   }
 }
 
-class _HouseholdInformation extends StatelessWidget {
-  const _HouseholdInformation();
-
-  String _getFullName(Person? person) {
-    String givenName = person?.givenName ?? '';
-    String familyName = person?.familyName ?? '';
-    return '$givenName $familyName';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormBuilderState>();
-
-    return BlocBuilder<ProfileCubit, ProfileState>(
-      buildWhen: (previous, current) => previous.household != current.household,
-      builder: (context, state) {
-        Household? household = state.household;
-        String address = household?.address ?? '';
-        String pets = household?.pets ?? '';
-        String notes = household?.notes ?? '';
-        String accessibilityNeeds = household?.accessibility_needs ?? '';
-        List<Person?> householdMembers =
-            household?.houseHoldMembers?.members ?? [];
-        householdMembers.map((person) {
-          String givenName = person?.givenName ?? '';
-          String familyName = person?.familyName ?? '';
-          String fullName = '$givenName $familyName';
-          return fullName;
-        }).toList();
-
-        return ProfileSection(
-          title: UserProfileStrings.householdInformation,
-          state: state,
-          modalBody: FormBuilder(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FormBuilderTextField(
-                  name: 'address',
-                  decoration: const InputDecoration(
-                      labelText: UserProfileStrings.address),
-                  initialValue: address,
-                ),
-                const SizedBox(height: 4),
-                FormBuilderTextField(
-                  name: 'pets',
-                  decoration:
-                      const InputDecoration(labelText: UserProfileStrings.pets),
-                  initialValue: pets,
-                ),
-                const SizedBox(height: 4),
-                FormBuilderTextField(
-                  name: 'accessibilityNeeds',
-                  decoration: const InputDecoration(
-                      labelText: UserProfileStrings.accessibilityNeeds),
-                  initialValue: accessibilityNeeds,
-                ),
-                const SizedBox(height: 4),
-                FormBuilderTextField(
-                  name: 'notes',
-                  decoration: const InputDecoration(
-                      labelText: UserProfileStrings.notes),
-                  initialValue: notes,
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (formKey.currentState?.saveAndValidate() ?? false) {
-                      final formData = formKey.currentState?.value;
-
-                      if (formData != null && household != null) {
-                        context.read<ProfileCubit>().saveHouseholdInfoModal(
-                              householdId: household.id,
-                              address: formData['address'],
-                              pets: formData['pets'],
-                              accessibilityNeeds:
-                                  formData['accessibilityNeeds'],
-                              notes: formData['notes'],
-                            );
-                        Navigator.of(context).pop();
-                      }
-                    }
-                  },
-                  child: const Text(UserProfileStrings.submit),
-                ),
-              ],
-            ),
-          ),
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(UserProfileStrings.householdMembers),
-              ],
-            ),
-            SizedBox(
-              height: 50.0,
-              child: ListView(shrinkWrap: true, children: [
-                for (var member in householdMembers)
-                  Row(
-                    children: [
-                      Text(_getFullName(member)),
-                      const SizedBox(width: 5),
-                      member!.profile != null ? const FaIcon(FontAwesomeIcons.user, size: 10) : const SizedBox.shrink(),
-                    ],
-                  ),
-              ]),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.address),
-                Text(address),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.pets),
-                Text(pets),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.accessibilityNeeds),
-                Text(accessibilityNeeds.isEmpty
-                    ? UserProfileStrings.accessibilityNeedsDefaultText
-                    : accessibilityNeeds),
-              ],
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(UserProfileStrings.notesWithNote),
-              ],
-            ),
-            SizedBox(
-              height: 50,
-              child: TextField(
-                controller: TextEditingController()..text = notes,
-                expands: true,
-                maxLines: null,
-                readOnly: true,
-                decoration:
-                    InputDecoration(filled: true, fillColor: Colors.grey[200]),
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// Cluster Information
 class _ClusterInformation extends StatelessWidget {
-  /// TODO: Add cluster information from database
   const _ClusterInformation();
 
   @override
@@ -366,45 +231,28 @@ class _ClusterInformation extends StatelessWidget {
       buildWhen: (previous, current) => previous.cluster != current.cluster,
       builder: (context, state) {
         Cluster? cluster = state.cluster;
-        String name = cluster?.name ?? '';
-        String meetingPlace = cluster?.meetingPlace ?? '';
-        List<Person?> captains = cluster?.captains?.people ?? [];
-        List<String> captainsNames = captains.map((captain) {
-          String givenName = captain?.givenName ?? '';
-          String familyName = captain?.familyName ?? '';
-          String fullName = '$givenName $familyName';
-          return fullName;
-        }).toList();
+        final name = cluster?.name ?? '';
+        final meetingPlace = cluster?.meetingPlace ?? '';
+        final captains = cluster?.captains?.people ?? <Person?>[];
+
         return ProfileSection(
           title: UserProfileStrings.clusterInformation,
           readOnly: true,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.clusterName),
-                Text(name),
-              ],
+            InfoRow(
+              icon: Icons.home_outlined,
+              label: UserProfileStrings.clusterName,
+              value: name,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(UserProfileStrings.meetingPlace),
-                Text(meetingPlace),
-              ],
+            InfoRow(
+              icon: Icons.location_searching_outlined,
+              label: UserProfileStrings.meetingPlace,
+              value: meetingPlace,
             ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(UserProfileStrings.captains),
-              ],
-            ),
-            SizedBox(
-              height: 50.0,
-              child: ListView(
-                shrinkWrap: true,
-                children: captainsNames.map((n) => Text(n)).toList(),
-              ),
+            PersonChipsRow(
+              people: captains,
+              label: UserProfileStrings.captains,
+              icon: Icons.gpp_good_outlined,
             ),
           ],
         );

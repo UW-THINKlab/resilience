@@ -1,52 +1,59 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:support_sphere/data/models/generated_classes.dart';
 
-class ResourceTypes extends Equatable {
-  const ResourceTypes({
-    required this.id,
-    required this.name,
-    this.description = '',
-  });
+export 'package:support_sphere/data/models/generated_classes.dart'
+    show ResourceTypes;
 
-  final String id;
-  final String name;
-  final String? description;
+enum ResourceTypesEnum {
+  durable('Durable'),
+  consumable('Consumable'),
+  skill('Skill');
 
-  @override
-  List<Object?> get props => [id, name, description];
+  final String value;
 
-  IconData get icon {
-    // Get the icon based on the resource type
-    switch (name) {
-      case 'Durable':
-        return FontAwesomeIcons.wrench;
-      case 'Consumable':
-        return FontAwesomeIcons.glassWater;
-      case 'Skill':
-        return FontAwesomeIcons.helmetSafety;
-      default:
-        return FontAwesomeIcons.question;
+  const ResourceTypesEnum(this.value);
+
+  static ResourceTypesEnum fromString(String value) {
+    return ResourceTypesEnum.values.firstWhere(
+      (e) => e.toString() == 'ResourceTypesEnum.${value.toLowerCase()}',
+    );
+  }
+}
+
+extension ResourceTypeIcon on ResourceTypes {
+  bool get quantifiable {
+    switch (ResourceTypesEnum.fromString(name)) {
+      case ResourceTypesEnum.durable:
+        return true;
+      case ResourceTypesEnum.consumable:
+        return true;
+      case ResourceTypesEnum.skill:
+        return false;
     }
   }
 
-  static ResourceTypes fromJson(Map<String, dynamic> json) {
-    return ResourceTypes(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-    );
+  FaIconData get icon {
+    switch (ResourceTypesEnum.fromString(name)) {
+      case ResourceTypesEnum.durable:
+        return FontAwesomeIcons.wrench;
+      case ResourceTypesEnum.consumable:
+        return FontAwesomeIcons.glassWater;
+      case ResourceTypesEnum.skill:
+        return FontAwesomeIcons.helmetSafety;
+    }
   }
 
-  ResourceTypes copyWith({
-    String? id,
-    String? name,
-    String? description,
-  }) {
-    return ResourceTypes(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-    );
+  // Matches the color scheme used for resource-request chat groups in the
+  // inbox (blue=consumable, yellow=durable, green=skill).
+  MaterialColor get baseColor {
+    switch (ResourceTypesEnum.fromString(name)) {
+      case ResourceTypesEnum.durable:
+        return Colors.yellow;
+      case ResourceTypesEnum.consumable:
+        return Colors.blue;
+      case ResourceTypesEnum.skill:
+        return Colors.green;
+    }
   }
 }

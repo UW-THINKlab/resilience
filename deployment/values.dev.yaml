@@ -156,7 +156,7 @@ kong:
       #   hosts:
       #     - example.com
     hosts:
-      - host: localhost
+      - host:
         paths:
           - path: /
             pathType: Prefix

@@ -1,5 +1,4 @@
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
@@ -95,7 +94,7 @@ class _FirstNameInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.person_sharp,
+              Icons.person_sharp,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -133,7 +132,7 @@ class _LastNameInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.person_sharp,
+              Icons.person_sharp,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -171,7 +170,7 @@ class _EmailInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.mail_outline,
+              Icons.mail_outline,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -200,7 +199,6 @@ class _SignupCodeInput extends StatelessWidget {
           validator: (value) => validateValue<SignupCubit>([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(7),
-              FormBuilderValidators.uppercase(),
             ],
             value,
             context,
@@ -212,7 +210,7 @@ class _SignupCodeInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.qr_code_outline,
+              Icons.qr_code_2_outlined,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -260,7 +258,7 @@ class _PasswordInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.lock_closed_outline,
+              Icons.lock_outline,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -270,8 +268,8 @@ class _PasswordInput extends StatelessWidget {
               },
               child: Icon(
                 state.showPassword
-                    ? Ionicons.eye_off_outline
-                    : Ionicons.eye_outline,
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 size: 15.0,
                 color: Theme.of(context).colorScheme.secondary,
               ),
@@ -317,7 +315,7 @@ class _ConfirmedPasswordInput extends StatelessWidget {
             enabledBorder: border(context),
             focusedBorder: focusBorder(context),
             prefixIcon: Icon(
-              Ionicons.lock_open_outline,
+              Icons.lock_open_outlined,
               size: 15.0,
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -327,8 +325,8 @@ class _ConfirmedPasswordInput extends StatelessWidget {
               },
               child: Icon(
                 state.showPassword
-                    ? Ionicons.eye_off_outline
-                    : Ionicons.eye_outline,
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 size: 15.0,
                 color: Theme.of(context).colorScheme.secondary,
               ),

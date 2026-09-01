@@ -8,18 +8,19 @@ sts = boto3.client('sts')
 def sanitize(input):
     return input.lower().strip().replace(" ", "")
 
+account_id = sanitize(os.environ.get('TF_VAR_account_id', 'FIXME'))
 project_name = sanitize(os.environ.get('TF_VAR_project_name', 'Support Sphere'))
 neighborhood = sanitize(os.environ.get('TF_VAR_neighborhood', 'Laurelhurst'))
 
 resource_prefix = f'{project_name}-{neighborhood}'
 
-scaling_role_arn = f'arn:aws:iam::871683513797:role/{resource_prefix}-scaling-role'
+scaling_role_arn = f'arn:aws:iam::{account_id}:role/{resource_prefix}-scaling-role'
 asg_name = f'{resource_prefix}-asg'
 
 def start_session(github):
     if github:
         return boto3.session.Session(region_name='us-west-2')
-    
+
     response = sts.assume_role(
         RoleArn=scaling_role_arn,
         RoleSessionName='run-cloud-server',
@@ -32,7 +33,7 @@ def start_session(github):
         region_name='us-west-2'
     )
 
-        
+
 def check_current_capacity(autoscaling):
     response = autoscaling.describe_auto_scaling_groups(
         AutoScalingGroupNames=[asg_name]
@@ -58,7 +59,7 @@ def scale_up(autoscaling):
     if check_current_capacity(autoscaling=autoscaling) == 1:
         print('Server is already running')
         return
-    
+
     response = autoscaling.set_desired_capacity(
         AutoScalingGroupName=asg_name,
         DesiredCapacity=1
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('--replace', action='store_true', help='Replace the server by scaling down and then scaling up')
     parser.add_argument('--github', action='store_true', help='Run the server with github repository')
 
-    args = parser.parse_args() 
+    args = parser.parse_args()
 
     print('Assuming role')
     session = start_session(args.github)

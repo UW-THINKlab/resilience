@@ -10,3 +10,5 @@ class AuthOnCurrentUserChanged extends AuthenticationEvent {
 }
 
 class AuthOnLogoutRequested extends AuthenticationEvent {}
+
+class AuthDeleteMyUserRequested extends AuthenticationEvent {}

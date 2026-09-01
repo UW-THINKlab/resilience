@@ -1,7 +1,16 @@
 import 'package:geodesy/geodesy.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/models/clusters.dart';
+import 'package:support_sphere/data/models/generated_classes.dart'
+    show UserRoles, UserCaptainClusters, APP_ROLES;
+import 'package:support_sphere/data/models/households.dart' show Household;
+import 'package:support_sphere/data/services/auth_service.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
+import 'package:uuid/v4.dart' show UuidV4;
+
+final log = Logger('ClusterService');
 
 class ClusterService {
   /// Retrieves the cluster by cluster id.
@@ -9,15 +18,23 @@ class ClusterService {
   /// Returns null if the cluster does not exist.
   Future<PostgrestMap?> getClusterById(String clusterId) async {
     /// This query will perform a join on the user_profiles and people tables
-    return await supabase.from('clusters').select('*').eq('id', clusterId).maybeSingle();
+    return await supabase
+        .from('clusters')
+        .select('*')
+        .eq('id', clusterId)
+        .maybeSingle();
   }
 
   Future<PostgrestList?> getAllClusters() async {
     return await supabase.from('clusters').select('*');
   }
 
-  Future<PostgrestMap?> getClusterIdByUserProfileId(String userProfileId) async {
-    return await supabase.from('user_profiles').select('''
+  Future<PostgrestMap?> getClusterIdByUserProfileId(
+    String userProfileId,
+  ) async {
+    return await supabase
+        .from('user_profiles')
+        .select('''
       id,
       people (
         people_groups (
@@ -26,14 +43,47 @@ class ClusterService {
           )
         )
       )
-    ''').eq('id', userProfileId).maybeSingle();
+    ''')
+        .eq('id', userProfileId)
+        .maybeSingle();
   }
 
-  Future<PostgrestMap?> updateClusterMeetingPoint(String clusterId, LatLng location) async {
+  // FIXME - couldn't find an existing lib
+  String pointGisStr(LatLng location) {
+    return "POINT(${location.longitude} ${location.latitude})";
+  }
+
+  // POLYGON ((latVal longVal, latVal longVal, ...))"
+  String regionGisStr(List<LatLng> geometry) {
+    String buffer = "POLYGON ((";
+    for (final location in geometry) {
+      buffer += "${location.latitude} ${location.longitude}, ";
+    }
+    buffer = buffer.substring(0, buffer.length - 2); // strip the last ', '
+    buffer += "))";
+    return buffer;
+  }
+
+  Future<PostgrestMap?> updateClusterMeetingPoint(
+    String clusterId,
+    LatLng location,
+    String? description,
+  ) async {
     // update
-    await supabase.from('clusters').update({'meeting_point': location}).eq('id', clusterId);
+    log.fine("updateClusterMeetingPoint: $clusterId $location");
+    await supabase
+        .from('clusters')
+        .update({
+          'meeting_point': pointGisStr(location),
+          'meeting_place': description,
+        })
+        .eq('id', clusterId);
+
     // new version
-    return getClusterById(clusterId);
+    final updatedCluster = await getClusterById(clusterId);
+    final point = updatedCluster?["meeting_point"];
+    log.fine(">>> updated meeting point: $point");
+    return updatedCluster;
   }
 
   Future<PostgrestList?> getCaptainsByClusterId(String clusterId) async {
@@ -57,5 +107,154 @@ class ClusterService {
       ''')
         .eq('cluster_id', clusterId)
         .eq('user_roles.role', AppRoles.subcommunityAgent);
+  }
+
+  Future<List<Household>> getHouseholds(String clusterId) async {
+    PostgrestList? data = await supabase
+        .from('households')
+        .select('*')
+        .eq('cluster_id', clusterId);
+
+    List<Household> households = [];
+
+    for (var record in data) {
+      households.add(Household.fromJson(record));
+    }
+
+    if (households.isEmpty) {
+      log.warning("No households for cluster $clusterId");
+      log.fine("Repsonse: $data");
+    }
+
+    return households;
+  }
+
+  Future<void> addHousehold(String clusterId, Household household) async {
+    final householdId = const UuidV4().generate();
+    await supabase.from('households').insert({
+      'id': householdId,
+      'cluster_id': clusterId,
+      'name': household.name,
+      'address': household.address,
+      'notes': household.notes,
+      'pets': household.pets,
+      'accessibility_needs': household.accessibilityNeeds,
+      //'created_by': supabase.auth.currentUser!.id,
+      //'created_at': DateTime.now().toIso8601String(),
+    });
+    await AuthService().createSignUpCodeForHousehold(householdId);
+  }
+
+  Future<void> deleteHousehold(String householdId) async {
+    await supabase.from('households').delete().eq('id', householdId);
+  }
+
+  /// upsertCluster - takes a name to value mapping to apply values to a cluster
+  /// assumes 'id' is set.
+  Future<void> upsertCluster(Map<String, dynamic> clusterUpdate) async {
+    log.finer("Updating cluster: $clusterUpdate");
+    await supabase.from('clusters').upsert(clusterUpdate);
+  }
+
+  Future<void> deleteCluster(String clusterId) async {
+    await supabase.from('clusters').delete().eq('id', clusterId);
+  }
+
+  Future<PostgrestMap?> getUserRoleByProfileId(
+    String userProfileId,
+    APP_ROLES role,
+  ) async {
+    return await supabase
+        .from(UserRoles.table_name)
+        .select(UserRoles.c_id)
+        .eq(UserRoles.c_userProfileId, userProfileId)
+        .eq(UserRoles.c_role, role.name)
+        .maybeSingle();
+  }
+
+  Future<PostgrestMap> upsertUserRole(
+    String userProfileId,
+    APP_ROLES role,
+  ) async {
+    final existing = await getUserRoleByProfileId(userProfileId, role);
+    if (existing != null) return existing;
+    return await supabase
+        .from(UserRoles.table_name)
+        .insert(
+          UserRoles.insert(
+            id: const UuidV4().generate(),
+            userProfileId: userProfileId,
+            role: role,
+          ),
+        )
+        .select(UserRoles.c_id)
+        .single();
+  }
+
+  Future<void> insertUserCaptainCluster(
+    String clusterId,
+    String userRoleId,
+  ) async {
+    await supabase
+        .from(UserCaptainClusters.table_name)
+        .insert(
+          UserCaptainClusters.insert(
+            id: const UuidV4().generate(),
+            clusterId: clusterId,
+            userRoleId: userRoleId,
+          ),
+        );
+  }
+
+  Future<void> deleteUserCaptainCluster(
+    String clusterId,
+    String userRoleId,
+  ) async {
+    await supabase
+        .from(UserCaptainClusters.table_name)
+        .delete()
+        .eq(UserCaptainClusters.c_clusterId, clusterId)
+        .eq(UserCaptainClusters.c_userRoleId, userRoleId);
+  }
+
+  Future<List<UserCaptainClusters>> getUserCaptainClustersByRoleId(
+    String userRoleId,
+  ) async {
+    final data = await supabase
+        .from(UserCaptainClusters.table_name)
+        .select()
+        .eq(UserCaptainClusters.c_userRoleId, userRoleId);
+    return UserCaptainClusters.converter(data);
+  }
+
+  Future<void> deleteUserRole(String userRoleId) async {
+    await supabase
+        .from(UserRoles.table_name)
+        .delete()
+        .eq(UserRoles.c_id, userRoleId);
+  }
+
+  Future<PostgrestList?> getCaptainsViewByClusterId(String clusterId) async {
+    return await supabase
+        .from('cluster_captains_view')
+        .select(
+          'cluster_id, user_profile_id, given_name, family_name, nickname',
+        )
+        .eq('cluster_id', clusterId);
+  }
+
+  Future<PostgrestList?> getCommunityAdmins() async {
+    return await supabase
+        .from(UserRoles.table_name)
+        .select(UserRoles.c_userProfileId)
+        .eq(UserRoles.c_role, APP_ROLES.com_admin.name);
+  }
+
+  Future<int> getHouseholdCount() async {
+    return await supabase.from('households').count();
+  }
+
+  Future<PostgrestList?> getAllClusterCaptains() async {
+    return await supabase.from('cluster_captains_view').select('cluster_id');
   }
 }
