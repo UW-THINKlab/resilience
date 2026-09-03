@@ -53,7 +53,7 @@ jobs:
     # original values are in deployment/values.cloud.yaml
     - run: |
         flutter build web \
-        --release \
+        --debug \
         --base-href "/resilience/" \
         --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
         --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
