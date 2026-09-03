@@ -50,8 +50,6 @@ python = ">=3.12.13,<3.15"
 pip = ">=26.2.1,<27"
 psycopg2-binary = ">=2.9.10,<3"
 
-[feature.db.pypi-dependencies]
-support-sphere-py = { path = "./src/support_sphere_py", editable = true }
 
 [feature.db.tasks]
 setup-db-data-via-k8s-job = { depends-on = [
@@ -174,14 +172,6 @@ depends-on = ["install-k3d", "k3d-delete-cluster"]
 
 [feature.backend.tasks.k3d-delete-cluster]
 cmd = "k3d cluster delete pdc-cluster"
-
-# Fast API tasks
-[feature.backend.tasks.run-fast-api-server-run]
-cmd = "fastapi run ./src/support_sphere_py/src/support_sphere/apis/main.py"
-
-# Runs the Fast API server in editable mode - auto-triggers restart when source files are changed.
-[feature.backend.tasks.fast-api-server-dev]
-cmd = "fastapi dev ./src/support_sphere_py/src/support_sphere/apis/main.py"
 
 [feature.backend.tasks.seed-db]
 cmd = "scripts/generate-seed-db.sh"
@@ -370,16 +360,6 @@ depends-on = ["start"]
 
 [feature.supabase.tasks.config]
 cmd = "python scripts/appconfig.py --dart -o src/support_sphere/lib/constants/appconfig.dart"
-
-[tasks.execute-sql]
-cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "execute_sql", "run-all"]
-cwd = "src/support_sphere_py"
-depends-on = ["supabase"]
-
-[tasks.db-init]
-cmd = ["uv", "run", "src/support_sphere/scripts/cli_app.py", "db_init", "run-all"]
-cwd = "src/support_sphere_py"
-depends-on = ["execute-sql"]
 
 [tasks.clean]
 cmd = ["docker", "system", "prune", "-af"]

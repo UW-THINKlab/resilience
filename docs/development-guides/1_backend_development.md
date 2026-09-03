@@ -254,47 +254,6 @@ If you run into an issue like `gpg: decryption failed: Inappropriate ioctl for d
 export GPG_TTY=$(tty)
 ```
 
-## Python package
-
-Since the underlying database for Supabase is Postgres,
-we are able to utilize Object Relational Mapping (ORM) to define the database schema.
-
-We use the `sqlmodel` package to define the database schema. [SQLModel](https://sqlmodel.tiangolo.com/) is a library that combines the power of [SQLAlchemy](https://www.sqlalchemy.org/) and [Pydantic](https://docs.pydantic.dev/latest/).
-
-The python package that defines the database schema can be found in the [`src/support_sphere_py`](https://github.com/UW-THINKlab/resilience/tree/main/src/support_sphere_py) directory.
-
-The package is structured as follows:
-
-```console
-.
-├── src
-│   └── support_sphere
-│       ├── apis
-│       ├── models
-│       │   ├── auth
-│       │   ├── enums
-│       │   └── public
-│       ├── repositories
-│       │   ├── auth
-│       │   └── public
-│       ├── scripts
-│       │   └── resources
-│       │       └── data
-│       └── services
-└── tests
-```
-
-**`src/support_sphere`**:
-
-- `models`: This directory contains the ORM models for the database, and is further divided into subdirectories for each schema.
-- `repositories`: This directory contains the repository classes for the models, which allows for CRUD operations.
-- `scripts`: This directory contains scripts for direct database operations, such as loading data.
-- `services`: This directory contains any services that need to interact with the database.
-    - `resources/data`: This directory contains any data files to be loaded into the database.
-- `apis`: This directory contains the API directory for fastapi routes (not implemented).
-
-**`tests`**: This directory contains any tests for the package.
-
 ## **Running locally**
 
 To run this app locally, follow these steps:
