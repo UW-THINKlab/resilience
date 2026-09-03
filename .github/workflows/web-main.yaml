@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-run-server:
-    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml
+    uses: UW-THINKlab/resilience/.github/workflows/run-dev-server.yml@main
   build-and-publish:
     runs-on: ubuntu-latest
     env:
