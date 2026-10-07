@@ -1,4 +1,4 @@
-package com.example.support_sphere
+package edu.washington.cs.supportsphere
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -456,7 +456,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           urlTemplate: _mapType == MapType.normal
               ? "http://tile.openstreetmap.org/{z}/{x}/{y}.png"
               : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpg',
-          userAgentPackageName: 'com.example.app',
+          userAgentPackageName: 'edu.washington.cs.supportsphere',
         ),
         Stack(
           children: [
