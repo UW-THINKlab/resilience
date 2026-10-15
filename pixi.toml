@@ -19,12 +19,6 @@ features = ["supabase"]
 [environments.secrets]
 features = ["secrets"]
 
-[environments.supabase.dependencies]
-python-dotenv = ">=1.2.3,<2"
-supabase = ">=2.31.0,<3"
-geomet = ">=1.1.0,<2"
-geojson = ">=3.3.0,<4"
-
 [dependencies]
 go-sops = ">=3.13.3,<4"
 
@@ -320,6 +314,10 @@ cmd = "gpg --import /root/private.pgp"
 
 [feature.supabase.dependencies]
 python = ">=3.14.7,<3.15"
+python-dotenv = ">=1.2.3,<2"
+supabase = ">=2.31.0,<3"
+geomet = ">=1.1.0,<2"
+geojson = ">=3.3.0,<4"
 
 [feature.supabase.tasks.install.env]
 # install in pixi env
