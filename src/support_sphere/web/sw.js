@@ -88,14 +88,15 @@ async function cacheMissing(urls) {
 // cache held (whichever variant this browser uses) so the app still starts
 // offline. Failing here fails the install, which keeps the old version.
 async function refreshCanvasKit() {
-  const names = await caches.keys();
-  if (names.includes(ENGINE_CACHE)) return;
+  const engineCache = await caches.open(ENGINE_CACHE);
+  if ((await engineCache.keys()).length > 0) return;
   const urls = new Set();
-  for (const name of names.filter((n) => n.startsWith('canvaskit-'))) {
+  const previous = (await caches.keys()).filter((n) => n.startsWith('canvaskit-') && n !== ENGINE_CACHE);
+  for (const name of previous) {
     for (const request of await (await caches.open(name)).keys()) {
       urls.add(request.url);
     }
   }
   const requests = [...urls].map((url) => new Request(url, {cache: 'no-cache'}));
-  await (await caches.open(ENGINE_CACHE)).addAll(requests);
+  await engineCache.addAll(requests);
 }

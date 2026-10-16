@@ -32,7 +32,9 @@ async function registerServiceWorker() {
     return;
   }
 
-  await navigator.serviceWorker.register('sw.js');
+  // sw.js itself rarely changes; updates arrive through sw_manifest.js, so
+  // keep the HTTP cache out of update checks for both.
+  await navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'});
 
   // The worker never sees requests made before it took control (CanvasKit on
   // the first visit, or after an update), so tell it what this page loaded.
