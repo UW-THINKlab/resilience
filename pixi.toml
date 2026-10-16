@@ -219,6 +219,11 @@ depends-on = ["install-flutter"]
 cmd = "flutter clean; flutter build web --debug"
 cwd = "src/support_sphere"
 
+# Release web build with the offline service worker, as deployed by web-main.yaml
+[feature.frontend.tasks.build-pwa]
+cmd = "flutter build web --no-web-resources-cdn && python ../../scripts/pwa_manifest.py build/web"
+cwd = "src/support_sphere"
+
 
 # ==== Deployment environment ====
 [feature.cloud.activation.env]

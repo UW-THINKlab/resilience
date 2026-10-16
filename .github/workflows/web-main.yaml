@@ -53,10 +53,12 @@ jobs:
     # original values are in deployment/values.cloud.yaml
     - run: |
         flutter build web \
-        --debug \
+        --no-web-resources-cdn \
         --base-href "/resilience/" \
         --dart-define=SUPABASE_ANON_KEY=${{ secrets.CLOUD_DB_JWT_ANON_KEY}} \
         --dart-define=SUPABASE_URL=${{ secrets.CLOUD_DB_URL}}
+    # Precache list for the offline service worker (web/sw.js)
+    - run: python ../../scripts/pwa_manifest.py build/web
 
     - name: Upload Pages HTML
       uses: actions/upload-pages-artifact@v3
