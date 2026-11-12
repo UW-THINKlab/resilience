@@ -11,6 +11,16 @@ class AppStrings {
   static const String emergencyBannerText = "Emergency mode declared.";
 }
 
+/// Strings shown when the server can't be reached
+class OfflineStrings {
+  static String showingSaved(String savedAgo) =>
+      "You're offline. Showing information saved $savedAgo.";
+  static const String needsConnection =
+      "Couldn't save: you're offline. Try again when you're connected.";
+  static const String inboxUnavailable =
+      "Messages need a connection. Try again when you're connected.";
+}
+
 class EmergencyAlertDialogStrings {
   static const String title = 'Emergency Declared';
   static const String message =

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
@@ -35,7 +36,12 @@ class AuthenticationRepository {
   }) async =>
       _authService.signInWithEmailAndPassword(email, password);
 
-  Future<void> logOut() async => await _authService.signOut();
+  /// Signs out, first deleting data saved for offline use: on a shared device
+  /// the next person must not see it.
+  Future<void> logOut() async {
+    await OfflineCache.clear();
+    await _authService.signOut();
+  }
 
   Future<void> deleteMyAccount() async => await _authService.deleteMyAccount();
 

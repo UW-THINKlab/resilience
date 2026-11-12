@@ -63,7 +63,9 @@ class InboxView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${state.error}'),
+                  Text(state.offline
+                      ? OfflineStrings.inboxUnavailable
+                      : 'Error: ${state.error}'),
                   ElevatedButton(
                     onPressed: () => context.read<InboxCubit>().fetchGroups(),
                     child: const Text('Retry'),

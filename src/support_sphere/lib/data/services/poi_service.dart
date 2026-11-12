@@ -2,6 +2,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart' show Color;
 import 'package:support_sphere/data/models/generated_classes.dart'
     show POI_CATEGORY;
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/data/models/point_of_interest.dart';
 
@@ -24,18 +25,26 @@ class PointOfInterestService {
       'getPointsOfInterest: calling get_visible_points_of_interest rpc '
       'for $requesterProfileId',
     );
-    final points = await supabase
-        .rpc(
-          'get_visible_points_of_interest',
-          params: {'p_requester_profile_id': requesterProfileId},
-        )
-        .order('name', ascending: true);
+    final points = await OfflineCache.fetch(
+      'points_of_interest:$requesterProfileId',
+      () async => decodeRows(await supabase
+          .rpc(
+            'get_visible_points_of_interest',
+            params: {'p_requester_profile_id': requesterProfileId},
+          )
+          .order('name', ascending: true)),
+      decode: decodeRows,
+    );
     log.fine('getPointsOfInterest: rpc returned ${points.length} rows: $points');
     return [for (var p in points) PointOfInterest.fromMap(p)];
   }
 
   Future<Map<String, (FaIconData, Color)>> getPointOfInterestTypes() async {
-    final rows = await supabase.from(typesCollection).select();
+    final rows = await OfflineCache.fetch(
+      'point_of_interest_types',
+      () => supabase.from(typesCollection).select(),
+      decode: decodeRows,
+    );
     final styles = <String, (FaIconData, Color)>{};
     for (final row in rows) {
       final icon = iconBySlug[row['icon']];

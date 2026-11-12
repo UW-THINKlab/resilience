@@ -26,8 +26,8 @@ class AppRepository {
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false)
         .limit(1)
+        .where((data) => data.isNotEmpty)
         .map((data) {
-          // FIXME zero index on empty data
           Map<String, dynamic> record = data[0];
           // Parse the data into a OperationalEvent object
           OperationalEvent event = OperationalEvent(

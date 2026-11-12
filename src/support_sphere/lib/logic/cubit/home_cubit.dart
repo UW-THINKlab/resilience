@@ -9,6 +9,7 @@ import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/clusters.dart';
 import 'package:support_sphere/data/repositories/cluster.dart';
 import 'package:support_sphere/data/repositories/home.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:support_sphere/logic/cubit/home_state.dart';
 import 'package:support_sphere/utils/geojson.dart' show GeoJson;
 
@@ -146,7 +147,15 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> saveMeetingPlace(String? description) async {
     if (state.pickedLocation != null) {
-      final Cluster cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, description);
+      final Cluster cluster;
+      try {
+        cluster = await clusterRepo.updateClusterMeetingPoint(state.cluster!, state.pickedLocation, description);
+      } catch (error, stackTrace) {
+        log.severe('saveMeetingPlace failed', error, stackTrace);
+        OfflineCache.reportWriteError(error);
+        await cancelMeetingPlace();
+        return;
+      }
       log.fine("Updated cluster: ${cluster.meetingPoint}");
 
       emit(state.copyWith(
