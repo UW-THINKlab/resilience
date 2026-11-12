@@ -1,12 +1,14 @@
 {
-    "name": "support_sphere",
-    "short_name": "support_sphere",
+    "id": "./",
+    "name": "Support Sphere",
+    "short_name": "Support Sphere",
+    "description": "Share information and resources with your neighbors to prepare for and respond to emergencies.",
     "start_url": ".",
+    "scope": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
+    "background_color": "#0E3646",
+    "theme_color": "#0E3646",
     "prefer_related_applications": false,
     "icons": [
         {
