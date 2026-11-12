@@ -91,6 +91,8 @@ class ClusterService {
           'meeting_place': description,
         })
         .eq('id', clusterId);
+    // The server answered, so the read-back below must not use saved data.
+    OfflineCache.markOnline();
 
     // new version
     final updatedCluster = await getClusterById(clusterId);

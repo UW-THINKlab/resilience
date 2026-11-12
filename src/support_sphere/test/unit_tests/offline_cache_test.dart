@@ -50,6 +50,26 @@ void main() {
     expect(result.single['name'], 'saved');
   });
 
+  test('waits out a slow query when nothing was saved', () async {
+    final result = await fetch(() async {
+      await Future.delayed(const Duration(milliseconds: 150));
+      return rows('slow');
+    });
+    expect(result.single['name'], 'slow');
+  });
+
+  test('saves a slow answer that arrives after the saved copy was used',
+      () async {
+    await fetch(() => rows('saved'));
+    final slow = Completer<List<Map<String, dynamic>>>();
+    final result = await fetch(() => slow.future);
+    expect(result.single['name'], 'saved');
+    slow.complete(rows('late'));
+    await pumpEventQueue();
+    final latest = await OfflineCache.load('rows');
+    expect((latest!.data as List).single['name'], 'late');
+  });
+
   test('rethrows server errors instead of using saved data', () async {
     await fetch(() => rows('saved'));
     expect(

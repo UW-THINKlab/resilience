@@ -14,7 +14,7 @@ class AppStrings {
 /// Strings shown when the server can't be reached
 class OfflineStrings {
   static String showingSaved(String savedAgo) =>
-      "You're offline. Showing information saved $savedAgo.";
+      "Can't reach the server. Showing information saved $savedAgo.";
   static const String needsConnection =
       "Couldn't save: you're offline. Try again when you're connected.";
   static const String inboxUnavailable =

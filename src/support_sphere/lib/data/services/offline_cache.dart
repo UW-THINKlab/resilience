@@ -55,22 +55,27 @@ class OfflineCache {
     final storageKey = _storageKey(key);
     if (storageKey == null) return query();
 
+    final saved = await _read(storageKey);
     final offline =
         _offlineUntil != null && DateTime.now().isBefore(_offlineUntil!);
-    if (offline) {
-      final saved = await _read(storageKey);
-      if (saved != null) return _useSaved(saved, decode);
-    }
+    if (saved != null && offline) return _useSaved(saved, decode);
 
+    // Built once: awaiting a Postgrest builder again would resend it.
+    final pending = Future(query);
     final T result;
     try {
-      result = await query().timeout(timeout);
+      // With nothing to fall back on, wait as long as the request takes.
+      result = await (saved == null ? pending : pending.timeout(timeout));
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
       _offlineUntil = DateTime.now().add(retryAfter);
-      final saved = await _read(storageKey);
       if (saved == null) rethrow;
-      _log.info('Network unreachable; using saved "$key"', error);
+      if (error is TimeoutException) {
+        // Slow, not necessarily down: keep the answer for next time.
+        unawaited(pending.then((late) => _write(storageKey, late),
+            onError: (_) {}));
+      }
+      _log.info('Server unreachable; using saved "$key"', error);
       return _useSaved(saved, decode);
     }
     markOnline();

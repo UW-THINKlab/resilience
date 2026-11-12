@@ -110,6 +110,8 @@ class ChecklistService {
     await _supabaseClient
         .from('checklist_steps_states')
         .update({'is_completed': isCompleted}).eq('id', stepStateId);
+    // The server answered, so the read-back below must not use saved data.
+    OfflineCache.markOnline();
   }
 
   Future<bool> areAllStepsCompleted(
