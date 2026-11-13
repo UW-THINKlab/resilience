@@ -1,6 +1,7 @@
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:support_sphere/constants/appconfig.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 
 final log = Logger('Config');
 
@@ -10,6 +11,7 @@ class Config {
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,
       anonKey: AppConfig.supabaseAnonKey,
+      httpClient: ReachabilityClient(),
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',

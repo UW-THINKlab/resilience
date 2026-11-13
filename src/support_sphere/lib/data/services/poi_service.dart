@@ -12,8 +12,6 @@ class PointOfInterestService {
 
   Future<void> insert(PointOfInterest poi) async {
     await supabase.from(collection).insert(poi.toMap());
-    // The server answered, so the refresh that follows must not use saved data.
-    OfflineCache.markOnline();
   }
 
   Future<void> delete(String id) async {

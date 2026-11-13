@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' show Logger;
 import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,11 +40,20 @@ class OfflineCache {
   /// The latest write that failed because the network is unreachable.
   static final ValueNotifier<Object?> lastFailedWrite = ValueNotifier(null);
 
+  /// Upper bound on the characters of saved data. Saved data shares browser
+  /// storage (about 5 MB on web) with the login session, which must still fit
+  /// when its token is refreshed.
+  @visibleForTesting
+  static int maxSavedChars = 2000000;
+
   static DateTime? _offlineUntil;
 
-  /// Whether [error] means the server couldn't be reached (as opposed to the
-  /// server rejecting the request).
-  static bool isNetworkError(Object error) => error is! PostgrestException;
+  /// Whether [error] means the server couldn't be reached, as opposed to the
+  /// server rejecting the request or a bug in handling its answer.
+  static bool isNetworkError(Object error) =>
+      error is! PostgrestException &&
+      error is! Error &&
+      error is! FormatException;
 
   /// Runs [query] and saves its result under [key]; if the network is
   /// unreachable, returns the result saved last time instead.
@@ -106,9 +116,13 @@ class OfflineCache {
 
   /// Records that the server answered, so data on screen is current again.
   static void markOnline() {
-    _offlineUntil = null;
+    markReachable();
     showingSavedSince.value = null;
   }
+
+  /// Records that the server answered something, so the next read goes to the
+  /// network again (e.g. a read-back after a save).
+  static void markReachable() => _offlineUntil = null;
 
   /// Reports a write that failed; network failures are surfaced to the user.
   /// Returns whether [error] was a network failure.
@@ -161,10 +175,19 @@ class OfflineCache {
   static Future<void> _write(String key, Object? data) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-        key,
-        jsonEncode({'t': DateTime.now().toIso8601String(), 'd': data}),
-      );
+      final entry =
+          jsonEncode({'t': DateTime.now().toIso8601String(), 'd': data});
+      var total = entry.length;
+      for (final other in prefs.getKeys()) {
+        if (other.startsWith(prefix) && other != key) {
+          total += prefs.getString(other)?.length ?? 0;
+        }
+      }
+      if (total > maxSavedChars) {
+        _log.warning('Not saving "$key": saved data would exceed the limit');
+        return;
+      }
+      await prefs.setString(key, entry);
     } catch (error) {
       // Storage full or unavailable: the app still works, just not offline.
       _log.warning('Could not save "$key"', error);
@@ -179,3 +202,21 @@ List<Map<String, dynamic>> decodeRows(dynamic json) =>
 /// Decodes a saved single row, which may be null.
 Map<String, dynamic>? decodeRow(dynamic json) =>
     json as Map<String, dynamic>?;
+
+/// An HTTP client that tells [OfflineCache] whenever the server answers, so a
+/// read right after a successful write isn't served from saved data.
+class ReachabilityClient extends http.BaseClient {
+  ReachabilityClient([http.Client? inner]) : _inner = inner ?? http.Client();
+
+  final http.Client _inner;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final response = await _inner.send(request);
+    OfflineCache.markReachable();
+    return response;
+  }
+
+  @override
+  void close() => _inner.close();
+}

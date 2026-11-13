@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'package:support_sphere/data/services/offline_cache.dart';
@@ -25,6 +27,7 @@ void main() {
     OfflineCache.currentUserId = () => userId;
     OfflineCache.timeout = const Duration(milliseconds: 50);
     OfflineCache.retryAfter = Duration.zero;
+    OfflineCache.maxSavedChars = 2000000;
     OfflineCache.markOnline();
   });
 
@@ -76,6 +79,37 @@ void main() {
       fetch(() async => throw const PostgrestException(message: 'denied')),
       throwsA(isA<PostgrestException>()),
     );
+  });
+
+  test('rethrows bugs in handling the answer instead of using saved data',
+      () async {
+    await fetch(() => rows('saved'));
+    expect(
+      fetch(() async => throw TypeError()),
+      throwsA(isA<TypeError>()),
+    );
+    expect(
+      fetch(() async => throw const FormatException('bad date')),
+      throwsFormatException,
+    );
+  });
+
+  test('skips saving when saved data would exceed the limit', () async {
+    await fetch(() => rows('first'));
+    OfflineCache.maxSavedChars = 100;
+    await OfflineCache.save('big', 'x' * 200);
+    expect(await OfflineCache.load('big'), isNull);
+    expect(await OfflineCache.load('rows'), isNotNull);
+  });
+
+  test('any server response ends the skip-the-network window', () async {
+    OfflineCache.retryAfter = const Duration(minutes: 1);
+    await fetch(() => rows('saved'));
+    await fetch(unreachable);
+    final client = ReachabilityClient(
+        MockClient((_) async => http.Response('', 201)));
+    await client.post(Uri.parse('https://example.invalid/rest/v1/x'));
+    expect((await fetch(() => rows('live'))).single['name'], 'live');
   });
 
   test('rethrows a network error when nothing was saved', () async {
