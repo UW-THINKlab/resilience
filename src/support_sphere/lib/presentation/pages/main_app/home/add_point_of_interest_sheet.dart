@@ -7,6 +7,7 @@ import 'package:support_sphere/data/models/generated_classes.dart'
     show VISIBILITY_SCOPE;
 import 'package:support_sphere/data/models/point_of_interest.dart';
 import 'package:support_sphere/data/services/poi_service.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:support_sphere/presentation/components/auth/borders.dart';
 import 'package:support_sphere/presentation/components/cancel_button.dart';
 import 'package:support_sphere/presentation/components/confirm_button.dart';
@@ -191,7 +192,12 @@ class _AddPointOfInterestSheetState extends State<AddPointOfInterestSheet> {
                           : VISIBILITY_SCOPE.private,
                       expiresAt: _expiresAt,
                     );
-                    await PointOfInterestService().insert(poi);
+                    try {
+                      await PointOfInterestService().insert(poi);
+                    } catch (error) {
+                      if (!OfflineCache.reportWriteError(error)) rethrow;
+                      return;
+                    }
 
                     if (context.mounted) Navigator.of(context).pop();
                     widget.onSave();

@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:support_sphere/utils/supabase.dart';
 
 class ChecklistService {
@@ -7,7 +8,9 @@ class ChecklistService {
   /// Get user's checklists (for basic users)
   Future<List<Map<String, dynamic>>> getUserChecklistsByUserId(
       String userId) async {
-    final results = await _supabaseClient
+    final results = await OfflineCache.fetch(
+      'user_checklists:$userId',
+      () => _supabaseClient
         .from('user_checklists')
         .select('''
           id,
@@ -47,7 +50,9 @@ class ChecklistService {
             userId)
         .order('priority',
             referencedTable: 'checklists.checklist_steps_orders',
-            ascending: true);
+            ascending: true),
+      decode: decodeRows,
+    );
 
     results.sort((a, b) {
       var priorityA =

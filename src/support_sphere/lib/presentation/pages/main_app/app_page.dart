@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:support_sphere/logic/bloc/auth/authentication_bloc.dart';
 import 'package:support_sphere/presentation/router/app_body_select.dart';
 import 'package:support_sphere/data/repositories/app.dart';
+import 'package:support_sphere/presentation/components/offline_banner.dart';
 
 final log = Logger('MyApp');
 
@@ -116,7 +117,9 @@ class AppPage extends StatelessWidget {
                 // drawer: const Drawer(
                 //   child: null,
                 // ),
-                body: bodySelector.getBody(state.selectedBottomNavIndex),
+                body: OfflineBanner(
+                  child: bodySelector.getBody(state.selectedBottomNavIndex),
+                ),
                 bottomNavigationBar: NavigationBar(
                   selectedIndex: state.selectedBottomNavIndex,
                   onDestinationSelected: (value) {

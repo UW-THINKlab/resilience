@@ -4,6 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/checklist.dart';
 import 'package:support_sphere/data/repositories/checklist.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 
 part 'checklist_state.dart';
 
@@ -54,6 +55,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
       await fetchUserChecklists(authUser.uuid);
     } catch (error) {
       /// TODO: handle errors
+      OfflineCache.reportWriteError(error);
       log.fine(error);
     } finally {
       emit(state.copyWith(isLoading: false));

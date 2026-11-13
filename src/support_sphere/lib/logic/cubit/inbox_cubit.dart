@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:support_sphere/data/models/auth_user.dart';
 import 'package:support_sphere/data/models/chat_group.dart';
 import 'package:support_sphere/data/repositories/chat_repository.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 
 part 'inbox_state.dart';
 
@@ -18,9 +19,14 @@ class InboxCubit extends Cubit<InboxState> {
     emit(state.copyWith(isLoading: true));
     try {
       final groups = await _repo.getUserChatGroups(authUser.uuid);
-      emit(state.copyWith(groups: groups, isLoading: false));
+      // A fresh state, so an error from an earlier attempt is cleared.
+      emit(InboxState(groups: groups));
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+        offline: OfflineCache.isNetworkError(e),
+      ));
     }
   }
 
@@ -29,9 +35,13 @@ class InboxCubit extends Cubit<InboxState> {
     try {
       await _repo.deleteGroup(id);
       final groups = await _repo.getUserChatGroups(authUser.uuid);
-      emit(state.copyWith(groups: groups, isLoading: false));
+      emit(InboxState(groups: groups));
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+        offline: OfflineCache.isNetworkError(e),
+      ));
     }
   }
 }

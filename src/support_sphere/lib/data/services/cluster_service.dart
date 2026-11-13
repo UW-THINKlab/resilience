@@ -6,6 +6,7 @@ import 'package:support_sphere/data/models/generated_classes.dart'
     show UserRoles, UserCaptainClusters, APP_ROLES;
 import 'package:support_sphere/data/models/households.dart' show Household;
 import 'package:support_sphere/data/services/auth_service.dart';
+import 'package:support_sphere/data/services/offline_cache.dart';
 import 'package:support_sphere/utils/supabase.dart';
 import 'package:support_sphere/constants/string_catalog.dart';
 import 'package:uuid/v4.dart' show UuidV4;
@@ -16,23 +17,33 @@ class ClusterService {
   /// Retrieves the cluster by cluster id.
   /// Returns a [Cluster] object if the cluster exist.
   /// Returns null if the cluster does not exist.
-  Future<PostgrestMap?> getClusterById(String clusterId) async {
+  Future<PostgrestMap?> getClusterById(String clusterId) {
     /// This query will perform a join on the user_profiles and people tables
-    return await supabase
-        .from('clusters')
-        .select('*')
-        .eq('id', clusterId)
-        .maybeSingle();
+    return OfflineCache.fetch(
+      'cluster:$clusterId',
+      () => supabase
+          .from('clusters')
+          .select('*')
+          .eq('id', clusterId)
+          .maybeSingle(),
+      decode: decodeRow,
+    );
   }
 
-  Future<PostgrestList?> getAllClusters() async {
-    return await supabase.from('clusters').select('*');
+  Future<PostgrestList?> getAllClusters() {
+    return OfflineCache.fetch(
+      'clusters',
+      () => supabase.from('clusters').select('*'),
+      decode: decodeRows,
+    );
   }
 
   Future<PostgrestMap?> getClusterIdByUserProfileId(
     String userProfileId,
-  ) async {
-    return await supabase
+  ) {
+    return OfflineCache.fetch(
+      'user_cluster:$userProfileId',
+      () => supabase
         .from('user_profiles')
         .select('''
       id,
@@ -45,7 +56,9 @@ class ClusterService {
       )
     ''')
         .eq('id', userProfileId)
-        .maybeSingle();
+        .maybeSingle(),
+      decode: decodeRow,
+    );
   }
 
   // FIXME - couldn't find an existing lib
@@ -86,8 +99,10 @@ class ClusterService {
     return updatedCluster;
   }
 
-  Future<PostgrestList?> getCaptainsByClusterId(String clusterId) async {
-    return await supabase
+  Future<PostgrestList?> getCaptainsByClusterId(String clusterId) {
+    return OfflineCache.fetch(
+      'captains:$clusterId',
+      () => supabase
         .from('user_captain_clusters')
         .select('''
         captain:user_roles (
@@ -106,7 +121,9 @@ class ClusterService {
         )
       ''')
         .eq('cluster_id', clusterId)
-        .eq('user_roles.role', AppRoles.subcommunityAgent);
+        .eq('user_roles.role', AppRoles.subcommunityAgent),
+      decode: decodeRows,
+    );
   }
 
   Future<List<Household>> getHouseholds(String clusterId) async {
